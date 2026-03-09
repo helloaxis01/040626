@@ -1,0 +1,373 @@
+
+  },
+];
+
+
+// ─────────────────────────────────────────────────────────────
+//  STAY STEADY — Balance & Proprioception
+// ─────────────────────────────────────────────────────────────
+const STEADY_SECTIONS = [
+  {
+    label: "Foundation", tag: "01",
+    purpose: "Train the systems your body uses to prevent falls — the vestibular system, ankle strategy, and glute activation. These movements feel simple and are deceptively hard to do well. Slow down.",
+    exercises: [
+      { id: 801, name: "Weight Shifts", start: "Standing, feet hip-width, near a wall for safety.", sub: "Ankle strategy training, standing", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Neutral Stance", focus: "SETUP", cue: "Stand feet hip-width. Arms relaxed at sides. Soft knees — never locked. Eyes on a fixed point at eye level." },
+        { pos: "B", label: "Side-to-Side Shifts", focus: "ANKLE", cue: "Slowly shift your weight to the right until the left foot is nearly unloaded. Pause 2 seconds. Shift left. Use your ankles, not your hips — think of yourself as a pendulum, not a seesaw." },
+        { pos: "C", label: "Forward & Back", focus: "PROPRIOCEPTION", cue: "Shift weight forward toward the balls of your feet, then back toward the heels. Stay within a comfortable range. Feel the floor through your feet — this is your sensory feedback loop." },
+      ]},
+      { id: 802, name: "Single-Leg Stance", start: "Standing near a wall, balanced on one foot.", sub: "Vestibular & glute med activation", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Stand Tall", focus: "SETUP", cue: "Stand near a wall or sturdy chair within arm's reach — use it for safety, not for support. Find a fixed point at eye level to focus on — this is your visual anchor. Arms at sides or lightly touching the wall." },
+        { pos: "B", label: "Lift One Foot", focus: "BALANCE", cue: "Lift one foot a few inches off the floor. Keep the stance leg slightly bent — never lock the knee. The hip of the lifted leg should drop slightly, which means the standing glute med is working. Hold 20–30 seconds each side." },
+        { pos: "C", label: "Eyes Closed Progression", focus: "VESTIBULAR", cue: "Once stable with eyes open, close them. This removes visual compensation and forces the vestibular and somatosensory systems to do the work. Even 5–10 seconds eyes-closed is a meaningful challenge." },
+      ]},
+    ],
+  },
+  {
+    label: "Dynamic Balance", tag: "02",
+    purpose: "Moving balance is harder than standing still. These patterns train the brain to manage balance during locomotion — the context where most real-world stumbles happen.",
+    exercises: [
+      { id: 803, name: "Tandem Walking", start: "Standing at one end of a clear path.", sub: "Heel-to-toe, narrow base of support", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Starting Position", focus: "SETUP", cue: "Stand tall. Heel of one foot touching the toes of the other. Find a line on the floor or imagine a tightrope. Arms out at sides for balance assist if needed." },
+        { pos: "B", label: "Walk Forward", focus: "BALANCE", cue: "Step forward, placing the heel of the leading foot directly against the toes of the back foot. Take 10 slow, deliberate steps forward. Eyes forward — not down at your feet." },
+        { pos: "C", label: "Walk Backward", focus: "VESTIBULAR", cue: "Reverse direction — 10 steps back, toe touching heel. Walking backward is a separate vestibular challenge. Move slowly. This is a clinical tool used in fall prevention programs." },
+      ]},
+      { id: 804, name: "Grapevine Walk", start: "Standing with space to move laterally.", sub: "Lateral crossover steps, hip coordination", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Side Start", focus: "SETUP", cue: "Stand tall, feet together. You will move laterally. Clear enough space for 8–10 sideways steps. Arms out slightly for balance." },
+        { pos: "B", label: "Cross & Step", focus: "COORDINATE", cue: "Step right with the right foot. Cross the left foot in front of the right. Step right again. Cross left foot behind the right. Repeat continuously. The alternating front/back crossover is the key pattern — it requires the brain to sequence hip abductor and adductor firing." },
+        { pos: "C", label: "Reverse Direction", focus: "BILATERAL", cue: "Lead with the left foot back across the same path. Each direction uses a different motor pattern. Aim for smooth, continuous movement — choppy steps mean the brain is still learning the sequence." },
+      ]},
+    ],
+  },
+  {
+    label: "Strength & Control", tag: "03",
+    purpose: "Eccentric control — the ability to decelerate your own bodyweight — is the single most important physical factor in fall prevention for adults over 40. Most injuries happen on the way down, not up.",
+    exercises: [
+      { id: 805, name: "Lateral Step-Downs", start: "Standing on a low step or curb, one foot at the edge.", sub: "Eccentric quad loading, 4-inch step", type: "reps", reps: "8–10 reps each side", steps: [
+        { pos: "A", label: "Find Your Step", focus: "SETUP", cue: "Stand on the edge of a bottom stair, curb, or low stool (4–6 inches high). Stand sideways so one foot is on the edge. The other foot hangs free over the side. Hold a wall lightly for safety — not for support." },
+        { pos: "B", label: "Slow Descent", focus: "ECCENTRIC", cue: "Bend the standing leg to slowly lower the hanging foot toward the floor. Take 3–4 full seconds to descend. The standing knee should track directly over the second toe — not collapsing inward. This slow lowering is the entire point: you are training the quad to control deceleration." },
+        { pos: "C", label: "Return to Top", focus: "CONTROL", cue: "Before the hanging foot touches the floor, reverse direction and press back to standing. Do not push off the lower foot — all the work comes from the standing leg. Switch sides after all reps." },
+      ]},
+    ],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────
+//  MOVE FREELY — Joint Integrity & Synovial Fluid Flow
+// ─────────────────────────────────────────────────────────────
+const FREELY_SECTIONS = [
+  {
+    label: "Spine", tag: "01",
+    purpose: "Most adults over 40 have lost thoracic extension without knowing it. This single deficit drives frozen shoulder, neck strain, and lower back compensation. Address it directly.",
+    exercises: [
+      { id: 901, name: "Thoracic Extension", start: "Seated in a chair, hands behind your head.", sub: "Over chair back — mid-spine mobilization", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Chair Setup", focus: "SETUP", cue: "Sit at the edge of a firm chair. Place both hands behind your head, fingers interlaced, supporting the weight of your head. Identify the middle of your back — the thoracic spine, roughly between your shoulder blades. This is the target." },
+        { pos: "B", label: "Arch Back", focus: "EXTEND", cue: "Lean back so the top edge of the chair back contacts your mid-spine. Let the upper back gently arch over the support. Do not extend the lower back or neck — this is a thoracic-only movement. Breathe out as you arch. Feel the front of the chest opening." },
+        { pos: "C", label: "Segment & Breathe", focus: "MOBILIZE", cue: "Hold for 2–3 breaths at each level. Then shift slightly up or down the chair back to target adjacent segments. 3–5 positions across the thoracic spine. Never force — the weight of your head is sufficient traction." },
+      ]},
+    ],
+  },
+  {
+    label: "Upper Body", tag: "02",
+    purpose: "CARS — Controlled Articular Rotations — are the gold standard for joint health. Each rep moves the joint through its full available range under active muscular tension. Think: moving through thick honey. No momentum. The resistance comes entirely from you.",
+    exercises: [
+      { id: 902, name: "Neck CARs", start: "Seated or standing upright, spine long.", sub: "Controlled Articular Rotation — cervical spine", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Setup & Brace", focus: "SETUP", cue: "Sit or stand tall. Pack the shoulders down away from ears. Engage the muscles of the neck lightly — imagine you are trying to make a double chin. This pre-tension is what makes CARs different from a regular neck stretch: the joint moves, the surrounding tissues stay engaged." },
+        { pos: "B", label: "The Half-Arc", focus: "CARS", cue: "Begin by drawing your chin toward your chest. Slowly arc the head to the right — ear toward right shoulder, continuing the arc until the ear moves toward the left shoulder, then chin returns to chest. One full half-arc takes 8–10 seconds. Move as if carving through resistance. Never tilt the head back — the arc travels chin to chest only, never through the back of the neck." },
+        { pos: "C", label: "Reverse & Repeat", focus: "END-RANGE", cue: "At any point where you feel stiffness or reduced range, slow down further and breathe into that position. Do not push through pain or any sharp sensation. Reverse direction for one full arc. 2–3 rotations each direction is sufficient. If you feel dizziness at any point, stop immediately and rest." },
+      ]},
+      { id: 903, name: "Shoulder CARs", start: "Standing, one arm at your side.", sub: "Controlled Articular Rotation — glenohumeral joint", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Setup & Lock Down", focus: "SETUP", cue: "Stand tall. Work one arm at a time. Before moving, engage the lat on the working side — imagine trying to crush a walnut in your armpit. This stabilizes the scapula so the ball-and-socket joint does the work, not the whole shoulder blade." },
+        { pos: "B", label: "Full Arc Forward", focus: "CARS", cue: "Keeping the arm straight and under tension, lift it forward and up overhead in a large circle. As it passes overhead, rotate the palm to face behind you, then continue the circle down behind your back as far as your range allows. Move through thick resistance. The entire arc should take 10–12 seconds." },
+        { pos: "C", label: "Reverse Arc", focus: "END-RANGE", cue: "At the limit of your range behind the body, pause and breathe. Reverse the circle — same path, same resistance, same slow pace. Switch arms after 2 full rotations. The shoulder that feels stuck is the one that needs this most." },
+      ]},
+      { id: 904, name: "Wrist CARs", start: "Seated or standing, forearms resting or extended.", sub: "Controlled Articular Rotation — radiocarpal joint", type: "time", seconds: 45, steps: [
+        { pos: "A", label: "Setup", focus: "SETUP", cue: "Sit or stand. Extend both arms in front at shoulder height. Make loose fists. Engage the forearm muscles lightly — you should feel mild tension in the forearm, not the fingers. This active tension is what makes this therapeutic rather than passive." },
+        { pos: "B", label: "Full Rotation", focus: "CARS", cue: "Slowly rotate both wrists simultaneously through their full available range: flex down, rotate toward the little finger side, extend back, rotate toward the thumb side. One full circle takes 6–8 seconds. Move as if drawing large circles in the air with your knuckles." },
+        { pos: "C", label: "Reverse & Isolate", focus: "END-RANGE", cue: "Reverse direction for equal rotations. If one wrist has less range in a particular direction, slow down there — that is where the synovial fluid is most restricted. 4–5 rotations each direction is a complete set." },
+      ]},
+    ],
+  },
+  {
+    label: "Lower Body", tag: "03",
+    purpose: "The hip and ankle are the most neglected joints for adults who sit. Synovial fluid only reaches cartilage during movement — compression from sitting drives it out. These rotations restore joint space and end-range control.",
+    exercises: [
+      { id: 905, name: "Hip CARs", start: "Standing, one hand lightly on a wall for balance.", sub: "Controlled Articular Rotation — hip joint", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Setup & Stabilize", focus: "SETUP", cue: "Stand on one leg. Hold a wall lightly with one hand for safety only — not for balance support. Engage the standing glute to keep the pelvis completely still. The entire point of Hip CARs is that the pelvis does not move — only the femur in the hip socket. Squeeze the core before lifting the leg." },
+        { pos: "B", label: "Full Circumduction", focus: "CARS", cue: "Lift the free knee and begin rotating the hip: knee lifts forward, swings out to the side, extends behind the body, sweeps back to center. One full rotation takes 8–10 seconds. Keep the circle as large as your range allows while the pelvis stays completely still. If the hip hikes or the lower back twists, you have exceeded your available range — make the circle smaller." },
+        { pos: "C", label: "Reverse & Switch", focus: "END-RANGE", cue: "Reverse direction for the same number of rotations. At any restricted point in the arc, slow further and breathe. 2–3 rotations each direction, each side. The hip that feels grinding or clicking is the one that needs the most consistent attention." },
+      ]},
+      { id: 906, name: "Ankle CARs", start: "Seated or standing, one foot lifted off the floor.", sub: "Controlled Articular Rotation — talocrural joint", type: "time", seconds: 45, steps: [
+        { pos: "A", label: "Seated Setup", focus: "SETUP", cue: "Sit in a chair. Cross one ankle over the opposite knee so the foot is free in the air. Hold the lower leg just above the ankle to stabilize the shin — you want the foot to move, not the whole leg. Engage the muscles of the lower leg lightly." },
+        { pos: "B", label: "Full Rotation", focus: "CARS", cue: "Draw the largest circle possible with your big toe. Move clockwise: point the foot forward, rotate out, flex back, rotate in. Take 5–6 seconds per full rotation. Most people discover significant restriction when moving into dorsiflexion (toes pulled back) — this is the direction that matters most for walking and balance." },
+        { pos: "C", label: "Reverse & Switch", focus: "END-RANGE", cue: "Reverse direction. 4–5 rotations each way per foot. If the ankle feels stiff or crunchy, this is synovial fluid restriction — not a reason to stop, but a reason to go slower and breathe through the range." },
+      ]},
+      { id: 907, name: "Adductor Rock-Back", start: "On all fours, one knee wide to the side.", sub: "Posterior hip capsule & inner thigh release", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Quadruped Setup", focus: "SETUP", cue: "Begin on hands and knees. Hands under shoulders, knees under hips. Spine neutral. Extend one leg directly out to the side — keep it straight, toes pointing forward or slightly down. The extended leg forms a 90-degree angle with your body." },
+        { pos: "B", label: "Rock Back", focus: "STRETCH", cue: "Slowly shift your hips back toward your heels, keeping the extended leg in place. You will feel a deep stretch along the inner thigh and the back of the hip on the extended side. Take 3–4 seconds to rock back. Breathe out during the descent. Do not round the lower back." },
+        { pos: "C", label: "Rock Forward & Repeat", focus: "RELEASE", cue: "Rock forward to the starting position. Pause briefly, then rock back again. 8–10 slow repetitions, then switch sides. This movement targets the posterior hip capsule and adductors — two structures that chronic sitting locks into permanent shortening." },
+      ]},
+    ],
+  },
+];
+
+
+// ─────────────────────────────────────────────────────────────
+//  FEET FIRST — Plantar Fasciitis & Foot Health
+// ─────────────────────────────────────────────────────────────
+const FEET_SECTIONS = [
+  {
+    label: "Release", tag: "01",
+    purpose: "Start here, especially on pain days. The plantar fascia and calf complex are often tight and compressed before you've taken your first step. These movements soften the tissue and restore blood flow before asking anything of it.",
+    exercises: [
+      { id: 1001, name: "Plantar Fascia Stretch", start: "Seated in a chair, one foot crossed over the opposite knee.", sub: "Seated toe extension hold", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Seated Setup", focus: "SETUP", cue: "Sit in a chair. Cross one foot over the opposite knee so the sole faces you. Hold the base of the toes with one hand. This is the windlass mechanism — the same tissue that loads with every walking step." },
+        { pos: "B", label: "Extend the Toes", focus: "STRETCH", cue: "Gently pull all toes back toward the shin until you feel a firm stretch along the arch. You should feel the plantar fascia tighten into a cord-like band. Hold this position — do not bounce. 30 seconds minimum. Research shows this specific stretch reduces morning pain more effectively than calf stretching alone." },
+        { pos: "C", label: "Massage the Arch", focus: "RELEASE", cue: "While holding the toe extension with one hand, use the thumb of the other hand to apply firm, slow strokes along the arch from heel to ball of foot. 5–6 strokes per set. Switch feet." },
+      ]},
+      { id: 1002, name: "Seated Foot Roll", start: "Seated in a chair, a ball or bottle under one foot.", sub: "Plantar fascia myofascial release", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Find Your Tool", focus: "SETUP", cue: "A frozen water bottle is ideal — the cold provides additional anti-inflammatory benefit. A tennis ball or smooth water bottle at room temperature also works. Place it on the floor in front of your chair." },
+        { pos: "B", label: "Roll the Arch", focus: "RELEASE", cue: "Place the arch of one foot on the bottle. Apply moderate downward pressure — enough to feel it, not enough to cause sharp pain. Slowly roll from the heel to the ball of the foot and back. 30 seconds per foot. Pause on any tender spots for 5–10 seconds rather than rolling through them." },
+        { pos: "C", label: "Target the Heel", focus: "FASCIAL", cue: "Shift pressure toward the heel — specifically the medial tubercle of the calcaneus, where the fascia attaches. This is typically the most sensitive spot. Use lighter pressure here. Slow, sustained pressure is more effective than rolling speed." },
+      ]},
+      { id: 1003, name: "Gastroc Stretch", start: "Standing, hands on a wall, one foot stepped back.", sub: "Standing calf stretch, straight knee", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Wall Setup", focus: "SETUP", cue: "Stand facing a wall, hands flat at shoulder height for support. Step one foot back about 18–24 inches, keeping both feet pointing straight forward. The back knee stays completely straight throughout — this targets the gastrocnemius, the larger calf muscle that crosses the knee." },
+        { pos: "B", label: "Lunge Forward", focus: "STRETCH", cue: "Bend the front knee and shift your weight forward until you feel a deep stretch in the calf of the back leg. Keep the back heel firmly on the floor — if it lifts, step the foot closer. Hold for 30–45 seconds. The gastroc is directly connected to the Achilles tendon, which loads the plantar fascia." },
+        { pos: "C", label: "Switch & Repeat", focus: "BILATERAL", cue: "Switch sides. If one side is significantly tighter, spend an extra round there. Tight calves are among the most common contributing factors to plantar fasciitis — they increase load on the fascia with every step." },
+      ]},
+      { id: 1004, name: "Soleus Stretch", start: "Standing at a wall, back knee bent, rear heel down.", sub: "Bent-knee calf stretch — deeper target", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Wall Setup", focus: "SETUP", cue: "Same starting position as the Gastroc Stretch — one foot stepped back, hands on wall. But this time, bend the back knee slightly. This small change completely shifts the stretch from the gastrocnemius to the soleus — the deeper, shorter calf muscle that attaches below the knee." },
+        { pos: "B", label: "Sink Into It", focus: "STRETCH", cue: "With the back knee bent, shift weight gently forward. The stretch will feel lower and deeper than the gastroc stretch — closer to the Achilles and heel. Keep the back heel on the floor. Hold 30–45 seconds. The soleus is often the tighter of the two calf muscles and the more overlooked." },
+        { pos: "C", label: "Switch Sides", focus: "BILATERAL", cue: "Repeat on the other side. If you have one-sided plantar fasciitis, pay particular attention to the soleus on that side. This stretch is often prescribed alone for cases where standard calf stretching hasn't helped." },
+      ]},
+    ],
+  },
+  {
+    label: "Activation", tag: "02",
+    purpose: "Years of supportive footwear have switched off the intrinsic muscles of the foot — the small muscles that create and maintain the arch. These exercises wake them back up. This is not quick or dramatic work. It is foundational.",
+    exercises: [
+      { id: 1005, name: "Toe Splay", start: "Seated or standing barefoot on a firm surface.", sub: "Intrinsic foot muscle activation", type: "reps", reps: "10–12 reps", steps: [
+        { pos: "A", label: "Seated or Standing", focus: "SETUP", cue: "Sit or stand barefoot on a firm surface. Place both feet flat on the floor, parallel, hip-width apart. Relax everything from the ankle down — no gripping or curling of toes. Feel the full footprint on the floor." },
+        { pos: "B", label: "Spread All Toes", focus: "ACTIVATE", cue: "Actively spread all five toes as wide apart as possible without lifting the foot. Hold for 2 seconds. Most people discover they cannot independently move their toes much at all — this is normal and is exactly why this exercise exists. The abductor hallucis and the interossei are the target muscles." },
+        { pos: "C", label: "Release & Repeat", focus: "CONTROL", cue: "Slowly release the spread. Pause 1 second. Repeat. If only some toes move, that is useful information — work with what you have. Over days and weeks, the range and independence improves noticeably." },
+      ]},
+      { id: 1006, name: "Arch Doming", start: "Seated, one foot flat on the floor.", sub: "Short foot exercise — intrinsic arch activation", type: "reps", reps: "10 reps each foot", steps: [
+        { pos: "A", label: "Setup", focus: "SETUP", cue: "Sit with one foot flat on the floor. The goal is to shorten the foot from heel to ball — creating a dome shape in the arch — without curling the toes. This is called the short foot exercise. It directly activates the flexor digitorum brevis and abductor hallucis, the primary arch-supporting muscles." },
+        { pos: "B", label: "Draw Heel to Ball", focus: "ACTIVATE", cue: "Without lifting the heel or curling the toes, try to drag the ball of the foot toward the heel. The arch should visibly rise. Hold for 3 seconds. This movement is subtle and mentally demanding. If the toes curl, relax them — the arch lift must come from the intrinsic muscles, not the long toe flexors." },
+        { pos: "C", label: "Release & Build", focus: "PROGRESS", cue: "Slowly release the arch. 10 reps per foot. As this becomes easier, progress to performing it standing, then standing on one leg. The short foot exercise is the single most prescribed intrinsic foot strengthening movement in sports PT and orthopedic rehabilitation." },
+      ]},
+      { id: 1007, name: "Big Toe Extension", start: "Seated, foot flat on the floor.", sub: "Windlass mechanism mobilization", type: "reps", reps: "10 reps each side", steps: [
+        { pos: "A", label: "Seated Setup", focus: "SETUP", cue: "Sit with foot flat on the floor. Place two fingers lightly under the big toe. The big toe is the most mechanically important digit in walking — its extension during push-off is what tightens the plantar fascia like a winch (the windlass mechanism). Restricted big toe extension is a direct cause of arch strain." },
+        { pos: "B", label: "Lift Only the Big Toe", focus: "ISOLATE", cue: "Lift only the big toe as high as possible, keeping the other four toes on the floor. Hold for 2 seconds. Then reverse — press the big toe down and lift the other four. This isolation trains the extensor hallucis and establishes independent toe control." },
+        { pos: "C", label: "Assisted Extension", focus: "MOBILIZE", cue: "Using your fingers, gently assist the big toe into full extension — past where it goes on its own. Hold for 5 seconds. This passively mobilizes the first metatarsophalangeal joint and stretches the intrinsic flexors. Restricted range here correlates directly with plantar fasciitis severity." },
+      ]},
+    ],
+  },
+  {
+    label: "Strengthening", tag: "03",
+    purpose: "Eccentric loading — slow, controlled lengthening under tension — has the strongest evidence base of any intervention for plantar fasciitis and Achilles tendinopathy. These are not stretches. The calf-heel complex must work under load to remodel the tissue.",
+    exercises: [
+      { id: 1008, name: "Eccentric Heel Drops", start: "Standing on the edge of a step, heels hanging off the back.", sub: "Alfredson protocol — straight knee", type: "reps", reps: "15 reps, 3 sets", steps: [
+        { pos: "A", label: "Step Edge Setup", focus: "SETUP", cue: "Stand on the edge of a step or curb with both feet, heels hanging off the back. Rise up onto both forefeet to the top position. This is the Alfredson protocol — the most evidence-backed exercise for plantar fasciitis and Achilles tendinopathy. Keep the working knee straight throughout." },
+        { pos: "B", label: "Single-Leg Lower", focus: "ECCENTRIC", cue: "Shift weight to one foot. Slowly lower the heel below the step level — taking a full 3 seconds to descend. You are loading the calf eccentrically: it is contracting while lengthening. This is the specific stimulus that promotes tendon and fascial remodeling. Do not rush." },
+        { pos: "C", label: "Two-Leg Return", focus: "RESET", cue: "Use both feet to rise back to the top position. Switch the working leg. 15 reps each side. If this is painless, add load over time — a backpack with a book is sufficient. Mild discomfort during the movement is acceptable; sharp pain is not." },
+      ]},
+      { id: 1009, name: "Eccentric Soleus Drops", start: "Standing on the edge of a step, heels hanging off the back.", sub: "Bent-knee heel drops — deeper calf loading", type: "reps", reps: "15 reps, 3 sets", steps: [
+        { pos: "A", label: "Step Edge, Knee Bent", focus: "SETUP", cue: "Same starting position as Eccentric Heel Drops — on a step edge, heels hanging. But this time, bend the working knee to approximately 30–40 degrees. This simple change shifts the load from the gastrocnemius to the soleus. The soleus attaches below the knee and is the primary load-bearing muscle of the calf during walking." },
+        { pos: "B", label: "Slow Descent", focus: "ECCENTRIC", cue: "Lower the heel slowly on the bent-knee leg — 3 full seconds down. Maintain the same knee angle throughout the descent. Do not let the knee straighten during the lowering phase or you shift back to the gastrocnemius. Feel the load deep in the lower calf, just above the heel." },
+        { pos: "C", label: "Two-Leg Return", focus: "RESET", cue: "Use both feet to return to the top. Switch sides. 15 reps each side. These two eccentric exercises — straight knee and bent knee — together cover the full calf-Achilles-fascia chain. Done consistently 3 days a week, clinical improvement is typically measurable within 6–8 weeks." },
+      ]},
+      { id: 1010, name: "Towel Scrunches", start: "Seated barefoot, a small towel flat under one foot.", sub: "Flexor digitorum brevis strengthening", type: "reps", reps: "3 sets of 20 seconds", steps: [
+        { pos: "A", label: "Towel Setup", focus: "SETUP", cue: "Sit barefoot with a small towel flat on the floor under one foot. The towel should be thin enough that you can feel the floor texture through it. No towel? Use a sock or work on a textured surface — the goal is toe flexion against mild resistance." },
+        { pos: "B", label: "Scrunch & Hold", focus: "STRENGTHEN", cue: "Curl all five toes to scrunch the towel toward you. Use only the toes — do not slide the whole foot. Hold the scrunch for 2 seconds, then release fully. This targets the flexor digitorum brevis and the lumbricals — the small muscles that support the metatarsal arch, the often-overlooked transverse arch of the foot." },
+        { pos: "C", label: "Repeat & Switch", focus: "ENDURANCE", cue: "Continue for 20 seconds, then switch feet. 3 sets per side. As strength builds, progress to standing on one leg while performing the scrunch — this adds the balance challenge and integrates the intrinsic work into functional loading." },
+      ]},
+    ],
+  },
+];
+
+
+// ─────────────────────────────────────────────────────────────
+//  TRAVEL TUNE-UP — In-Transit & Post-Arrival
+// ─────────────────────────────────────────────────────────────
+const TRANSIT_SECTIONS = [
+  {
+    label: "In-Transit", tag: "01",
+    purpose: "Designed for a seat. Zero equipment, minimal space. These four movements keep circulation moving, prevent stiffness, and down-regulate the nervous system during long flights or drives.",
+    exercises: [
+      { id: 1100, name: "Ankle Pumps & Circles", start: "Seated in your seat, feet flat on the floor.", sub: "Circulation — prevents swelling and blood pooling", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Seated Start", focus: "SETUP", cue: "Sit upright, feet flat on the floor. Lift both feet slightly so heels rest lightly. No need to remove shoes." },
+        { pos: "B", label: "Pump Up & Down", focus: "CIRCULATE", cue: "Flex feet up (toes toward shins) then point down — 20 slow repetitions. This activates the soleus muscle, which acts as a second heart to pump blood back from the legs." },
+        { pos: "C", label: "Slow Circles", focus: "MOBILIZE", cue: "Rotate each ankle in slow, full circles — 10 clockwise, 10 counter-clockwise per foot. Imagine drawing large, smooth circles in the air with your big toe." },
+      ]},
+      { id: 1101, name: "Seated Glute Squeezes", start: "Seated in your seat, feet flat.", sub: "Prevents gluteal amnesia from prolonged pressure", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Neutral Sit", focus: "SETUP", cue: "Sit tall, feet flat. No leaning — weight distributed evenly through both sit bones. Shoulders relaxed." },
+        { pos: "B", label: "Squeeze & Hold", focus: "ACTIVATE", cue: "Squeeze both glutes firmly together. Hold for 5 seconds. Breathe normally — do not hold your breath or brace the upper body." },
+        { pos: "C", label: "Release & Repeat", focus: "RESET", cue: "Release completely for 5 seconds. 10 repetitions. Prolonged pressure switches off the glutes over time — this keeps the tissue and motor signal alive." },
+      ]},
+      { id: 1102, name: "Seated Cat-Cow", start: "Seated upright in your seat, hands on knees.", sub: "Lubricates intervertebral discs compressed under cabin pressure", type: "flow", seconds: 60, steps: [
+        { pos: "A", label: "Hands on Knees", focus: "SETUP", cue: "Sit at the front third of your seat. Hands resting on knees. Spine neutral. Take one breath here." },
+        { pos: "B", label: "Arch — Inhale", focus: "EXT", cue: "Inhale as you arch the low back, lift the chest, and gently look upward. Let the spine extend segmentally from tailbone to neck." },
+        { pos: "C", label: "Round — Exhale", focus: "FLEX", cue: "Exhale fully as you round the spine, tuck the chin, and pull the navel in. Feel each vertebra flex. 8–10 slow cycles." },
+      ]},
+      { id: 1103, name: "Peripheral Vision Softening", start: "Seated, eyes open and gaze forward.", sub: "Down-regulates the nervous system during stress or turbulence", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Soft Gaze Forward", focus: "SETUP", cue: "Let your eyes relax and unfocus slightly. Do not look at a screen or read. Allow the gaze to become wide and diffuse." },
+        { pos: "B", label: "Expand Peripheral Awareness", focus: "DOWNREGULATE", cue: "Without moving your eyes, softly notice the full width of your visual field — the edges of the cabin, movement in your periphery. This is panoramic vision, the same visual state predators use when resting." },
+        { pos: "C", label: "Hold & Breathe", focus: "CALM", cue: "Maintain this soft, wide gaze for 60–90 seconds. Breathe slowly. This activates the parasympathetic nervous system and reduces the threat-detection response that makes turbulence feel dangerous." },
+      ]},
+    ],
+  },
+  {
+    label: "Post-Arrival", tag: "02",
+    purpose: "Do these as soon as you reach your hotel or home. They undo the posture of travel — compressed hip flexors, locked thoracic spine, forward shoulders — and signal the body that you have arrived.",
+    exercises: [
+      { id: 1104, name: "Standing Psoas Release", start: "Standing, about to step into a shallow lunge.", sub: "Long-axis stretch for hip flexors shortened during travel", type: "flow", seconds: 60, steps: [
+        { pos: "A", label: "Shallow Lunge", focus: "SETUP", cue: "Step forward into a shallow lunge — not a deep split. Back knee can be raised or lowered. Both feet point forward. Keep torso upright." },
+        { pos: "B", label: "Pelvic Tuck & Lean", focus: "STRETCH", cue: "Tuck the pelvis slightly (posterior tilt) to flatten the low back. Gently lean the torso toward the front leg. You will feel a deep stretch at the front of the back hip — this is the psoas." },
+        { pos: "C", label: "Hold & Breathe", focus: "RELEASE", cue: "Hold 30–45 seconds each side. With each exhale, allow the hip to sink a little further. Do not force — the psoas responds to patience, not pressure." },
+      ]},
+      { id: 1105, name: "Wall Slides (W to Y)", start: "Standing with your back flat against a wall.", sub: "Activates lower trapezius to fix 'luggage shoulder'", type: "reps", reps: "10 slow reps", steps: [
+        { pos: "A", label: "Wall Contact", focus: "SETUP", cue: "Stand with head, upper back, and glutes touching the wall. Arms in a W shape — elbows bent, backs of hands against the wall. This is your baseline." },
+        { pos: "B", label: "Slide to Y", focus: "ACTIVATE", cue: "Keeping the backs of hands and elbows touching the wall, slowly slide arms upward until they form a Y overhead. If contact is lost, reduce range. The lower trapezius must fire to keep the shoulder blades down and in." },
+        { pos: "C", label: "Slow Return", focus: "CONTROL", cue: "Lower arms back to W in 3 seconds. Do not shrug or let shoulders elevate. 10 reps. This directly reverses the upper trap dominance that carrying luggage creates." },
+      ]},
+      { id: 1106, name: "Open Book Stretch", start: "Lying on your side, knees stacked at 90°.", sub: "Restores thoracic rotation — the first thing to lock after travel", type: "flow", seconds: 60, steps: [
+        { pos: "A", label: "Side-Lying Setup", focus: "SETUP", cue: "Lie on your side with hips and knees bent to 90°. Stack knees together. Extend both arms forward at shoulder height. Place top hand on top knee to keep hips anchored." },
+        { pos: "B", label: "Open the Top Arm", focus: "ROTATE", cue: "Keeping the bottom knee stack stable, slowly rotate the top arm up, back, and toward the floor behind you — like opening a book. Let the chest and thoracic spine follow the arm." },
+        { pos: "C", label: "Hold & Return", focus: "RELEASE", cue: "Hold for 3–5 breaths at the end range. Do not force the shoulder to the floor — let gravity do it gradually. Return slowly. 5 reps each side." },
+      ]},
+      { id: 1107, name: "Physiological Sigh", start: "Seated or lying down — any comfortable position.", sub: "Rapidly offloads CO₂ and signals the brain you have arrived safely", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Relax Completely", focus: "SETUP", cue: "Sit or lie comfortably. Let the body be heavy. Close the eyes. This is not just breathing — it is a signal to the nervous system that the travel phase is over." },
+        { pos: "B", label: "Double Inhale", focus: "CO2 OFFLOAD", cue: "Breathe in through the nose to about 80% capacity, then sniff in a second short inhale to fully inflate the lungs. This pops collapsed air sacs (alveoli) and maximizes surface area for CO₂ exchange." },
+        { pos: "C", label: "Long Exhale", focus: "DOWNREGULATE", cue: "Release a long, slow exhale through the mouth — twice as long as the inhale. 3–5 rounds. Each cycle measurably reduces physiological arousal. You will feel the nervous system shift." },
+      ]},
+      { id: 1108, name: "Doorway Pec Stretch", start: "Standing in a doorway, forearms on the frame.", sub: "Counteracts internal shoulder rotation from carrying bags", type: "flow", seconds: 60, steps: [
+        { pos: "A", label: "Doorway Setup", focus: "SETUP", cue: "Stand in a doorway. Place both forearms on the door frame at 90° — elbows at shoulder height, upper arms parallel to floor. Step one foot forward." },
+        { pos: "B", label: "Lean Through", focus: "STRETCH", cue: "Gently shift your weight forward through the doorway. Let the chest open. You should feel a stretch across the pectorals and front of the shoulders." },
+        { pos: "C", label: "Hold & Breathe", focus: "RELEASE", cue: "Hold 30–45 seconds. On each exhale, allow the chest to open a fraction more. Do not shrug the shoulders up. Switch foot position halfway through." },
+      ]},
+      { id: 1109, name: "Glute Bridge", start: "Lying on your back, knees bent, feet flat on the floor.", sub: "Re-engages the posterior chain after hours of sitting", type: "reps", reps: "12–15 reps", steps: [
+        { pos: "A", label: "Supine Setup", focus: "SETUP", cue: "Lie on your back. Feet flat, hip-width, heels 6 inches from glutes. Arms flat at sides. This is your reset position after travel." },
+        { pos: "B", label: "Drive & Lift", focus: "ENGAGE", cue: "Press through the heels and lift the hips until shoulders, hips, and knees form a straight line. Squeeze the glutes firmly at the top. Hold 2 seconds." },
+        { pos: "C", label: "Lower Slowly", focus: "CONTROL", cue: "Lower with control — 3 seconds down. Do not let the hips crash. The slow descent builds the posterior chain that sitting disengages." },
+      ]},
+    ],
+  },
+];
+
+
+// ─────────────────────────────────────────────────────────────
+//  ANXIETY RELIEF — Nervous System Reset
+// ─────────────────────────────────────────────────────────────
+const ANXIETY_SECTIONS = [
+  {
+    label: "Immediate Nervous System Reset", tag: "01",
+    purpose: "Anxiety floods the system with adrenaline and cortisol, shifting the nervous system into sympathetic overdrive. These first four techniques work fast — each one has a direct, measurable effect on heart rate, vagal tone, or the threat-detection centers of the brain. Use them as soon as you feel the activation rising.",
+    exercises: [
+      { id: 2001, name: "Cold Shock (Dive Reflex)", start: "Standing or seated near a sink or bowl of cold water.", sub: "Rapid parasympathetic activation via the mammalian dive reflex", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Prepare Cold Water", focus: "SETUP", cue: "Fill a sink or bowl with cold water — as cold as possible, ideally with ice. The mammalian dive reflex is one of the fastest known parasympathetic pathways: cold water on the face instantly slows the heart via the vagus nerve. Athletes and therapists use this for acute anxiety." },
+        { pos: "B", label: "Submerge Face or Wrists", focus: "ACTIVATE", cue: "Submerge your face for 15–30 seconds (hold breath), or hold both wrists under cold running water. If face submersion isn't possible, press a cold wet cloth firmly to the forehead and cheeks. The trigeminal nerve responds immediately." },
+        { pos: "C", label: "Surface and Breathe", focus: "INTEGRATE", cue: "Come up slowly and take a long, slow exhale. You will notice a distinct drop in heart rate and a shift in mental clarity — the hallmark of the dive reflex activating. Repeat 1–2 times if needed. This technique is a first-line DBT skill for acute emotional dysregulation." },
+      ]},
+      { id: 2002, name: "Legs Up the Wall", start: "Seated on the floor close to a wall, about to lie back.", sub: "Passive inversion that shifts blood pooling and calms the heart", type: "time", seconds: 120, steps: [
+        { pos: "A", label: "Scoot to the Wall", focus: "SETUP", cue: "Sit sideways next to a wall, then swing the legs up as you lie back. Legs rest against the wall, hips as close to the baseboard as comfortable. A folded blanket under the hips creates more traction if you have tight hamstrings. The key is legs above heart level." },
+        { pos: "B", label: "Settle and Release", focus: "REST", cue: "Let the legs go heavy against the wall. Arms rest wide at 30°, palms up. Close the eyes. Passive inversion shifts venous return and activates baroreceptors in the neck and chest — the brain interprets this as cardiovascular calm. Heart rate measurably decreases within 2 minutes." },
+        { pos: "C", label: "Breathe Into the Belly", focus: "RESTORE", cue: "With gravity assisting, the diaphragm moves more freely here. Each breath goes deeper without effort. Stay for the full 2 minutes — anxiety often lifts noticeably within that window. When you come down, roll to one side and pause for 30 seconds before sitting up." },
+      ]},
+      { id: 2003, name: "Voo Sounding", start: "Seated or lying down, eyes closed, spine supported.", sub: "Sub-diaphragmatic resonance for vagal nerve toning", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Settle and Find the Tone", focus: "SETUP", cue: "Sit or lie comfortably. Take a full belly breath in. As you exhale, produce a slow, deep 'VooooOOOOO' sound — like a foghorn or a ship's horn. The key is that it resonates in the chest and belly, not just the throat. You should feel the vibration in the sternum and upper abdomen." },
+        { pos: "B", label: "Sustain for Full Exhale", focus: "TONE", cue: "Make the Voo last the entire exhale — 6–8 seconds minimum. The low-frequency vibration directly stimulates the vagus nerve through thoracic resonance. Dr. Peter Levine, founder of Somatic Experiencing, uses this as a primary nervous system regulation tool." },
+        { pos: "C", label: "Pause and Inhale", focus: "INTEGRATE", cue: "After each Voo, rest for 2 breaths before the next one. Notice the quality of stillness between sounds — this is the parasympathetic response deepening. 6–8 rounds is a complete cycle. The effect is cumulative: each round deepens the shift." },
+      ]},
+      { id: 2004, name: "5-4-3-2-1 Sensory Scan", start: "Seated upright, both feet flat on the floor.", sub: "Sensory grounding that interrupts anxious cognitive loops", type: "time", seconds: 120, steps: [
+        { pos: "A", label: "Name 5 Things You See", focus: "VISUAL", cue: "Look around the room slowly. Name 5 distinct things you can see — out loud or in your mind. Describe them specifically: not just 'a chair' but 'a dark wooden chair with a cracked armrest.' Specificity matters. This engages the prefrontal cortex and begins to quiet the amygdala's alarm." },
+        { pos: "B", label: "4 Touch · 3 Sound · 2 Smell", focus: "SENSORY", cue: "4: Notice 4 physical sensations — the weight of your body, the texture of your clothing, the temperature of your hands, the floor under your feet. 3: Identify 3 distinct sounds in the environment. 2: Find 2 things you can smell, or recall 2 scents you know well." },
+        { pos: "C", label: "1 Taste — Then Return", focus: "GROUND", cue: "Notice 1 thing you can taste, or take a sip of water and pay full attention to the sensation. Then take 3 slow breaths. The full 5-4-3-2-1 protocol has been shown in clinical settings to reduce acute anxiety within 5 minutes by shifting attention from internal threat-monitoring to direct sensory experience." },
+      ]},
+    ],
+  },
+  {
+    label: "Somatic Grounding & Release", tag: "02",
+    purpose: "Once the initial spike is addressed, these four techniques work deeper — using body awareness, gentle movement, and self-touch to consolidate the shift from fight-or-flight to safety. Each one communicates directly with the nervous system through proprioception, the breath, or social engagement cues.",
+    exercises: [
+      { id: 2005, name: "Grounding Roots", start: "Standing, feet hip-width, weight evenly distributed.", sub: "Proprioceptive grounding through deliberate body awareness", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Feel the Ground", focus: "SETUP", cue: "Stand barefoot if possible. Plant the feet firmly — feel the heel, the ball of the foot, and all five toes in contact with the floor. Press down slightly and feel the floor pressing back. This proprioceptive feedback tells the nervous system: you are standing on solid ground. You are not falling." },
+        { pos: "B", label: "Roots Down, Rise Up", focus: "ANCHOR", cue: "Imagine roots growing downward from the soles of your feet — through the floor, into the earth. With each exhale, let the roots grow deeper. With each inhale, let the crown of the head rise slightly. The body lengthens in two directions. Anxiety contracts the body. This counters that." },
+        { pos: "C", label: "Breathe and Notice Weight", focus: "INTEGRATE", cue: "Feel the full weight of the body supported. The floor is holding you — you do not have to hold yourself up. Notice the hips, belly, chest — all simply resting on the skeletal frame, which is resting on the earth. Stay for the full duration. Anxiety requires you to be in your head; this practice puts you back in your body." },
+      ]},
+      { id: 2006, name: "Forward Fold", start: "Standing, feet hip-width, knees soft.", sub: "Mild inversion activating baroreceptors, reducing sympathetic tone", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Hinge at the Hips", focus: "SETUP", cue: "Stand with feet hip-width apart. Soften the knees generously. Hinge forward from the hips — not the waist — and let the upper body hang. Arms dangle. Head is heavy. If hamstrings pull, bend the knees more. The goal is full upper body release, not straight legs." },
+        { pos: "B", label: "Let the Head Hang Heavy", focus: "INVERT", cue: "Let gravity take the weight of the skull. The mild inversion — head below heart — activates baroreceptors in the neck and chest. The brain interprets this as blood pressure rising and slows the heart to compensate. This is a direct cardiovascular pathway to calm. Breathe slowly." },
+        { pos: "C", label: "Sway and Release", focus: "RESTORE", cue: "Gently sway side to side — tiny movements, like seaweed in slow current. This bilateral movement, even small, helps discharge residual nervous energy. After 45–60 seconds, slowly roll up one vertebra at a time — head comes up last. Take 3 breaths at the top before continuing." },
+      ]},
+      { id: 2007, name: "Hand on Heart", start: "Seated or lying down, in any comfortable position.", sub: "Self-compassion activation through physical self-touch", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Place Both Hands", focus: "SETUP", cue: "Place one or both hands flat on the center of the chest, over the heart. Close the eyes. Physically feel the warmth of your own hands through the fabric. This simple gesture activates the same neurological pathway as receiving care from another person — the body does not fully distinguish the source of the touch." },
+        { pos: "B", label: "Feel the Heartbeat", focus: "CONNECT", cue: "Press gently until you can feel your heartbeat — or simply feel the rise and fall of the chest with the breath. Acknowledge: this heart has been beating for your entire life without your asking it to. It does not need you to be anxious on its behalf. Let it do its work." },
+        { pos: "C", label: "Breathe Into the Hands", focus: "SOFTEN", cue: "Breathe slowly, imagining the breath flowing to and from the hands. With each exhale, consciously soften the area beneath the palms. Dr. Kristin Neff's research on self-compassion shows this gesture measurably reduces cortisol and activates the caregiving system — the same system that calms an anxious child also calms an anxious adult." },
+      ]},
+      { id: 2008, name: "Earlobe Circles", start: "Seated, both hands raised to the ears.", sub: "Auricular vagal branch stimulation through ear massage", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Find the Earlobes", focus: "SETUP", cue: "Reach up and gently take both earlobes between the thumb and index finger. The ear — specifically the concha and tragus — contains a branch of the vagus nerve called the auricular branch. Gentle stimulation here has been shown in clinical studies to increase heart rate variability, a direct marker of parasympathetic tone." },
+        { pos: "B", label: "Slow Circles and Gentle Pulls", focus: "STIMULATE", cue: "Make slow, gentle circles with the earlobes. Then gently pull the lobes downward — a slow, steady traction. Move to the outer ear rim (helix) and trace it slowly from bottom to top with the thumb. Take your time. This is not massage — it is gentle, deliberate stimulation." },
+        { pos: "C", label: "Continue and Breathe", focus: "TONE", cue: "Continue for the full minute, working both ears simultaneously. Breathe slowly — long exhales enhance the effect. You may notice a warmth in the ears, a softening of tension in the jaw, or a gentle heaviness behind the eyes. These are signs of vagal activation. This technique is used in integrative medicine for acute anxiety and insomnia." },
+      ]},
+    ],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────
+//  STRESS RELIEF — Cortisol Reset
+// ─────────────────────────────────────────────────────────────
+const STRESS_SECTIONS = [
+  {
+    label: "Physical Discharge", tag: "01",
+    purpose: "Stress primes the body to fight or flee — cortisol and adrenaline flood the bloodstream, muscles tense, heart rate climbs. But modern stressors rarely let us move. These four exercises complete the stress cycle the body started: they give the nervous system the physical discharge it was primed for, which is the only pathway through — not around — the stress response.",
+    exercises: [
+      { id: 2101, name: "Progressive Muscle Relaxation", start: "Lying on your back on the floor or a firm surface, arms at sides.", sub: "Systematic tension-release that discharges stored muscular stress", type: "time", seconds: 120, steps: [
+        { pos: "A", label: "Feet, Calves & Thighs", focus: "LOWER BODY", cue: "Starting at the feet: curl the toes and tense the feet hard for 5 seconds, then release completely. Next, contract the calves and thighs simultaneously — hold 5 seconds, then let go. The contrast between maximal tension and release is the mechanism. Stress stores muscular holding patterns below conscious awareness; PMR makes them visible and clears them." },
+        { pos: "B", label: "Core, Hands & Arms", focus: "MID BODY", cue: "Tense the glutes and core together — hold 5 seconds, release. Then make tight fists and tense the forearms, biceps, and shoulders all at once — hold 5 seconds, release fully. Let the arms go completely heavy. Notice the warmth in the released muscles — this is increased blood flow returning." },
+        { pos: "C", label: "Shoulders, Jaw & Face", focus: "UPPER BODY", cue: "Shrug the shoulders to the ears — hold 5 seconds, release. Clench the jaw and scrunch the face — hold 5 seconds, release. Finally, take a full breath, tense the entire body from feet to face simultaneously — hold 5 seconds, then release everything at once and exhale fully. One complete cycle is enough; repeat if time allows." },
+      ]},
+      { id: 2102, name: "Rhythmic Walking", start: "Standing, with enough space to walk or march in place.", sub: "Bilateral gait cycle that metabolizes cortisol and adrenaline", type: "time", seconds: 120, steps: [
+        { pos: "A", label: "March in Place", focus: "SETUP", cue: "Begin marching — knees lifting high, arms swinging in opposition (right arm forward as left knee rises). The gait cycle is the body's natural stress-metabolism mechanism. Research shows a brisk 10-minute walk reduces cortisol by 15–20%. Even 2 minutes of deliberate marching initiates this response." },
+        { pos: "B", label: "Cross-Body Pattern", focus: "BILATERAL", cue: "Exaggerate the cross-body swing: right elbow drives back as the left knee lifts, and vice versa. This bilateral, alternating pattern activates both brain hemispheres simultaneously and has a measurable organizing effect on a dysregulated nervous system — the same mechanism that makes walking after an argument feel instinctively helpful." },
+        { pos: "C", label: "Audible Exhale with Each Step", focus: "DISCHARGE", cue: "Breathe out with each step — a short, deliberate exhale through the mouth, like punctuation. Make it audible. Lift the knees higher, let the arms swing wider. After 2 minutes you will notice a shift: the quality of mental activity changes. Stress rumination is harder to sustain when the body is engaged bilaterally." },
+      ]},
+      { id: 2103, name: "Thoracic Extension", start: "Seated in a firm chair, hands clasped behind the head.", sub: "Opens the chest compressed by stress posture, restores full breathing", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Hands Behind Head", focus: "SETUP", cue: "Sit at the edge of a firm chair. Interlace the fingers behind the head, elbows wide. Chronic stress collapses the chest inward and forward — shoulders round, the thoracic spine flexes, and the breath shortens. This position is the direct reversal of that pattern." },
+        { pos: "B", label: "Extend Over the Chair Back", focus: "OPEN", cue: "Lean back gently over the top edge of the chair back — let it act as a fulcrum for the mid-thoracic spine. Allow the head to drop back, elbows flare open, chest lifts toward the ceiling. Hold 10–15 seconds. Breathe into the stretch. You may feel or hear gentle cracking — this is normal joint cavitation." },
+        { pos: "C", label: "Repeat at Different Levels", focus: "MOBILIZE", cue: "Come up slowly, shift position up slightly on the chair, and extend again at a different vertebral level. 3–4 extensions across the mid and upper thoracic. Each one opens the anterior chest, stretches the intercostals, and restores full lung volume — all of which are mechanically restricted during the stress posture." },
+      ]},
+      { id: 2104, name: "The Shake-Out", start: "Standing, feet hip-width, knees soft.", sub: "TRE — Tension/Trauma Releasing Exercises via natural tremor", type: "time", seconds: 120, steps: [
+        { pos: "A", label: "Soft Knees, Begin Bouncing", focus: "SETUP", cue: "Stand with feet hip-width, knees softly bent. Let the arms hang completely loose. Begin gentle heel-drops — heels barely lifting, dropping with gravity, letting the body bounce passively. Do not force anything. Animals in the wild tremble after a stressful encounter to discharge the activation; this is the same reflex." },
+        { pos: "B", label: "Let the Shake Travel Up", focus: "DISCHARGE", cue: "Let the tremoring move up from the feet — through the knees, hips, belly, chest, arms. If the body wants to shake more, let it. If natural tremor doesn't arrive, gentle deliberate bouncing is still effective. The goal is movement without muscular control — surrendering the body to its own discharge mechanism." },
+        { pos: "C", label: "Gradually Still, Then Rest", focus: "INTEGRATE", cue: "After 90 seconds, let the shaking slow naturally — do not stop it abruptly. Stand completely still for 20 seconds and notice the quality of the body: warmth, tingling, a sense of weight and softness. This is parasympathetic activation. Used in trauma-informed therapy worldwide (TRE, Somatic Experiencing)." },
+      ]},
+    ],
+  },
+  {
+    label: "Release & Downshift", tag: "02",
+    purpose: "After physical discharge, the nervous system is receptive to deep parasympathetic recovery. These four movements work through compression, posture, breath, and bilateral stimulation to consolidate the shift from reactive to resting — from stress to safety.",
+    exercises: [
+      { id: 2105, name: "Child's Pose", start: "Kneeling on the floor, knees wide, big toes together.", sub: "Vagal toning through forward fold and abdominal compression", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Kneel and Fold Forward", focus: "SETUP", cue: "Kneel with knees wide or together, big toes touching. Fold the torso forward over the thighs and rest the forehead on the floor, or on stacked hands or a folded blanket. Arms can extend forward or rest alongside the body. Let the entire torso go heavy." },
+        { pos: "B", label: "Abdomen Against Thighs", focus: "COMPRESS", cue: "The mild compression of the abdomen against the thighs in this position applies gentle pressure on the gut wall — which in turn stimulates the vagus nerve via the enteric nervous system. This is part of why forward folds feel intrinsically calming. Allow each exhale to press the belly more firmly against the thighs." },
+        { pos: "C", label: "Breathe Into the Back Body", focus: "RESTORE", cue: "Direct the breath into the back: feel the ribs widen laterally on the inhale, then settle on the exhale. Stay for the full 90 seconds. If the mind returns to the stressor, acknowledge it and redirect to the sensation of the forehead on the ground. You do not have to solve anything right now." },
+      ]},
+      { id: 2106, name: "Chin Tucks", start: "Seated upright or standing against a wall.", sub: "Cervical decompression that releases the suboccipital muscles", type: "time", seconds: 45, steps: [
+        { pos: "A", label: "Upright Posture", focus: "SETUP", cue: "Sit or stand tall. During stress, the head juts forward as the body prepares for action — this compresses the upper cervical spine, restricts blood flow to the brain, and contributes to tension headaches. The chin tuck is a direct reset of this pattern. Think: 'tall spine, double chin.'" },
+        { pos: "B", label: "Draw the Chin Straight Back", focus: "RETRACT", cue: "Without tilting the head, draw the chin straight back — creating a 'double chin.' The head should feel like it's gliding back on a level track, not tucking downward. Hold the retraction gently for 3–5 seconds. You should feel a mild stretch at the base of the skull — this is the suboccipital release." },
+        { pos: "C", label: "10 Slow Reps", focus: "DECOMPRESS", cue: "Release and repeat — 10 slow, deliberate reps. Each one creates traction in the upper cervical joints, decompresses the C1-C2 region, and releases the muscles that clamp tight under stress. Combined with slow nasal breathing throughout, this produces a rapid drop in perceived tension." },
+      ]},
+      { id: 2107, name: "Wall Pushes", start: "Standing an arm's length from a solid wall.", sub: "Isometric exertion that completes the stress activation cycle", type: "time", seconds: 60, steps: [
+        { pos: "A", label: "Hands on Wall at Shoulder Height", focus: "SETUP", cue: "Place both palms flat against the wall at shoulder height, arms nearly straight. Step the feet back slightly. The stress response contracts muscles and primes them for exertion — this exercise uses that primed energy deliberately rather than letting it sit unspent in the body." },
+        { pos: "B", label: "Push with Maximum Effort", focus: "EXERT", cue: "Press into the wall as hard as you can — as if you intend to push it over. Engage the entire kinetic chain: push through the feet, brace the core, press with the chest, shoulders, and arms simultaneously. Hold 10 seconds of maximal effort. Breathe out slowly during the push." },
+        { pos: "C", label: "Release and Exhale Fully", focus: "COMPLETE", cue: "Release suddenly and exhale completely. The abrupt shift from maximum tension to release signals the nervous system that the threat response is complete. Repeat 3–5 times. This is the physical completion of the fight-or-flight cycle — the body gets the exertion it was primed to perform, and can now down-regulate." },
+      ]},
+      { id: 2108, name: "Butterfly Hug", start: "Seated or standing, arms crossed over the chest.", sub: "Bilateral stimulation (EMDR technique) that integrates the stress response", type: "time", seconds: 90, steps: [
+        { pos: "A", label: "Cross Arms Over Chest", focus: "SETUP", cue: "Cross both arms over the chest — right hand to the left shoulder area, left hand to the right — like hugging yourself. Fingertips rest near the collarbones or upper arms. Close the eyes. This position was developed by Lucina Artigas for trauma survivors and is a core technique in EMDR (Eye Movement Desensitization and Reprocessing) therapy." },
+        { pos: "B", label: "Alternating Taps", focus: "BILATERAL", cue: "Begin alternating gentle taps — right hand taps, then left hand taps — at a slow, rhythmic pace, like a slow heartbeat. The alternating bilateral stimulation mimics REM sleep processing and activates both brain hemispheres simultaneously. This helps the nervous system integrate and file the stress experience rather than holding it." },
+        { pos: "C", label: "Continue and Breathe", focus: "INTEGRATE", cue: "Continue for the full 90 seconds. Breathe slowly and naturally. You may notice images, sensations, or memories arising — let them pass without engagement. The bilateral rhythm is doing the work. Many people find this position produces an immediate sense of comfort and safety — the same circuits activated by human contact are recruited through self-administered bilateral touch." },
+      ]},
+    ],
+  },
+];

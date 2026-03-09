@@ -1,0 +1,205 @@
+
+.ob-ext-nav, .ob-label {
+  display: none;
+}
+
+.ob-wrap {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  color: var(--ob-text-body);
+  font-family: 'Barlow', sans-serif;
+  background: transparent;
+}
+
+.ob-shell {
+  height: 100%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  position: relative;
+  z-index: 100;
+}
+
+.ob-orb-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.ob-orb-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top right, rgba(255,255,255,0.03) 0%, transparent 85%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ob-screen {height: 100%;
+  scroll-snap-align: start;
+  display: block;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 110px 24px 150px;
+  box-sizing: border-box;
+}
+
+.ob-pad {
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ob-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ob-accent);
+  margin-bottom: 12px;
+}
+
+.ob-heading {
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ob-text-head);
+  margin-bottom: 16px;
+}
+
+.ob-heading em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ob-accent);
+}
+
+.ob-body {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ob-text-body);
+}
+
+.ob-nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  background: var(--ob-nav-bg);
+  z-index: 101;
+}
+
+.ob-nav-next,
+.ob-nav-back,
+.ob-btn-primary {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.ob-nav-next, .ob-btn-primary {
+  background: var(--ob-accent);
+  color: var(--ob-accent-text);
+}
+
+.ob-nav-back {
+    background: transparent;
+    color: var(--ob-text-sec);
+}
+
+.ob-ndots {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ob-nd {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ob-dot-bg);
+  transition: all 0.2s;
+}
+
+.ob-nd.a {
+  background: var(--ob-accent);
+}
+
+.ob-sci-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ob-sci {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--ob-box-bg);
+  border: 1px solid var(--ob-box-border);
+  text-align: left;
+}
+
+.ob-sci-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ob-text-sec);
+  margin-bottom: 6px;
+}
+
+.ob-sci-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ob-text-body);
+}
+
+.ob-cta-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.ob-cta-screen .ob-pad {
+  text-align: center;
+}
+
+.ob-cta-head {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ob-text-head);
+  margin-bottom: 12px;
+}
+
+.ob-cta-head em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ob-accent);
+}
+
+.ob-cta-sub {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ob-text-body);
+  margin-bottom: 24px;
+}

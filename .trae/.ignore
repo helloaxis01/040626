@@ -1,0 +1,20 @@
+# PROTECT MY TOKENS
+/node_modules/
+/.git/
+/.next/
+/dist/
+/build/
+
+# IGNORE MEDIA (AI DOESN'T NEED TO 'READ' IMAGES)
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.mp4
+*.gif
+*.zip
+*.pdf
+
+# SYSTEM JUNK
+.DS_Store
+*.log
