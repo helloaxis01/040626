@@ -11,8 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: #0a0a0f; }
-    #root { height: 100%; }
+    html, body { height: 100%; background: #0a0a0f; overflow-x: hidden; max-width: 100%; }
+    #root { height: 100%; max-width: 100%; overflow-x: hidden; }
     #load-err { display:none; position:fixed; inset:0; background:#0a0a0f; color:#ff6b6b;
       font-family:sans-serif; font-size:14px; padding:40px; white-space:pre-wrap; }
   </style>
@@ -239,9 +239,9 @@ const CIRCADIAN_THEMES = {
   // ── DAWN 5–11am — warm orange/amber, sunrise ──
   dawn: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 5% 20%, rgba(255,100,30,0.55) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 95% 80%, rgba(255,150,50,0.45) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(255,190,70,0.32) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(180,60,0,0.28) 0%, transparent 70%)",
+      orb1: "radial-gradient(ellipse 120% 100% at 5% 20%, rgba(255,100,30,0.65) 0%, transparent 70%)",
+      orb2: "radial-gradient(ellipse 110% 120% at 95% 80%, rgba(255,150,50,0.55) 0%, transparent 72%)",
+      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(255,190,70,0.38) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(180,60,0,0.34) 0%, transparent 70%)",
       accent: "#FF8C35", accentDim: "rgba(255,140,53,0.25)", accentGlow: "rgba(255,140,53,0.55)",
       accentBtnText: "#1a0800",
       bg: "radial-gradient(ellipse at 30% 60%, #2d1200 0%, #1a0c00 50%, #0f0700 100%)",
@@ -261,9 +261,9 @@ const CIRCADIAN_THEMES = {
   // ── MIDDAY 11–5pm — mint/teal, crisp and clear ──
   midday: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 10% 15%, rgba(0,220,180,0.50) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 90% 85%, rgba(0,200,160,0.42) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(40,240,200,0.28) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(0,120,100,0.26) 0%, transparent 70%)",
+      orb1: "radial-gradient(ellipse 120% 100% at 10% 15%, rgba(0,220,180,0.65) 0%, transparent 70%)",
+      orb2: "radial-gradient(ellipse 110% 120% at 90% 85%, rgba(0,200,160,0.55) 0%, transparent 72%)",
+      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(40,240,200,0.38) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(0,120,100,0.34) 0%, transparent 70%)",
       accent: "#00E8C0", accentDim: "rgba(0,232,192,0.20)", accentGlow: "rgba(0,232,192,0.52)",
       accentBtnText: "#001f1a",
       bg: "radial-gradient(ellipse at 50% 30%, #001a14 0%, #001008 50%, #000a05 100%)",
@@ -283,9 +283,9 @@ const CIRCADIAN_THEMES = {
   // ── PRIME 5–10pm — cool blue, winding down ──
   prime: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 10% 25%, rgba(30,100,255,0.52) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 90% 80%, rgba(60,150,240,0.44) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 50% -10%, rgba(100,180,255,0.32) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(10,40,140,0.28) 0%, transparent 70%)",
+      orb1: "radial-gradient(ellipse 120% 100% at 10% 25%, rgba(30,100,255,0.35) 0%, transparent 70%)",
+      orb2: "radial-gradient(ellipse 110% 120% at 90% 80%, rgba(60,150,240,0.32) 0%, transparent 72%)",
+      orb3: "radial-gradient(ellipse 90% 80% at 50% -10%, rgba(100,180,255,0.22) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(10,40,140,0.20) 0%, transparent 70%)",
       accent: "#4DA8FF", accentDim: "rgba(77,168,255,0.22)", accentGlow: "rgba(77,168,255,0.55)",
       accentBtnText: "#00102a",
       bg: "radial-gradient(ellipse at 50% 40%, #001428 0%, #000e1e 50%, #000810 100%)",
@@ -305,9 +305,9 @@ const CIRCADIAN_THEMES = {
   // ── REST 10–5am — deep purple/indigo, calm and dim ──
   rest: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 15% 25%, rgba(100,30,220,0.52) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 85% 80%, rgba(140,50,255,0.44) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(80,20,160,0.32) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(50,0,100,0.28) 0%, transparent 70%)",
+      orb1: "radial-gradient(ellipse 120% 100% at 15% 25%, rgba(100,30,220,0.35) 0%, transparent 70%)",
+      orb2: "radial-gradient(ellipse 110% 120% at 85% 80%, rgba(140,50,255,0.32) 0%, transparent 72%)",
+      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(80,20,160,0.22) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(50,0,100,0.20) 0%, transparent 70%)",
       accent: "#A060FF", accentDim: "rgba(160,96,255,0.22)", accentGlow: "rgba(160,96,255,0.52)",
       accentBtnText: "#0a0020",
       bg: "radial-gradient(ellipse at 50% 40%, #0a0018 0%, #060010 50%, #030008 100%)",
@@ -525,7 +525,7 @@ function Onboarding({ theme, onComplete }) {
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {[
                   { p:"dawn",    label:"Dawn",    time:"5–11am",   desc:"Warm amber",
-                    icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="6"/></svg> },
+                    icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16 A 8 8 0 0 1 20 16"/><line x1="0" y1="16" x2="24" y2="16"/></svg> },
                   { p:"midday",  label:"Midday",  time:"11am–5pm", desc:"Cool mint",
                     icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg> },
                   { p:"prime",   label:"Prime",   time:"5–10pm",   desc:"Deep blue",
@@ -600,7 +600,7 @@ function Onboarding({ theme, onComplete }) {
               </div>
 
               <div style={{width:"100%", marginBottom:20}}>
-                <div style={{fontSize:10, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--ob-text-sec)", marginBottom:8, fontWeight:500}}>Your Name</div>
+                <div style={{fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--ob-text-sec)", marginBottom:8, fontWeight:500}}>Your Name</div>
                 <input
                   type="text"
                   placeholder="Full name"
@@ -617,7 +617,7 @@ function Onboarding({ theme, onComplete }) {
               </div>
 
               <div style={{width:"100%", marginBottom:24}}>
-                <div style={{fontSize:10, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--ob-text-sec)", marginBottom:8, fontWeight:500}}>Date</div>
+                <div style={{fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--ob-text-sec)", marginBottom:8, fontWeight:500}}>Date</div>
                 <div style={{
                   padding:"12px 16px", borderRadius:12, fontSize:15,
                   fontFamily:"'Barlow',sans-serif", fontWeight:400,
@@ -1535,21 +1535,21 @@ const STRESS_SECTIONS = [
 ];
 
 const TRACKS = {
-  daily:       { id: "daily",       label: "Daily Feel Good",      subtitle: "Functional · Structural · Restorative", purpose: "Spine, core, and posterior chain. The foundation session.",                          sections: DAILY_SECTIONS,    duration: "~25 min" },
+  daily:       { id: "daily",       label: "Daily Feel Good",      subtitle: "Spine · Core · Chain", purpose: "Spine, core, and posterior chain. The foundation session.",                          sections: DAILY_SECTIONS,    duration: "~25 min" },
   restorative: { id: "restorative", label: "Full Reset", subtitle: "Flow · Circulation · Recovery",         purpose: "Gentle continuous movement for circulation, joint lubrication, and recovery.",      sections: RESTORATIVE_SECTIONS, duration: "~15 min" },
-  morning:     { id: "morning",     label: "Morning Refresh",      subtitle: "Gentle · Spinal · Awakening",           purpose: "Seven movements to wake the spine before you look at your phone.",                  sections: MORNING_SECTIONS,  duration: "~8 min"  },
-  prime:       { id: "prime",     label: "Better Sleep Stretch",    subtitle: "Restore · Decompress · Release",        purpose: "Lower cortisol, decompress the spine, prepare for sleep.",                          sections: PRIME_SECTIONS,  duration: "~12 min" },
-  desk:        { id: "desk",        label: "The Desk Break",          subtitle: "Desk · Posture · Reset",                purpose: "Six movements to undo an hour of sitting. Stand up. Do it now.",                   sections: DESK_SECTIONS,     duration: "~5 min"  },
-  screen:      { id: "screen",      label: "Digital Detox",      subtitle: "Neck · Traps · Upper Back",             purpose: "Undo the forward pull of screen time. Seven targeted releases for the neck and shoulder girdle.", sections: SCREEN_SECTIONS, duration: "~12 min" },
-  hip:         { id: "hip",         label: "Happy Hips",         subtitle: "Flexors · Rotators · Adductors",        purpose: "Open the hips, free the lower back, restore the range that sitting steals.",        sections: HIP_SECTIONS,      duration: "~18 min" },
+  morning:     { id: "morning",     label: "Morning Refresh",      subtitle: "Gentle · Spinal · Mobilization",           purpose: "Seven movements to wake the spine before you look at your phone.",                  sections: MORNING_SECTIONS,  duration: "~8 min"  },
+  prime:       { id: "prime",     label: "Better Sleep Stretch",    subtitle: "Restore · Decompress · Downtime",        purpose: "Lower cortisol, decompress the spine, prepare for sleep.",                          sections: PRIME_SECTIONS,  duration: "~12 min" },
+  desk:        { id: "desk",        label: "The Desk Break",          subtitle: "Posture · Reset · 5 min",                purpose: "Six movements to undo an hour of sitting. Stand up. Do it now.",                   sections: DESK_SECTIONS,     duration: "~5 min"  },
+  screen:      { id: "screen",      label: "Digital Detox",      subtitle: "Neck · Traps · Thoracic",             purpose: "Undo the forward pull of screen time. Seven targeted releases for the neck and shoulder girdle.", sections: SCREEN_SECTIONS, duration: "~12 min" },
+  hip:         { id: "hip",         label: "Happy Hips",         subtitle: "Flexors · Rotators · Release",        purpose: "Open the hips, free the lower back, restore the range that sitting steals.",        sections: HIP_SECTIONS,      duration: "~18 min" },
   back:        { id: "back",        label: "Lower Back Soother",     subtitle: "Decompress · Release · Restore",        purpose: "For days when the lower back needs care, not challenge. Gentle traction and release.", sections: BACK_SECTIONS,     duration: "~15 min" },
   steady:      { id: "steady",      label: "Stay Steady",            subtitle: "Balance · Proprioception · Control",    purpose: "Train the systems that prevent falls. Simple movements that are deceptively hard to do well.", sections: STEADY_SECTIONS,   duration: "~15 min" },
-  freely:      { id: "freely",      label: "Move Freely",            subtitle: "CARS · Joint Health · Synovial Flow",   purpose: "Controlled Articular Rotations and mobility work for every major joint. The WD-40 session.", sections: FREELY_SECTIONS,   duration: "~20 min" },
+  freely:      { id: "freely",      label: "Move Freely",            subtitle: "CARS · Synovial · Joints",   purpose: "Controlled Articular Rotations and mobility work for every major joint. The WD-40 session.", sections: FREELY_SECTIONS,   duration: "~20 min" },
   transit:     { id: "transit",     label: "In-Transit",           subtitle: "Seated · Circulation · Calm",           purpose: "Four exercises designed for your seat. Keep circulation moving and the nervous system calm during any long journey.",        sections: TRANSIT_SECTIONS,  duration: "~8 min"  },
-  travel:      { id: "travel",      label: "Post-Arrival Reset",    subtitle: "Undo Travel · Decompress · Restore",    purpose: "Six movements to undo the posture of travel. Do these as soon as you arrive.",                                           sections: [{label:"Post-Arrival",tag:"PA",purpose:"Six movements to undo the posture of travel. Do these as soon as you reach your hotel or home.",exercises:[{id:1104,name:"Standing Psoas Release",start:"Standing, about to step into a shallow lunge.",sub:"Hip flexors shortened during travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Shallow Lunge",focus:"SETUP",cue:"Step forward into a shallow lunge. Back knee raised or lowered. Torso upright, feet forward."},{pos:"B",label:"Pelvic Tuck & Lean",focus:"STRETCH",cue:"Tuck the pelvis slightly, lean torso toward the front leg. Feel the stretch at the front of the back hip — this is the psoas."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"Hold 30–45 seconds each side. With each exhale, allow the hip to sink further. Switch sides."}]},{id:1105,name:"Wall Slides (W to Y)",start:"Standing with your back flat against a wall.",sub:"Activates lower trapezius — fixes luggage shoulder",type:"reps",reps:"10 slow reps",steps:[{pos:"A",label:"Wall Contact",focus:"SETUP",cue:"Head, upper back, and glutes touching the wall. Arms in a W shape — elbows bent, backs of hands against wall."},{pos:"B",label:"Slide to Y",focus:"ACTIVATE",cue:"Keep backs of hands and elbows on the wall and slowly slide arms up to a Y overhead. Do not let contact break."},{pos:"C",label:"Slow Return",focus:"CONTROL",cue:"Lower to W in 3 seconds. Do not shrug. 10 reps. This reverses upper trap dominance from carrying luggage."}]},{id:1106,name:"Open Book Stretch",start:"Lying on your side, knees stacked at 90°.",sub:"Restores thoracic rotation locked after travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Side-Lying Setup",focus:"SETUP",cue:"Lie on your side, hips and knees at 90°, knees stacked. Both arms extended forward at shoulder height."},{pos:"B",label:"Open the Top Arm",focus:"ROTATE",cue:"Rotate the top arm up, back, and toward the floor behind you — like opening a book. Let the chest follow."},{pos:"C",label:"Hold & Return",focus:"RELEASE",cue:"Hold 3–5 breaths. Let gravity do the work. Return slowly. 5 reps each side."}]},{id:1107,name:"Physiological Sigh",start:"Seated or lying down.",sub:"Rapidly offloads CO₂ — signals arrival to the brain",type:"time",seconds:90,steps:[{pos:"A",label:"Relax Completely",focus:"SETUP",cue:"Sit or lie comfortably. Body heavy, eyes closed."},{pos:"B",label:"Double Inhale",focus:"CO2 OFFLOAD",cue:"Breathe in to 80% capacity, then sniff in a second short inhale to fully inflate. This pops collapsed air sacs."},{pos:"C",label:"Long Exhale",focus:"DOWNREGULATE",cue:"Long slow exhale through the mouth — twice the inhale length. 3–5 rounds. Each cycle measurably reduces arousal."}]},{id:1108,name:"Doorway Pec Stretch",start:"Standing in a doorway, forearms on the frame.",sub:"Counteracts shoulder rotation from carrying bags",type:"flow",seconds:60,steps:[{pos:"A",label:"Doorway Setup",focus:"SETUP",cue:"Forearms on door frame at 90°, elbows at shoulder height. Step one foot forward."},{pos:"B",label:"Lean Through",focus:"STRETCH",cue:"Shift weight forward gently. Feel the stretch across the chest and front shoulders."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"30–45 seconds. Exhale into the stretch. Do not shrug. Switch foot halfway."}]},{id:1109,name:"Glute Bridge",start:"Lying on your back, knees bent, feet flat.",sub:"Re-engages the posterior chain after hours of sitting",type:"reps",reps:"12–15 reps",steps:[{pos:"A",label:"Supine Setup",focus:"SETUP",cue:"Lie on back. Feet flat, hip-width, heels 6 inches from glutes."},{pos:"B",label:"Drive & Lift",focus:"ENGAGE",cue:"Press through heels, lift hips to a straight line — shoulders, hips, knees. Squeeze glutes at top. Hold 2s."},{pos:"C",label:"Lower Slowly",focus:"CONTROL",cue:"Lower in 3 seconds. Do not crash the hips. Controlled descent rebuilds what sitting disengages."}]}]}],  duration: "~15 min" },
-  anxiety:     { id: "anxiety",    label: "Calm Circuit",          subtitle: "Breathe · Ground · Regulate",         purpose: "Evidence-based techniques that directly shift the nervous system from fight-or-flight to rest and digest.",       sections: ANXIETY_SECTIONS,  duration: "~15 min" },
-  stress:      { id: "stress",     label: "Tension Release",       subtitle: "Discharge · Release · Restore",        purpose: "Complete the stress cycle the body started. Move the cortisol through. Then downshift.",                        sections: STRESS_SECTIONS,   duration: "~18 min" },
-  feet:        { id: "feet",        label: "Feet First",             subtitle: "Release · Activate · Strengthen",      purpose: "PT-backed protocol for plantar fasciitis and foot pain. Release the tissue, wake the muscles, load the chain.", sections: FEET_SECTIONS,     duration: "~18 min" },
+  travel:      { id: "travel",      label: "Post-Arrival Reset",    subtitle: "Travel · Decompress · Reset",    purpose: "Six movements to undo the posture of travel. Do these as soon as you arrive.",                                           sections: [{label:"Post-Arrival",tag:"PA",purpose:"Six movements to undo the posture of travel. Do these as soon as you reach your hotel or home.",exercises:[{id:1104,name:"Standing Psoas Release",start:"Standing, about to step into a shallow lunge.",sub:"Hip flexors shortened during travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Shallow Lunge",focus:"SETUP",cue:"Step forward into a shallow lunge. Back knee raised or lowered. Torso upright, feet forward."},{pos:"B",label:"Pelvic Tuck & Lean",focus:"STRETCH",cue:"Tuck the pelvis slightly, lean torso toward the front leg. Feel the stretch at the front of the back hip — this is the psoas."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"Hold 30–45 seconds each side. With each exhale, allow the hip to sink further. Switch sides."}]},{id:1105,name:"Wall Slides (W to Y)",start:"Standing with your back flat against a wall.",sub:"Activates lower trapezius — fixes luggage shoulder",type:"reps",reps:"10 slow reps",steps:[{pos:"A",label:"Wall Contact",focus:"SETUP",cue:"Head, upper back, and glutes touching the wall. Arms in a W shape — elbows bent, backs of hands against wall."},{pos:"B",label:"Slide to Y",focus:"ACTIVATE",cue:"Keep backs of hands and elbows on the wall and slowly slide arms up to a Y overhead. Do not let contact break."},{pos:"C",label:"Slow Return",focus:"CONTROL",cue:"Lower to W in 3 seconds. Do not shrug. 10 reps. This reverses upper trap dominance from carrying luggage."}]},{id:1106,name:"Open Book Stretch",start:"Lying on your side, knees stacked at 90°.",sub:"Restores thoracic rotation locked after travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Side-Lying Setup",focus:"SETUP",cue:"Lie on your side, hips and knees at 90°, knees stacked. Both arms extended forward at shoulder height."},{pos:"B",label:"Open the Top Arm",focus:"ROTATE",cue:"Rotate the top arm up, back, and toward the floor behind you — like opening a book. Let the chest follow."},{pos:"C",label:"Hold & Return",focus:"RELEASE",cue:"Hold 3–5 breaths. Let gravity do the work. Return slowly. 5 reps each side."}]},{id:1107,name:"Physiological Sigh",start:"Seated or lying down.",sub:"Rapidly offloads CO₂ — signals arrival to the brain",type:"time",seconds:90,steps:[{pos:"A",label:"Relax Completely",focus:"SETUP",cue:"Sit or lie comfortably. Body heavy, eyes closed."},{pos:"B",label:"Double Inhale",focus:"CO2 OFFLOAD",cue:"Breathe in to 80% capacity, then sniff in a second short inhale to fully inflate. This pops collapsed air sacs."},{pos:"C",label:"Long Exhale",focus:"DOWNREGULATE",cue:"Long slow exhale through the mouth — twice the inhale length. 3–5 rounds. Each cycle measurably reduces arousal."}]},{id:1108,name:"Doorway Pec Stretch",start:"Standing in a doorway, forearms on the frame.",sub:"Counteracts shoulder rotation from carrying bags",type:"flow",seconds:60,steps:[{pos:"A",label:"Doorway Setup",focus:"SETUP",cue:"Forearms on door frame at 90°, elbows at shoulder height. Step one foot forward."},{pos:"B",label:"Lean Through",focus:"STRETCH",cue:"Shift weight forward gently. Feel the stretch across the chest and front shoulders."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"30–45 seconds. Exhale into the stretch. Do not shrug. Switch foot halfway."}]},{id:1109,name:"Glute Bridge",start:"Lying on your back, knees bent, feet flat.",sub:"Re-engages the posterior chain after hours of sitting",type:"reps",reps:"12–15 reps",steps:[{pos:"A",label:"Supine Setup",focus:"SETUP",cue:"Lie on back. Feet flat, hip-width, heels 6 inches from glutes."},{pos:"B",label:"Drive & Lift",focus:"ENGAGE",cue:"Press through heels, lift hips to a straight line — shoulders, hips, knees. Squeeze glutes at top. Hold 2s."},{pos:"C",label:"Lower Slowly",focus:"CONTROL",cue:"Lower in 3 seconds. Do not crash the hips. Controlled descent rebuilds what sitting disengages."}]}]}],  duration: "~15 min" },
+  anxiety:     { id: "anxiety",    label: "Calm Circuit",          subtitle: "Breathe · Ground · Vagal",         purpose: "Evidence-based techniques that directly shift the nervous system from fight-or-flight to rest and digest.",       sections: ANXIETY_SECTIONS,  duration: "~15 min" },
+  stress:      { id: "stress",     label: "Tension Release",       subtitle: "Discharge · Release · Downshift",        purpose: "Complete the stress cycle the body started. Move the cortisol through. Then downshift.",                        sections: STRESS_SECTIONS,   duration: "~18 min" },
+  feet:        { id: "feet",        label: "Feet First",             subtitle: "Plantar · Release · Load",      purpose: "PT-backed protocol for plantar fasciitis and foot pain. Release the tissue, wake the muscles, load the chain.", sections: FEET_SECTIONS,     duration: "~18 min" },
 };
 
 
@@ -1657,7 +1657,7 @@ function storageSet(key, val) {
 // ─────────────────────────────────────────────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
-  html, body, #root { width:100%; min-height:100%; margin:0; padding:0; box-sizing:border-box; background:#080d18; }
+  html, body, #root { width:100%; max-width:100vw; min-height:100%; margin:0; padding:0; box-sizing:border-box; background:#080d18; overflow-x:hidden; }
   * { box-sizing:border-box; margin:0; padding:0; }
   ::-webkit-scrollbar { width:0px; } * { scrollbar-width:none; }
   /* ── LIQUID GLASS VARIABLES ── */
@@ -1700,18 +1700,18 @@ const css = `
   }
   [data-theme="light"] {
     --bg-gradient: linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%);
-    --orb1: radial-gradient(ellipse 65% 55% at 10% 15%, rgba(80,140,200,0.07) 0%, transparent 65%);
-    --orb2: radial-gradient(ellipse 55% 65% at 90% 75%, rgba(100,160,210,0.05) 0%, transparent 65%);
-    --orb3: radial-gradient(ellipse 50% 45% at 55% 5%,  rgba(140,180,220,0.04) 0%, transparent 65%);
-    --glass-bg: rgba(255,255,255,0.68);
-    --glass-bg-hover: rgba(255,255,255,0.82);
-    --glass-border: rgba(200,220,240,0.70);
-    --glass-border-strong: rgba(160,195,225,0.80);
-    --glass-specular: rgba(255,255,255,0.75);
-    --glass-shadow: 0 2px 10px rgba(20,50,90,0.07), 0 1px 3px rgba(20,50,90,0.04);
-    --glass-shadow-lg: 0 8px 28px rgba(20,50,90,0.09), 0 2px 8px rgba(20,50,90,0.05);
-    --tab-bg: rgba(255,255,255,0.70);
-    --hdr-bg: rgba(235,243,250,0.82);
+    --orb1: radial-gradient(ellipse 65% 55% at 10% 15%, rgba(80,140,200,0.12) 0%, transparent 65%);
+    --orb2: radial-gradient(ellipse 55% 65% at 90% 75%, rgba(100,160,210,0.09) 0%, transparent 65%);
+    --orb3: radial-gradient(ellipse 50% 45% at 55% 5%,  rgba(140,180,220,0.07) 0%, transparent 65%);
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-bg-hover: rgba(255,255,255,0.72);
+    --glass-border: rgba(200,220,240,0.68);
+    --glass-border-strong: rgba(160,195,225,0.78);
+    --glass-specular: rgba(255,255,255,0.88);
+    --glass-shadow: 0 2px 12px rgba(20,50,90,0.11), 0 1px 4px rgba(20,50,90,0.06);
+    --glass-shadow-lg: 0 10px 32px rgba(20,50,90,0.13), 0 2px 10px rgba(20,50,90,0.07);
+    --tab-bg: rgba(255,255,255,0.62);
+    --hdr-bg: rgba(235,243,250,0.75);
     --text-primary: #0f1e2e;
     --text-secondary: rgba(15,30,46,0.80);
     --text-tertiary: rgba(15,30,46,0.65);
@@ -1762,7 +1762,16 @@ const css = `
   [data-theme="light"] .track-card-sub {
     font-weight: 500;
   }
-
+  /* Light mode: stronger glass edge and primary button depth */
+  [data-theme="light"] .track-card::before {
+    background: linear-gradient(90deg, transparent, var(--glass-specular) 35%, rgba(255,255,255,0.35) 50%, var(--glass-specular) 65%, transparent);
+  }
+  [data-theme="light"] .begin-btn {
+    box-shadow: 0 2px 12px var(--accent-glow), 0 4px 20px rgba(42,95,143,0.18);
+  }
+  [data-theme="light"] .begin-btn:hover {
+    box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
+  }
 
   /* ── NIGHT MODE — Apple Watch Ultra style: #000000 + vibrant red only ── */
   [data-night="true"] {
@@ -1828,7 +1837,9 @@ const css = `
   /* ── BASE ── */
   .app {
     height:100vh;
+    height:100dvh;
     width:100%;
+    max-width:100vw;
     display:flex;
     flex-direction:column;
     overflow-y:auto;
@@ -1852,12 +1863,21 @@ const css = `
     50%  { transform:scale(1.06) translate(12px,-10px); }
     100% { transform:scale(0.96) translate(-8px,14px); }
   }
+  @keyframes flowFadeIn {
+    from { opacity:0; transform:scale(0.92); }
+    to   { opacity:1; transform:scale(1); }
+  }
+  @keyframes flowDonePop {
+    0%   { opacity:0; transform:translate(-50%,-50%) scale(0.5); }
+    50%  { opacity:1; transform:translate(-50%,-50%) scale(1.1); }
+    100% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
 
   /* ── GLASS CARD ── */
   .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
     border-radius: 16px;
@@ -1985,14 +2005,14 @@ const css = `
     background:var(--glass-bg); border:1px solid var(--glass-border-strong);
     border-radius:12px 12px 0 0; border-bottom-color:transparent;
     box-shadow:inset 0 1px 0 var(--glass-specular);
-    backdrop-filter:blur(20px) saturate(1.8); -webkit-backdrop-filter:blur(20px) saturate(1.8);
+    backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     margin:6px -8px 0; padding:13px 8px;
   }
   .panel {
     background:var(--glass-bg); border:1px solid var(--glass-border-strong); border-top:none;
     border-radius:0 0 12px 12px; padding:20px 16px 22px 16px;
     margin:0 -8px 8px;
-    backdrop-filter:blur(20px) saturate(1.8); -webkit-backdrop-filter:blur(20px) saturate(1.8);
+    backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     box-shadow:0 4px 20px rgba(60,80,150,0.10), inset 0 -1px 0 var(--glass-specular);
   }
   .reps-row { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:8px; border-top:1px solid var(--border); padding-top:14px; flex-wrap:nowrap; }
@@ -2237,8 +2257,13 @@ const css = `
   /* ── SUMMARY ── */
   .summary {
     border:1px solid var(--glass-border); padding:20px; margin-top:28px; border-radius:18px;
-    background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    background:var(--glass-bg); backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
+    position:relative; overflow:hidden;
+  }
+  .summary::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px; pointer-events:none;
+    background:linear-gradient(90deg, transparent, var(--glass-specular) 35%, rgba(255,255,255,0.2) 50%, var(--glass-specular) 65%, transparent);
   }
   .summary-title { font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-secondary); margin-bottom:14px; font-weight:500; }
   .summary-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
@@ -2254,11 +2279,19 @@ const css = `
   .history-track { font-size:13px; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-secondary); }
   .history-detail { font-size:12px; color:var(--text-dim); }
 
+  /* Momentum 7-day strip (glass card) */
+  .summary-momentum { margin-top:24px; }
+  .momentum-strip { display:flex; gap:6px; margin-bottom:10px; }
+  .momentum-cell { flex:1; aspect-ratio:1; border-radius:6px; transition:all 0.2s; }
+  .momentum-labels { display:flex; justify-content:space-between; margin-bottom:8px; }
+  .momentum-label { font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dimmer); }
+  .momentum-disclaimer { font-size:11px; color:var(--text-dimmer); letter-spacing:0.06em; line-height:1.5; }
+
   /* ── DONE BANNER ── */
   .done-banner {
     padding:36px 22px; text-align:center; margin-top:24px; border-radius:22px;
     background:var(--glass-bg); border:1px solid var(--glass-border);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
   }
   .db-title { font-size:22px; font-weight:500; letter-spacing:-0.03em; margin-bottom:5px; color:var(--text-white); }
@@ -2304,7 +2337,7 @@ const css = `
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:3px; padding:10px 6px 8px; border:none; cursor:pointer; border-radius:0;
     background:transparent; color:var(--text-dim);
-    font-family:'Barlow',sans-serif; font-size:10px; font-weight:500;
+    font-family:'Barlow',sans-serif; font-size:11px; font-weight:500;
     letter-spacing:0.08em; text-transform:uppercase;
     transition:color 0.15s; position:relative; flex:1;
     border-top:2px solid transparent;
@@ -2316,16 +2349,21 @@ const css = `
   .tab-btn.active svg { filter:drop-shadow(0 0 3px var(--accent-glow)); }
   .tab-btn:hover { color:var(--text-secondary); }
   .tab-btn svg { stroke:currentColor; fill:none; transition:all 0.15s; width:18px; height:18px; }
+  @keyframes tabPulse {
+    0%, 100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.7; transform:scale(1.2); }
+  }
   .tab-live-dot {
     position:absolute; top:8px; right:calc(50% - 12px);
     width:5px; height:5px; border-radius:50%;
     background:var(--accent); box-shadow:0 0 5px var(--accent-glow);
+    animation:tabPulse 4s ease-in-out infinite;
   }
   .tab-bar-spacer { height:calc(62px + env(safe-area-inset-bottom, 0px)); }
 
   /* ── HOME ── */
   .home { min-height:100vh; position:relative; z-index:1; }
-  .home-hdr { padding:52px 24px 0; max-width:100%; }
+  .home-hdr { padding:calc(env(safe-area-inset-top, 0px) + 52px) 24px 0; max-width:100%; }
   .home-wordmark {
     font-size:36px; font-weight:700; letter-spacing:0.10em; text-transform:uppercase;
     color:var(--text-white); line-height:1; margin-bottom:0;
@@ -2346,7 +2384,7 @@ const css = `
     position:relative; cursor:default; width:100%;
   }
   .eol-xs {
-    font-size:12px; letter-spacing:2em; font-weight:300;
+    font-size:12px; letter-spacing:0.8em; font-weight:300;
     color:var(--eol-color);
     transition:opacity 0.4s ease;
     text-align:center;
@@ -2370,13 +2408,15 @@ const css = `
     font-size:14px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase;
     color:var(--text-dim); margin-bottom:12px;
   }
+  .start-here-group { margin-bottom:4px; }
+  .start-here-label { color:var(--accent); letter-spacing:0.22em; }
   .track-cards { display:flex; flex-direction:column; gap:8px; }
 
   /* ── TRACK CARD ── */
   .track-card {
-    background:var(--glass-bg); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6);
+    background:var(--glass-bg); backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     border:1px solid var(--glass-border);
-    box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
+    box-shadow:0 24px 48px rgba(0,0,0,0.06), var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
     border-radius:24px; padding:28px 24px 22px 24px; cursor:pointer;
     transition: background 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display:flex; flex-direction:column; gap:12px; position:relative; overflow:hidden;
@@ -2390,7 +2430,7 @@ const css = `
     box-shadow:var(--glass-shadow-lg), inset 0 1px 0 var(--glass-specular);
     transform:translateY(-2px);
   }
-  .track-card:active { transform:translateY(0); }
+  .track-card:active { transform:scale(0.98); }
   .track-card-left { flex:1; min-width:0; width:100%; }
   .track-card-name { font-size:22px; font-weight:600; color:var(--text-white); margin-bottom:6px; letter-spacing:-0.02em; }
   .track-card-sub { font-size:14px; color:var(--accent); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; opacity:0.85; line-height:1.5; }
@@ -2410,7 +2450,7 @@ const css = `
   .theme-toggle {
     position:fixed; top:16px; right:20px; z-index:200; border-radius:50%;
     background:var(--glass-bg); border:1px solid var(--glass-border);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     width:36px; height:36px; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
     box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
@@ -2418,6 +2458,22 @@ const css = `
   }
   .theme-toggle:hover { background:var(--glass-bg-hover); border-color:var(--glass-border-strong); }
   .theme-toggle svg { stroke:var(--text-secondary); fill:none; }
+
+  /* ── ACCESSIBILITY: focus visible (keyboard / screen reader) ── */
+  button:focus-visible, a:focus-visible, .track-card:focus-visible,
+  input:focus-visible, [role="button"]:focus-visible {
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+  .track-card { outline:none; }
+  .tab-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ── ACCESSIBILITY: reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .app-orbs { animation: none !important; }
+    .tab-live-dot { animation: none !important; }
+    .track-card, .glass-card, .tab-btn, .begin-btn { transition-duration: 0.08s; }
+  }
 `;
 
 // ─────────────────────────────────────────────────────────────
@@ -2572,51 +2628,42 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
 
 
 // ─────────────────────────────────────────────────────────────
-//  MOMENTUM MAP — 12-week session grid
+//  MOMENTUM — 7-day strip (device-only)
 // ─────────────────────────────────────────────────────────────
 function MomentumMap({ history }) {
   const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
-  const days = Array.from({ length: 84 }, (_, i) => {
+  const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
-    d.setDate(d.getDate() - (83 - i));
-    return d.toISOString().split("T")[0];
+    d.setDate(d.getDate() - (6 - i));
+    return d.toDateString();
   });
-  // Count sessions per date for intensity
   const sessionCounts = history.reduce((acc, e) => {
-    const d = e.date; acc[d] = (acc[d] || 0) + 1; return acc;
+    acc[e.date] = (acc[e.date] || 0) + 1;
+    return acc;
   }, {});
   const maxCount = Math.max(1, ...Object.values(sessionCounts));
-  const weeks = [];
-  for (let w = 0; w < 12; w++) weeks.push(days.slice(w * 7, w * 7 + 7));
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="summary summary-momentum" style={{ marginTop: 24 }}>
       <div className="summary-title" style={{ marginBottom: 12 }}>Momentum</div>
-      <div style={{ display: "flex", gap: 3 }}>
-        {weeks.map((week, wi) => (
-          <div key={wi} style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1 }}>
-            {week.map((date, di) => {
-              const count = sessionCounts[date] || 0;
-              const intensity = count > 0 ? 0.35 + (count / maxCount) * 0.65 : 0;
-              const isToday = date === todayStr;
-              return (
-                <div key={di} style={{
-                  aspectRatio: "1", borderRadius: 3,
-                  background: count > 0 ? `color-mix(in srgb, var(--accent) ${Math.round(intensity*100)}%, transparent)` : "var(--dot-bg)",
-                  boxShadow: count > 0 ? `0 0 ${4 + intensity*6}px var(--accent-glow)` : "none",
-                  border: isToday ? "1px solid var(--accent)" : "none",
-                  transition: "all 0.2s",
-                }} />
-              );
-            })}
-          </div>
-        ))}
+      <div className="momentum-strip">
+        {days.map((dateStr, i) => {
+          const count = sessionCounts[dateStr] || 0;
+          const intensity = count > 0 ? 0.35 + (count / maxCount) * 0.65 : 0;
+          const isToday = i === 6;
+          return (
+            <div key={i} className="momentum-cell" style={{
+              background: count > 0 ? `color-mix(in srgb, var(--accent) ${Math.round(intensity * 100)}%, transparent)` : "var(--dot-bg)",
+              boxShadow: count > 0 ? `0 0 ${4 + intensity * 6}px var(--accent-glow)` : "none",
+              border: isToday ? "1px solid var(--accent)" : "none",
+            }} />
+          );
+        })}
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
-        <span style={{ fontSize: 9, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)" }}>12 weeks ago</span>
-        <span style={{ fontSize: 9, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)" }}>Today</span>
+      <div className="momentum-labels">
+        <span className="momentum-label">7 days ago</span>
+        <span className="momentum-label">Today</span>
       </div>
-      <div style={{ marginTop: 8, fontSize: 10, color: "var(--text-dimmer)", letterSpacing: "0.06em", lineHeight: 1.5 }}>
+      <div className="momentum-disclaimer">
         Activity data is stored locally on this device.
       </div>
     </div>
@@ -2636,14 +2683,14 @@ function TabBar({ view, setView, hasActiveSession, theme }) {
   return (
 <div className="tab-bar">
       <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,0.18) 50%,transparent)",pointerEvents:"none"}} />
-      <button className={`tab-btn ${view==="home"?"active":""}`} onClick={()=>setView("home")}><HomeIcon/>Home</button>
-      <button className={`tab-btn ${view==="session"?"active":""}`} onClick={()=>setView("session")} style={{position:"relative"}}>
-        {hasActiveSession && view!=="session" && <div className="tab-live-dot"/>}
+      <button className={`tab-btn ${view==="home"?"active":""}`} onClick={()=>setView("home")} aria-label="Home" aria-current={view==="home"?"page":undefined}><HomeIcon/>Home</button>
+      <button className={`tab-btn ${view==="session"?"active":""}`} onClick={()=>setView("session")} style={{position:"relative"}} aria-label="Session" aria-current={view==="session"?"page":undefined}>
+        {hasActiveSession && view!=="session" && <div className="tab-live-dot" aria-hidden/>}
         <SessionIcon/>Session
       </button>
-      <button className={`tab-btn ${view==="timer"?"active":""}`} onClick={()=>setView("timer")}><TimerIcon/>Timer</button>
-      <button className={`tab-btn ${view==="mood"?"active":""}`} onClick={()=>setView("mood")}><MoodIcon/>Mood</button>
-      <button className={`tab-btn ${view==="settings"?"active":""}`} onClick={()=>setView("settings")}><SettingsIcon/>Settings</button>
+      <button className={`tab-btn ${view==="timer"?"active":""}`} onClick={()=>setView("timer")} aria-label="Timer" aria-current={view==="timer"?"page":undefined}><TimerIcon/>Timer</button>
+      <button className={`tab-btn ${view==="mood"?"active":""}`} onClick={()=>setView("mood")} aria-label="Mood and appearance" aria-current={view==="mood"?"page":undefined}><MoodIcon/>Mood</button>
+      <button className={`tab-btn ${view==="settings"?"active":""}`} onClick={()=>setView("settings")} aria-label="Settings" aria-current={view==="settings"?"page":undefined}><SettingsIcon/>Settings</button>
     </div>
   );
 }
@@ -2807,7 +2854,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 }
 
 function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, done, totalDone, sessionSecs,
-  onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false }) {
+  onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete }) {
 
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
@@ -2855,30 +2902,31 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
   const NAME_DIM  = D;
   const HAIRLINE  = isNight ? "rgba(255,59,48,0.15)" : (isDark ? "rgba(255,255,255,0.07)" : `${ct.accent}22`);
 
-  // Glass card & control bar surfaces — Night Mode is opaque black, no white tint
+  // Glass card & control bar — light mode: crisp, soft tinted shadows (no muddy black)
   const GLASS_BG   = isNight ? "#000000"
     : (isDark ? "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)"
-              : "linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.48) 100%)");
+              : "linear-gradient(135deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.58) 100%)");
   const GLASS_BDR  = isNight ? "1px solid rgba(255,59,48,0.20)"
-    : (isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.70)");
+    : (isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(200,220,240,0.65)");
   const GLASS_SHAD = isNight ? "0 8px 32px rgba(0,0,0,0.80)"
     : (isDark ? "inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 32px rgba(0,0,0,0.25)"
-              : "inset 0 1px 0 rgba(255,255,255,0.90), 0 4px 20px rgba(0,0,0,0.08)");
+              : "inset 0 1px 0 rgba(255,255,255,0.85), 0 8px 24px rgba(20,50,90,0.06), 0 2px 8px rgba(20,50,90,0.04)");
   const BAR_BG     = isNight ? "#000000"
     : (isDark ? "linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.06) 100%)"
-              : "linear-gradient(135deg, rgba(255,255,255,0.80) 0%, rgba(255,255,255,0.55) 100%)");
+              : "linear-gradient(135deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.62) 100%)");
   const BAR_BDR    = isNight ? "1px solid rgba(255,59,48,0.22)"
-    : (isDark ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(255,255,255,0.80)");
+    : (isDark ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(200,220,240,0.70)");
   const BAR_SHAD   = isNight ? "0 8px 40px rgba(0,0,0,0.90)"
     : (isDark ? "inset 0 1px 0 rgba(255,255,255,0.12), 0 8px 40px rgba(0,0,0,0.35)"
-              : "inset 0 1px 0 rgba(255,255,255,1), 0 4px 24px rgba(0,0,0,0.10)");
+              : "inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 28px rgba(20,50,90,0.06), 0 2px 10px rgba(20,50,90,0.04)");
   const DIVIDER    = isNight ? "1px solid rgba(255,59,48,0.15)"
     : (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)");
   const ROW_DIV    = isNight ? "1px solid rgba(255,59,48,0.12)"
     : (isDark ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(0,0,0,0.06)");
   const SESS_BG    = isNight ? "#000000"
-    : (isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.60)");
+    : (isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.65)");
   const BACK_DIM   = isNight ? "rgba(255,59,48,0.25)" : (isDark ? "rgba(255,255,255,0.22)" : "rgba(15,30,46,0.22)");
+  const NAME_SHAD  = isDark ? "0 2px 24px rgba(0,0,0,0.5)" : "0 2px 20px rgba(20,50,90,0.12)";
 
   // Snapshot activeAll on mount so fi stays stable regardless of external skips
   const listRef = useRef(activeAllProp);
@@ -2888,12 +2936,15 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
 
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
-  const [phase, setPhase] = useState("intro"); // "intro" | "getready" | "exercise" | "rest"
+  const [phase, setPhase] = useState("intro"); // "intro" | "getready" | "exercise" | "rest" | "milestone" | "closing"
   const [restLeft, setRestLeft] = useState(10);
   const [readyLeft, setReadyLeft] = useState(12);
   const [paused, setPaused] = useState(false);
+  const [milestoneMessage, setMilestoneMessage] = useState("");
+  const [showJustDone, setShowJustDone] = useState(false);
   const restRef = useRef(null);
   const readyRef = useRef(null);
+  const milestoneRef = useRef(null);
 
   const cur = list[Math.min(fi, list.length - 1)];
   const next = list[fi + 1] || null;
@@ -2946,16 +2997,41 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
     return () => clearInterval(restRef.current);
   }, [phase, fi]);
 
-  const handleTimerDone = () => {
-    beep(660, 0.4); // end of exercise
+  const completeCurrent = () => {
+    beep(660, 0.4);
     onToggle(cur.id);
-    if (fi < list.length - 1) setPhase("rest");
+    setShowJustDone(true);
+    setTimeout(() => setShowJustDone(false), 450);
+    const nextTotal = totalDone + 1;
+    if (nextTotal >= listTotal) {
+      setPhase("closing");
+      if (onSessionComplete) onSessionComplete();
+      return;
+    }
+    const at25 = Math.ceil(listTotal * 0.25);
+    const at50 = Math.ceil(listTotal * 0.5);
+    const at75 = Math.ceil(listTotal * 0.75);
+    if (nextTotal === at25 || nextTotal === at50 || nextTotal === at75) {
+      const msg = nextTotal === at25 ? "Quarter done" : nextTotal === at50 ? "Halfway there" : "Almost there";
+      setMilestoneMessage(msg);
+      setPhase("milestone");
+      if (milestoneRef.current) clearTimeout(milestoneRef.current);
+      milestoneRef.current = setTimeout(() => {
+        setPhase("rest");
+        setMilestoneMessage("");
+        milestoneRef.current = null;
+      }, 2200);
+    } else {
+      setPhase("rest");
+    }
+  };
+
+  const handleTimerDone = () => {
+    completeCurrent();
   };
 
   const handleMarkDone = () => {
-    beep(660, 0.4); // end of exercise
-    onToggle(cur.id);
-    if (fi < list.length - 1) setPhase("rest");
+    completeCurrent();
   };
 
   const handleSkip = () => {
@@ -2990,17 +3066,79 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           : "radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, rgba(0,0,0,0.18) 100%)",
       }} />
 
-      {/* ── TOP BAR ── */}
+      {/* Spotlight: dim edges so center pops (not on intro or closing) */}
+      {phase !== "intro" && phase !== "closing" && (
+        <div style={{
+          position:"absolute", inset:0, pointerEvents:"none", zIndex:1,
+          background: isDark
+            ? "radial-gradient(ellipse 75% 65% at 50% 38%, transparent 42%, rgba(0,0,0,0.55) 100%)"
+            : "radial-gradient(ellipse 75% 65% at 50% 38%, transparent 45%, rgba(0,0,0,0.25) 100%)",
+        }} />
+      )}
+
+      {/* ── TOP BAR: Exit + Progress ring ── */}
       <div style={{
-        display:"flex", alignItems:"center",
+        display:"flex", alignItems:"center", justifyContent:"space-between",
         padding:"56px 24px 16px", flexShrink:0, position:"relative", zIndex:2,
       }}>
         <button onClick={onExit} style={{
           background:"none", border:"none", cursor:"pointer", color:S,
           fontFamily:"'Barlow',sans-serif", fontSize:11, letterSpacing:"0.18em",
           textTransform:"uppercase", padding:0, display:"flex", alignItems:"center", gap:5,
+          opacity: phase === "intro" ? 1 : 0.85,
         }}>✕ <span>Exit</span></button>
+        {phase !== "intro" && phase !== "closing" && listTotal > 0 && (() => {
+          const r = 14; const C = 2 * Math.PI * r;
+          const filled = (totalDone / listTotal) * C;
+          const offset = C - filled;
+          return (
+            <div style={{ position:"relative", width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg width={36} height={36} style={{ transform:"rotate(-90deg)" }}>
+                <circle cx="18" cy="18" r={r} fill="none" stroke={isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"} strokeWidth="3" />
+                <circle cx="18" cy="18" r={r} fill="none" stroke={A} strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={C} strokeDashoffset={offset}
+                  style={{ transition:"stroke-dashoffset 0.4s ease-out" }} />
+              </svg>
+              <span style={{ position:"absolute", fontSize:10, fontWeight:700, color:W }}>{totalDone}/{listTotal}</span>
+            </div>
+          );
+        })()}
       </div>
+
+      {/* ── MILESTONE overlay (brief) ── */}
+      {phase === "milestone" && (
+        <div style={{
+          position:"absolute", inset:0, zIndex:10, display:"flex", alignItems:"center", justifyContent:"center",
+          background:"transparent", pointerEvents:"none",
+        }}>
+          <div style={{
+            fontSize:28, fontWeight:600, letterSpacing:"-0.02em", color:W,
+            textShadow: NAME_SHAD, opacity:0, animation:"flowFadeIn 0.35s ease forwards",
+          }}>{milestoneMessage}</div>
+        </div>
+      )}
+
+      {/* ── CLOSING RITUAL ── */}
+      {phase === "closing" && (
+        <div style={{
+          flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+          padding:"48px", textAlign:"center", position:"relative", zIndex:10,
+        }}>
+          <div style={{fontSize:13, letterSpacing:"0.22em", textTransform:"uppercase", color:D, marginBottom:12}}>{trackLabel}</div>
+          <div style={{fontSize:15, color:S, marginBottom:32}}>{listTotal} exercises · {formatTime(sessionSecs)}</div>
+          <div style={{fontSize:28, fontWeight:500, letterSpacing:"-0.02em", lineHeight:1.35, color:W, marginBottom:48, maxWidth:300,
+            textShadow: NAME_SHAD}}>
+            Session complete. Time recorded.
+          </div>
+          <button onClick={onExit} style={{
+            padding:"16px 48px", borderRadius:28, cursor:"pointer",
+            background:A, border:"none", color: ct.accentBtnText || "#0a0e1a",
+            fontFamily:"'Barlow',sans-serif", fontSize:13, fontWeight:700,
+            letterSpacing:"0.18em", textTransform:"uppercase",
+            boxShadow:`0 0 32px ${ct.accentGlow}`,
+          }}>Done</button>
+        </div>
+      )}
 
       {/* ── INTRO SCREEN ── */}
       {phase === "intro" && (
@@ -3009,9 +3147,14 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           alignItems:"center", justifyContent:"center",
           padding:"32px", textAlign:"center", position:"relative", zIndex:2,
         }}>
+          {streak > 0 && (
+            <div style={{fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", color:A, marginBottom:20}}>
+              Day {streak}
+            </div>
+          )}
           <div style={{fontSize:11, letterSpacing:"0.30em", textTransform:"uppercase", color:D, marginBottom:16}}>Flow Session</div>
           <div style={{fontSize:52, fontWeight:600, letterSpacing:"-0.03em", lineHeight:1.0, color:W, marginBottom:12,
-            textShadow:"0 2px 24px rgba(0,0,0,0.5)"}}>
+            textShadow: NAME_SHAD}}>
             {trackLabel}
           </div>
           <div style={{fontSize:15, color:S, marginBottom:4}}>{filteredCount} exercises</div>
@@ -3032,7 +3175,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
       )}
 
       {/* ── GET READY / REST / EXERCISE — shared content zone ── */}
-      {phase !== "intro" && (
+      {phase !== "intro" && phase !== "closing" && phase !== "milestone" && (
         <div style={{flex:1, display:"flex", flexDirection:"column", position:"relative", zIndex:2, minHeight:0, padding:"8px 20px 0"}}>
 
           {/* Phase label */}
@@ -3045,7 +3188,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
             fontSize: phase === "exercise" ? 38 : 34,
             fontWeight:600, letterSpacing:"-0.025em", lineHeight:1.05,
             color:W, marginBottom:20, flexShrink:0,
-            textShadow:"0 2px 24px rgba(0,0,0,0.5)",
+            textShadow: NAME_SHAD,
           }}>
             {phase === "rest" ? next?.name : cur.name}
           </div>
@@ -3058,15 +3201,15 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
               <div style={{
                 borderRadius:20,
                 background: GLASS_BG,
-                backdropFilter:"blur(24px) saturate(1.8)",
-                WebkitBackdropFilter:"blur(24px) saturate(1.8)",
+                backdropFilter:"blur(24px) saturate(1.4)",
+                WebkitBackdropFilter:"blur(24px) saturate(1.4)",
                 border: GLASS_BDR,
                 boxShadow: GLASS_SHAD,
                 overflow:"hidden", flexShrink:0, marginBottom:20,
               }}>
                 {ex.steps[0] && (
                   <div style={{padding:"16px 18px 14px", borderBottom: ex.steps[1] ? ROW_DIV : "none"}}>
-                    <div style={{fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase",
+                    <div style={{fontSize:11, letterSpacing:"0.24em", textTransform:"uppercase",
                       color:A, marginBottom:8, opacity:0.85}}>Setup</div>
                     <div style={{fontSize:16, color:W, lineHeight:1.55, fontWeight:isDark?300:400,
                       letterSpacing:"-0.01em"}}>{ex.steps[0].cue}</div>
@@ -3074,7 +3217,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
                 )}
                 {ex.steps[1] && (
                   <div style={{padding:"14px 18px 16px"}}>
-                    <div style={{fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase",
+                    <div style={{fontSize:11, letterSpacing:"0.24em", textTransform:"uppercase",
                       color:A, marginBottom:8, opacity:0.85}}>Move</div>
                     <div style={{fontSize:16, color:W, lineHeight:1.55, fontWeight:isDark?300:400,
                       letterSpacing:"-0.01em"}}>{ex.steps[1].cue}</div>
@@ -3082,7 +3225,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
                 )}
                 {!ex.steps[1] && cur.type === "reps" && cur.reps && (
                   <div style={{padding:"14px 18px 16px", borderTop: ROW_DIV}}>
-                    <div style={{fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase",
+                    <div style={{fontSize:11, letterSpacing:"0.24em", textTransform:"uppercase",
                       color:A, marginBottom:6, opacity:0.85}}>Target</div>
                     <div style={{fontSize:20, fontWeight:600, color:W}}>{cur.reps}</div>
                   </div>
@@ -3094,7 +3237,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           {/* Reps target if steps exist */}
           {phase === "exercise" && cur.type === "reps" && cur.reps && cur.steps?.length >= 2 && (
             <div style={{marginBottom:16, flexShrink:0}}>
-              <div style={{fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase", color:A, opacity:0.8, marginBottom:6}}>Target</div>
+              <div style={{fontSize:11, letterSpacing:"0.24em", textTransform:"uppercase", color:A, opacity:0.8, marginBottom:6}}>Target</div>
               <div style={{fontSize:22, fontWeight:600, color:W}}>{cur.reps}</div>
             </div>
           )}
@@ -3125,26 +3268,29 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
             </div>
           )}
 
-          {/* Session complete */}
-          {phase === "exercise" && totalDone >= list.length && list.length > 0 && (
-            <div style={{padding:"14px 18px", borderRadius:16,
-              background: SESS_BG,
-              backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
-              border:`1px solid ${ct.accent}44`, marginBottom:10, flexShrink:0}}>
-              <div style={{fontSize:17, fontWeight:600, color:A}}>Session Complete ✓</div>
-              <div style={{fontSize:12, color:S, marginTop:3}}>{list.length} exercises · {formatTime(sessionSecs)}</div>
+          {/* Just-done micro animation */}
+          {showJustDone && (
+            <div style={{
+              position:"absolute", left:"50%", top:"40%", transform:"translate(-50%,-50%)",
+              width:56, height:56, borderRadius:"50%", border:`3px solid ${A}`,
+              display:"flex", alignItems:"center", justifyContent:"center",
+              background: `${A}22`, animation:"flowDonePop 0.45s ease-out forwards",
+              zIndex:5,
+            }}>
+              <span style={{ fontSize:24, color:A }}>✓</span>
             </div>
           )}
         </div>
       )}
 
       {/* ── LIQUID GLASS PILL BAR ── */}
+      {phase !== "closing" && phase !== "milestone" && (
       <div style={{
         margin:"0 16px", marginBottom:`max(28px, env(safe-area-inset-bottom, 28px))`,
         borderRadius:24, overflow:"hidden", flexShrink:0, position:"relative", zIndex:2,
         background: BAR_BG,
-        backdropFilter:"blur(40px) saturate(2)",
-        WebkitBackdropFilter:"blur(40px) saturate(2)",
+        backdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)",
+        WebkitBackdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)",
         border: BAR_BDR,
         boxShadow: BAR_SHAD,
         display:"flex", alignItems:"stretch", height:56,
@@ -3207,7 +3353,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:4,
             borderRight: DIVIDER}}>
             <span style={{fontSize:22, fontWeight:700, color:W, letterSpacing:"-0.03em"}}>{restLeft}</span>
-            <span style={{fontSize:10, letterSpacing:"0.16em", textTransform:"uppercase", color:D}}>sec</span>
+            <span style={{fontSize:11, letterSpacing:"0.16em", textTransform:"uppercase", color:D}}>sec</span>
           </div>
           <button onClick={() => { clearInterval(restRef.current); setFi(i=>Math.min(i+1,list.length-1)); setPhase("exercise"); }} style={{
             flex:1, background:"transparent", border:"none",
@@ -3234,6 +3380,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           <div style={{width:56}} />
         )}
       </div>
+      )}
     </div>
   );
 }
@@ -3586,6 +3733,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [showSkipOnly, setShowSkipOnly] = useState(false);
   const [resting, setResting] = useState(false);
   const [flowActive, setFlowActive] = useState(false);
+  const [sessionComplete, setSessionComplete] = useState(false);
   const [done, setDone] = useState(() => storageGet("axis_done", {}));
   const [skipped, setSkipped] = useState(() => storageGet("axis_skipped", {}));
   const [favs, setFavs] = useState(() => storageGet("axis_favs", {}));
@@ -3598,7 +3746,13 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return h.some(e => e.date === new Date().toDateString());
   });
 
-  useEffect(() => { const t = setInterval(() => setSessionSecs(s => s + 1), 1000); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    if (!flowActive) { setSessionComplete(false); return; }
+    if (sessionComplete) return;
+    setSessionSecs(0);
+    const t = setInterval(() => setSessionSecs(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [flowActive, sessionComplete]);
 
   // Paint gradient on body + apply circadian theme
   useEffect(() => {
@@ -3682,7 +3836,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       <style>{css}</style>
       <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate", transition:"background 2s ease"}} />
       <div className="app-body">
-      <div style={{padding:"52px 24px 0", width:"100%", boxSizing:"border-box"}}>
+      <div style={{padding:"calc(env(safe-area-inset-top, 0px) + 52px) 24px 0", width:"100%", boxSizing:"border-box"}}>
         <div style={{fontSize:"13px",letterSpacing:"0.26em",textTransform:"uppercase",color:"var(--text-tertiary)",marginBottom:8}}>AXIS</div>
         <div style={{fontSize:"30px",fontWeight:500,letterSpacing:"-0.02em",color:"var(--text-white)",marginBottom:36}}>Settings</div>
         <div style={{borderTop:"1px solid var(--border)",paddingTop:24,marginBottom:32}}>
@@ -3756,7 +3910,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   if (view === "mood") {
     const MOOD_PERIODS = [
       { p:"dawn",    label:"Dawn",    time:"5–11am",   desc:"Warm amber. Morning energy.",
-        icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="6"/></svg> },
+        icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16 A 8 8 0 0 1 20 16"/><line x1="0" y1="16" x2="24" y2="16"/></svg> },
       { p:"midday",  label:"Midday",  time:"11am–5pm", desc:"Cool mint. Crisp and focused.",
         icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg> },
       { p:"prime",   label:"Prime",   time:"5–10pm",   desc:"Deep blue. Winding down.",
@@ -3770,7 +3924,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         <style>{css}</style>
         <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate", transition:"background 2s ease"}} />
         <div className="app-body">
-          <div style={{padding:"52px 24px 0", width:"100%", boxSizing:"border-box"}}>
+          <div style={{padding:"calc(env(safe-area-inset-top, 0px) + 52px) 24px 0", width:"100%", boxSizing:"border-box"}}>
             <div style={{fontSize:"13px",letterSpacing:"0.26em",textTransform:"uppercase",color:"var(--text-tertiary)",marginBottom:8}}>AXIS</div>
             <div style={{fontSize:"30px",fontWeight:500,letterSpacing:"-0.02em",color:"var(--text-white)",marginBottom:6}}>Mood</div>
             <div style={{fontSize:"14px",color:"var(--text-secondary)",marginBottom:32,lineHeight:1.6}}>
@@ -3888,12 +4042,33 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             <div className="home-tagline">Listen to your body. Select your focus.</div>
           </div>
           <div className="track-cards-outer">
+            {history.length === 0 && (() => {
+              const startTrack = TRACKS.daily;
+              return (
+                <div className="track-group start-here-group" role="region" aria-label="Suggested first session">
+                  <div className="track-group-label start-here-label">Start here</div>
+                  <div className="track-cards">
+                    <div className="track-card start-here-card" onClick={() => beginTrack(startTrack.id)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); beginTrack(startTrack.id); } }} aria-label={`Start ${startTrack.label}, ${startTrack.duration}`}>
+                      <div className="track-card-left">
+                        <div className="track-card-name">{startTrack.label}</div>
+                        <div className="track-card-sub">{startTrack.subtitle}</div>
+                        <div className="track-card-purpose">{startTrack.purpose}</div>
+                      </div>
+                      <div className="track-card-right">
+                        <div className="track-card-dur">{startTrack.duration}</div>
+                        <button className="begin-btn" onClick={e => { e.stopPropagation(); beginTrack(startTrack.id); }} aria-label={`Begin ${startTrack.label} session`}>Begin</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             {groups.map(g => (
               <div className="track-group" key={g.label}>
                 <div className="track-group-label">{g.label}</div>
                 <div className="track-cards">
                   {g.ids.map(id => { const t = TRACKS[id]; return (
-                    <div className="track-card" key={t.id} onClick={() => beginTrack(t.id)}>
+                    <div className="track-card" key={t.id} onClick={() => beginTrack(t.id)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); beginTrack(t.id); } }} aria-label={`${t.label}, ${t.duration}. Begin session`}>
                       <div className="track-card-left">
                         <div className="track-card-name">{t.label}</div>
                         <div className="track-card-sub">{t.subtitle}</div>
@@ -3901,7 +4076,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
                       </div>
                       <div className="track-card-right">
                         <div className="track-card-dur">{t.duration}</div>
-                        <button className="begin-btn" onClick={e => { e.stopPropagation(); beginTrack(t.id); }}>Begin</button>
+                        <button className="begin-btn" onClick={e => { e.stopPropagation(); beginTrack(t.id); }} aria-label={`Begin ${t.label}`}>Begin</button>
                       </div>
                     </div>
                   );})}
@@ -3931,9 +4106,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             </svg>
           </div>
           <div style={{fontSize:"18px",fontWeight:400,color:"var(--text-white)",letterSpacing:"-0.02em",marginBottom:10}}>Ready for movement.</div>
-          <div style={{fontSize:"12px",color:"var(--eol-color)",letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:32,fontWeight:300}}>MOVE x MEND x MAINTAIN</div>
-          <button onClick={()=>setView("home")} style={{padding:"12px 28px",background:"var(--accent-dim)",border:"1px solid var(--accent)",color:"var(--accent)",fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,letterSpacing:"0.18em",textTransform:"uppercase",cursor:"pointer",borderRadius:24,transition:"all 0.2s"}}>
-            Choose a Track
+          <div style={{fontSize:"12px",color:"var(--eol-color)",letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:32,fontWeight:300}}>X MOVE X MEND X MAINTAIN X</div>
+          <button onClick={()=>setView("home")} style={{padding:"12px 28px",background:"var(--accent-dim)",border:"1px solid var(--accent)",color:"var(--accent)",fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,letterSpacing:"0.18em",textTransform:"uppercase",cursor:"pointer",borderRadius:24,transition:"all 0.2s"}} aria-label="Browse all tracks">
+            Browse all tracks
           </button>
         </div>
         <TabBar view={view} setView={setView} hasActiveSession={hasActiveSession} theme={theme} />
@@ -3950,13 +4125,15 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       <FlowOverlay
         theme={theme} activePeriod={activePeriod} activeAll={filteredAll} TOTAL={filteredAll.length}
         done={done} totalDone={totalDone} sessionSecs={sessionSecs}
-        onExit={() => setFlowActive(false)}
+        onExit={() => { setFlowActive(false); setSessionComplete(false); }}
         onToggle={toggle}
         onSkip={toggleSkip}
         formatTime={formatTime}
         trackLabel={TRACKS[track].label}
         trackDuration={TRACKS[track].duration}
         nightMode={nightMode}
+        streak={streak}
+        onSessionComplete={() => setSessionComplete(true)}
       />
     )}
     <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
@@ -4085,7 +4262,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
                   <span>Start Flow</span>
                 </div>
-                <div style={{fontSize:10, fontWeight:400, letterSpacing:"0.12em", opacity:0.65, marginTop:4}}>
+                <div style={{fontSize:11, fontWeight:400, letterSpacing:"0.12em", opacity:0.65, marginTop:4}}>
                   {activeAll.length} exercises · auto-timed
                 </div>
               </button>
