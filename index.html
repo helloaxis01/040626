@@ -264,14 +264,15 @@ const CIRCADIAN_THEMES = {
   // ── DAWN 5–11am — warm orange/amber, sunrise ──
   dawn: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 5% 20%, rgba(255,100,30,0.65) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 95% 80%, rgba(255,150,50,0.55) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(255,190,70,0.38) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(180,60,0,0.34) 0%, transparent 70%)",
+      // Large, round orbs that bleed off-screen like the original design — strong orange pops over deep navy
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 18%, rgba(255,135,55,0.80) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 60%, rgba(255,175,75,0.74) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(205,80,20,0.60) 0%, transparent 76%)",
       accent: "#FF8C35", accentDim: "rgba(255,140,53,0.25)", accentGlow: "rgba(255,140,53,0.55)",
       accentBtnText: "#1a0800",
-      bg: "radial-gradient(ellipse at 30% 60%, #2d1200 0%, #1a0c00 50%, #0f0700 100%)",
+      bg: MAIN_APP_BG.dark,
       textPrimary: "#FFF0E0",
-      tabBg: "rgba(15,7,0,0.88)",
+      tabBg: "rgba(7,9,18,0.94)",
     },
     light: {
       orb1: "radial-gradient(ellipse 120% 100% at 5% 20%, rgba(255,120,40,0.28) 0%, transparent 72%)",
@@ -286,19 +287,21 @@ const CIRCADIAN_THEMES = {
   // ── MIDDAY 11–5pm — mint/teal, crisp and clear ──
   midday: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 10% 15%, rgba(0,220,180,0.65) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 90% 85%, rgba(0,200,160,0.55) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(40,240,200,0.38) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(0,120,100,0.34) 0%, transparent 70%)",
+      // Teal orbs: big, round, bleeding off-screen over navy
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 18%, rgba(0,225,190,0.70) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 62%, rgba(0,210,170,0.64) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(0,140,110,0.55) 0%, transparent 76%)",
       accent: "#00E8C0", accentDim: "rgba(0,232,192,0.20)", accentGlow: "rgba(0,232,192,0.52)",
       accentBtnText: "#001f1a",
-      bg: "radial-gradient(ellipse at 50% 30%, #001a14 0%, #001008 50%, #000a05 100%)",
+      bg: MAIN_APP_BG.dark,
       textPrimary: "#D0FFF5",
       tabBg: "rgba(0,8,4,0.88)",
     },
     light: {
-      orb1: "radial-gradient(ellipse 120% 100% at 10% 15%, rgba(0,200,160,0.20) 0%, transparent 72%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 90% 85%, rgba(0,180,140,0.15) 0%, transparent 74%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(40,220,180,0.12) 0%, transparent 76%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(0,140,110,0.10) 0%, transparent 72%)",
+      // Brighter teal orbs over the light gradient
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 16%, rgba(0,210,175,0.32) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 58%, rgba(0,195,155,0.26) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 80% 80% at 50% 112%, rgba(0,150,125,0.22) 0%, transparent 76%)",
       accent: "#007A6A", accentDim: "rgba(0,122,106,0.16)", accentGlow: "rgba(0,122,106,0.34)",
       accentBtnText: "#ffffff",
       bg: "linear-gradient(160deg, #f0fffc 0%, #e0fff8 35%, #d0fff4 70%, #e8fff9 100%)",
@@ -308,19 +311,20 @@ const CIRCADIAN_THEMES = {
   // ── PRIME 5–10pm — cool blue, winding down ──
   prime: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 10% 25%, rgba(30,100,255,0.35) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 90% 80%, rgba(60,150,240,0.32) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 50% -10%, rgba(100,180,255,0.22) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(10,40,140,0.20) 0%, transparent 70%)",
+      // Blue orbs
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 22%, rgba(40,120,255,0.60) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 68%, rgba(70,160,255,0.56) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 75% 75% at 50% 118%, rgba(20,60,170,0.52) 0%, transparent 76%)",
       accent: "#4DA8FF", accentDim: "rgba(77,168,255,0.22)", accentGlow: "rgba(77,168,255,0.55)",
       accentBtnText: "#00102a",
-      bg: "radial-gradient(ellipse at 50% 40%, #001428 0%, #000e1e 50%, #000810 100%)",
+      bg: MAIN_APP_BG.dark,
       textPrimary: "#D8EEFF",
       tabBg: "rgba(0,6,14,0.88)",
     },
     light: {
-      orb1: "radial-gradient(ellipse 120% 100% at 10% 25%, rgba(30,110,220,0.24) 0%, transparent 72%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 90% 80%, rgba(60,160,230,0.19) 0%, transparent 74%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 50% -10%, rgba(100,190,255,0.15) 0%, transparent 76%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(30,80,180,0.12) 0%, transparent 72%)",
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 20%, rgba(40,120,230,0.30) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 64%, rgba(70,160,230,0.26) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 80% 80% at 50% 116%, rgba(40,90,200,0.22) 0%, transparent 76%)",
       accent: "#1060C0", accentDim: "rgba(16,96,192,0.17)", accentGlow: "rgba(16,96,192,0.38)",
       accentBtnText: "#ffffff",
       bg: "linear-gradient(160deg, #d8eeff 0%, #c0e0ff 35%, #a8d4ff 70%, #c8e8ff 100%)",
@@ -330,19 +334,20 @@ const CIRCADIAN_THEMES = {
   // ── REST 10–5am — deep purple/indigo, calm and dim ──
   rest: {
     dark: {
-      orb1: "radial-gradient(ellipse 120% 100% at 15% 25%, rgba(100,30,220,0.35) 0%, transparent 70%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 85% 80%, rgba(140,50,255,0.32) 0%, transparent 72%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(80,20,160,0.22) 0%, transparent 75%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(50,0,100,0.20) 0%, transparent 70%)",
+      // Purple orbs
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 24%, rgba(130,50,240,0.60) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 70%, rgba(170,80,255,0.56) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 75% 75% at 50% 120%, rgba(90,40,180,0.52) 0%, transparent 76%)",
       accent: "#A060FF", accentDim: "rgba(160,96,255,0.22)", accentGlow: "rgba(160,96,255,0.52)",
       accentBtnText: "#0a0020",
-      bg: "radial-gradient(ellipse at 50% 40%, #0a0018 0%, #060010 50%, #030008 100%)",
+      bg: MAIN_APP_BG.dark,
       textPrimary: "#E8D8FF",
       tabBg: "rgba(3,0,8,0.90)",
     },
     light: {
-      orb1: "radial-gradient(ellipse 120% 100% at 15% 25%, rgba(100,30,200,0.20) 0%, transparent 72%)",
-      orb2: "radial-gradient(ellipse 110% 120% at 85% 80%, rgba(130,50,230,0.16) 0%, transparent 74%)",
-      orb3: "radial-gradient(ellipse 90% 80% at 55% -10%, rgba(80,20,160,0.12) 0%, transparent 76%), radial-gradient(ellipse 100% 80% at 50% 110%, rgba(60,20,120,0.10) 0%, transparent 72%)",
+      orb1: "radial-gradient(ellipse 90% 90% at -5% 22%, rgba(120,40,220,0.28) 0%, transparent 72%)",
+      orb2: "radial-gradient(ellipse 90% 90% at 105% 68%, rgba(150,70,230,0.24) 0%, transparent 74%)",
+      orb3: "radial-gradient(ellipse 80% 80% at 50% 118%, rgba(90,40,180,0.20) 0%, transparent 76%)",
       accent: "#6030B0", accentDim: "rgba(96,48,176,0.18)", accentGlow: "rgba(96,48,176,0.38)",
       accentBtnText: "#ffffff",
       bg: "linear-gradient(160deg, #ece0ff 0%, #ddd0ff 35%, #cec0ff 70%, #e0d4ff 100%)",
