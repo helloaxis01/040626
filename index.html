@@ -223,7 +223,9 @@ const obLightVars = `
 
 // Main app backgrounds (dark/light) — onboarding uses these when in color mode so it matches the app
 const MAIN_APP_BG = {
-  dark: "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)",
+  // Dark: flipped so the richer navy weight now anchors the bottom,
+  // while the upper half stays a bit more open for color orbs to bloom into.
+  dark: "radial-gradient(ellipse at 50% 82%, #0f1f35 0%, #0a1525 45%, #080d18 100%)",
   light: "linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%)",
 };
 
@@ -1767,7 +1769,8 @@ const css = `
   .glass-bar { background: var(--tab-bg); backdrop-filter: blur(28px) saturate(1.4); -webkit-backdrop-filter: blur(28px) saturate(1.4); border: 1px solid var(--border); }
   /* ── LIQUID GLASS VARIABLES ── */
   [data-theme="dark"] {
-    --bg-gradient: radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%);
+    /* Match MAIN_APP_BG.dark: richer navy anchored lower so top has more room for color orbs */
+    --bg-gradient: radial-gradient(ellipse at 50% 82%, #0f1f35 0%, #0a1525 45%, #080d18 100%);
     --orb1: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99,179,237,0.18) 0%, transparent 70%);
     --orb2: radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.15) 0%, transparent 70%);
     --orb3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(251,191,36,0.10) 0%, transparent 70%);
