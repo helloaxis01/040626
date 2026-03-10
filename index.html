@@ -3085,6 +3085,12 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
   const completeCurrent = () => {
     beep(660, 0.4);
     onToggle(cur.id);
+    // Last exercise: always show Flow Completed (don't rely on totalDone — user may have skipped with Next)
+    if (fi >= list.length - 1) {
+      setPhase("closing");
+      if (onSessionComplete) onSessionComplete();
+      return;
+    }
     const nextTotal = totalDone + 1;
     if (nextTotal >= listTotal) {
       setPhase("closing");
