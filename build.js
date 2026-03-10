@@ -58,7 +58,7 @@ copyRecursive(path.join(root, 'Logo - Vector'), path.join(dist, 'Logo - Vector')
 const iconSvg = path.join(root, 'apple-touch-icon.svg');
 const iconPngRoot = path.join(root, 'apple-touch-icon.png');
 const iconPngDist = path.join(dist, 'apple-touch-icon.png');
-const iconVersion = 'v=4'; // bump to force iOS to re-fetch icon
+const iconVersion = 'v=5'; // bump to force iOS to re-fetch icon
 if (fs.existsSync(iconPngRoot)) {
   fs.copyFileSync(iconPngRoot, iconPngDist);
   builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, 'apple-touch-icon.png?' + iconVersion);
