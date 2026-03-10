@@ -57,11 +57,13 @@ function copyRecursive(src, dest) {
 copyRecursive(path.join(root, 'Logo - Vector'), path.join(dist, 'Logo - Vector'));
 const iconSvg = path.join(root, 'apple-touch-icon.svg');
 const iconPngRoot = path.join(root, 'apple-touch-icon.png');
-const iconPngDist = path.join(dist, 'apple-touch-icon.png');
-const iconVersion = 'v=6'; // bump to force iOS to re-fetch icon
+// Version in filename so iOS/browsers never use a cached old icon
+const iconFilename = 'apple-touch-icon-7.png';
+const iconPngDist = path.join(dist, iconFilename);
 if (fs.existsSync(iconPngRoot)) {
   fs.copyFileSync(iconPngRoot, iconPngDist);
-  builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, 'apple-touch-icon.png?' + iconVersion);
+  builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, iconFilename);
+  builtHtml = builtHtml.replace(/apple-touch-icon\.png[^"']*/g, iconFilename);
   fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
 } else if (fs.existsSync(iconSvg)) {
   fs.copyFileSync(iconSvg, path.join(dist, 'apple-touch-icon.svg'));
@@ -73,7 +75,8 @@ if (fs.existsSync(iconPngRoot)) {
     const pngData = resvg.render();
     const pngBuffer = pngData.asPng();
     fs.writeFileSync(iconPngDist, pngBuffer);
-    builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, 'apple-touch-icon.png?' + iconVersion);
+    builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, iconFilename);
+    builtHtml = builtHtml.replace(/apple-touch-icon\.png[^"']*/g, iconFilename);
     fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
   } catch (e) {
     console.warn('Could not generate PNG icon:', e.message);

@@ -11,7 +11,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!app\\.js$|apple-touch-icon\\.(png|svg)(\\?.*)?$|Logo).*)",
+      "source": "/((?!app\\.js$|apple-touch-icon[^.]*\\.(png|svg)$|Logo).*)",
       "destination": "/index.html"
     }
   ]
