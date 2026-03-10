@@ -768,6 +768,7 @@ function Onboarding({ theme, onComplete }) {
             <div className="ob-nav-bar">
               <button className="ob-nav-back" onClick={() => go(4)}>←</button>
               {dots(5)}
+              <button className="ob-nav-next" style={{ visibility: "hidden" }}>Next</button>
             </div>
           </div>}
 
@@ -1047,7 +1048,7 @@ const PRIME_SECTIONS = [
         { pos: "A", label: "Setup", focus: "SETUP", cue: "Sit sideways against the wall, then swing legs up. Hips as close to the wall as comfortable. Arms out at sides, palms up." },
         { pos: "B", label: "Hold & Breathe", focus: "RESTORE", cue: "Let gravity drain the legs. Close the eyes. Breathe naturally. This posture reverses venous pooling and calms the nervous system." },
       ]},
-      { id: 302, name: "Reclined Butterfly", start: "Lying on your back, soles of feet together.", sub: "Supine bound angle, hips open", type: "flow", seconds: 45, steps: [
+      { id: 302, name: "Reclined Butterfly", start: "Lying on your back, soles of feet together.", sub: "Supine bound angle, hips open", type: "flow", seconds: 90, steps: [
         { pos: "A", label: "Soles Together", focus: "SETUP", cue: "Lie on back. Bring the soles of your feet together and let knees fall wide. Place hands on belly or out at sides." },
         { pos: "B", label: "Gravity Hold", focus: "RELEASE", cue: "Let the inner thighs and groin soften completely. Do not push. Hold 60–90s." },
       ]},
@@ -2168,7 +2169,8 @@ const css = `
   .chev.op { transform:rotate(180deg); }
   .row-actions { display:flex; gap:4px; flex-shrink:0; align-self:center; }
   .ra-btn {
-    width:26px; height:26px; border-radius:8px; border:1px solid var(--glass-border);
+    min-width:30px; height:30px; border-radius:999px; border:1px solid var(--glass-border);
+    padding:0 10px;
     background:var(--glass-bg); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
     display:flex; align-items:center; justify-content:center; cursor:pointer;
     font-size:13px; font-weight:700; line-height:1; transition:all 0.15s; color:var(--text-dim);
@@ -2715,8 +2717,8 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
       {open && (
         <div className="panel" style={skipped ? { opacity: 0.45 } : {}}>
           {ex.start && (
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,padding:"8px 12px",borderRadius:10,background:"var(--accent-dim)",border:"1px solid var(--accent-glow)"}}>
-              <div style={{fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent-secondary)",fontWeight:700,flexShrink:0}}>Start</div>
+            <div style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:14,padding:"8px 12px",borderRadius:10,background:"var(--accent-dim)",border:"1px solid var(--accent-glow)"}}>
+              <div style={{fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent-secondary)",fontWeight:700,flexShrink:0,marginTop:2}}>Start</div>
               <div style={{fontSize:13,color:"var(--text-secondary)",lineHeight:1.5}}>{ex.start}</div>
             </div>
           )}
@@ -3123,7 +3125,13 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
 
   const handleNext = () => {
     beep(440, 0.2);
-    if (fi < list.length - 1) { setFi(i => i + 1); setPhase("exercise"); }
+    if (fi < list.length - 1) {
+      setFi(i => i + 1);
+      setPhase("exercise");
+    } else {
+      // Last exercise — treat Next as completing the flow
+      completeCurrent();
+    }
   };
 
   const handlePrev = () => {
@@ -3195,12 +3203,15 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
           padding:"48px", textAlign:"center", position:"relative", zIndex:10,
         }}>
-          <div style={{fontSize:28, fontWeight:500, letterSpacing:"-0.02em", lineHeight:1.35, color:W, marginBottom:12, maxWidth:300,
+          <div style={{fontSize:24, fontWeight:600, letterSpacing:"0.20em", textTransform:"uppercase", lineHeight:1.4, color:W, marginBottom:16, maxWidth:320,
             textShadow: NAME_SHAD}}>
-            Session complete.
+            FLOW COMPLETED
           </div>
-          <div style={{fontSize:15, color:S, marginBottom:48, maxWidth:280, lineHeight:1.5}}>
-            Give yourself a moment before you move on.
+          <div style={{fontSize:15, color:S, marginBottom:24, maxWidth:300, lineHeight:1.6}}>
+            Take a few moments to breathe or rest.
+          </div>
+          <div style={{fontSize:12, color:D, marginBottom:40, maxWidth:280, lineHeight:1.6}}>
+            Click Exit to return to the main menu.
           </div>
           <button onClick={onExit} style={{
             padding:"16px 48px", borderRadius:28, cursor:"pointer",
@@ -3208,7 +3219,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
             fontFamily:"'Barlow',sans-serif", fontSize:13, fontWeight:700,
             letterSpacing:"0.18em", textTransform:"uppercase",
             boxShadow:`0 0 32px ${ct.accentGlow}`,
-          }}>Done</button>
+          }}>Exit</button>
         </div>
       )}
 
@@ -3343,7 +3354,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
         </div>
       )}
 
-      {/* ── LIQUID GLASS PILL BAR (Exit, Pause/Done, Next, Skip, etc.) ── */}
+      {/* ── LIQUID GLASS PILL BAR (Exit, Pause, Next, Skip Rest) ── */}
       {phase !== "closing" && phase !== "milestone" && (
       <div style={{
         margin:"0 16px", marginBottom:`max(28px, env(safe-area-inset-bottom, 28px))`,
@@ -3355,16 +3366,23 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
         boxShadow: BAR_SHAD,
         display:"flex", alignItems:"stretch", height:56,
       }}>
-        {/* EXERCISE: Pause only (no Done — let timer run; Next/Skip are the way out) */}
-        {phase === "exercise" && (cur?.type === "time" || cur?.type === "flow") && (
-          <button onClick={() => setPaused(p => !p)} style={{
-            flex:1, background: paused ? `${A}22` : "transparent", border:"none",
-            borderRight: DIVIDER,
-            color: paused ? A : S,
-            fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
-            letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
-            transition:"all 0.2s",
-          }}>{paused ? "Resume" : "Pause"}</button>
+        {/* EXERCISE: Pause (left) + Next/Done (right) inside the bar — shown for all exercise types */}
+        {phase === "exercise" && cur && (
+          <>
+            <button onClick={() => setPaused(p => !p)} style={{
+              flex:1, background: paused ? `${A}22` : "transparent", border:"none",
+              borderRight: DIVIDER,
+              color: paused ? A : S,
+              fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
+              letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
+              transition:"all 0.2s",
+            }}>{paused ? "Resume" : "Pause"}</button>
+            <button onClick={handleNext} style={{
+              width:120, background:"transparent", border:"none",
+              color:W, fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
+              letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
+            }}>{fi === list.length - 1 ? "Done" : "Next"}</button>
+          </>
         )}
 
         {/* GET READY: Start Now */}
@@ -3394,26 +3412,6 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
 
         {/* INTRO spacer */}
         {phase === "intro" && <div style={{flex:1}} />}
-
-        {/* Next + Skip (exercise only) — own pills */}
-        {phase === "exercise" && (
-          <>
-            <div style={{flex:1}} />
-            <button onClick={handleNext} style={{
-              padding:"0 24px", height:40, alignSelf:"center", borderRadius:20,
-              background:"var(--glass-bg)", border:`1px solid ${A}44`,
-              color:W, fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
-              letterSpacing:"0.14em", textTransform:"uppercase", cursor:"pointer",
-              marginRight:8,
-            }}>Next</button>
-            <button onClick={handleSkip} style={{
-              padding:"0 24px", height:40, alignSelf:"center", borderRadius:20,
-              background:"transparent", border:"1px solid var(--glass-border)",
-              color:S, fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:600,
-              letterSpacing:"0.14em", textTransform:"uppercase", cursor:"pointer",
-            }}>Skip</button>
-          </>
-        )}
 
         {/* Get ready / rest / intro right spacer */}
         {(phase === "getready" || phase === "rest" || phase === "intro") && (
