@@ -55,32 +55,16 @@ function copyRecursive(src, dest) {
 }
 
 copyRecursive(path.join(root, 'Logo - Vector'), path.join(dist, 'Logo - Vector'));
-const iconSvg = path.join(root, 'apple-touch-icon.svg');
+// Single app icon only: your PNG → axis-icon.png (no old filenames, no SVG fallback)
 const iconPngRoot = path.join(root, 'apple-touch-icon.png');
-// Version in filename so iOS/browsers never use a cached old icon
-const iconFilename = 'apple-touch-icon-7.png';
-const iconPngDist = path.join(dist, iconFilename);
+const iconPngDist = path.join(dist, 'axis-icon.png');
 if (fs.existsSync(iconPngRoot)) {
   fs.copyFileSync(iconPngRoot, iconPngDist);
-  builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, iconFilename);
-  builtHtml = builtHtml.replace(/apple-touch-icon\.png[^"']*/g, iconFilename);
+  // One icon link only; strip any other apple-touch-icon links
+  builtHtml = builtHtml.replace(/<link rel="apple-touch-icon"[^>]*>\s*/gi, '');
+  const iconLink = '<link rel="apple-touch-icon" href="/axis-icon.png" sizes="180x180" />';
+  builtHtml = builtHtml.replace(/(<meta name="apple-mobile-web-app-status-bar-style"[^>]*>\s*)/i, '$1\n  ' + iconLink + '\n  ');
   fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
-} else if (fs.existsSync(iconSvg)) {
-  fs.copyFileSync(iconSvg, path.join(dist, 'apple-touch-icon.svg'));
-  try {
-    const svgBuf = fs.readFileSync(iconSvg);
-    const resvg = new Resvg(svgBuf, {
-      fitTo: { mode: 'width', value: 180 },
-    });
-    const pngData = resvg.render();
-    const pngBuffer = pngData.asPng();
-    fs.writeFileSync(iconPngDist, pngBuffer);
-    builtHtml = builtHtml.replace(/apple-touch-icon\.svg/g, iconFilename);
-    builtHtml = builtHtml.replace(/apple-touch-icon\.png[^"']*/g, iconFilename);
-    fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
-  } catch (e) {
-    console.warn('Could not generate PNG icon:', e.message);
-  }
 }
 finish();
 
