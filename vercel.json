@@ -1,10 +1,18 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    }
+  ],
   "rewrites": [
-    { "source": "/app.js", "destination": "/app.js" },
-    { "source": "/apple-touch-icon.png", "destination": "/apple-touch-icon.png" },
-    { "source": "/apple-touch-icon.svg", "destination": "/apple-touch-icon.svg" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!app\\.js$|apple-touch-icon\\.(png|svg)(\\?.*)?$|Logo).*)",
+      "destination": "/index.html"
+    }
   ]
 }
