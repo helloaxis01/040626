@@ -36,7 +36,7 @@
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load Babel. Check your connection and try again.')"></script>
   <script type="text/babel" data-presets="react">
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useLayoutEffect, useRef } = React;
 
 // ─────────────────────────────────────────────────────────────
 //  AXIS — COMPLETE APP (Onboarding → Home → Sessions)
@@ -70,14 +70,14 @@ function AxisIcon({ size = 72, color = "#F0EEEB" }) {
 // ── ONBOARDING ────────────────────────────────────────────────
 const obCss = `
   @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
   html,body,#root{width:100%;margin:0;padding:0;}
   .ob-wrap {
     min-height:100%; width:100%; display:flex; flex-direction:column; position:relative; overflow:clip;
     background:var(--ob-page-bg); font-family:'Barlow',sans-serif; font-weight:300;
     box-sizing:border-box;
   }
-  /* orbs — match main app orbFloat + sheen when in color mode */
-  @keyframes orbFloat { 0%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.06) translate(12px,-10px)} 100%{transform:scale(0.96) translate(-8px,14px)} }
+  /* orbs — static layer + sheen when in color mode */
   .ob-orbs-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
   .ob-orbs-layer::after { content:''; position:absolute; inset:0; pointer-events:none; background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%); }
   .ob-label { display:none; }
@@ -377,7 +377,7 @@ function applyCircadianTheme(isDark, period) {
       ${t.accentBtnText ? `--accent-btn-text: ${t.accentBtnText} !important;` : ""}
       ${t.tabBg ? `--tab-bg: ${t.tabBg} !important;` : ""}
     }
-    .app-orbs { transition: background 2s ease !important; }
+    .app-orbs { transition: background 0.4s ease !important; }
   `;
   return { bg: t.bg };
 }
@@ -445,7 +445,6 @@ function Onboarding({ theme, onComplete }) {
       <style>{obCss}{`:root,body,[data-ob]{${vars}}.ob-wrap{${vars}}`}</style>
       <div className="ob-orbs-layer" style={{
         background:`${t.orb1}, ${t.orb2}, ${t.orb3}`,
-        animation:"orbFloat 24s cubic-bezier(0.37,0,0.63,1) infinite alternate",
         transition:"background 0.6s ease",
       }} />
       {hasChosenMood && !colorRevealed && (
@@ -465,7 +464,7 @@ function Onboarding({ theme, onComplete }) {
             position:"fixed", inset:0, pointerEvents:"none", zIndex:0.5,
             background: `${colorTheme.orb1}, ${colorTheme.orb2}, ${colorTheme.orb3}`,
             opacity: 0,
-            animation: "obColorFadeIn 2.5s ease-out forwards, orbFloat 24s cubic-bezier(0.37,0,0.63,1) infinite alternate",
+            animation: "obColorFadeIn 2.5s ease-out forwards",
           }}
         />
       )}
@@ -1619,22 +1618,22 @@ const KNEE_SECTIONS = [
 ];
 
 const TRACKS = {
-  daily:       { id: "daily",       label: "Daily Feel Good",      subtitle: "Spine · Core · Chain", purpose: "Spine, core, and posterior chain. The foundation session.",                          sections: DAILY_SECTIONS,    duration: "~25 min" },
-  restorative: { id: "restorative", label: "Full Reset", subtitle: "Flow · Circulation · Recovery",         purpose: "Gentle continuous movement for circulation, joint lubrication, and recovery.",      sections: RESTORATIVE_SECTIONS, duration: "~15 min" },
-  morning:     { id: "morning",     label: "Morning Refresh",      subtitle: "Gentle · Spinal · Mobilization",           purpose: "Seven movements to wake the spine before you look at your phone.",                  sections: MORNING_SECTIONS,  duration: "~8 min"  },
-  prime:       { id: "prime",     label: "Better Sleep Stretch",    subtitle: "Restore · Decompress · Downtime",        purpose: "Lower cortisol, decompress the spine, prepare for sleep.",                          sections: PRIME_SECTIONS,  duration: "~12 min" },
-  desk:        { id: "desk",        label: "The Desk Break",          subtitle: "Posture · Reset · 5 min",                purpose: "Six movements to undo an hour of sitting. Stand up. Do it now.",                   sections: DESK_SECTIONS,     duration: "~5 min"  },
-  screen:      { id: "screen",      label: "Digital Detox",      subtitle: "Neck · Traps · Thoracic",             purpose: "Undo the forward pull of screen time. Seven targeted releases for the neck and shoulder girdle.", sections: SCREEN_SECTIONS, duration: "~12 min" },
-  hip:         { id: "hip",         label: "Happy Hips",         subtitle: "Flexors · Rotators · Release",        purpose: "Open the hips, free the lower back, restore the range that sitting steals.",        sections: HIP_SECTIONS,      duration: "~18 min" },
-  back:        { id: "back",        label: "Lower Back Soother",     subtitle: "Decompress · Release · Restore",        purpose: "For days when the lower back needs care, not challenge. Gentle traction and release.", sections: BACK_SECTIONS,     duration: "~15 min" },
-  steady:      { id: "steady",      label: "Stay Steady",            subtitle: "Balance · Proprioception · Control",    purpose: "Train the systems that prevent falls. Simple movements that are deceptively hard to do well.", sections: STEADY_SECTIONS,   duration: "~15 min" },
-  freely:      { id: "freely",      label: "Move Freely",            subtitle: "CARS · Synovial · Joints",   purpose: "Controlled Articular Rotations and mobility work for every major joint. The WD-40 session.", sections: FREELY_SECTIONS,   duration: "~20 min" },
-  transit:     { id: "transit",     label: "In-Transit",           subtitle: "Seated · Circulation · Calm",           purpose: "Four exercises designed for your seat. Keep circulation moving and the nervous system calm during any long journey.",        sections: TRANSIT_SECTIONS,  duration: "~8 min"  },
-  travel:      { id: "travel",      label: "Post-Arrival Reset",    subtitle: "Travel · Decompress · Reset",    purpose: "Six movements to undo the posture of travel. Do these as soon as you arrive.",                                           sections: [{label:"Post-Arrival",tag:"PA",purpose:"Six movements to undo the posture of travel. Do these as soon as you reach your hotel or home.",exercises:[{id:1104,name:"Standing Psoas Release",start:"Standing, about to step into a shallow lunge.",sub:"Hip flexors shortened during travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Shallow Lunge",focus:"SETUP",cue:"Step forward into a shallow lunge. Back knee raised or lowered. Torso upright, feet forward."},{pos:"B",label:"Pelvic Tuck & Lean",focus:"STRETCH",cue:"Tuck the pelvis slightly, lean torso toward the front leg. Feel the stretch at the front of the back hip — this is the psoas."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"Hold 30–45 seconds each side. With each exhale, allow the hip to sink further. Switch sides."}]},{id:1105,name:"Wall Slides (W to Y)",start:"Standing with your back flat against a wall.",sub:"Activates lower trapezius — fixes luggage shoulder",type:"reps",reps:"10 slow reps",steps:[{pos:"A",label:"Wall Contact",focus:"SETUP",cue:"Head, upper back, and glutes touching the wall. Arms in a W shape — elbows bent, backs of hands against wall."},{pos:"B",label:"Slide to Y",focus:"ACTIVATE",cue:"Keep backs of hands and elbows on the wall and slowly slide arms up to a Y overhead. Do not let contact break."},{pos:"C",label:"Slow Return",focus:"CONTROL",cue:"Lower to W in 3 seconds. Do not shrug. 10 reps. This reverses upper trap dominance from carrying luggage."}]},{id:1106,name:"Open Book Stretch",start:"Lying on your side, knees stacked at 90°.",sub:"Restores thoracic rotation locked after travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Side-Lying Setup",focus:"SETUP",cue:"Lie on your side, hips and knees at 90°, knees stacked. Both arms extended forward at shoulder height."},{pos:"B",label:"Open the Top Arm",focus:"ROTATE",cue:"Rotate the top arm up, back, and toward the floor behind you — like opening a book. Let the chest follow."},{pos:"C",label:"Hold & Return",focus:"RELEASE",cue:"Hold 3–5 breaths. Let gravity do the work. Return slowly. 5 reps each side."}]},{id:1107,name:"Physiological Sigh",start:"Seated or lying down.",sub:"Rapidly offloads CO₂ — signals arrival to the brain",type:"time",seconds:90,steps:[{pos:"A",label:"Relax Completely",focus:"SETUP",cue:"Sit or lie comfortably. Body heavy, eyes closed."},{pos:"B",label:"Double Inhale",focus:"CO2 OFFLOAD",cue:"Breathe in to 80% capacity, then sniff in a second short inhale to fully inflate. This pops collapsed air sacs."},{pos:"C",label:"Long Exhale",focus:"DOWNREGULATE",cue:"Long slow exhale through the mouth — twice the inhale length. 3–5 rounds. Each cycle measurably reduces arousal."}]},{id:1108,name:"Doorway Pec Stretch",start:"Standing in a doorway, forearms on the frame.",sub:"Counteracts shoulder rotation from carrying bags",type:"flow",seconds:60,steps:[{pos:"A",label:"Doorway Setup",focus:"SETUP",cue:"Forearms on door frame at 90°, elbows at shoulder height. Step one foot forward."},{pos:"B",label:"Lean Through",focus:"STRETCH",cue:"Shift weight forward gently. Feel the stretch across the chest and front shoulders."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"30–45 seconds. Exhale into the stretch. Do not shrug. Switch foot halfway."}]},{id:1109,name:"Glute Bridge",start:"Lying on your back, knees bent, feet flat.",sub:"Re-engages the posterior chain after hours of sitting",type:"reps",reps:"12–15 reps",steps:[{pos:"A",label:"Supine Setup",focus:"SETUP",cue:"Lie on back. Feet flat, hip-width, heels 6 inches from glutes."},{pos:"B",label:"Drive & Lift",focus:"ENGAGE",cue:"Press through heels, lift hips to a straight line — shoulders, hips, knees. Squeeze glutes at top. Hold 2s."},{pos:"C",label:"Lower Slowly",focus:"CONTROL",cue:"Lower in 3 seconds. Do not crash the hips. Controlled descent rebuilds what sitting disengages."}]}]}],  duration: "~15 min" },
-  anxiety:     { id: "anxiety",    label: "Calm Circuit",          subtitle: "Breathe · Ground · Vagal",         purpose: "Evidence-based techniques that directly shift the nervous system from fight-or-flight to rest and digest.",       sections: ANXIETY_SECTIONS,  duration: "~15 min" },
-  stress:      { id: "stress",     label: "Tension Release",       subtitle: "Discharge · Release · Downshift",        purpose: "Complete the stress cycle the body started. Move the cortisol through. Then downshift.",                        sections: STRESS_SECTIONS,   duration: "~18 min" },
-  feet:        { id: "feet",        label: "Feet First",             subtitle: "Plantar · Release · Load",      purpose: "PT-backed protocol for plantar fasciitis and foot pain. Release the tissue, wake the muscles, load the chain.", sections: FEET_SECTIONS,     duration: "~18 min" },
-  knee:        { id: "knee",        label: "Knee Resilience",       subtitle: "Strengthen · Lubricate · Support", purpose: "Bulletproof the joint: strengthen the muscles that support it and use low-load movements to lubricate and offload pressure. Motion is lotion.", sections: KNEE_SECTIONS,     duration: "~18 min" },
+  daily:       { id: "daily",       label: "The Baseline Protocol", subtitle: "Spine · Core · Chain", purpose: "Spine, core, and posterior chain. The foundation session.",                          sections: DAILY_SECTIONS,    duration: "25 min" },
+  restorative: { id: "restorative", label: "Full Reset", subtitle: "Flow · Circulation · Recovery",         purpose: "Gentle continuous movement for circulation, joint lubrication, and recovery.",      sections: RESTORATIVE_SECTIONS, duration: "15 min" },
+  morning:     { id: "morning",     label: "Morning Refresh",      subtitle: "Gentle · Spinal · Mobilization",           purpose: "Seven movements to wake the spine before you look at your phone.",                  sections: MORNING_SECTIONS,  duration: "8 min"  },
+  prime:       { id: "prime",     label: "Better Sleep Stretch",    subtitle: "Restore · Decompress · Downtime",        purpose: "Lower cortisol, decompress the spine, prepare for sleep.",                          sections: PRIME_SECTIONS,  duration: "12 min" },
+  desk:        { id: "desk",        label: "The Desk Break",          subtitle: "Posture · Reset · 5 min",                purpose: "Six movements to undo an hour of sitting. Stand up. Do it now.",                   sections: DESK_SECTIONS,     duration: "5 min"  },
+  screen:      { id: "screen",      label: "Digital Detox",      subtitle: "Neck · Traps · Thoracic",             purpose: "Undo the forward pull of screen time. Seven targeted releases for the neck and shoulder girdle.", sections: SCREEN_SECTIONS, duration: "12 min" },
+  hip:         { id: "hip",         label: "Happy Hips",         subtitle: "Flexors · Rotators · Release",        purpose: "Open the hips, free the lower back, restore the range that sitting steals.",        sections: HIP_SECTIONS,      duration: "18 min" },
+  back:        { id: "back",        label: "Lower Back Soother",     subtitle: "Decompress · Release · Restore",        purpose: "For days when the lower back needs care, not challenge. Gentle traction and release.", sections: BACK_SECTIONS,     duration: "15 min" },
+  steady:      { id: "steady",      label: "Stay Steady",            subtitle: "Balance · Proprioception · Control",    purpose: "Train the systems that prevent falls. Simple movements that are deceptively hard to do well.", sections: STEADY_SECTIONS,   duration: "15 min" },
+  freely:      { id: "freely",      label: "Move Freely",            subtitle: "CARS · Synovial · Joints",   purpose: "Controlled Articular Rotations and mobility work for every major joint. The WD-40 session.", sections: FREELY_SECTIONS,   duration: "20 min" },
+  transit:     { id: "transit",     label: "In-Transit",           subtitle: "Seated · Circulation · Calm",           purpose: "Four exercises designed for your seat. Keep circulation moving and the nervous system calm during any long journey.",        sections: TRANSIT_SECTIONS,  duration: "8 min"  },
+  travel:      { id: "travel",      label: "Post-Arrival Reset",    subtitle: "Travel · Decompress · Reset",    purpose: "Six movements to undo the posture of travel. Do these as soon as you arrive.",                                           sections: [{label:"Post-Arrival",tag:"PA",purpose:"Six movements to undo the posture of travel. Do these as soon as you reach your hotel or home.",exercises:[{id:1104,name:"Standing Psoas Release",start:"Standing, about to step into a shallow lunge.",sub:"Hip flexors shortened during travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Shallow Lunge",focus:"SETUP",cue:"Step forward into a shallow lunge. Back knee raised or lowered. Torso upright, feet forward."},{pos:"B",label:"Pelvic Tuck & Lean",focus:"STRETCH",cue:"Tuck the pelvis slightly, lean torso toward the front leg. Feel the stretch at the front of the back hip — this is the psoas."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"Hold 30–45 seconds each side. With each exhale, allow the hip to sink further. Switch sides."}]},{id:1105,name:"Wall Slides (W to Y)",start:"Standing with your back flat against a wall.",sub:"Activates lower trapezius — fixes luggage shoulder",type:"reps",reps:"10 slow reps",steps:[{pos:"A",label:"Wall Contact",focus:"SETUP",cue:"Head, upper back, and glutes touching the wall. Arms in a W shape — elbows bent, backs of hands against wall."},{pos:"B",label:"Slide to Y",focus:"ACTIVATE",cue:"Keep backs of hands and elbows on the wall and slowly slide arms up to a Y overhead. Do not let contact break."},{pos:"C",label:"Slow Return",focus:"CONTROL",cue:"Lower to W in 3 seconds. Do not shrug. 10 reps. This reverses upper trap dominance from carrying luggage."}]},{id:1106,name:"Open Book Stretch",start:"Lying on your side, knees stacked at 90°.",sub:"Restores thoracic rotation locked after travel",type:"flow",seconds:60,steps:[{pos:"A",label:"Side-Lying Setup",focus:"SETUP",cue:"Lie on your side, hips and knees at 90°, knees stacked. Both arms extended forward at shoulder height."},{pos:"B",label:"Open the Top Arm",focus:"ROTATE",cue:"Rotate the top arm up, back, and toward the floor behind you — like opening a book. Let the chest follow."},{pos:"C",label:"Hold & Return",focus:"RELEASE",cue:"Hold 3–5 breaths. Let gravity do the work. Return slowly. 5 reps each side."}]},{id:1107,name:"Physiological Sigh",start:"Seated or lying down.",sub:"Rapidly offloads CO₂ — signals arrival to the brain",type:"time",seconds:90,steps:[{pos:"A",label:"Relax Completely",focus:"SETUP",cue:"Sit or lie comfortably. Body heavy, eyes closed."},{pos:"B",label:"Double Inhale",focus:"CO2 OFFLOAD",cue:"Breathe in to 80% capacity, then sniff in a second short inhale to fully inflate. This pops collapsed air sacs."},{pos:"C",label:"Long Exhale",focus:"DOWNREGULATE",cue:"Long slow exhale through the mouth — twice the inhale length. 3–5 rounds. Each cycle measurably reduces arousal."}]},{id:1108,name:"Doorway Pec Stretch",start:"Standing in a doorway, forearms on the frame.",sub:"Counteracts shoulder rotation from carrying bags",type:"flow",seconds:60,steps:[{pos:"A",label:"Doorway Setup",focus:"SETUP",cue:"Forearms on door frame at 90°, elbows at shoulder height. Step one foot forward."},{pos:"B",label:"Lean Through",focus:"STRETCH",cue:"Shift weight forward gently. Feel the stretch across the chest and front shoulders."},{pos:"C",label:"Hold & Breathe",focus:"RELEASE",cue:"30–45 seconds. Exhale into the stretch. Do not shrug. Switch foot halfway."}]},{id:1109,name:"Glute Bridge",start:"Lying on your back, knees bent, feet flat.",sub:"Re-engages the posterior chain after hours of sitting",type:"reps",reps:"12–15 reps",steps:[{pos:"A",label:"Supine Setup",focus:"SETUP",cue:"Lie on back. Feet flat, hip-width, heels 6 inches from glutes."},{pos:"B",label:"Drive & Lift",focus:"ENGAGE",cue:"Press through heels, lift hips to a straight line — shoulders, hips, knees. Squeeze glutes at top. Hold 2s."},{pos:"C",label:"Lower Slowly",focus:"CONTROL",cue:"Lower in 3 seconds. Do not crash the hips. Controlled descent rebuilds what sitting disengages."}]}]}],  duration: "15 min" },
+  anxiety:     { id: "anxiety",    label: "Calm Circuit",          subtitle: "Breathe · Ground · Vagal",         purpose: "Evidence-based techniques that directly shift the nervous system from fight-or-flight to rest and digest.",       sections: ANXIETY_SECTIONS,  duration: "15 min" },
+  stress:      { id: "stress",     label: "Tension Release",       subtitle: "Discharge · Release · Downshift",        purpose: "Complete the stress cycle the body started. Move the cortisol through. Then downshift.",                        sections: STRESS_SECTIONS,   duration: "18 min" },
+  feet:        { id: "feet",        label: "Feet First",             subtitle: "Plantar · Release · Load",      purpose: "PT-backed protocol for plantar fasciitis and foot pain. Release the tissue, wake the muscles, load the chain.", sections: FEET_SECTIONS,     duration: "18 min" },
+  knee:        { id: "knee",        label: "Knee Resilience",       subtitle: "Strengthen · Lubricate · Support", purpose: "Bulletproof the joint: strengthen the muscles that support it and use low-load movements to lubricate and offload pressure. Motion is lotion.", sections: KNEE_SECTIONS,     duration: "18 min" },
 };
 
 
@@ -1742,6 +1741,13 @@ function storageSet(key, val) {
 // ─────────────────────────────────────────────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  @font-face {
+    font-family: 'DSEG7';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Modern-MINI/DSEG7ModernMini-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
   html, body, #root { width:100%; max-width:100vw; min-height:100%; min-height:100dvh; height:100dvh; margin:0; padding:0; box-sizing:border-box; background:#080d18; overflow-x:hidden; -webkit-text-size-adjust:100%; }
   * { box-sizing:border-box; margin:0; padding:0; }
   ::-webkit-scrollbar { width:0px; } * { scrollbar-width:none; }
@@ -1875,6 +1881,12 @@ const css = `
   [data-theme="light"] .begin-btn:hover {
     box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
   }
+  [data-theme="light"] .session-browse-btn {
+    box-shadow: 0 2px 12px var(--accent-glow), 0 4px 20px rgba(42,95,143,0.18);
+  }
+  [data-theme="light"] .session-browse-btn:hover {
+    box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
+  }
   /* Light mode: breathing timer rings more visible */
   [data-theme="light"] .timer-breathe-guide-ring circle {
     stroke: rgba(15,30,46,0.28);
@@ -1969,6 +1981,7 @@ const css = `
     overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
     background: var(--bg-gradient);
+    background-color: var(--bg-fallback, #0a1525);
     color:var(--text-primary);
     font-family:'Barlow',sans-serif;
     font-weight:300;
@@ -1981,11 +1994,6 @@ const css = `
   .app-orbs::after {
     content:''; position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%);
-  }
-  @keyframes orbFloat {
-    0%   { transform:scale(1) translate(0,0); }
-    50%  { transform:scale(1.06) translate(12px,-10px); }
-    100% { transform:scale(0.96) translate(-8px,14px); }
   }
   @keyframes flowFadeIn {
     from { opacity:0; transform:scale(0.92); }
@@ -2099,7 +2107,7 @@ const css = `
   }
 
   /* ── CONTENT ── */
-  .content { padding:0 20px 100px; max-width:100%; position:relative; z-index:1; }
+  .content { padding:0 20px 24px; max-width:100%; position:relative; z-index:1; }
   .sg {
     margin-top:32px;
     background:var(--glass-bg);
@@ -2138,6 +2146,14 @@ const css = `
     margin:0 -8px 8px;
     backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     box-shadow:0 4px 20px rgba(60,80,150,0.10), inset 0 -1px 0 var(--glass-specular);
+  }
+  [data-theme="dark"] .panel {
+    background:rgba(0,0,0,0.32);
+    box-shadow:0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  [data-theme="light"] .panel {
+    background:rgba(0,0,0,0.06);
+    box-shadow:0 4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
   }
   .reps-row { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:8px; border-top:1px solid var(--border); padding-top:14px; flex-wrap:nowrap; }
   .reps-left { display:flex; flex-direction:column; flex:1; min-width:0; }
@@ -2302,14 +2318,13 @@ const css = `
     border-top:1px solid var(--border);
     display:flex; flex-direction:column; gap:14px;
   }
-  .timer-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+  .timer-top { display:flex; align-items:flex-start; justify-content:flex-start; gap:8px; }
   .timer-val {
-    font-size:60px; font-weight:600; letter-spacing:-0.04em;
+    font-size:60px; font-weight:400; letter-spacing:0.02em;
     color:var(--text-white); line-height:1;
-  }
-  .timer-unit {
-    font-size:12px; letter-spacing:0.16em; text-transform:uppercase;
-    color:var(--text-secondary); font-weight:500;
+    font-family:'DSEG7', 'Share Tech Mono', 'Courier New', monospace;
+    font-variant-numeric:tabular-nums;
+    text-shadow:0 0 0.4px currentColor;
   }
   .timer-next { text-align:right; }
   .timer-next { text-align:right; }
@@ -2578,6 +2593,11 @@ const css = `
     box-shadow:0 2px 12px var(--accent-glow);
   }
   .begin-btn:hover { opacity:0.88; transform:scale(1.03); }
+  .session-browse-btn {
+    background: var(--accent) !important; border: none !important; color: var(--accent-btn-text) !important;
+    box-shadow: 0 2px 12px var(--accent-glow); transition: all 0.2s;
+  }
+  .session-browse-btn:hover { opacity: 0.88; transform: scale(1.03); }
 
   /* ── THEME TOGGLE ── */
   .theme-toggle {
@@ -2603,7 +2623,6 @@ const css = `
 
   /* ── ACCESSIBILITY: reduced motion ── */
   @media (prefers-reduced-motion: reduce) {
-    .app-orbs { animation: none !important; }
     .tab-live-dot { animation: none !important; }
     .track-card, .glass-card, .tab-btn, .begin-btn { transition-duration: 0.08s; }
   }
@@ -2621,24 +2640,12 @@ function Timer({ seconds, onDone, nextName }) {
     else { clearInterval(ref.current); if (left === 0 && running) { setRunning(false); onDone?.(); } }
     return () => clearInterval(ref.current);
   }, [running, left]);
-  const pct = (seconds - left) / seconds;
   const label = running ? "Pause" : left === seconds ? "Start" : "Resume";
+  const display = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, "0")}`;
   return (
     <div className="timer-wrap">
       <div className="timer-top">
-        <div style={{display:"flex",alignItems:"baseline",gap:8}}>
-          <div className="timer-val">{left}</div>
-          <div className="timer-unit">sec</div>
-        </div>
-        {nextName && (
-          <div className="timer-next">
-            <div className="timer-next-lbl">Next up</div>
-            <div className="timer-next-name">{nextName}</div>
-          </div>
-        )}
-      </div>
-      <div className="timer-bar-track">
-        <div className="timer-bar-fill" style={{ width: `${pct * 100}%` }} />
+        <div className="timer-val">{display}</div>
       </div>
       <div className="timer-btns">
         <button className="tb" onClick={() => setRunning(r => !r)}>{label}</button>
@@ -2663,7 +2670,10 @@ function RestTimer({ onDone }) {
   );
 }
 
-function Steps({ steps, small }) {
+const FOCUS_SPELL = { EXT: "Extension", FLEX: "Flexion", SETUP: "Setup", SPINE: "Spine", STRETCH: "Stretch", CORE: "Core", RELEASE: "Release", GLUTES: "Glutes", STABILITY: "Stability", CONTROL: "Control", HOLD: "Hold", ECCENTRIC: "Eccentric", PUSH: "Push", ISO: "Isometric", PULL: "Pull", RAISE: "Raise", LOWER: "Lower", ROTATE: "Rotation", TWIST: "Twist", CERVICAL: "Cervical", LATERAL: "Lateral", CIRCULATE: "Circulate", FLOW: "Flow", MOBILIZE: "Mobilize", MOMENTUM: "Momentum", ISOLATE: "Isolate", DECOMPRESS: "Decompress", FORWARD: "Forward", BACKWARD: "Backward", GROUND: "Ground", "END-RANGE": "End Range", TARGET: "Target", EXHALE: "Exhale", INHALE: "Inhale", FLEX: "Flexion" };
+function spellFocus(f) { return (f && FOCUS_SPELL[f.toUpperCase()]) ? FOCUS_SPELL[f.toUpperCase()] : (f || ""); }
+
+function Steps({ steps, small, startPill }) {
   return (
     <div className={small ? "steps" : "fc-steps"}>
       {small && steps && steps.length > 0 && (
@@ -2673,12 +2683,13 @@ function Steps({ steps, small }) {
           How to perform
         </div>
       )}
+      {small && startPill && <div style={{marginTop:10,marginBottom:0}}>{startPill}</div>}
       {steps.map((s, i) => small ? (
         <div className="step" key={i}>
           <div className="step-badge"><div className="step-badge-inner"><span className="step-pos">{s.pos}</span></div></div>
           <div className="step-right">
             <div className="step-label">{s.label}</div>
-            <div className="step-focus">{s.focus}</div>
+            <div className="step-focus">{spellFocus(s.focus)}</div>
             <div className="step-cue">{s.cue}</div>
           </div>
         </div>
@@ -2687,7 +2698,7 @@ function Steps({ steps, small }) {
           <div className="fc-badge"><span className="fc-pos">{s.pos}</span></div>
           <div className="fc-right">
             <div className="fc-plabel">{s.label}</div>
-            <div className="fc-pfocus">{s.focus}</div>
+            <div className="fc-pfocus">{spellFocus(s.focus)}</div>
             <div className="fc-pcue">{s.cue}</div>
           </div>
         </div>
@@ -2729,13 +2740,16 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
       </div>
       {open && (
         <div className="panel" style={skipped ? { opacity: 0.45 } : {}}>
-          {ex.start && (
-            <div style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:14,padding:"8px 12px",borderRadius:10,background:"var(--accent-dim)",border:"1px solid var(--accent-glow)"}}>
-              <div style={{fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent-secondary)",fontWeight:700,flexShrink:0,marginTop:2}}>Start</div>
-              <div style={{fontSize:13,color:"var(--text-secondary)",lineHeight:1.5}}>{ex.start}</div>
-            </div>
-          )}
-          <Steps steps={ex.steps} small />
+          <Steps
+            steps={ex.steps}
+            small
+            startPill={ex.start ? (
+              <div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"8px 12px",borderRadius:10,background:"var(--accent-dim)",border:"1px solid var(--accent-glow)"}}>
+                <div style={{fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent-secondary)",fontWeight:700,flexShrink:0,marginTop:2}}>Start</div>
+                <div style={{fontSize:13,color:"var(--text-secondary)",lineHeight:1.5}}>{ex.start}</div>
+              </div>
+            ) : null}
+          />
           {!skipped && (
             <>
               {(ex.type === "time" || ex.type === "flow") && !hideTimer
@@ -2808,7 +2822,7 @@ function MomentumMap({ history }) {
 // ─────────────────────────────────────────────────────────────
 function TabBar({ view, setView, hasActiveSession, theme, nightMode = false }) {
   const HomeIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
-  const SessionIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+  const SessionIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>;
   const MoodIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/></svg>;
   const TimerIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 3h6"/><path d="M12 3v2"/></svg>;
   const SettingsIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
@@ -2916,7 +2930,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
   const remaining = left;
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;
-  const display = mins > 0 ? `${mins}:${secs.toString().padStart(2,"0")}` : `${remaining}`;
+  const display = `${mins}:${secs.toString().padStart(2,"0")}`;
   const total = list.length;
 
   // Theme-aware timer colors — use circadian accent
@@ -2941,20 +2955,42 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
   const NEXT_C    = nightMode ? "rgba(255,59,48,0.45)"  : (isTimerDark ? "rgba(232,228,223,0.40)" : "rgba(15,30,46,0.50)");
   const NEXT_NAME = nightMode ? "#FF3B30"               : (isTimerDark ? "rgba(232,228,223,0.70)" : "#0f1e2e");
 
-  const numSize = large ? 120 : 72;
+  const numSize = large ? 80 : 72;
   const unitSize = large ? 14 : 12;
   const barH = large ? 4 : 2;
   const gap = large ? 10 : 0;
   const marginTop = large ? 0 : 16;
   const marginBottom = large ? 14 : 10;
 
-  return (
-    <div style={{display:"flex", flexDirection:"column", gap:gap, marginTop, alignItems: large ? "center" : "flex-start"}}>
-      <div style={{display:"flex", alignItems:"baseline", gap: large ? 10 : 6, marginBottom: marginBottom}}>
-        <div style={{fontSize: numSize, fontWeight:600, letterSpacing:"-0.04em", color:TN, lineHeight:1}}>{display}</div>
-        <div style={{fontSize: unitSize, letterSpacing:"0.16em", textTransform:"uppercase", color:TU, fontWeight:500, marginBottom: large ? 6 : 4}}>{mins > 0 ? "min" : "sec"}</div>
+  if (large) {
+    const barHeight = 8;
+    const barWidth = 249;
+    return (
+      <div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop}}>
+        {/* Number on top — white, digital style (matches GET READY countdown) */}
+        <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+          <div style={{
+            minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
+            fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
+            fontSize: numSize, fontWeight: 400, letterSpacing: "0.02em",
+            color: "#fff", lineHeight: 1,
+            textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
+          }}>{display}</div>
+        </div>
+        {/* Progress bar: matches GET READY (249×8, 2x margin below) */}
+        <div style={{width: barWidth, height: barHeight, borderRadius: barHeight, background: BAR_TRACK, overflow: "hidden", marginTop: 28}}>
+          <div style={{height: barHeight, borderRadius: barHeight, background: BAR_FILL, width: `${pct*100}%`, transition: "width 1s linear"}} />
+        </div>
       </div>
-      <div style={{height: barH, width: large ? "100%" : "auto", maxWidth: large ? 280 : "none", background:"transparent", borderRadius: barH, overflow:"hidden"}}>
+    );
+  }
+
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:gap, marginTop, alignItems:"flex-start"}}>
+      <div style={{display:"flex", alignItems:"baseline", gap: 6, marginBottom: marginBottom}}>
+        <div style={{minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight:600, letterSpacing:"-0.04em", color:TN, lineHeight:1}}>{display}</div>
+      </div>
+      <div style={{height: barH, width: "auto", background:"transparent", borderRadius: barH, overflow:"hidden"}}>
         <div style={{height: barH, borderRadius: barH, background:BAR_FILL,
           width:`${pct*100}%`, transition:"width 1s linear"}} />
       </div>
@@ -3046,8 +3082,10 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
   const [phase, setPhase] = useState("intro"); // "intro" | "getready" | "exercise" | "rest" | "milestone" | "closing"
-  const [restLeft, setRestLeft] = useState(10);
-  const [readyLeft, setReadyLeft] = useState(12);
+  const REST_SECONDS = 15;
+  const GETREADY_SECONDS = 15;
+  const [restLeft, setRestLeft] = useState(REST_SECONDS);
+  const [readyLeft, setReadyLeft] = useState(GETREADY_SECONDS);
   const [paused, setPaused] = useState(false);
   const [milestoneMessage, setMilestoneMessage] = useState("");
   const restRef = useRef(null);
@@ -3069,7 +3107,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
     };
   }, []);
 
-  // Get-ready countdown — fires when phase becomes "getready"
+  // Get-ready countdown (15s) — fires when phase becomes "getready"
   useEffect(() => {
     if (phase !== "getready") return;
     readyRef.current = setInterval(() => {
@@ -3078,7 +3116,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           clearInterval(readyRef.current);
           setPhase("exercise");
           beep(880, 0.3);
-          return 12;
+          return GETREADY_SECONDS;
         }
         return l - 1;
       });
@@ -3086,18 +3124,19 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
     return () => clearInterval(readyRef.current);
   }, [phase]);
 
-  // Rest countdown — auto-advance to next exercise
+  // Rest countdown (15s) — then go to getready for 15s before next exercise
   useEffect(() => {
     if (phase !== "rest") { clearInterval(restRef.current); return; }
-    setRestLeft(10);
+    setRestLeft(REST_SECONDS);
     restRef.current = setInterval(() => {
       setRestLeft(l => {
         if (l <= 1) {
           clearInterval(restRef.current);
           beep(880, 0.3);
           setFi(i => Math.min(i + 1, list.length - 1));
-          setPhase("exercise");
-          return 10;
+          setReadyLeft(GETREADY_SECONDS);
+          setPhase("getready");
+          return REST_SECONDS;
         }
         return l - 1;
       });
@@ -3149,22 +3188,22 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
   const handleSkip = () => {
     onSkip(cur.id);
     beep(440, 0.2);
-    if (fi < list.length - 1) { setFi(i => i + 1); setPhase("exercise"); }
+    if (fi < list.length - 1) { setFi(i => i + 1); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }
   };
 
   const handleNext = () => {
     beep(440, 0.2);
     if (fi < list.length - 1) {
       setFi(i => i + 1);
-      setPhase("exercise");
+      setReadyLeft(GETREADY_SECONDS);
+      setPhase("getready");
     } else {
-      // Last exercise — treat Next as completing the flow
       completeCurrent();
     }
   };
 
   const handlePrev = () => {
-    if (fi > 0) { setFi(i => i - 1); setPhase("exercise"); clearInterval(restRef.current); }
+    if (fi > 0) { setFi(i => i - 1); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); clearInterval(restRef.current); }
   };
 
   // No exercises: show message and exit (avoids cur.id / cur.name access on undefined)
@@ -3198,12 +3237,11 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
     }}>
       <style>{css}</style>
 
-      {/* Same orb layer as main app — uses CSS vars + .app-orbs::after sheen */}
+      {/* Orb layer — static */}
       <div className="app-orbs" style={{
-        position:"absolute", inset:0, pointerEvents:"none", zIndex:0,
+        position:"absolute", inset:0,
         background:"var(--orb1), var(--orb2), var(--orb3)",
-        animation:"orbFloat 24s cubic-bezier(0.37,0,0.63,1) infinite alternate",
-        transition:"background 2s ease",
+        transition:"background 0.4s ease",
       }} />
 
       {/* ── TOP BAR: Exit + Progress ring ── */}
@@ -3212,11 +3250,13 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
         padding:"max(12px, env(safe-area-inset-top)) 20px 10px", flexShrink:0, position:"relative", zIndex:2,
       }}>
         <button onClick={onExit} style={{
-          background:"none", border:"none", cursor:"pointer", color:S,
-          fontFamily:"'Barlow',sans-serif", fontSize:11, letterSpacing:"0.18em",
-          textTransform:"uppercase", padding:0, display:"flex", alignItems:"center", gap:5,
-          opacity: phase === "intro" ? 1 : 0.85,
-        }}>✕ <span>Exit</span></button>
+          display:"flex", alignItems:"center", gap:5, padding:"8px 14px",
+          background: "transparent",
+          border: "1px solid " + (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)"),
+          borderRadius: 999, cursor: "pointer", color: S,
+          fontFamily: "'Barlow', sans-serif", fontSize: 11, letterSpacing: "0.18em",
+          textTransform: "uppercase", opacity: phase === "intro" ? 1 : 0.9,
+        }}>X EXIT</button>
         {phase !== "intro" && phase !== "closing" && listTotal > 0 && (() => {
           const size = 46; const r = 19; const C = 2 * Math.PI * r;
           const filled = ((fi + 1) / listTotal) * C;
@@ -3229,7 +3269,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
                   strokeDasharray={C} strokeDashoffset={offset}
                   style={{ transition:"stroke-dashoffset 0.4s ease-out" }} />
               </svg>
-              <span style={{ position:"absolute", fontSize:12, fontWeight:700, color:W }}>{fi + 1}/{listTotal}</span>
+              <span style={{ position:"absolute", fontSize: 11, fontWeight: 600, color: W, fontFamily: "'Barlow', sans-serif" }}>{fi + 1}/{listTotal}</span>
             </div>
           );
         })()}
@@ -3274,56 +3314,54 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
         </div>
       )}
 
-      {/* ── INTRO SCREEN ── */}
+      {/* ── INTRO SCREEN: mockup — FLOW SESSION, title, subtitle, two placeholder rects, GET READY at bottom ── */}
       {phase === "intro" && (
         <div style={{
           flex:1, display:"flex", flexDirection:"column",
-          alignItems:"center", justifyContent:"center",
-          padding:"16px 24px 24px", textAlign:"center", position:"relative", zIndex:2, minHeight:0,
+          alignItems:"center", justifyContent:"space-between",
+          padding:"20px 24px 20px", textAlign:"center", position:"relative", zIndex:2, minHeight:0,
         }}>
-          {streak > 0 && (
-            <div style={{fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", color:A, marginBottom:8}}>
-              Day {streak}
+          <div style={{flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
+            <div style={{fontSize:10, letterSpacing:"0.3em", textTransform:"uppercase", color:S, marginBottom:24}}>FLOW SESSION</div>
+            <div style={{fontSize:36, fontWeight:600, letterSpacing:"-0.03em", lineHeight:1.1, color:W, marginBottom:16, textShadow: NAME_SHAD}}>
+              {trackLabel}
             </div>
-          )}
-          <div style={{fontSize:10, letterSpacing:"0.28em", textTransform:"uppercase", color:D, marginBottom:8}}>Flow Session</div>
-          <div style={{fontSize:38, fontWeight:600, letterSpacing:"-0.03em", lineHeight:1.05, color:W, marginBottom:6,
-            textShadow: NAME_SHAD}}>
-            {trackLabel}
+            <div style={{fontSize: 13, color: S, marginBottom: 48}}>{filteredCount} exercises • {trackDuration}</div>
           </div>
-          <div style={{fontSize:14, color:S, marginBottom:2}}>{filteredCount} exercises</div>
-          <div style={{fontSize:12, color:D, marginBottom:24}}>{trackDuration}</div>
-          <button onClick={() => { primeAudio(); beep(880, 0.3); setPhase("getready"); }} style={{
-            padding:"14px 44px", borderRadius:36, cursor:"pointer",
-            background:A, border:"none", color: ct.accentBtnText || "#0a0e1a",
-            fontFamily:"'Barlow',sans-serif", fontSize:12, fontWeight:700,
-            letterSpacing:"0.22em", textTransform:"uppercase",
-            boxShadow: isDark ? `0 0 24px ${ct.accentGlow}, 0 2px 12px rgba(0,0,0,0.2)` : `0 0 20px ${ct.accentGlow}, 0 2px 8px rgba(20,50,90,0.08)`,
-          }}>Let's Go</button>
-          <button onClick={onExit} style={{
-            marginTop:12, background:"none", border:"none", cursor:"pointer",
-            fontSize:11, letterSpacing:"0.16em", textTransform:"uppercase",
-            color:D, fontFamily:"'Barlow',sans-serif",
-          }}>Cancel</button>
+          <div style={{display:"flex", flexDirection:"column", alignItems:"center", paddingBottom:8}}>
+            <button onClick={() => { primeAudio(); beep(880, 0.3); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }} style={{
+              padding: "14px 48px", borderRadius: 999, cursor: "pointer",
+              background: A, border: "none", color: "#0a0e1a",
+              fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
+              letterSpacing: "0.24em", textTransform: "uppercase",
+              boxShadow: `0 0 24px ${ct.accentGlow}`,
+            }}>GET READY</button>
+            <button onClick={onExit} style={{
+              marginTop:14, background:"none", border:"none", cursor:"pointer",
+              fontSize:11, letterSpacing:"0.16em", textTransform:"uppercase", color:D, fontFamily:"'Barlow',sans-serif",
+            }}>Cancel</button>
+          </div>
         </div>
       )}
 
       {/* ── GET READY / REST / EXERCISE — top: copy (scrollable); bottom half: large timer in liquid glass ── */}
       {phase !== "intro" && phase !== "closing" && phase !== "milestone" && (
         <div style={{flex:1, display:"flex", flexDirection:"column", position:"relative", zIndex:2, minHeight:0, overflow:"hidden"}}>
-          {/* Top: instructional copy only, scrollable so it never overlaps timer */}
-          <div style={{flex: "0 1 42%", minHeight:0, overflowY:"auto", overflowX:"hidden", padding:"6px 16px 12px", WebkitOverflowScrolling:"touch"}}>
-          {/* Phase label */}
-          <div style={{fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase", color:A, marginBottom:6, flexShrink:0}}>
-            {phase === "getready" ? "First Up" : phase === "rest" ? "Up Next" : ""}
+          {/* Top: instructional copy — more space so longer instructions don't get cut off */}
+          <div style={{flex: "1 1 58%", minHeight:0, overflowY:"auto", overflowX:"hidden", padding:"6px 16px 12px", WebkitOverflowScrolling:"touch"}}>
+          {/* Status label: small, all-caps, wide letter spacing — centered on GET READY / BEGIN / UP NEXT */}
+          <div style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: S, marginBottom: 8, flexShrink: 0, textAlign: (phase === "getready" || phase === "exercise" || phase === "rest") ? "center" : "left" }}>
+            {phase === "getready" ? "GET READY" : phase === "exercise" ? "BEGIN" : phase === "rest" ? "UP NEXT" : ""}
           </div>
 
-          {/* Exercise name */}
+          {/* Primary title: large, bold — white, centered on GET READY / BEGIN / UP NEXT */}
           <div style={{
-            fontSize: phase === "exercise" ? 28 : 26,
-            fontWeight:600, letterSpacing:"-0.025em", lineHeight:1.1,
-            color:W, marginBottom:12, flexShrink:0,
+            fontSize: (phase === "getready" || phase === "exercise") ? 32 : 26,
+            fontWeight: 700, letterSpacing: "0.02em", lineHeight: 1.1, textTransform: "uppercase",
+            color: W,
+            marginBottom: 14, flexShrink: 0, fontFamily: "'Barlow', sans-serif",
             textShadow: NAME_SHAD,
+            textAlign: (phase === "getready" || phase === "exercise" || phase === "rest") ? "center" : "left",
           }}>
             {phase === "rest" ? next?.name : cur.name}
           </div>
@@ -3334,43 +3372,36 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
             if (!ex?.steps?.length && !ex?.start) return null;
             return (
               <div style={{
-                borderRadius:16,
-                background: GLASS_BG,
-                backdropFilter:"blur(24px) saturate(1.4)",
-                WebkitBackdropFilter:"blur(24px) saturate(1.4)",
-                border: GLASS_BDR,
-                boxShadow: `${GLASS_SHAD}, 0 0 0 1px ${isNight ? "rgba(255,59,48,0.15)" : ct.accent + "22"}`,
-                overflow:"hidden", flexShrink:0, marginBottom:12,
+                borderRadius: 20,
+                background: isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.45)",
+                backdropFilter: "blur(24px) saturate(1.4)",
+                WebkitBackdropFilter: "blur(24px) saturate(1.4)",
+                border: `1px solid ${isNight ? "rgba(255,59,48,0.12)" : (isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")}`,
+                boxShadow: isDark ? "0 4px 24px rgba(0,0,0,0.15)" : "0 4px 20px rgba(0,0,0,0.06)",
+                overflow: "hidden", flexShrink: 0, marginBottom: 16,
               }}>
                 {ex.start && (
-                  <div style={{padding:"12px 14px 10px", borderBottom: (ex.steps?.[0] || ex.steps?.[1]) ? ROW_DIV : "none"}}>
-                    <div style={{fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase",
-                      color:A, marginBottom:6, opacity:0.85}}>Start</div>
-                    <div style={{fontSize:14, color:W, lineHeight:1.45, fontWeight:isDark?300:400,
-                      letterSpacing:"-0.01em"}}>{ex.start}</div>
+                  <div style={{ padding: "12px 14px 10px", borderBottom: (ex.steps?.[0] || ex.steps?.[1]) ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
+                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>START</div>
+                    <div style={{ fontSize: 14, color: W, lineHeight: 1.45, fontWeight: 300, letterSpacing: "-0.01em" }}>{ex.start}</div>
                   </div>
                 )}
                 {ex.steps?.[0] && (
-                  <div style={{padding:"12px 14px 10px", borderBottom: ex.steps[1] ? ROW_DIV : "none"}}>
-                    <div style={{fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase",
-                      color:A, marginBottom:6, opacity:0.85}}>Setup</div>
-                    <div style={{fontSize:14, color:W, lineHeight:1.45, fontWeight:isDark?300:400,
-                      letterSpacing:"-0.01em"}}>{ex.steps[0].cue}</div>
+                  <div style={{ padding: "12px 14px 10px", borderBottom: ex.steps[1] ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
+                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>SETUP</div>
+                    <div style={{ fontSize: 14, color: W, lineHeight: 1.45, fontWeight: 300, letterSpacing: "-0.01em" }}>{ex.steps[0].cue}</div>
                   </div>
                 )}
                 {ex.steps[1] && (
-                  <div style={{padding:"10px 14px 12px"}}>
-                    <div style={{fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase",
-                      color:A, marginBottom:6, opacity:0.85}}>Move</div>
-                    <div style={{fontSize:14, color:W, lineHeight:1.45, fontWeight:isDark?300:400,
-                      letterSpacing:"-0.01em"}}>{ex.steps[1].cue}</div>
+                  <div style={{ padding: "10px 14px 12px", textAlign: "left" }}>
+                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>MOVE</div>
+                    <div style={{ fontSize: 14, color: W, lineHeight: 1.45, fontWeight: 300, letterSpacing: "-0.01em" }}>{ex.steps[1].cue}</div>
                   </div>
                 )}
                 {!ex.steps?.[1] && ex.type === "reps" && ex.reps && (
-                  <div style={{padding:"10px 14px 12px", borderTop: ROW_DIV}}>
-                    <div style={{fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase",
-                      color:A, marginBottom:4, opacity:0.85}}>Target</div>
-                    <div style={{fontSize:18, fontWeight:600, color:W}}>{ex.reps}</div>
+                  <div style={{ padding: "10px 14px 12px", borderTop: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)", textAlign: "left" }}>
+                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 4 }}>TARGET</div>
+                    <div style={{ fontSize: 18, fontWeight: 600, color: W }}>{ex.reps}</div>
                   </div>
                 )}
               </div>
@@ -3386,105 +3417,102 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           )}
 
           </div>
-          {/* Bottom half: timer as feature — centered in liquid glass card */}
+          {/* Bottom half: timer block moved up — double pill height (112px) below */}
           {phase === "exercise" && cur && (
-            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 12px"}}>
-              <div style={{
-                borderRadius:24,
-                background: GLASS_BG,
-                backdropFilter: "blur(32px) saturate(1.5)",
-                WebkitBackdropFilter: "blur(32px) saturate(1.5)",
-                border: GLASS_BDR,
-                boxShadow: `${GLASS_SHAD}, 0 0 0 1px ${isNight ? "rgba(255,59,48,0.12)" : ct.accent + "18"}`,
-                padding: "32px 44px 28px",
-                minWidth: 200,
-              }}>
-                <OverlayTimer key={cur.id + "-" + fi} seconds={cur.type === "time" || cur.type === "flow" ? cur.seconds : 45} onDone={handleTimerDone}
-                  autoStart={true} paused={paused} fi={fi} list={list} theme={theme} activePeriod={activePeriod} nightMode={nightMode} large={true} />
-              </div>
+            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 112px"}}>
+              <OverlayTimer key={cur.id + "-" + fi} seconds={cur.type === "time" || cur.type === "flow" ? cur.seconds : 45} onDone={handleTimerDone}
+                autoStart={true} paused={paused} fi={fi} list={list} theme={theme} activePeriod={activePeriod} nightMode={nightMode} large={true} />
             </div>
           )}
           {phase === "getready" && (
-            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", gap:8}}>
-              <div style={{
-                borderRadius:24,
-                background: GLASS_BG,
-                backdropFilter: "blur(32px) saturate(1.5)",
-                WebkitBackdropFilter: "blur(32px) saturate(1.5)",
-                border: GLASS_BDR,
-                boxShadow: `${GLASS_SHAD}, 0 0 0 1px ${isNight ? "rgba(255,59,48,0.12)" : ct.accent + "18"}`,
-                padding: "28px 40px 24px",
-              }}>
-                <span style={{fontSize:64, fontWeight:700, letterSpacing:"-0.04em", color:W, lineHeight:1}}>{readyLeft}</span>
-                <span style={{fontSize:12, letterSpacing:"0.18em", textTransform:"uppercase", color:D, marginLeft:8}}>sec</span>
+            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 112px"}}>
+              <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <div style={{
+                  minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
+                  fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
+                  fontSize: 80, fontWeight: 400, letterSpacing: "0.02em",
+                  color: "#fff", lineHeight: 1,
+                  textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
+                }}>
+                  {`0:${readyLeft.toString().padStart(2, "0")}`}
+                </div>
+                <div style={{width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 28}}>
+                  <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
+                </div>
+              </div>
+            </div>
+          )}
+          {phase === "rest" && (
+            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 112px"}}>
+              <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <div style={{
+                  minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
+                  fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
+                  fontSize: 80, fontWeight: 400, letterSpacing: "0.02em",
+                  color: "#fff", lineHeight: 1,
+                  textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
+                }}>
+                  {`0:${restLeft.toString().padStart(2, "0")}`}
+                </div>
+                <div style={{width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 28}}>
+                  <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((REST_SECONDS - restLeft) / REST_SECONDS) * 100}%`, transition: "width 1s linear" }} />
+                </div>
               </div>
             </div>
           )}
         </div>
       )}
 
-      {/* ── LIQUID GLASS PILL BAR (Exit, Pause, Next, Skip Rest) ── */}
-      {phase !== "closing" && phase !== "milestone" && (
+      {/* ── LIQUID GLASS PILL BAR (Exit, Pause, Next, Skip Rest) — hidden on intro ── */}
+      {phase !== "closing" && phase !== "milestone" && phase !== "intro" && (
       <div style={{
         margin:"0 16px", marginBottom:`max(28px, env(safe-area-inset-bottom, 28px))`,
-        borderRadius:24, overflow:"hidden", flexShrink:0, position:"relative", zIndex:2,
-        background: BAR_BG,
-        backdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)",
-        WebkitBackdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)",
-        border: BAR_BDR,
-        boxShadow: BAR_SHAD,
-        display:"flex", alignItems:"stretch", height:56,
+        flexShrink:0, position:"relative", zIndex:2,
+        display:"flex", alignItems:"stretch", height:56, gap: phase === "exercise" ? 12 : 0,
+        ...(phase === "exercise" ? {} : { borderRadius: 24, overflow: "hidden", background: BAR_BG, backdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)", WebkitBackdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)", border: BAR_BDR, boxShadow: BAR_SHAD }),
       }}>
-        {/* EXERCISE: Pause (left) + Next/Done (right) inside the bar — shown for all exercise types */}
+        {/* EXERCISE: two individual pills — Pause + Next/Done */}
         {phase === "exercise" && cur && (
           <>
             <button onClick={() => setPaused(p => !p)} style={{
-              flex:1, background: paused ? `${A}22` : "transparent", border:"none",
-              borderRight: DIVIDER,
-              color: paused ? A : S,
-              fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
-              letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
-              transition:"all 0.2s",
-            }}>{paused ? "Resume" : "Pause"}</button>
+              flex: 1, minWidth: 0, borderRadius: 999,
+              background: isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.5)",
+              backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+              border: `1px solid ${A}`,
+              color: A,
+              fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
+              transition: "all 0.2s", boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.2)" : "0 4px 16px rgba(0,0,0,0.08)",
+            }}>{paused ? "RESUME" : "PAUSE"}</button>
             <button onClick={handleNext} style={{
-              width:120, background:"transparent", border:"none",
-              color:W, fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
-              letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
-            }}>{fi === list.length - 1 ? "Done" : "Next"}</button>
+              flex: 1, minWidth: 0, borderRadius: 999,
+              background: A, border: "none",
+              color: "#0a0e1a",
+              fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
+              boxShadow: `0 0 16px ${ct.accentGlow}`,
+            }}>{fi === list.length - 1 ? "DONE" : "NEXT"}</button>
           </>
         )}
 
-        {/* GET READY: Start Now */}
+        {/* GET READY: Start Now — full width */}
         {phase === "getready" && (
           <button onClick={() => { clearInterval(readyRef.current); setPhase("exercise"); beep(880,0.3); }} style={{
-            flex:1, background:"transparent", border:"none",
-            borderRight: DIVIDER,
-            color:W, fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
-            letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
-          }}>Start Now</button>
+            flex: 1, width: "100%", minWidth: 0, background: A, border: "none",
+            color: "#0a0e1a", fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
+            letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer",
+            boxShadow: `0 0 20px ${ct.accentGlow}`,
+          }}>START NOW</button>
         )}
 
-        {/* REST: countdown + Skip Rest */}
-        {phase === "rest" && (<>
-          <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:4,
-            borderRight: DIVIDER}}>
-            <span style={{fontSize:22, fontWeight:700, color:W, letterSpacing:"-0.03em"}}>{restLeft}</span>
-            <span style={{fontSize:11, letterSpacing:"0.16em", textTransform:"uppercase", color:D}}>sec</span>
-          </div>
-          <button onClick={() => { clearInterval(restRef.current); setFi(i=>Math.min(i+1,list.length-1)); setPhase("exercise"); }} style={{
-            flex:1, background:"transparent", border:"none",
-            borderRight: DIVIDER,
-            color:W, fontFamily:"'Barlow',sans-serif", fontSize:11, fontWeight:700,
-            letterSpacing:"0.16em", textTransform:"uppercase", cursor:"pointer",
+        {/* REST: SKIP REST centered in full pill (no countdown on left) */}
+        {phase === "rest" && (
+          <button onClick={() => { clearInterval(restRef.current); setFi(i=>Math.min(i+1,list.length-1)); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }} style={{
+            flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center",
+            background: "transparent", border: "none",
+            color: W, fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 700,
+            letterSpacing: "0.16em", textTransform: "uppercase", cursor: "pointer",
           }}>Skip Rest</button>
-        </>)}
-
-        {/* INTRO spacer */}
-        {phase === "intro" && <div style={{flex:1}} />}
-
-        {/* Get ready / rest / intro right spacer */}
-        {(phase === "getready" || phase === "rest" || phase === "intro") && (
-          <div style={{width:56}} />
         )}
       </div>
       )}
@@ -3563,7 +3591,6 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   };
   const [breathPattern, setBreathPattern] = useState("4-7-8");
   const [breathCycles,  setBreathCycles]  = useState(4);
-  const [breatheMinimal, setBreatheMinimal] = useState(false); // minimal: ring + phase word only, no numbers
   const [bRunning,  setBRunning]  = useState(false);
   const [bPhaseIdx, setBPhaseIdx] = useState(0);
   const [bCycle,    setBCycle]    = useState(1);
@@ -3638,14 +3665,14 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
   const iPct = iPhase === "work" ? ((work-iTime)/work)*100 : iPhase === "rest" ? ((rest-iTime)/rest)*100 : 0;
   const iRingColor = iPhase === "rest" ? "var(--text-secondary)" : "var(--accent)";
-  const iCircumference = 2 * Math.PI * 110;
+  const iCircumference = 2 * Math.PI * 140;
   const BTN       = { padding:"18px 56px", borderRadius:36, cursor:"pointer", fontFamily:"'Barlow',sans-serif", fontSize:"12px", fontWeight:700, letterSpacing:"0.20em", textTransform:"uppercase", background:"var(--accent)", color:"var(--accent-btn-text, #fff)", border:"none", boxShadow:"0 0 28px var(--accent-glow)", transition:"all 0.2s" };
   const BTN_GHOST = { padding:"18px 28px", borderRadius:36, cursor:"pointer", fontFamily:"'Barlow',sans-serif", fontSize:"12px", fontWeight:600, letterSpacing:"0.14em", textTransform:"uppercase", background:"var(--glass-bg)", color:"var(--text-secondary)", border:"1px solid var(--glass-border)", transition:"all 0.2s" };
 
   return (
     <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
       <style>{css}</style>
-      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate",transition:"background 2s ease"}} />
+      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)", transition:"background 0.4s ease"}} />
       <div className="app-body" style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"calc(100vh - 84px)",padding:"0 24px 84px",boxSizing:"border-box",width:"100%"}}>
 
         {/* Timer block — centered, static layout so circle/start don't shift between modes */}
@@ -3666,11 +3693,11 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
         {/* ── INTERVAL MODE ── */}
         {mode === "interval" && (<>
-          <div style={{flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center",width:"100%",height:260,marginBottom:0}}>
-            <svg width="260" height="260" className="timer-interval-ring" style={{transform:"rotate(-90deg)",display:"block",margin:"0 auto"}}>
-              <circle cx="130" cy="130" r="110" fill="none" stroke="var(--glass-border)" strokeWidth="3"/>
+          <div style={{flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center",width:320,height:320,marginLeft:"auto",marginRight:"auto",marginBottom:0}}>
+            <svg width="320" height="320" className="timer-interval-ring" style={{transform:"rotate(-90deg)",display:"block",margin:"0 auto"}}>
+              <circle cx="160" cy="160" r="140" fill="none" stroke="var(--glass-border)" strokeWidth="3"/>
               {iPhase !== "idle" && iPhase !== "done" && (
-                <circle cx="130" cy="130" r="110" fill="none"
+                <circle cx="160" cy="160" r="140" fill="none"
                   stroke={iRingColor} strokeWidth="4" strokeLinecap="round"
                   strokeDasharray={iCircumference}
                   strokeDashoffset={iCircumference*(1-iPct/100)}
@@ -3679,14 +3706,23 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               )}
             </svg>
             <div style={{position:"absolute",textAlign:"center"}}>
-              {iPhase === "idle" && <div style={{fontSize:"80px",fontWeight:700,letterSpacing:"-0.04em",color:"var(--text-white)",fontFamily:"'Barlow',sans-serif",lineHeight:1}}>{work}</div>}
-              {(iPhase === "work" || iPhase === "rest") && <div style={{fontSize:"96px",fontWeight:700,letterSpacing:"-0.04em",color:iRingColor,fontFamily:"'Barlow',sans-serif",lineHeight:1,transition:"color 0.4s"}}>{iTime}</div>}
+              {iPhase === "idle" && (
+                <>
+                  <div style={{fontSize:"96px",fontWeight:700,letterSpacing:"-0.04em",color:"var(--text-white)",fontFamily:"'Barlow',sans-serif",lineHeight:1}}>{work}</div>
+                  <div style={{fontSize:"13px",letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--text-dimmer)",marginTop:8}}>1 / {rounds}</div>
+                </>
+              )}
+              {(iPhase === "work" || iPhase === "rest") && (
+                <>
+                  <div style={{fontSize:"96px",fontWeight:700,letterSpacing:"-0.04em",color:"#fff",fontFamily:"'Barlow',sans-serif",lineHeight:1,transition:"color 0.4s"}}>{iTime}</div>
+                  <div style={{fontSize:"13px",letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--text-dimmer)",marginTop:8}}>{iRound} / {rounds}</div>
+                </>
+              )}
               {iPhase === "done" && <div style={{fontSize:"48px",fontWeight:700,color:"var(--accent)",fontFamily:"'Barlow',sans-serif",lineHeight:1}}>✓</div>}
-              {iPhase !== "idle" && iPhase !== "done" && <div style={{fontSize:"13px",letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--text-dimmer)",marginTop:8}}>{iRound} / {rounds}</div>}
             </div>
           </div>
 
-          <div style={{flexShrink:0,minHeight:160,width:"100%",marginBottom:0}}>
+          <div style={{flexShrink:0,minHeight:120,width:"100%",marginBottom:0}}>
           {iPhase === "idle" && (
             <div style={{display:"flex",marginBottom:0,borderRadius:20,background:"var(--glass-bg)",border:"1px solid var(--glass-border)",width:"100%",boxSizing:"border-box",overflow:"hidden"}}>
               {[
@@ -3694,7 +3730,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 {label:"Rest",   val:rest,   set:setRest,   min:0, max:120, step:5,  isRound:false},
                 {label:"Rounds", val:rounds, set:setRounds, min:1, max:20,  step:1,  isRound:true},
               ].map(({label,val,set,min,max,step,isRound},i) => (
-                <div key={label} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:10,padding:"16px 0",borderLeft:i>0?"1px solid var(--border)":"none"}}>
+                <div key={label} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:"12px 0",borderLeft:i>0?"1px solid var(--border)":"none"}}>
                   <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>{label}</div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <button onClick={()=>set(v=>Math.max(min,v-step))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
@@ -3707,7 +3743,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           )}
           </div>
 
-          <div style={{flexShrink:0,display:"flex",gap:12,marginTop:40}}>
+          <div style={{flexShrink:0,display:"flex",gap:12,marginTop:20}}>
             {iPhase === "idle"   && <button onClick={()=>{primeAudio();iStart();}} style={BTN}>Start</button>}
             {(iPhase==="work"||iPhase==="rest") && <>
               <button onClick={()=>setIRunning(r=>!r)} style={{...BTN,padding:"18px 40px"}}>{iRunning?"Pause":"Resume"}</button>
@@ -3719,13 +3755,13 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
         {/* ── BREATHE MODE ── */}
         {mode === "breathe" && (<>
-          {/* Breathing circle — fixed height slot */}
-          <div className="timer-breathe-ring-wrap" style={{flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center",width:260,height:260,marginLeft:"auto",marginRight:"auto",marginBottom:0}}>
-            <svg width="260" height="260" style={{position:"absolute",top:0,left:0}} className="timer-breathe-guide-ring">
-              <circle cx="130" cy="130" r="110" fill="none" stroke="var(--glass-border)" strokeWidth="1.5"/>
+          {/* Breathing circle — enlarged READY circle + ring */}
+          <div className="timer-breathe-ring-wrap" style={{flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center",width:320,height:320,marginLeft:"auto",marginRight:"auto",marginBottom:0}}>
+            <svg width="320" height="320" style={{position:"absolute",top:0,left:0}} className="timer-breathe-guide-ring">
+              <circle cx="160" cy="160" r="140" fill="none" stroke="var(--glass-border)" strokeWidth="1.5"/>
             </svg>
             <div className={`timer-breathe-expand-ring ${!(bRunning && bExpand) ? "breathe-idle" : ""}`} style={{
-              position:"absolute", width:220, height:220, borderRadius:"50%",
+              position:"absolute", left:24, top:24, width:272, height:272, borderRadius:"50%",
               background:`radial-gradient(circle, var(--accent-glow) 0%, var(--accent-dim) 55%, transparent 100%)`,
               border:"1.5px solid var(--accent)",
               opacity: bRunning && bExpand ? 0.85 : 0.08,
@@ -3734,20 +3770,20 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               boxShadow: bRunning && bExpand ? "0 0 50px var(--accent-glow)" : "none",
             }}/>
             <div style={{position:"absolute",textAlign:"center",pointerEvents:"none"}}>
-              {!bRunning && !bDone && <div style={{fontSize:"13px",letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Ready</div>}
+              {!bRunning && !bDone && <div style={{fontSize:"20px",letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Ready</div>}
               {bRunning && <>
-                {!breatheMinimal && <div style={{fontSize:"42px",fontWeight:700,color:curBreathPhase.color,fontFamily:"'Barlow',sans-serif",lineHeight:1,transition:"color 0.5s"}}>{bTime}</div>}
-                <div style={{fontSize: breatheMinimal ? "18px" : "13px", letterSpacing:"0.18em",textTransform:"uppercase",color:breatheMinimal ? curBreathPhase.color : "var(--text-dimmer)", marginTop: breatheMinimal ? 0 : 6, transition:"all 0.5s"}}>{curBreathPhase.label}</div>
-                {!breatheMinimal && <div style={{fontSize:"13px",color:"var(--text-dimmer)",marginTop:4}}>{bCycle} / {breathCycles}</div>}
+                <div style={{fontSize:"48px",fontWeight:700,color:curBreathPhase.color,fontFamily:"'Barlow',sans-serif",lineHeight:1,transition:"color 0.5s"}}>{bTime}</div>
+                <div style={{fontSize:"14px", letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--text-dimmer)", marginTop: 6, transition:"all 0.5s"}}>{curBreathPhase.label}</div>
+                <div style={{fontSize:"13px",color:"var(--text-dimmer)",marginTop:4}}>{bCycle} / {breathCycles}</div>
               </>}
-              {bDone && <div style={{fontSize:"36px",fontWeight:700,color:"var(--accent)",fontFamily:"'Barlow',sans-serif",lineHeight:1}}>✓</div>}
+              {bDone && <div style={{fontSize:"42px",fontWeight:700,color:"var(--accent)",fontFamily:"'Barlow',sans-serif",lineHeight:1}}>✓</div>}
             </div>
           </div>
-          {/* Options — same minHeight as Interval (160) so circle + Start stay fixed when switching mode */}
-          <div style={{flexShrink:0,minHeight:160,width:"100%",marginBottom:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
+          {/* Options — pattern buttons + cycles, tighter spacing toward Start */}
+          <div style={{flexShrink:0,minHeight:120,width:"100%",marginBottom:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
           {!bRunning && !bDone && (
             <>
-              <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20,justifyContent:"center"}}>
+              <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12,justifyContent:"center"}}>
                 {Object.keys(BREATH_PATTERNS).map(p => (
                   <button key={p} onClick={()=>setBreathPattern(p)} style={{
                     fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,
@@ -3759,29 +3795,17 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                   }}>{p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh"}</button>
                 ))}
               </div>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:24}}>
-                <span style={{fontSize:12,letterSpacing:"0.16em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Minimal</span>
-                <button type="button" role="switch" aria-checked={breatheMinimal} onClick={()=>setBreatheMinimal(v=>!v)} style={{
-                  width:40,height:22,border:"1px solid",borderColor:breatheMinimal?"var(--accent)":"var(--glass-border)",
-                  borderRadius:11,background:breatheMinimal?"var(--accent)":"var(--glass-bg)",cursor:"pointer",position:"relative",transition:"all 0.2s",
-                }}>
-                  <div style={{position:"absolute",top:2,left:breatheMinimal?20:2,width:16,height:16,borderRadius:"50%",background:theme==="dark"?"#fff":"#111",transition:"left 0.2s",boxShadow:"0 1px 3px rgba(0,0,0,0.3)"}}/>
-                </button>
-                <span style={{fontSize:11,color:"var(--text-dimmer)"}}>Ring + phase only</span>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginBottom:8}}>
+                <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Cycles</div>
+                <button onClick={()=>setBreathCycles(v=>Math.max(1,v-1))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+                <div style={{fontSize:"22px",fontWeight:700,color:"var(--text-white)",minWidth:20,textAlign:"center",fontFamily:"'Barlow',sans-serif"}}>{breathCycles}</div>
+                <button onClick={()=>setBreathCycles(v=>Math.min(12,v+1))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
               </div>
-              {!breatheMinimal && (
-                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginBottom:0}}>
-                  <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Cycles</div>
-                  <button onClick={()=>setBreathCycles(v=>Math.max(1,v-1))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
-                  <div style={{fontSize:"22px",fontWeight:700,color:"var(--text-white)",minWidth:20,textAlign:"center",fontFamily:"'Barlow',sans-serif"}}>{breathCycles}</div>
-                  <button onClick={()=>setBreathCycles(v=>Math.min(12,v+1))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
-                </div>
-              )}
             </>
           )}
           </div>
 
-          <div style={{flexShrink:0,display:"flex",gap:12,marginTop:40}}>
+          <div style={{flexShrink:0,display:"flex",gap:12,marginTop:20}}>
             {!bRunning && !bDone && <button onClick={bStart} style={BTN}>Start</button>}
             {bRunning && <>
               <button onClick={()=>setBRunning(r=>!r)} style={{...BTN,padding:"18px 40px"}}>Pause</button>
@@ -3870,12 +3894,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return () => clearInterval(t);
   }, [flowActive, sessionComplete]);
 
-  // Paint gradient on body + apply circadian theme
-  useEffect(() => {
+  // Paint gradient on body + apply circadian theme (useLayoutEffect to avoid flash on tab switch)
+  useLayoutEffect(() => {
     const isDark = theme === "dark";
     const period = activePeriod || getCircadianPeriod();
     const circadian = nightMode ? { bg: "#000000" } : applyCircadianTheme(isDark, period);
-    document.body.style.transition = "background 2s ease";
+    document.body.style.transition = "background 0.4s ease";
     document.body.style.background = circadian?.bg
       || (isDark ? "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)"
                  : "linear-gradient(145deg, #c8d8e8 0%, #d0dcea 35%, #dce4ec 70%, #e8eef4 100%)");
@@ -3883,7 +3907,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     document.documentElement.style.width = "100%";
     document.body.style.minHeight = "100vh";
     return () => { document.body.style.background = ""; };
-  }, [theme, activePeriod]);
+  }, [theme, activePeriod, nightMode]);
   useEffect(() => { storageSet("axis_show_streak", showStreak); }, [showStreak]);
   useEffect(() => { storageSet("axis_show_timer", showTimer); }, [showTimer]);
   useEffect(() => { storageSet("axis_show_pct", showPct); }, [showPct]);
@@ -3943,14 +3967,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const GearIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
 
   // SETTINGS
-  // TIMER VIEW
+  // TIMER VIEW (key forces fresh mount to avoid blank on first open)
   if (view === "timer") {
-    return <TimerView theme={theme} view={view} setView={setView} hasActiveSession={hasActiveSession} css={css} activePeriod={activePeriod} nightMode={nightMode} />;
+    return <TimerView key="timer" theme={theme} view={view} setView={setView} hasActiveSession={hasActiveSession} css={css} activePeriod={activePeriod} nightMode={nightMode} />;
   }
   if (view === "settings") return (
-    <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
+    <div key="settings" className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
       <style>{css}</style>
-      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate", transition:"background 2s ease"}} />
+      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)", transition:"background 0.4s ease"}} />
       <div className="app-body">
       <div className="app-page-header">
         <div className="app-label" style={{fontSize:24,fontWeight:600,textTransform:"uppercase",color:"var(--text-secondary)",marginBottom:20}}>AXIS</div>
@@ -4038,7 +4062,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return (
       <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
         <style>{css}</style>
-        <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate", transition:"background 2s ease"}} />
+        <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)", transition:"background 0.4s ease"}} />
         <div className="app-body">
           <div className="app-page-header">
             <div className="app-label" style={{fontSize:24,fontWeight:600,textTransform:"uppercase",color:"var(--text-secondary)",marginBottom:20}}>AXIS</div>
@@ -4153,7 +4177,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return (
       <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
         <style>{css}</style>
-      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate", transition:"background 2s ease"}} />
+      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)", transition:"background 0.4s ease"}} />
         <div className="app-body">
         <div className="home">
           <div className="home-hdr app-page-header">
@@ -4209,20 +4233,65 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     );
   }
 
-  // SESSION — empty state if no track started
+  // SESSION — empty state: spec — #0B121C bg, Inter, CTA pill (#1A232E + #5EEAD4), logo, tagline
   if (view === "session" && !hasActiveSession) {
     return (
       <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
         <style>{css}</style>
-        <div className="app-body" style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 32px 120px",textAlign:"center",minHeight:"calc(100vh - 72px)"}}>
-        <div style={{marginBottom:16,opacity:0.25}}>
-            <img src={theme === "dark" ? AXIS_LOGO_DARK : AXIS_LOGO_LIGHT} alt="AXIS" style={{ height: 72, width: "auto", objectFit: "contain" }} />
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');`}</style>
+        <div
+          className="app-body"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+            minHeight: "100vh",
+            minHeight: "100dvh",
+            padding: "48px 32px 80px",
+            textAlign: "center",
+            background: "#0B121C",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          }}
+        >
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "100%" }}>
+            <div style={{ fontSize: 14, fontWeight: 300, color: "#ffffff", marginBottom: 20, textAlign: "center" }}>
+              Ready for movement.
+            </div>
+            <button
+              className="begin-btn session-browse-btn"
+              onClick={() => setView("home")}
+              style={{
+                padding: "12px 48px",
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: 14,
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+              }}
+              aria-label="Browse all tracks"
+            >
+              BROWSE ALL TRACKS
+            </button>
           </div>
-          <div style={{fontSize:"12px",color:"var(--eol-color)",letterSpacing:"0.22em",textTransform:"uppercase",marginBottom:96,fontWeight:300}}>X&nbsp;MOVE&nbsp;X&nbsp;MEND&nbsp;X&nbsp;MAINTAIN&nbsp;X</div>
-          <div style={{fontSize:"18px",fontWeight:400,color:"var(--text-white)",letterSpacing:"-0.02em",marginBottom:20}}>Ready for movement.</div>
-          <button onClick={()=>setView("home")} style={{padding:"12px 28px",background:"var(--accent-dim)",border:"1px solid var(--accent)",color:"var(--accent)",fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,letterSpacing:"0.18em",textTransform:"uppercase",cursor:"pointer",borderRadius:24,transition:"all 0.2s"}} aria-label="Browse all tracks">
-            Browse all tracks
-          </button>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <img
+              src={theme === "dark" ? AXIS_LOGO_DARK : AXIS_LOGO_LIGHT}
+              alt="AXIS"
+              style={{ height: 72, width: "auto", objectFit: "contain", opacity: 0.4, marginBottom: 48 }}
+            />
+            <div
+              style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: 11,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                fontWeight: 300,
+                color: "rgba(255, 255, 255, 0.4)",
+              }}
+            >
+              X MOVE X MEND X MAINTAIN X
+            </div>
+          </div>
         </div>
         <TabBar view={view} setView={setView} hasActiveSession={hasActiveSession} theme={theme} nightMode={nightMode} />
       </div>
@@ -4255,7 +4324,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       : null}
     <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
       <style>{css}</style>
-      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)",animation:"orbFloat 24s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate", transition:"background 2s ease"}} />
+      <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)", transition:"background 0.4s ease"}} />
       <div className="app-body">
       <div className="hdr-wrap">
         <div className="hdr">
@@ -4373,7 +4442,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
                 })}
               </div>
             ))}
-            <div style={{padding:"16px 0 32px"}}>
+            <div style={{padding:"16px 0 16px"}}>
               <button
                 className="fv-cta"
                 disabled={filteredAll.length === 0}
