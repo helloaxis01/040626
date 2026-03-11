@@ -86,7 +86,9 @@ const obCss = `
   @keyframes obFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
   @keyframes obColorFadeIn { from { opacity:0; } to { opacity:1; } }
   .ob-color-reveal { animation: obColorFadeIn 2.5s ease-out forwards; }
-  .ob-pad { padding:calc(env(safe-area-inset-top, 0px) + 72px) 32px 140px; flex:1; box-sizing:border-box; width:100%; }
+  .ob-pad { padding:calc(env(safe-area-inset-top, 0px) + 72px) 32px calc(env(safe-area-inset-bottom, 0px) + 70px); flex:1; box-sizing:border-box; width:100%; }
+  /* Disclosure / CTA: extra scroll space under Let's Go — matches .ob-pad bottom */
+  .ob-pad-after-cta { min-height:calc(env(safe-area-inset-bottom, 0px) + 70px); flex-shrink:0; width:100%; pointer-events:none; }
   .ob-s0 {
     display:flex; flex-direction:column; justify-content:space-between; align-items:center; text-align:center;
     min-height:100vh; padding:60px 32px 80px; box-sizing:border-box;
@@ -484,7 +486,7 @@ function Onboarding({ theme, onComplete }) {
           {cur === 1 && <div className="ob-screen">
             <div className="ob-pad">
               <div className="ob-eyebrow">Alpha Build</div>
-              <div className="ob-heading" style={{fontSize:32, fontWeight:700, color:"var(--ob-text-head)"}}>Welcome to AXIS (Alpha)!</div>
+              <div className="ob-heading" style={{fontSize:32, fontWeight:700, color:"var(--ob-text-head)"}}>Welcome to AXIS!</div>
               <div className="ob-body" style={{marginBottom:20}}>
                 Still a web prototype but ready to try! Report any rough edges you come across.
               </div>
@@ -511,7 +513,7 @@ function Onboarding({ theme, onComplete }) {
                 <div className="ob-sci"><div className="ob-sci-text">70% of desk workers fight neck tension.</div></div>
                 <div className="ob-sci"><div className="ob-sci-text">100% feel better moving smarter.</div></div>
               </div>
-              <div className="ob-eyebrow" style={{marginTop:24}}>The Foundation</div>
+              <div className="ob-eyebrow" style={{marginTop:48}}>The Foundation</div>
               <div className="ob-heading">Movement equals <em>medicine.</em></div>
               <div className="ob-body" style={{marginBottom:20}}>
                 AXIS isn't a workout. It's a nervous system reboot with research-backed moves that dial down pain and wake up your core.
@@ -532,7 +534,7 @@ function Onboarding({ theme, onComplete }) {
               <div className="ob-body" style={{marginBottom:20, fontSize:14, color:"var(--ob-text-sec)"}}>
                 Exercise therapy beats pills and passive fixes for chronic pain.
               </div>
-              <div className="ob-eyebrow" style={{marginTop:24}}>The Method</div>
+              <div className="ob-eyebrow" style={{marginTop:48}}>The Method</div>
               <div className="ob-heading">One session. Total <em>reset.</em></div>
               <div className="ob-body" style={{marginBottom:16}}>
                 8 minute morning boost or evening deep release. AXIS fits your day. We handle the cues so you can stay in the flow.
@@ -540,7 +542,7 @@ function Onboarding({ theme, onComplete }) {
               <div className="ob-sci-blocks">
                 <div className="ob-sci"><div className="ob-sci-text" style={{fontStyle:"italic", opacity:0.9}}>Show up and move. Your body does the rest.</div></div>
               </div>
-              <div className="ob-eyebrow" style={{marginTop:28}}>The Ethics</div>
+              <div className="ob-eyebrow" style={{marginTop:56}}>The Ethics</div>
               <div className="ob-heading">Your data is your <em>data.</em></div>
               <div className="ob-body" style={{marginBottom:16, fontSize:14, color:"var(--ob-text-sec)"}}>
                 No account. No tracking. No BS. Your data stays on your device.
@@ -555,7 +557,7 @@ function Onboarding({ theme, onComplete }) {
 
           {/* 4: APPEARANCE */}
           {cur === 4 && <div className="ob-screen">
-            <div className="ob-pad" style={{paddingBottom:"calc(env(safe-area-inset-bottom,0px) + 80px)"}}>
+            <div className="ob-pad">
               <div className="ob-eyebrow">Appearance</div>
               <div className="ob-heading" style={{fontSize:36}}>Set your <em>mood.</em></div>
               <div className="ob-body" style={{marginBottom:28, fontSize:14}}>
@@ -603,7 +605,7 @@ function Onboarding({ theme, onComplete }) {
               <div style={{fontSize:11,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--ob-text-sec)",marginBottom:10}}>
                 {obAutoTime ? "Or choose a fixed mood" : "Choose a mood"}
               </div>
-              <div style={{display:"flex",flexDirection:"column",gap:10,opacity:obAutoTime ? 0.85 : 1}}>
+              <div style={{display:"flex",flexDirection:"column",gap:10,opacity:obAutoTime ? 0.85 : 1,marginBottom:32}}>
                 {[
                   { p:"dawn",    label:"Dawn",    time:"5–11am",   desc:"Warm amber",
                     icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16 A 8 8 0 0 1 20 16"/><line x1="0" y1="16" x2="24" y2="16"/></svg> },
@@ -656,7 +658,7 @@ function Onboarding({ theme, onComplete }) {
 
           {/* 5: THE SAFETY + MEDICAL DISCLAIMER */}
           {cur === 5 && <div className="ob-screen ob-cta-screen">
-            <div className="ob-pad" style={{paddingBottom:"calc(env(safe-area-inset-bottom, 0px) + 120px)"}}>
+            <div className="ob-pad">
               <div className="ob-eyebrow" style={{marginBottom:8}}>The Safety</div>
               <div className="ob-heading" style={{ fontSize: 36, marginBottom: 12 }}>A note on your <em>safety.</em></div>
               <div className="ob-body" style={{ marginBottom: 16 }}>
@@ -668,7 +670,7 @@ function Onboarding({ theme, onComplete }) {
                 </div>
               </div>
 
-              <div className="ob-eyebrow" style={{marginBottom:8}}>Medical Disclaimer</div>
+              <div className="ob-eyebrow" style={{marginTop:48,marginBottom:8}}>Medical Disclaimer</div>
               <div style={{
                 fontSize:13, lineHeight:1.72, color:"var(--ob-text-body)", fontWeight:300,
                 marginBottom:24, padding:"16px", borderRadius:14,
@@ -767,6 +769,7 @@ function Onboarding({ theme, onComplete }) {
                   onComplete({ period: periodForTheme, theme: obTheme });
                 }}
               >Let's Go</button>
+              <div className="ob-pad-after-cta" aria-hidden />
             </div>
             <div className="ob-nav-bar">
               <button className="ob-nav-back" onClick={() => go(4)}>←</button>
@@ -2320,7 +2323,7 @@ const css = `
   }
   .timer-top { display:flex; align-items:flex-start; justify-content:flex-start; gap:8px; }
   .timer-val {
-    font-size:60px; font-weight:400; letter-spacing:0.02em;
+    font-size:48px; font-weight:400; letter-spacing:0.02em;
     color:var(--text-white); line-height:1;
     font-family:'DSEG7', 'Share Tech Mono', 'Courier New', monospace;
     font-variant-numeric:tabular-nums;
@@ -2709,6 +2712,10 @@ function Steps({ steps, small, startPill }) {
 
 function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onFav, note, onNote, nextName, hideTimer = false, hideDone = false }) {
   const rowRef = useRef(null);
+  const markDoneAndCollapse = () => {
+    onToggle();
+    if (open) onExpand();
+  };
   useEffect(() => {
     if (open && rowRef.current) {
       setTimeout(() => rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
@@ -2753,16 +2760,16 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
           {!skipped && (
             <>
               {(ex.type === "time" || ex.type === "flow") && !hideTimer
-                ? <Timer key={ex.id} seconds={ex.seconds} onDone={onToggle} nextName={nextName} />
+                ? <Timer key={ex.id} seconds={ex.seconds} onDone={markDoneAndCollapse} nextName={nextName} />
                 : ex.reps && !hideDone
                   ? <div style={{marginTop:20, paddingTop:16, borderTop:"1px solid var(--border)"}}>
                       <div style={{fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase", color:"var(--accent-secondary)", fontWeight:700, marginBottom:8}}>Target</div>
                       <div style={{fontSize:16, fontWeight:700, letterSpacing:"0.04em", color:"var(--text-white)", lineHeight:1.3, marginBottom:16}}>
                         {ex.reps}
                       </div>
-                      <button className="mark-btn" onClick={onToggle}>Mark Done</button>
+                      <button className="mark-btn" onClick={e => { e.stopPropagation(); markDoneAndCollapse(); }}>Mark Done</button>
                     </div>
-                  : !hideDone ? <button className="mark-btn" onClick={onToggle} style={{ marginTop:16 }}>Mark Done</button> : null
+                  : !hideDone ? <button className="mark-btn" onClick={e => { e.stopPropagation(); markDoneAndCollapse(); }} style={{ marginTop:16 }}>Mark Done</button> : null
               }
             </>
           )}
