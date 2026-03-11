@@ -105,7 +105,7 @@ const obCss = `
   .ob-splash-name { font-size:48px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-text-head); line-height:1; margin-top:44px; }
   .ob-splash-tag { margin-top:24px; font-size:13px; letter-spacing:0.28em; text-transform:uppercase; color:var(--ob-text-sec); }
   .ob-eyebrow { font-size:13px; font-weight:500; letter-spacing:0.26em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:16px; }
-  .ob-heading { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.1; color:var(--ob-text-head); margin-bottom:20px; }
+  .ob-heading { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:18px; }
   .ob-heading em { font-style:italic; font-weight:300; color:var(--ob-accent); }
   .ob-body { font-size:15px; line-height:1.52; color:var(--ob-text-body); font-weight:400; }
   :root { --ob-box-bg: rgba(255,255,255,0.08); --ob-box-border: rgba(255,255,255,0.13); }
@@ -153,7 +153,7 @@ const obCss = `
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
   }
-  .ob-cta-head { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.1; color:var(--ob-text-head); margin-bottom:16px; }
+  .ob-cta-head { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:14px; }
   .ob-cta-head em { font-style:italic; font-weight:300; color:var(--ob-accent); }
   .ob-cta-sub { font-size:15px; color:var(--ob-text-body); line-height:1.52; margin-bottom:40px; font-weight:400; }
   .ob-btn-primary {
@@ -180,21 +180,28 @@ const obCss = `
   .ob-nd.a { background:var(--ob-accent); transform:scale(1.3); box-shadow:0 0 8px var(--ob-accent-glow); }
   .ob-nav-bar {
     position:fixed; bottom:0; left:0; right:0;
-    padding:16px 32px calc(env(safe-area-inset-bottom, 0px) + 20px);
-    display:flex; justify-content:space-between; align-items:center; z-index:100;
+    padding:0 18px env(safe-area-inset-bottom, 0px);
+    display:flex; justify-content:space-between; align-items:flex-start; z-index:100;
     background:var(--ob-nav-bg);
     backdrop-filter:blur(40px) saturate(1.8); -webkit-backdrop-filter:blur(40px) saturate(1.8);
     border-top:1px solid rgba(255,255,255,0.14);
   }
+  .ob-nav-inner {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    padding:10px 0;
+  }
   .ob-nav-next {
-    padding:10px 24px; border-radius:20px; cursor:pointer; transition:all 0.15s;
+    padding:8px 20px; border-radius:18px; cursor:pointer; transition:all 0.15s;
     background:var(--ob-accent-dim); border:1px solid var(--ob-accent);
-    color:var(--ob-accent); font-family:'Barlow',sans-serif; font-size:13px;
+    color:var(--ob-accent); font-family:'Barlow',sans-serif; font-size:12px;
     font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
   }
   .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff); }
   .ob-nav-back {
-    background:none; border:none; cursor:pointer; padding:8px 12px;
+    background:none; border:none; cursor:pointer; padding:6px 8px;
     font-family:'Barlow',sans-serif; font-size:18px; color:var(--ob-text-sec);
     opacity:0.6; transition:opacity 0.15s; line-height:1;
   }
@@ -495,9 +502,11 @@ function Onboarding({ theme, onComplete }) {
               </div>
             </div>
             <div className="ob-nav-bar">
-              <button className="ob-nav-back" onClick={() => go(0)}>←</button>
-              {dots(1)}
-              <button className="ob-nav-next" onClick={() => go(2)}>Next</button>
+              <div className="ob-nav-inner">
+                <button className="ob-nav-back" onClick={() => go(0)}>←</button>
+                {dots(1)}
+                <button className="ob-nav-next" onClick={() => go(2)}>Next</button>
+              </div>
             </div>
           </div>}
           {/* 2: PERSPECTIVE + FOUNDATION */}
@@ -520,9 +529,11 @@ function Onboarding({ theme, onComplete }) {
               </div>
             </div>
             <div className="ob-nav-bar">
-              <button className="ob-nav-back" onClick={() => go(1)}>←</button>
-              {dots(2)}
-              <button className="ob-nav-next" onClick={() => go(3)}>Next</button>
+              <div className="ob-nav-inner">
+                <button className="ob-nav-back" onClick={() => go(1)}>←</button>
+                {dots(2)}
+                <button className="ob-nav-next" onClick={() => go(3)}>Next</button>
+              </div>
             </div>
           </div>}
 
@@ -549,9 +560,11 @@ function Onboarding({ theme, onComplete }) {
               </div>
             </div>
             <div className="ob-nav-bar">
-              <button className="ob-nav-back" onClick={() => go(2)}>←</button>
-              {dots(3)}
-              <button className="ob-nav-next" onClick={() => go(4)}>Next</button>
+              <div className="ob-nav-inner">
+                <button className="ob-nav-back" onClick={() => go(2)}>←</button>
+                {dots(3)}
+                <button className="ob-nav-next" onClick={() => go(4)}>Next</button>
+              </div>
             </div>
           </div>}
 
@@ -650,9 +663,11 @@ function Onboarding({ theme, onComplete }) {
               </div>
             </div>
             <div className="ob-nav-bar">
-              <button className="ob-nav-back" onClick={() => go(3)}>←</button>
-              {dots(4)}
-              <button className="ob-nav-next" onClick={() => { if (obPeriod == null) { setObPeriod(getCircadianPeriod()); setHasChosenMood(true); } go(5); }}>Next</button>
+              <div className="ob-nav-inner">
+                <button className="ob-nav-back" onClick={() => go(3)}>←</button>
+                {dots(4)}
+                <button className="ob-nav-next" onClick={() => { if (obPeriod == null) { setObPeriod(getCircadianPeriod()); setHasChosenMood(true); } go(5); }}>Next</button>
+              </div>
             </div>
           </div>}
 
@@ -772,9 +787,11 @@ function Onboarding({ theme, onComplete }) {
               <div className="ob-pad-after-cta" aria-hidden />
             </div>
             <div className="ob-nav-bar">
-              <button className="ob-nav-back" onClick={() => go(4)}>←</button>
-              {dots(5)}
-              <button className="ob-nav-next" style={{ visibility: "hidden" }}>Next</button>
+              <div className="ob-nav-inner">
+                <button className="ob-nav-back" onClick={() => go(4)}>←</button>
+                {dots(5)}
+                <button className="ob-nav-next" style={{ visibility: "hidden" }}>Next</button>
+              </div>
             </div>
           </div>}
 
@@ -883,22 +900,22 @@ const DAILY_SECTIONS = [
     label: "Lower Body & Rotation", tag: "04",
     purpose: "Release tension accumulated in the hips, hamstrings, and lumbar spine. Let gravity and breath do the work. These are passive holds. There is nothing to push through.",
     exercises: [
-      { id: 15, name: "Supine Hamstring Stretch", start: "Lying on your back, both legs extended.", sub: "Straight-Leg Raise", type: "flow", seconds: 45, steps: [
-        { pos: "A", label: "Supine Start", focus: "SETUP", cue: "Lie on back. Both legs extended flat. Lower back in neutral. Arms at sides." },
-        { pos: "B", label: "Raise One Leg", focus: "STRETCH", cue: "Lift one leg with knee straight. Hold behind thigh or calf. Feel stretch in hamstring, not knee." },
+      { id: 15, name: "Supine Hamstring Stretch", start: "Lying on your back, both legs extended. You'll do one leg at a time (e.g. right first, then left).", sub: "Straight-Leg Raise", type: "flow", seconds: 45, steps: [
+        { pos: "A", label: "Supine Start", focus: "SETUP", cue: "Lie on your back. Both legs extended, lower back neutral. Arms relaxed at your sides." },
+        { pos: "B", label: "Raise One Leg", focus: "STRETCH", cue: "Lift one leg (e.g. right first) keeping the knee straight. Use both hands to hold behind the thigh or calf. Feel the stretch in the hamstring, not the knee. Switch to the other leg when cued." },
       ]},
-      { id: 16, name: "Figure Four Stretch", start: "Lying on your back, knees bent, feet flat.", sub: "Supine Piriformis Stretch", type: "flow", seconds: 45, steps: [
-        { pos: "A", label: "Supine Setup", focus: "SETUP", cue: "Lie on back, knees bent, feet flat. Cross right ankle over left knee. Flex right foot." },
-        { pos: "B", label: "Draw In", focus: "STRETCH", cue: "Clasp hands behind left thigh and gently draw both legs toward chest. Feel stretch in right outer hip." },
+      { id: 16, name: "Figure Four Stretch", start: "Lying on your back, knees bent, feet flat. Cross one ankle over the opposite knee (e.g. right ankle over left knee); you'll do both sides.", sub: "Supine Piriformis Stretch", type: "flow", seconds: 45, steps: [
+        { pos: "A", label: "Cross Leg Over Knee", focus: "SETUP", cue: "Lie on your back, knees bent, feet flat. Cross one leg over the other by placing that ankle on the opposite knee (e.g. right ankle on left knee). Flex the foot of the crossed leg." },
+        { pos: "B", label: "Draw In", focus: "STRETCH", cue: "Clasp hands behind the supporting thigh (the one with the foot on the floor) and gently draw both legs toward your chest. Feel the stretch in the outer hip of the crossed leg. Repeat on the other side when cued." },
       ]},
-      { id: 17, name: "Windshield Wipers", start: "Lying on your back, knees bent, arms out in a T.", sub: "Supine Hip Rotation", type: "flow", seconds: 45, steps: [
-        { pos: "A", label: "Supine, Feet Flat", focus: "SETUP", cue: "Lie on back. Knees bent, feet flat and hip-width. Arms in T, palms down for stability." },
+      { id: 17, name: "Windshield Wipers", start: "Lying on your back, knees bent, arms out in a T. Rotate knees side to side.", sub: "Supine Hip Rotation", type: "flow", seconds: 45, steps: [
+        { pos: "A", label: "Supine, Feet Flat", focus: "SETUP", cue: "Lie on your back. Knees bent, feet flat and hip-width. Arms out in a T, palms down for stability." },
         { pos: "B", label: "Lower Knees Right", focus: "ROTATE", cue: "Let both knees fall slowly to the right toward the floor. Keep shoulders flat. Breathe out." },
-        { pos: "C", label: "Lower Knees Left", focus: "ROTATE", cue: "Sweep knees back through center and lower to the left. Move at a slow, windshield-wiper pace." },
+        { pos: "C", label: "Lower Knees Left", focus: "ROTATE", cue: "Sweep knees back through center and lower to the left. Move at a slow, windshield-wiper pace. Continue alternating as needed." },
       ]},
-      { id: 18, name: "Reclined Spinal Twist", start: "Lying on your back, one knee drawn to your chest.", sub: "Arms in T position", type: "flow", seconds: 45, steps: [
-        { pos: "A", label: "Supine Start", focus: "SETUP", cue: "Lie on back. Draw right knee to chest. Arms out in a T, shoulders heavy on the floor." },
-        { pos: "B", label: "Cross & Hold", focus: "TWIST", cue: "Guide right knee across body to the left with left hand. Turn gaze right if comfortable. Hold 20–30s each side." },
+      { id: 18, name: "Reclined Spinal Twist", start: "Lying on your back, one knee drawn to your chest. Do one side (e.g. right) then the other.", sub: "Arms in T position", type: "flow", seconds: 45, steps: [
+        { pos: "A", label: "Supine Start", focus: "SETUP", cue: "Lie on your back. Draw one knee to your chest (e.g. right first). Arms out in a T, shoulders heavy on the floor." },
+        { pos: "B", label: "Cross & Hold", focus: "TWIST", cue: "Guide that knee across your body with the opposite hand (e.g. right knee to the left with left hand). Turn gaze the other way if comfortable. Hold 20–30s. Repeat on the other side when cued." },
       ]},
     ],
   },
@@ -2671,32 +2688,54 @@ function RestTimer({ onDone }) {
 const FOCUS_SPELL = { EXT: "Extension", FLEX: "Flexion", SETUP: "Setup", SPINE: "Spine", STRETCH: "Stretch", CORE: "Core", RELEASE: "Release", GLUTES: "Glutes", STABILITY: "Stability", CONTROL: "Control", HOLD: "Hold", ECCENTRIC: "Eccentric", PUSH: "Push", ISO: "Isometric", PULL: "Pull", RAISE: "Raise", LOWER: "Lower", ROTATE: "Rotation", TWIST: "Twist", CERVICAL: "Cervical", LATERAL: "Lateral", CIRCULATE: "Circulate", FLOW: "Flow", MOBILIZE: "Mobilize", MOMENTUM: "Momentum", ISOLATE: "Isolate", DECOMPRESS: "Decompress", FORWARD: "Forward", BACKWARD: "Backward", GROUND: "Ground", "END-RANGE": "End Range", TARGET: "Target", EXHALE: "Exhale", INHALE: "Inhale", FLEX: "Flexion" };
 function spellFocus(f) { return (f && FOCUS_SPELL[f.toUpperCase()]) ? FOCUS_SPELL[f.toUpperCase()] : (f || ""); }
 
-function Steps({ steps, small, startPill }) {
+function Steps({ steps, small, start: startText }) {
   return (
     <div className={small ? "steps" : "fc-steps"}>
-      {small && steps && steps.length > 0 && (
+      {small && (steps?.length > 0 || startText) && (
         <div style={{fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase",
           color:"var(--text-dimmer)", fontWeight:600, paddingBottom:8,
           borderBottom:"1px solid var(--border)", marginBottom:0, paddingLeft:0}}>
           How to perform
         </div>
       )}
-      {small && startPill && <div style={{marginTop:10,marginBottom:0}}>{startPill}</div>}
-      {steps.map((s, i) => small ? (
-        <div className="step" key={i}>
-          <div className="step-badge"><div className="step-badge-inner"><span className="step-pos">{s.pos}</span></div></div>
+
+      {/* START row — no badge, matches Flow \"START\" block */}
+      {startText && (small ? (
+        <div className="step">
           <div className="step-right">
-            <div className="step-label">{s.label}</div>
-            <div className="step-focus">{spellFocus(s.focus)}</div>
+            <div className="step-focus" style={{marginBottom:4}}>Start</div>
+            <div className="step-cue">{startText}</div>
+          </div>
+        </div>
+      ) : (
+        <div className="fc-step">
+          <div className="fc-right">
+            <div className="fc-pfocus">Start</div>
+            <div className="fc-pcue">{startText}</div>
+          </div>
+        </div>
+      ))}
+
+      {/* Steps: numeric badges 1,2,3… with focus + cue, matching Flow card */}
+      {steps?.map((s, i) => small ? (
+        <div className="step" key={i}>
+          <div className="step-badge">
+            <div className="step-badge-inner">
+              <span className="step-pos">{i + 1}</span>
+            </div>
+          </div>
+          <div className="step-right">
+            <div className="step-focus">{s.focus || (i === 0 ? "Setup" : "Move")}</div>
             <div className="step-cue">{s.cue}</div>
           </div>
         </div>
       ) : (
         <div className="fc-step" key={i}>
-          <div className="fc-badge"><span className="fc-pos">{s.pos}</span></div>
+          <div className="fc-badge">
+            <span className="fc-pos">{i + 1}</span>
+          </div>
           <div className="fc-right">
-            <div className="fc-plabel">{s.label}</div>
-            <div className="fc-pfocus">{spellFocus(s.focus)}</div>
+            <div className="fc-pfocus">{s.focus || (i === 0 ? "Setup" : "Move")}</div>
             <div className="fc-pcue">{s.cue}</div>
           </div>
         </div>
@@ -2745,12 +2784,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
           <Steps
             steps={ex.steps}
             small
-            startPill={ex.start ? (
-              <div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"8px 12px",borderRadius:10,background:"var(--accent-dim)",border:"1px solid var(--accent-glow)"}}>
-                <div style={{fontSize:9,letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent-secondary)",fontWeight:700,flexShrink:0,marginTop:2}}>Start</div>
-                <div style={{fontSize:13,color:"var(--text-secondary)",lineHeight:1.4}}>{ex.start}</div>
-              </div>
-            ) : null}
+            start={ex.start || undefined}
           />
           {!skipped && (
             <>
@@ -3120,7 +3154,8 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
   const BACK_DIM   = isNight ? "rgba(255,59,48,0.25)" : (isDark ? "rgba(255,255,255,0.22)" : "rgba(15,30,46,0.22)");
   const NAME_SHAD  = "none";
 
-  // Snapshot activeAll on mount so fi stays stable regardless of external skips
+  // Flow uses the same exercise list as Session LIST/Flow tab: activeAllProp = filteredAll from getAll(track).
+  // Instructions (cur.start, cur.steps[].cue, step.focus) are the single source of truth from TRACKS[track].sections.
   const listRef = useRef(activeAllProp);
   const list = listRef.current;
   const listTotal = list.length;
@@ -3128,16 +3163,16 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
 
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
-  const [phase, setPhase] = useState("intro"); // "intro" | "getready" | "exercise" | "rest" | "milestone" | "closing"
-  const REST_SECONDS = 15;
+  const [phase, setPhase] = useState("intro"); // "intro" | "getready" | "launch" | "exercise" | "milestone" | "closing"
   const GETREADY_SECONDS = 15;
-  const [restLeft, setRestLeft] = useState(REST_SECONDS);
   const [readyLeft, setReadyLeft] = useState(GETREADY_SECONDS);
   const [paused, setPaused] = useState(false);
+  const [launchCount, setLaunchCount] = useState(3); // 3, 2, 1 before exercise start
   const [milestoneMessage, setMilestoneMessage] = useState("");
-  const restRef = useRef(null);
   const readyRef = useRef(null);
+  const launchRef = useRef(null);
   const milestoneRef = useRef(null);
+  const wakeLockRef = useRef(null);
 
   const cur = list.length > 0 ? list[Math.min(fi, list.length - 1)] : null;
   const next = list[fi + 1] || null;
@@ -3154,15 +3189,29 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
     };
   }, []);
 
-  // Get-ready countdown (15s) — fires when phase becomes "getready"
+  // Wake Lock: keep screen on during flow (iOS/Safari support varies)
+  useEffect(() => {
+    if (phase === "intro") return;
+    if (phase === "closing") {
+      try { wakeLockRef.current?.release(); wakeLockRef.current = null; } catch (e) {}
+      return;
+    }
+    if (navigator.wakeLock && typeof navigator.wakeLock.request === "function") {
+      navigator.wakeLock.request("screen").then(lock => { wakeLockRef.current = lock; }).catch(() => {});
+    }
+  }, [phase]);
+  useEffect(() => () => { try { wakeLockRef.current?.release(); wakeLockRef.current = null; } catch (e) {} }, []);
+
+  // Get-ready countdown (15s) — at 0 go to 3-2-1 launch
   useEffect(() => {
     if (phase !== "getready") return;
     readyRef.current = setInterval(() => {
       setReadyLeft(l => {
         if (l <= 1) {
           clearInterval(readyRef.current);
-          setPhase("exercise");
-          beep(880, 0.3);
+          primeAudio();
+          setLaunchCount(3);
+          setPhase("launch");
           return GETREADY_SECONDS;
         }
         return l - 1;
@@ -3171,30 +3220,18 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
     return () => clearInterval(readyRef.current);
   }, [phase]);
 
-  // Rest countdown (15s) — then go to getready for 15s before next exercise
+  // 3-2-1 launch countdown with beeps then start exercise (primeAudio/beep on user context helps iOS)
   useEffect(() => {
-    if (phase !== "rest") { clearInterval(restRef.current); return; }
-    setRestLeft(REST_SECONDS);
-    restRef.current = setInterval(() => {
-      setRestLeft(l => {
-        if (l <= 1) {
-          clearInterval(restRef.current);
-          beep(880, 0.3);
-          setFi(i => Math.min(i + 1, list.length - 1));
-          setReadyLeft(GETREADY_SECONDS);
-          setPhase("getready");
-          return REST_SECONDS;
-        }
-        return l - 1;
-      });
-    }, 1000);
-    return () => clearInterval(restRef.current);
-  }, [phase, fi]);
+    if (phase !== "launch") return;
+    const t1 = setTimeout(() => { primeAudio(); setLaunchCount(2); beep(440, 0.1); }, 1000);
+    const t2 = setTimeout(() => { setLaunchCount(1); beep(440, 0.1); }, 2000);
+    const t3 = setTimeout(() => { setLaunchCount(0); beep(880, 0.3); setPhase("exercise"); }, 3000);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, [phase]);
 
   const completeCurrent = () => {
     beep(660, 0.4);
     onToggle(cur.id);
-    // Last exercise: always show Flow Completed (don't rely on totalDone — user may have skipped with Next)
     if (fi >= list.length - 1) {
       setPhase("closing");
       if (onSessionComplete) onSessionComplete();
@@ -3215,12 +3252,16 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
       setPhase("milestone");
       if (milestoneRef.current) clearTimeout(milestoneRef.current);
       milestoneRef.current = setTimeout(() => {
-        setPhase("rest");
+        setFi(i => Math.min(i + 1, list.length - 1));
+        setReadyLeft(GETREADY_SECONDS);
+        setPhase("getready");
         setMilestoneMessage("");
         milestoneRef.current = null;
       }, 2200);
     } else {
-      setPhase("rest");
+      setFi(i => Math.min(i + 1, list.length - 1));
+      setReadyLeft(GETREADY_SECONDS);
+      setPhase("getready");
     }
   };
 
@@ -3250,7 +3291,7 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
   };
 
   const handlePrev = () => {
-    if (fi > 0) { setFi(i => i - 1); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); clearInterval(restRef.current); }
+    if (fi > 0) { setFi(i => i - 1); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }
   };
 
   // No exercises: show message and exit (avoids cur.id / cur.name access on undefined)
@@ -3373,16 +3414,17 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
             <div style={{fontSize:36, fontWeight:600, letterSpacing:"-0.03em", lineHeight:1.1, color:W, marginBottom:16, textShadow: NAME_SHAD}}>
               {trackLabel}
             </div>
-            <div style={{fontSize: 13, color: S, marginBottom: 48}}>{filteredCount} exercises • {trackDuration}</div>
+            <div style={{fontSize: 13, color: S, marginBottom: 24}}>{filteredCount} exercises • {trackDuration}</div>
           </div>
           <div style={{display:"flex", flexDirection:"column", alignItems:"center", paddingBottom:8}}>
+            <div style={{fontSize: 12, color: S, opacity: 0.85, maxWidth: 320, lineHeight: 1.4, marginBottom: 28, textAlign: "center"}}>No equipment? You can modify — use a towel instead of a strap, a book instead of a block, or skip props and focus on range of motion.</div>
             <button onClick={() => { primeAudio(); beep(880, 0.3); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }} style={{
               padding: "14px 48px", borderRadius: 999, cursor: "pointer",
               background: A, border: "none", color: "#0a0e1a",
               fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
               letterSpacing: "0.24em", textTransform: "uppercase",
               boxShadow: `0 0 24px ${ct.accentGlow}`,
-            }}>GET READY</button>
+            }}>REST & GET READY</button>
             <button onClick={onExit} style={{
               marginTop:14, background:"none", border:"none", cursor:"pointer",
               fontSize:11, letterSpacing:"0.16em", textTransform:"uppercase", color:D, fontFamily:"'Barlow',sans-serif",
@@ -3394,28 +3436,28 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
       {/* ── GET READY / REST / EXERCISE — top: copy (scrollable); bottom half: large timer in liquid glass ── */}
       {phase !== "intro" && phase !== "closing" && phase !== "milestone" && (
         <div style={{flex:1, display:"flex", flexDirection:"column", position:"relative", zIndex:2, minHeight:0, overflow:"hidden"}}>
-          {/* Top: instructional copy — more space so longer instructions don't get cut off */}
-          <div style={{flex: "1 1 58%", minHeight:0, overflowY:"auto", overflowX:"hidden", padding:"6px 16px 12px", WebkitOverflowScrolling:"touch"}}>
+          {/* Top: instructional copy — flex column so timer/launch can sit at bottom (marginTop: auto) */}
+          <div style={{flex: "1 1 58%", minHeight:0, overflowY:"auto", overflowX:"hidden", padding:"6px 16px 12px", WebkitOverflowScrolling:"touch", display:"flex", flexDirection:"column"}}>
           {/* Status label: small, all-caps, wide letter spacing — centered on GET READY / BEGIN / UP NEXT */}
-          <div style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: S, marginBottom: 8, flexShrink: 0, textAlign: (phase === "getready" || phase === "exercise" || phase === "rest") ? "center" : "left" }}>
-            {phase === "getready" ? "GET READY" : phase === "exercise" ? "BEGIN" : phase === "rest" ? "UP NEXT" : ""}
+          <div style={{ fontSize: 13, letterSpacing: "0.28em", textTransform: "uppercase", color: S, marginBottom: 10, flexShrink: 0, textAlign: (phase === "getready" || phase === "launch" || phase === "exercise") ? "center" : "left" }}>
+            {phase === "getready" ? "REST & GET READY" : phase === "launch" ? "GET SET" : phase === "exercise" ? "BEGIN" : ""}
           </div>
 
-          {/* Primary title: large, bold — white, centered on GET READY / BEGIN / UP NEXT */}
+          {/* Primary title: large, bold — white, centered */}
           <div style={{
-            fontSize: (phase === "getready" || phase === "exercise") ? 32 : 26,
-            fontWeight: 700, letterSpacing: "0.02em", lineHeight: 1.1, textTransform: "uppercase",
+            fontSize: (phase === "getready" || phase === "launch" || phase === "exercise") ? 38 : 30,
+            fontWeight: 700, letterSpacing: "0.02em", lineHeight: 1.08, textTransform: "uppercase",
             color: W,
-            marginBottom: 14, flexShrink: 0, fontFamily: "'Barlow', sans-serif",
+            marginBottom: 16, flexShrink: 0, fontFamily: "'Barlow', sans-serif",
             textShadow: NAME_SHAD,
-            textAlign: (phase === "getready" || phase === "exercise" || phase === "rest") ? "center" : "left",
+            textAlign: (phase === "getready" || phase === "launch" || phase === "exercise") ? "center" : "left",
           }}>
-            {phase === "rest" ? next?.name : cur.name}
+            {cur?.name}
           </div>
 
           {/* ── GLASS CUE CARD ── */}
           {(() => {
-            const ex = phase === "rest" ? next : cur;
+            const ex = cur;
             if (!ex?.steps?.length && !ex?.start) return null;
             return (
               <div style={{
@@ -3428,27 +3470,21 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
                 overflow: "hidden", flexShrink: 0, marginBottom: 16,
               }}>
                 {ex.start && (
-                  <div style={{ padding: "12px 14px 10px", borderBottom: (ex.steps?.[0] || ex.steps?.[1]) ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
-                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>START</div>
-                    <div style={{ fontSize: 14, color: W, lineHeight: 1.35, fontWeight: 300, letterSpacing: "-0.01em" }}>{ex.start}</div>
+                  <div style={{ padding: "14px 16px 12px", borderBottom: ex.steps?.length ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
+                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 8 }}>START</div>
+                    <div style={{ fontSize: 17, color: W, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em" }}>{ex.start}</div>
                   </div>
                 )}
-                {ex.steps?.[0] && (
-                  <div style={{ padding: "12px 14px 10px", borderBottom: ex.steps[1] ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
-                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>SETUP</div>
-                    <div style={{ fontSize: 14, color: W, lineHeight: 1.35, fontWeight: 300, letterSpacing: "-0.01em" }}>{ex.steps[0].cue}</div>
+                {ex.steps?.map((step, idx) => (
+                  <div key={idx} style={{ padding: idx === 0 ? "14px 16px 12px" : "12px 16px 14px", borderBottom: (idx < ex.steps.length - 1) || (ex.type === "reps" && ex.reps) ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
+                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 8 }}>{step.focus || (idx === 0 ? "SETUP" : "MOVE")}</div>
+                    <div style={{ fontSize: 17, color: W, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em" }}>{step.cue}</div>
                   </div>
-                )}
-                {ex.steps[1] && (
-                  <div style={{ padding: "10px 14px 12px", textAlign: "left" }}>
-                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>MOVE</div>
-                    <div style={{ fontSize: 14, color: W, lineHeight: 1.35, fontWeight: 300, letterSpacing: "-0.01em" }}>{ex.steps[1].cue}</div>
-                  </div>
-                )}
-                {!ex.steps?.[1] && ex.type === "reps" && ex.reps && (
-                  <div style={{ padding: "10px 14px 12px", borderTop: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)", textAlign: "left" }}>
-                    <div style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 4 }}>TARGET</div>
-                    <div style={{ fontSize: 18, fontWeight: 600, color: W }}>{ex.reps}</div>
+                ))}
+                {ex.type === "reps" && ex.reps && (
+                  <div style={{ padding: "12px 16px 14px", textAlign: "left" }}>
+                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 6 }}>TARGET</div>
+                    <div style={{ fontSize: 20, fontWeight: 600, color: W }}>{ex.reps}</div>
                   </div>
                 )}
               </div>
@@ -3463,48 +3499,45 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
             </div>
           )}
 
-          </div>
-          {/* Bottom half: timer block moved up — double pill height (112px) below */}
+          {/* REST & GET READY: timer and progress bar — lower, closer to START button */}
+          {phase === "getready" && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 16, flexShrink: 0, paddingTop: 24 }}>
+              <div style={{
+                minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
+                color: "#fff", lineHeight: 1,
+              }}>
+                {`0:${readyLeft.toString().padStart(2, "0")}`}
+              </div>
+              <div style={{ width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 28 }}>
+                <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
+              </div>
+            </div>
+          )}
+
+          {/* BEGIN: exercise countdown and progress bar — lower, closer to PAUSE/NEXT */}
           {phase === "exercise" && cur && (
-            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 112px"}}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 16, flexShrink: 0, paddingTop: 24 }}>
               <OverlayTimer key={cur.id + "-" + fi} seconds={cur.type === "time" || cur.type === "flow" ? cur.seconds : 45} onDone={handleTimerDone}
                 autoStart={true} paused={paused} fi={fi} list={list} theme={theme} activePeriod={activePeriod} nightMode={nightMode} large={true} />
             </div>
           )}
-          {phase === "getready" && (
-            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 112px"}}>
-              <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                <div style={{
-                  minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
-                  color: "#fff", lineHeight: 1,
-                }}>
-                  {`0:${readyLeft.toString().padStart(2, "0")}`}
-                </div>
-                <div style={{width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 28}}>
-                  <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
-                </div>
+
+          {/* Launch: 3, 2, 1 — lower, closer to pill */}
+          {phase === "launch" && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "auto", marginBottom: 16, flexShrink: 0, paddingTop: 24 }}>
+              <div style={{
+                fontFamily: "'Barlow', sans-serif",
+                fontSize: 120, fontWeight: 700, color: W, lineHeight: 1,
+                textShadow: NAME_SHAD,
+              }}>
+                {launchCount > 0 ? launchCount : ""}
               </div>
             </div>
           )}
-          {phase === "rest" && (
-            <div style={{flex:1, minHeight:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 20px 112px"}}>
-              <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                <div style={{
-                  minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-                  fontFamily: "'Barlow', sans-serif",
-                  fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
-                  color: "#fff", lineHeight: 1,
-                }}>
-                  {`0:${restLeft.toString().padStart(2, "0")}`}
-                </div>
-                <div style={{width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 28}}>
-                  <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((REST_SECONDS - restLeft) / REST_SECONDS) * 100}%`, transition: "width 1s linear" }} />
-                </div>
-              </div>
-            </div>
-          )}
+
+          </div>
         </div>
       )}
 
@@ -3540,9 +3573,9 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           </>
         )}
 
-        {/* GET READY: Start Now — full width */}
+        {/* GET READY: Start Now — full width (triggers 3-2-1 then exercise; primeAudio helps iOS unlock beeps) */}
         {phase === "getready" && (
-          <button onClick={() => { clearInterval(readyRef.current); setPhase("exercise"); beep(880,0.3); }} style={{
+          <button onClick={() => { clearInterval(readyRef.current); primeAudio(); setLaunchCount(3); setPhase("launch"); }} style={{
             flex: 1, width: "100%", minWidth: 0, background: A, border: "none",
             color: "#0a0e1a", fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
             letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer",
@@ -3550,14 +3583,9 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
           }}>START NOW</button>
         )}
 
-        {/* REST: SKIP REST centered in full pill (no countdown on left) */}
-        {phase === "rest" && (
-          <button onClick={() => { clearInterval(restRef.current); setFi(i=>Math.min(i+1,list.length-1)); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }} style={{
-            flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center",
-            background: "transparent", border: "none",
-            color: W, fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 700,
-            letterSpacing: "0.16em", textTransform: "uppercase", cursor: "pointer",
-          }}>Skip Rest</button>
+        {/* LAUNCH: no button — 3-2-1 runs automatically */}
+        {phase === "launch" && (
+          <div style={{ flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: S, fontSize: 12, letterSpacing: "0.12em" }}>Starting…</div>
         )}
       </div>
       )}
