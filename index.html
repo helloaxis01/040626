@@ -3683,29 +3683,113 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     letterSpacing: "0.02em",
     textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
   };
+  // Barlow for flat minimal look; main countdown and stepper values
   const intervalDigitStyle = {
-    ...DSEG_BASE,
+    fontFamily: "'Barlow', sans-serif",
+    fontWeight: 600,
+    letterSpacing: "-0.02em",
     minWidth: 100,
     textAlign: "center",
     fontSize: 80,
-    color: "#fff",
+    color: "var(--text-white)",
     lineHeight: 1,
+    fontVariantNumeric: "tabular-nums",
   };
-  const dsegMedium = { ...DSEG_BASE, fontSize: 22, color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center" };
-  const dsegSmall = { ...DSEG_BASE, fontSize: 13, color: "var(--text-dimmer)", lineHeight: 1.2 };
-  const BTN       = { padding:"18px 56px", borderRadius:36, cursor:"pointer", fontFamily:"'Barlow',sans-serif", fontSize:"12px", fontWeight:700, letterSpacing:"0.20em", textTransform:"uppercase", background:"var(--accent)", color:"var(--accent-btn-text, #fff)", border:"none", boxShadow:"0 0 28px var(--accent-glow)", transition:"all 0.2s" };
-  const BTN_GHOST = { padding:"18px 28px", borderRadius:36, cursor:"pointer", fontFamily:"'Barlow',sans-serif", fontSize:"12px", fontWeight:600, letterSpacing:"0.14em", textTransform:"uppercase", background:"var(--glass-bg)", color:"var(--text-secondary)", border:"1px solid var(--glass-border)", transition:"all 0.2s" };
+  const timerNumMedium = { fontFamily: "'Barlow', sans-serif", fontWeight: 600, fontSize: 22, color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center", fontVariantNumeric: "tabular-nums" };
+  const timerNumSmall = { fontFamily: "'Barlow', sans-serif", fontWeight: 500, fontSize: 13, color: "var(--text-dimmer)", lineHeight: 1.2 };
+  const BTN       = { padding:"12px 32px", borderRadius:28, cursor:"pointer", fontFamily:"'Barlow',sans-serif", fontSize:"11px", fontWeight:700, letterSpacing:"0.16em", textTransform:"uppercase", transition:"all 0.22s" };
+  const BTN_GHOST = { padding:"12px 20px", borderRadius:28, cursor:"pointer", fontFamily:"'Barlow',sans-serif", fontSize:"11px", fontWeight:600, letterSpacing:"0.12em", textTransform:"uppercase", transition:"all 0.22s" };
   // Lock INTERVAL + BREATHE layout: same ring slot, same mid slot, same button row (BREATHE as reference — no extra ring offset)
-  const TIMER_RING_WRAP = { flexShrink:0, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", width:320, height:320, marginLeft:"auto", marginRight:"auto", marginTop:0, marginBottom:0 };
-  const TIMER_MID_MIN_IDLE = 120; // Work/Rest/Rounds vs pattern/cycles
+  // Circle as large as possible within column; static slot so INTERVAL/BREATHE don’t shift
+  const ringSize = 360;
+  const TIMER_RING_WRAP = { flexShrink:0, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft:"auto", marginRight:"auto", marginTop:0, marginBottom:0 };
+  const TIMER_MID_MIN_IDLE = 120; // Work/Rest/Rounds vs pattern/cycles below circle
   const TIMER_PHASE_BAND = 52;    // matches BREATHE phase label block height so Pause/Reset align when running
-  // Toggle + primary actions: fixed spacing; button row pinned so START/PAUSE stay same vertical slot
-  const TIMER_TOGGLE_WRAP = { flexShrink:0, display:"flex", gap:0, marginBottom:28, background:"var(--glass-bg)", border:"1px solid var(--glass-border)", borderRadius:24, padding:4, minHeight:48, alignItems:"center", boxSizing:"border-box" };
-  const TIMER_BTN_ROW = { flexShrink:0, display:"flex", gap:12, marginTop:"auto", paddingTop:20, paddingBottom:8, width:"100%", justifyContent:"center", boxSizing:"border-box" };
+  // Toggle: spacer above so INTERVAL/BREATHE sit halfway between top edge and top of circle (toggle ~60px + margin 28 → midpoint = 28px above toggle)
+  const TIMER_TOGGLE_SPACER_TOP = 28;
+  const TIMER_TOGGLE_WRAP = { flexShrink:0, display:"flex", gap:10, marginBottom:28, padding:6, minHeight:48, alignItems:"center", boxSizing:"border-box" };
+  // Button row: equal spacers when Pause/Reset/Again — when START only, shrink spacer above so START sits same height as Pause/RESET
+  const TIMER_BTN_SPACER_ABOVE = { flex:1, minHeight:0, width:"100%" };
+  const TIMER_BTN_SPACER_BELOW = { flex:1, minHeight:0, width:"100%" };
+  // Idle: START halfway between Work/Rest/Rounds (or patterns) and tab bar — balanced flex + no pull-up
+  const TIMER_BTN_SPACER_ABOVE_IDLE = { flex:1, minHeight:0, width:"100%" };
+  const TIMER_BTN_SPACER_BELOW_IDLE = { flex:1, minHeight:0, width:"100%" };
+  const TIMER_BTN_ROW = { flexShrink:0, display:"flex", gap:8, width:"100%", justifyContent:"center", boxSizing:"border-box", paddingTop:6, paddingBottom:6 };
+  const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW, marginTop:0 };
+
+  const timerFlatCss = `
+  .timer-view-body .timer-mode-outer-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+  }
+  .timer-view-body .timer-glass-wrap {
+    background: transparent;
+    border-radius: 999px;
+    position: relative;
+  }
+  .timer-view-body .timer-glass-toggle-btn {
+    padding: 10px 24px; border-radius: 999px; border: none;
+    font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; transition: all 0.2s ease;
+    background: transparent; color: var(--text-dim);
+  }
+  .timer-view-body .timer-glass-toggle-btn.active {
+    background: var(--accent); color: var(--accent-btn-text, #fff);
+  }
+  .timer-view-body .timer-glass-orb {
+    background: transparent;
+    border-radius: 50%;
+    position: relative;
+  }
+  .timer-view-body .timer-glass-panel {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative; overflow: hidden;
+  }
+  .timer-view-body .timer-glass-phase {
+    background: transparent;
+    border-radius: 0;
+  }
+  .timer-view-body .timer-glass-btn-pri {
+    background: var(--accent);
+    color: var(--accent-btn-text, #fff);
+    border: none;
+  }
+  .timer-view-body .timer-glass-btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .timer-view-body .timer-glass-pattern-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: all 0.2s ease;
+  }
+  .timer-view-body .timer-glass-pattern-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .timer-view-body .timer-glass-stepper {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+  }
+  .timer-view-body .timer-interval-ring circle:first-of-type {
+    stroke: var(--border);
+  }
+  .timer-view-body .timer-breathe-guide-ring circle {
+    stroke: var(--border);
+  }
+  `;
 
   return (
     <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"} style={{minHeight:"100dvh",display:"flex",flexDirection:"column"}}>
       <style>{css}</style>
+      <style>{timerFlatCss}</style>
       <div className="app-orbs" style={{background:"var(--orb1), var(--orb2), var(--orb3)", transition:"background 0.4s ease"}} />
       {/* Anchor from top like first paint — no vertical centering so circle/toggle don’t jump when mode/state changes */}
       <div className="app-body timer-view-body" style={{
@@ -3714,28 +3798,21 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
         padding:"calc(env(safe-area-inset-top, 0px) + 16px) 24px calc(84px + env(safe-area-inset-bottom, 0px))",
         boxSizing:"border-box",width:"100%",
       }}>
-        {/* Single column: toggle → ring (locked slot) → mid → flex spacer → buttons (locked to bottom band) */}
+        {/* Single column: spacer → toggle (halfway top→circle) → ring → mid → spacers → buttons (halfway cycles→tab bar) */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",width:"100%",maxWidth:360,flex:1,minHeight:0}}>
-        {/* Mode toggle — same height as main timer screen */}
-        <div style={TIMER_TOGGLE_WRAP}>
+        <div style={{flexShrink:0, height:TIMER_TOGGLE_SPACER_TOP, width:"100%"}} aria-hidden />
+        <div className="timer-mode-outer-pill timer-glass-wrap" style={TIMER_TOGGLE_WRAP}>
           {["interval","breathe"].map(m => (
-            <button key={m} onClick={()=>switchMode(m)} style={{
-              padding:"9px 28px", borderRadius:20, border:"none", cursor:"pointer",
-              fontFamily:"'Barlow',sans-serif", fontSize:"13px", fontWeight:600,
-              letterSpacing:"0.14em", textTransform:"uppercase", transition:"all 0.2s",
-              background: mode===m ? "var(--accent)" : "transparent",
-              color: mode===m ? "var(--accent-btn-text, #fff)" : "var(--text-dim)",
-              boxShadow: mode===m ? "0 0 16px var(--accent-glow)" : "none",
-            }}>{m === "interval" ? "Interval" : "Breathe"}</button>
+            <button key={m} type="button" onClick={()=>switchMode(m)} className={"timer-glass-toggle-btn" + (mode===m ? " active" : "")}>{m === "interval" ? "Interval" : "Breathe"}</button>
           ))}
         </div>
 
-        {/* ── INTERVAL MODE ── (ring locked; column flex so START/PAUSE pin to same band) */}
+        {/* ── INTERVAL MODE ── circle static above; Work/Rest/Rounds then START/PAUSE/RESET below */}
         {mode === "interval" && (
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",width:"100%",flex:1,minHeight:0}}>
-          <div className="timer-ring-slot" style={TIMER_RING_WRAP}>
-            <svg width="320" height="320" className="timer-interval-ring" style={{transform:"rotate(-90deg)",display:"block",margin:"0 auto"}}>
-              <circle cx="160" cy="160" r="140" fill="none" stroke="var(--glass-border)" strokeWidth="3"/>
+          <div className="timer-glass-orb timer-ring-slot" style={TIMER_RING_WRAP}>
+            <svg width={ringSize} height={ringSize} viewBox="0 0 320 320" className="timer-interval-ring" style={{transform:"rotate(-90deg)",display:"block",margin:"0 auto"}}>
+              <circle cx="160" cy="160" r="140" fill="none" stroke="var(--border)" strokeWidth="2.5"/>
               {iPhase !== "idle" && iPhase !== "done" && (
                 <circle cx="160" cy="160" r="140" fill="none"
                   stroke={iRingColor} strokeWidth="4" strokeLinecap="round"
@@ -3746,7 +3823,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               )}
             </svg>
             {/* Overlay: big seconds centered in circle; rounds row in bottom 1/4 (80px) */}
-            <div style={{position:"absolute",left:0,top:0,width:320,height:320,pointerEvents:"none"}}>
+            <div style={{position:"absolute",left:0,top:0,width:ringSize,height:ringSize,pointerEvents:"none"}}>
               {/* Large countdown — centered in full circle */}
               <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                 {iPhase === "idle" && (
@@ -3767,16 +3844,16 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 }}>
                   {iPhase === "idle" && (
                     <>
-                      <span style={dsegSmall}>1</span>
+                      <span style={timerNumSmall}>1</span>
                       <span style={{fontSize:13,letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>/</span>
-                      <span style={dsegSmall}>{rounds}</span>
+                      <span style={timerNumSmall}>{rounds}</span>
                     </>
                   )}
                   {(iPhase === "work" || iPhase === "rest") && (
                     <>
-                      <span style={dsegSmall}>{iRound}</span>
+                      <span style={timerNumSmall}>{iRound}</span>
                       <span style={{fontSize:13,letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>/</span>
-                      <span style={dsegSmall}>{rounds}</span>
+                      <span style={timerNumSmall}>{rounds}</span>
                     </>
                   )}
                 </div>
@@ -3784,23 +3861,24 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
             </div>
           </div>
 
-          <div style={{flexShrink:0,minHeight:iPhase==="idle"?TIMER_MID_MIN_IDLE:0,width:"100%",marginBottom:0}}>
+          {/* Mid zone: Work/Rest/Rounds below circle when idle */}
+          <div style={{flexShrink:0,minHeight:iPhase==="idle"?TIMER_MID_MIN_IDLE:0,width:"100%",marginTop:24,marginBottom:20}}>
           {iPhase === "idle" && (
-            <div style={{display:"flex",marginBottom:0,borderRadius:20,background:"var(--glass-bg)",border:"1px solid var(--glass-border)",width:"100%",boxSizing:"border-box",overflow:"hidden"}}>
+            <div className="timer-glass-panel" style={{display:"flex",marginBottom:0,width:"100%",boxSizing:"border-box",overflow:"hidden"}}>
               {[
                 {label:"Work",   val:work,   set:setWork,   min:5, max:300, step:5,  isRound:false},
                 {label:"Rest",   val:rest,   set:setRest,   min:0, max:120, step:5,  isRound:false},
                 {label:"Rounds", val:rounds, set:setRounds, min:1, max:20,  step:1,  isRound:true},
               ].map(({label,val,set,min,max,step,isRound},i) => (
-                <div key={label} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:"12px 0",borderLeft:i>0?"1px solid var(--border)":"none"}}>
+                <div key={label} style={{flex:1,minWidth:isRound?80:0,display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:"12px 4px",borderLeft:i>0?"1px solid var(--border)":"none"}}>
                   <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>{label}</div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <button onClick={()=>set(v=>Math.max(min,v-step))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+                    <button type="button" onClick={()=>set(v=>Math.max(min,v-step))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>−</button>
                     <div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:2}}>
-                      <span style={dsegMedium}>{val}</span>
+                      <span style={timerNumMedium}>{val}</span>
                       {!isRound && <span style={{fontSize:"13px",color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>s</span>}
                     </div>
-                    <button onClick={()=>set(v=>Math.min(max,v+step))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
+                    <button type="button" onClick={()=>set(v=>Math.min(max,v+step))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>+</button>
                   </div>
                 </div>
               ))}
@@ -3812,37 +3890,38 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
             <div style={{flexShrink:0,width:"100%",minHeight:TIMER_PHASE_BAND,boxSizing:"border-box"}} aria-hidden />
           )}
 
-          <div style={TIMER_BTN_ROW}>
-            {iPhase === "idle"   && <button onClick={()=>{primeAudio();iStart();}} style={BTN}>Start</button>}
+          <div style={iPhase==="idle"?TIMER_BTN_SPACER_ABOVE_IDLE:TIMER_BTN_SPACER_ABOVE} aria-hidden />
+          <div style={iPhase==="idle"?TIMER_BTN_ROW_IDLE:TIMER_BTN_ROW}>
+            {iPhase === "idle"   && <button type="button" onClick={()=>{primeAudio();iStart();}} className="timer-glass-btn-pri" style={BTN}>Start</button>}
             {(iPhase==="work"||iPhase==="rest") && <>
-              <button onClick={()=>setIRunning(r=>!r)} style={{...BTN,padding:"18px 40px"}}>{iRunning?"Pause":"Resume"}</button>
-              <button onClick={iReset} style={BTN_GHOST}>Reset</button>
+              <button type="button" onClick={()=>setIRunning(r=>!r)} className="timer-glass-btn-pri" style={{...BTN,padding:"12px 28px"}}>{iRunning?"Pause":"Resume"}</button>
+              <button type="button" onClick={iReset} className="timer-glass-btn-ghost" style={BTN_GHOST}>Reset</button>
             </>}
-            {iPhase === "done"   && <button onClick={iReset} style={BTN}>Again</button>}
+            {iPhase === "done"   && <button type="button" onClick={iReset} className="timer-glass-btn-pri" style={BTN}>Again</button>}
           </div>
+          <div style={iPhase==="idle"?TIMER_BTN_SPACER_BELOW_IDLE:TIMER_BTN_SPACER_BELOW} aria-hidden />
         </div>)}
 
-        {/* ── BREATHE MODE ── (same ring slot + button band as INTERVAL) */}
+        {/* ── BREATHE MODE ── circle static above; patterns + Cycles then START/PAUSE/RESET below */}
         {mode === "breathe" && (
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",width:"100%",flex:1,minHeight:0}}>
-          <div className="timer-breathe-ring-wrap timer-ring-slot" style={TIMER_RING_WRAP}>
-            <svg width="320" height="320" style={{position:"absolute",top:0,left:0}} className="timer-breathe-guide-ring">
-              <circle cx="160" cy="160" r="140" fill="none" stroke="var(--glass-border)" strokeWidth="1.5"/>
+          <div className="timer-glass-orb timer-breathe-ring-wrap timer-ring-slot" style={TIMER_RING_WRAP}>
+            <svg width={ringSize} height={ringSize} viewBox="0 0 320 320" style={{position:"absolute",top:0,left:0}} className="timer-breathe-guide-ring">
+              <circle cx="160" cy="160" r="140" fill="none" stroke="var(--border)" strokeWidth="1.5"/>
             </svg>
             <div className={`timer-breathe-expand-ring ${!(bRunning && bExpand) ? "breathe-idle" : ""}`} style={{
-              position:"absolute", left:24, top:24, width:272, height:272, borderRadius:"50%",
-              background:`radial-gradient(circle, var(--accent-glow) 0%, var(--accent-dim) 55%, transparent 100%)`,
-              border:"1.5px solid var(--accent)",
-              opacity: bRunning && bExpand ? 0.85 : 0.08,
+              position:"absolute", left:27, top:27, width:306, height:306, borderRadius:"50%",
+              background: bRunning && bExpand ? "var(--accent-dim)" : "transparent",
+              border:"2px solid var(--accent)",
+              opacity: bRunning && bExpand ? 0.4 : 0.12,
               transform: bRunning && bExpand ? "scale(1)" : "scale(0.45)",
               transition: bRunning ? `opacity ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1), transform ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1)` : "opacity 0.6s ease, transform 0.6s ease",
-              boxShadow: bRunning && bExpand ? "0 0 50px var(--accent-glow)" : "none",
             }}/>
             {/* Same layout as INTERVAL: countdown centered; cycle line in bottom band (bottom 20, height 80) */}
-            <div style={{position:"absolute",left:0,top:0,width:320,height:320,pointerEvents:"none"}}>
+            <div style={{position:"absolute",left:0,top:0,width:ringSize,height:ringSize,pointerEvents:"none"}}>
               {!bRunning && !bDone && (
                 <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  <div style={{fontSize:"20px",letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Ready</div>
+                  <div style={{fontSize:"20px",fontWeight:600,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>Ready</div>
                 </div>
               )}
               {bRunning && (
@@ -3855,9 +3934,9 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                     position:"absolute",left:0,right:0,bottom:20,height:80,
                     display:"flex",alignItems:"center",justifyContent:"center",gap:6,
                   }}>
-                    <span style={dsegSmall}>{bCycle}</span>
+                    <span style={timerNumSmall}>{bCycle}</span>
                     <span style={{fontSize:13,color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>/</span>
-                    <span style={dsegSmall}>{breathCycles}</span>
+                    <span style={timerNumSmall}>{breathCycles}</span>
                   </div>
                 </>
               )}
@@ -3870,7 +3949,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           </div>
           {/* Phase label — between circle and Pause/Reset; height locked to TIMER_PHASE_BAND for INTERVAL alignment */}
           {bRunning && (
-            <div style={{flexShrink:0,width:"100%",textAlign:"center",padding:"9px 20px 10px",marginTop:-5,boxSizing:"border-box",minHeight:TIMER_PHASE_BAND,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div className="timer-glass-phase" style={{flexShrink:0,width:"100%",textAlign:"center",padding:"9px 20px 10px",marginTop:-5,boxSizing:"border-box",minHeight:TIMER_PHASE_BAND,display:"flex",alignItems:"center",justifyContent:"center"}}>
               <div style={{
                 fontSize:26,
                 fontWeight:700,
@@ -3883,44 +3962,39 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               }}>{curBreathPhase.label}</div>
             </div>
           )}
-          {/* Options — pattern + cycles (same minHeight as INTERVAL idle controls) */}
-          <div style={{flexShrink:0,minHeight:(!bRunning && !bDone)?TIMER_MID_MIN_IDLE:0,width:"100%",marginBottom:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
-          {!bRunning && !bDone && (
-            <>
-              <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12,justifyContent:"center"}}>
-                {Object.keys(BREATH_PATTERNS).map(p => (
-                  <button key={p} onClick={()=>setBreathPattern(p)} style={{
-                    fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,
-                    letterSpacing:"0.14em",textTransform:"uppercase",padding:"9px 20px",
-                    borderRadius:20,cursor:"pointer",transition:"all 0.2s",
-                    border: breathPattern===p?"1px solid var(--accent)":"1px solid var(--glass-border)",
-                    background: breathPattern===p?"var(--accent-dim)":"var(--glass-bg)",
-                    color: breathPattern===p?"var(--accent)":"var(--text-secondary)",
-                  }}>{p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh"}</button>
-                ))}
-              </div>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginBottom:8}}>
-                <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Cycles</div>
-                <button onClick={()=>setBreathCycles(v=>Math.max(1,v-1))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
-                <span style={dsegMedium}>{breathCycles}</span>
-                <button onClick={()=>setBreathCycles(v=>Math.min(12,v+1))} style={{width:28,height:28,borderRadius:"50%",border:"1px solid var(--glass-border)",background:"transparent",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
-              </div>
-            </>
-          )}
-          </div>
           {/* Spacer when done so Again aligns with INTERVAL Again */}
           {bDone && (
             <div style={{flexShrink:0,width:"100%",minHeight:TIMER_PHASE_BAND,boxSizing:"border-box"}} aria-hidden />
           )}
-
-          <div style={TIMER_BTN_ROW}>
-            {!bRunning && !bDone && <button onClick={bStart} style={BTN}>Start</button>}
-            {bRunning && <>
-              <button onClick={()=>setBRunning(r=>!r)} style={{...BTN,padding:"18px 40px"}}>Pause</button>
-              <button onClick={bReset} style={BTN_GHOST}>Reset</button>
-            </>}
-            {bDone && <button onClick={bReset} style={BTN}>Again</button>}
+          {/* Options — 4-7-8 / Box / Physio Sigh + Cycles below circle when idle */}
+          <div style={{flexShrink:0,minHeight:(!bRunning && !bDone)?TIMER_MID_MIN_IDLE:0,width:"100%",marginTop:24,marginBottom:20,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
+          {!bRunning && !bDone && (
+            <>
+              <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:16,justifyContent:"center"}}>
+                {Object.keys(BREATH_PATTERNS).map(p => (
+                  <button key={p} type="button" onClick={()=>setBreathPattern(p)} className={"timer-glass-pattern-btn" + (breathPattern===p ? " active" : "")} style={{fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",padding:"9px 20px",cursor:"pointer",color: breathPattern===p ? "var(--accent)" : "var(--text-secondary)"}}>{p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh"}</button>
+                ))}
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:18}}>
+                <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Cycles</div>
+                <button type="button" onClick={()=>setBreathCycles(v=>Math.max(1,v-1))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>−</button>
+                <span style={timerNumMedium}>{breathCycles}</span>
+                <button type="button" onClick={()=>setBreathCycles(v=>Math.min(12,v+1))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>+</button>
+              </div>
+            </>
+          )}
           </div>
+
+          <div style={(!bRunning && !bDone)?TIMER_BTN_SPACER_ABOVE_IDLE:TIMER_BTN_SPACER_ABOVE} aria-hidden />
+          <div style={(!bRunning && !bDone)?TIMER_BTN_ROW_IDLE:TIMER_BTN_ROW}>
+            {!bRunning && !bDone && <button type="button" onClick={bStart} className="timer-glass-btn-pri" style={BTN}>Start</button>}
+            {bRunning && <>
+              <button type="button" onClick={()=>setBRunning(r=>!r)} className="timer-glass-btn-pri" style={{...BTN,padding:"12px 28px"}}>Pause</button>
+              <button type="button" onClick={bReset} className="timer-glass-btn-ghost" style={BTN_GHOST}>Reset</button>
+            </>}
+            {bDone && <button type="button" onClick={bReset} className="timer-glass-btn-pri" style={BTN}>Again</button>}
+          </div>
+          <div style={(!bRunning && !bDone)?TIMER_BTN_SPACER_BELOW_IDLE:TIMER_BTN_SPACER_BELOW} aria-hidden />
         </div>)}
 
         </div>
