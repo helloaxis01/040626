@@ -1744,13 +1744,6 @@ function storageSet(key, val) {
 // ─────────────────────────────────────────────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-  @font-face {
-    font-family: 'DSEG7';
-    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Modern-MINI/DSEG7ModernMini-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-  }
   html, body, #root { width:100%; max-width:100vw; min-height:100%; min-height:100dvh; height:100dvh; margin:0; padding:0; box-sizing:border-box; background:#080d18; overflow-x:hidden; -webkit-text-size-adjust:100%; }
   * { box-sizing:border-box; margin:0; padding:0; }
   ::-webkit-scrollbar { width:0px; } * { scrollbar-width:none; }
@@ -2323,11 +2316,10 @@ const css = `
   }
   .timer-top { display:flex; align-items:flex-start; justify-content:flex-start; gap:8px; }
   .timer-val {
-    font-size:48px; font-weight:400; letter-spacing:0.02em;
+    font-size:48px; font-weight:600; letter-spacing:-0.02em;
     color:var(--text-white); line-height:1;
-    font-family:'DSEG7', 'Share Tech Mono', 'Courier New', monospace;
+    font-family:'Barlow', sans-serif;
     font-variant-numeric:tabular-nums;
-    text-shadow:0 0 0.4px currentColor;
   }
   .timer-next { text-align:right; }
   .timer-next { text-align:right; }
@@ -2978,10 +2970,9 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
         <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
           <div style={{
             minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-            fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
-            fontSize: numSize, fontWeight: 400, letterSpacing: "0.02em",
+            fontFamily: "'Barlow', sans-serif",
+            fontSize: numSize, fontWeight: 600, letterSpacing: "-0.02em",
             color: "#fff", lineHeight: 1,
-            textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
           }}>{display}</div>
         </div>
         {/* Progress bar: matches GET READY (249×8, 2x margin below) */}
@@ -2995,7 +2986,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
   return (
     <div style={{display:"flex", flexDirection:"column", gap:gap, marginTop, alignItems:"flex-start"}}>
       <div style={{display:"flex", alignItems:"baseline", gap: 6, marginBottom: marginBottom}}>
-        <div style={{minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight:600, letterSpacing:"-0.04em", color:TN, lineHeight:1}}>{display}</div>
+        <div style={{minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontFamily: "'Barlow', sans-serif", fontSize: numSize, fontWeight:600, letterSpacing:"-0.04em", color:TN, lineHeight:1}}>{display}</div>
       </div>
       <div style={{height: barH, width: "auto", background:"transparent", borderRadius: barH, overflow:"hidden"}}>
         <div style={{height: barH, borderRadius: barH, background:BAR_FILL,
@@ -3436,10 +3427,9 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
               <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
                 <div style={{
                   minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-                  fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
-                  fontSize: 80, fontWeight: 400, letterSpacing: "0.02em",
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
                   color: "#fff", lineHeight: 1,
-                  textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
                 }}>
                   {`0:${readyLeft.toString().padStart(2, "0")}`}
                 </div>
@@ -3454,10 +3444,9 @@ function FlowOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, don
               <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
                 <div style={{
                   minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-                  fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
-                  fontSize: 80, fontWeight: 400, letterSpacing: "0.02em",
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
                   color: "#fff", lineHeight: 1,
-                  textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
                 }}>
                   {`0:${restLeft.toString().padStart(2, "0")}`}
                 </div>
@@ -3675,15 +3664,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   const iCircumference = 2 * Math.PI * 140;
   // Plain seconds only — no 0: prefix (e.g. 30 not 0:30)
   const formatSecondsOnly = s => String(s);
-  // DSEG7 — shared digital style (same numerals as center 30); sizes vary by context
-  const DSEG_BASE = {
-    fontFamily: "'DSEG7', 'Share Tech Mono', 'Courier New', monospace",
-    fontVariantNumeric: "tabular-nums",
-    fontWeight: 400,
-    letterSpacing: "0.02em",
-    textShadow: "0 0 0.4px currentColor, 0 0 20px rgba(255,255,255,0.2)",
-  };
-  // Barlow for flat minimal look; main countdown and stepper values
+  // Barlow for all timer numerals; main countdown and stepper values
   const intervalDigitStyle = {
     fontFamily: "'Barlow', sans-serif",
     fontWeight: 600,
@@ -3703,7 +3684,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   // Circle as large as possible within column; static slot so INTERVAL/BREATHE don’t shift
   const ringSize = 360;
   const TIMER_RING_WRAP = { flexShrink:0, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft:"auto", marginRight:"auto", marginTop:0, marginBottom:0 };
-  const TIMER_MID_MIN_IDLE = 120; // Work/Rest/Rounds vs pattern/cycles below circle
+  const TIMER_MID_MIN_IDLE = 156; // Work/Rest/Rounds row stack vs pattern/cycles below circle
   const TIMER_PHASE_BAND = 52;    // matches BREATHE phase label block height so Pause/Reset align when running
   // Toggle: spacer above so INTERVAL/BREATHE sit halfway between top edge and top of circle (toggle ~60px + margin 28 → midpoint = 28px above toggle)
   const TIMER_TOGGLE_SPACER_TOP = 28;
@@ -3777,6 +3758,73 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 50%;
+  }
+  /* Work/Rest/Rounds: 44px min touch target, spacing so taps don’t overlap */
+  .timer-view-body .timer-interval-stepper {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .timer-view-body .timer-interval-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+  .timer-view-body .timer-interval-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+  .timer-view-body .timer-interval-row:last-child {
+    border-bottom: none;
+  }
+  .timer-view-body .timer-interval-row-label {
+    flex: 0 0 auto;
+    width: 64px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    font-family: 'Barlow', sans-serif;
+  }
+  .timer-view-body .timer-interval-row-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+  .timer-view-body .timer-interval-row-value {
+    min-width: 52px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-view-body .timer-pattern-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .timer-view-body .timer-pattern-row .timer-glass-pattern-btn {
+    min-height: 40px;
+    padding: 10px 18px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .timer-view-body .timer-interval-ring circle:first-of-type {
     stroke: var(--border);
@@ -3864,21 +3912,21 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           {/* Mid zone: Work/Rest/Rounds below circle when idle */}
           <div style={{flexShrink:0,minHeight:iPhase==="idle"?TIMER_MID_MIN_IDLE:0,width:"100%",marginTop:24,marginBottom:20}}>
           {iPhase === "idle" && (
-            <div className="timer-glass-panel" style={{display:"flex",marginBottom:0,width:"100%",boxSizing:"border-box",overflow:"hidden"}}>
+            <div className="timer-glass-panel timer-interval-rows" style={{marginBottom:0,width:"100%",boxSizing:"border-box",overflow:"hidden",borderRadius:16}}>
               {[
                 {label:"Work",   val:work,   set:setWork,   min:5, max:300, step:5,  isRound:false},
                 {label:"Rest",   val:rest,   set:setRest,   min:0, max:120, step:5,  isRound:false},
                 {label:"Rounds", val:rounds, set:setRounds, min:1, max:20,  step:1,  isRound:true},
-              ].map(({label,val,set,min,max,step,isRound},i) => (
-                <div key={label} style={{flex:1,minWidth:isRound?80:0,display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:"12px 4px",borderLeft:i>0?"1px solid var(--border)":"none"}}>
-                  <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>{label}</div>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <button type="button" onClick={()=>set(v=>Math.max(min,v-step))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>−</button>
-                    <div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:2}}>
-                      <span style={timerNumMedium}>{val}</span>
-                      {!isRound && <span style={{fontSize:"13px",color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>s</span>}
+              ].map(({label,val,set,min,max,step,isRound}) => (
+                <div key={label} className="timer-interval-row">
+                  <span className="timer-interval-row-label">{label}</span>
+                  <div className="timer-interval-row-controls">
+                    <button type="button" aria-label={`${label} decrease`} onClick={()=>set(v=>Math.max(min,v-step))} className="timer-glass-stepper timer-interval-stepper" style={{color:"var(--text-secondary)",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>−</button>
+                    <div className="timer-interval-row-value" style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:2}}>
+                      <span style={{...timerNumMedium,fontSize:20}}>{val}</span>
+                      {!isRound && <span style={{fontSize:12,color:"var(--text-dimmer)",fontFamily:"'Barlow',sans-serif"}}>s</span>}
                     </div>
-                    <button type="button" onClick={()=>set(v=>Math.min(max,v+step))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>+</button>
+                    <button type="button" aria-label={`${label} increase`} onClick={()=>set(v=>Math.min(max,v+step))} className="timer-glass-stepper timer-interval-stepper" style={{color:"var(--text-secondary)",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>+</button>
                   </div>
                 </div>
               ))}
@@ -3970,16 +4018,20 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           <div style={{flexShrink:0,minHeight:(!bRunning && !bDone)?TIMER_MID_MIN_IDLE:0,width:"100%",marginTop:24,marginBottom:20,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
           {!bRunning && !bDone && (
             <>
-              <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:16,justifyContent:"center"}}>
+              <div className="timer-pattern-row">
                 {Object.keys(BREATH_PATTERNS).map(p => (
                   <button key={p} type="button" onClick={()=>setBreathPattern(p)} className={"timer-glass-pattern-btn" + (breathPattern===p ? " active" : "")} style={{fontFamily:"'Barlow',sans-serif",fontSize:"13px",fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",padding:"9px 20px",cursor:"pointer",color: breathPattern===p ? "var(--accent)" : "var(--text-secondary)"}}>{p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh"}</button>
                 ))}
               </div>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:18}}>
-                <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)"}}>Cycles</div>
-                <button type="button" onClick={()=>setBreathCycles(v=>Math.max(1,v-1))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>−</button>
-                <span style={timerNumMedium}>{breathCycles}</span>
-                <button type="button" onClick={()=>setBreathCycles(v=>Math.min(12,v+1))} className="timer-glass-stepper" style={{width:32,height:32,borderRadius:"50%",color:"var(--text-secondary)",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>+</button>
+              <div className="timer-interval-row" style={{width:"100%",maxWidth:360,marginTop:4}}>
+                <span className="timer-interval-row-label">Cycles</span>
+                <div className="timer-interval-row-controls">
+                  <button type="button" aria-label="Cycles decrease" onClick={()=>setBreathCycles(v=>Math.max(1,v-1))} className="timer-glass-stepper timer-interval-stepper" style={{color:"var(--text-secondary)",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>−</button>
+                  <div className="timer-interval-row-value" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <span style={{...timerNumMedium,fontSize:20}}>{breathCycles}</span>
+                  </div>
+                  <button type="button" aria-label="Cycles increase" onClick={()=>setBreathCycles(v=>Math.min(12,v+1))} className="timer-glass-stepper timer-interval-stepper" style={{color:"var(--text-secondary)",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:"none"}}>+</button>
+                </div>
               </div>
             </>
           )}
