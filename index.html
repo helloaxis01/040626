@@ -887,7 +887,7 @@ const DAILY_SECTIONS = [
       { id: 5, name: "Pelvic Tilts", start: "Lying on your back, knees bent, feet flat on the floor.", sub: "Supine Posterior/Anterior Tilt", reps: "10–12 reps", type: "reps", steps: [
         { pos: "A", label: "Supine Neutral", focus: "SETUP", cue: "Lie on back. Knees bent, feet flat. Small natural arch in lower back. Arms at sides." },
         { pos: "B", label: "Posterior Tilt", focus: "CORE", cue: "Gently press lower back into floor. Engage deep abdominals. Hold 2s. Do not hold breath." },
-        { pos: "C", label: "Anterior Tilt", focus: "RELEASE", cue: "Let the lower back arch slightly away from floor. Pelvis tips forward. Move slowly between B and C." },
+        { pos: "C", label: "Anterior Tilt", focus: "RELEASE", cue: "Let the lower back arch slightly away from the floor as the pelvis tips forward. Then gently press the lower back into the floor again. Move slowly back and forth between the small arch and the gentle press." },
       ]},
       { id: 6, name: "Glute Bridge", start: "Lying on your back, knees bent, feet flat on the floor.", sub: "Bodyweight", reps: "12–15 reps", type: "reps", steps: [
         { pos: "A", label: "Supine Setup", focus: "SETUP", cue: "Lie on back. Feet flat, hip-width, heels 6 inches from glutes. Arms flat at sides." },
@@ -1680,6 +1680,386 @@ const KNEE_SECTIONS = [
   ]},
 ];
 
+const GOLF_SECTIONS = [
+  {
+    label: "Pre-Game: The Dynamic Drive",
+    tag: "G1",
+    purpose: "Prime rotation, wrists, and hips before stepping onto the first tee.",
+    exercises: [
+      {
+        id: 3001,
+        name: "Standing Club Rotations",
+        start: "Standing tall with feet shoulder-width apart.",
+        sub: "Separate upper body rotation from stable hips.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Hold a golf club across your upper back and shoulders, gripping each end. Keep your spine straight and knees slightly bent." },
+          { focus: "ROTATE", cue: "Rotate your torso to the right as far as comfortable while keeping your hips and feet facing forward." },
+          { focus: "SWITCH", cue: "Slowly rotate to the left, feeling the separation between your upper and lower body." },
+        ],
+      },
+      {
+        id: 3002,
+        name: "Leg Swings",
+        start: "Standing near a wall or golf cart for balance.",
+        sub: "Lubricate the hip joint in front, back, and lateral planes.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Stand on one leg, engage your core, and rest a hand lightly on the wall or cart for balance." },
+          { focus: "SWING", cue: "Swing the opposite leg forward and backward in a controlled motion, gradually increasing the range as the hip warms up." },
+          { focus: "LATERAL", cue: "Switch to side-to-side swings in front of your body to open the hip socket in the lateral plane." },
+        ],
+      },
+      {
+        id: 3003,
+        name: "Active Wrist Circles",
+        start: "Arms extended in front of you at chest height.",
+        sub: "Warm wrists and forearms for gripping the club.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Make light fists with both hands with arms extended at shoulder height." },
+          { focus: "CIRCLE", cue: "Rotate your wrists in slow, controlled clockwise circles, using the full available range." },
+          { focus: "REVERSE", cue: "Change direction to counter-clockwise, releasing tension through the forearms." },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Post-Game: The Fairway Recovery",
+    tag: "G2",
+    purpose: "Decompress the spine, hips, and shoulders after a full round.",
+    exercises: [
+      {
+        id: 3004,
+        name: "Open Books",
+        start: "Lying on your side, knees stacked and bent at 90 degrees.",
+        sub: "Restore thoracic rotation after repetitive swings.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SPINE", cue: "Extend both arms straight out in front of you with palms touching and knees stacked." },
+          { focus: "OPEN", cue: "Lift the top arm and rotate it slowly across your body toward the floor behind you while keeping your knees pinned together." },
+          { focus: "RESET", cue: "Breathe deeply into the stretch, then slowly return to the starting position and repeat." },
+        ],
+      },
+      {
+        id: 3005,
+        name: "Kneeling Hip Flexor Stretch",
+        start: "In a half-kneeling position with one knee on the floor.",
+        sub: "Lengthen the front of the hip after walking and swinging.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Keep your front foot flat, torso upright, and ribs stacked over the pelvis." },
+          { focus: "TUCK", cue: "Gently tuck your pelvis under and lean forward slightly until you feel a stretch in the front of your back hip." },
+          { focus: "REACH", cue: "Reach the arm on the same side as your back knee toward the ceiling to deepen the release." },
+        ],
+      },
+      {
+        id: 3006,
+        name: "Thread the Needle",
+        start: "On all fours with hands under shoulders and knees under hips.",
+        sub: "Release tension between the shoulder blades.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Slide one arm underneath the other, palm up, reaching as far as comfortable." },
+          { focus: "ROTATE", cue: "Lower your shoulder and ear toward the floor, letting the upper back rotate." },
+          { focus: "BREATH", cue: "Hold and breathe into the space between your shoulder blades before switching sides." },
+        ],
+      },
+    ],
+  },
+];
+
+const TENNIS_SECTIONS = [
+  {
+    label: "Pre-Game: The Court Readiness",
+    tag: "T1",
+    purpose: "Prepare hips, shoulders, and ankles for multi-directional court work.",
+    exercises: [
+      {
+        id: 3011,
+        name: "Lateral Lunges with Reach",
+        start: "Standing with feet wide apart.",
+        sub: "Groove lateral load and balance for wide court coverage.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Shift your weight to the right, bending the right knee while keeping the left leg straight." },
+          { focus: "REACH", cue: "Reach your arms forward to balance your weight and keep the chest lifted." },
+          { focus: "SWITCH", cue: "Push off the right foot to return to center, then repeat on the left side." },
+        ],
+      },
+      {
+        id: 3012,
+        name: "Shoulder Y & T Raises",
+        start: "Standing with a slight hinge at the hips.",
+        sub: "Activate lower traps and posterior shoulder for overhead work.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Let your arms hang down with thumbs pointing out and spine long." },
+          { focus: "Y-RAISE", cue: "Raise your arms up to form a Y shape, squeezing the shoulder blades together." },
+          { focus: "T-RAISE", cue: "Lower your arms, then raise them straight out to the sides to form a T, maintaining control." },
+        ],
+      },
+      {
+        id: 3013,
+        name: "Ankle Hops",
+        start: "Standing tall with feet close together.",
+        sub: "Prime calf and Achilles for quick first steps.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Stay light on the balls of your feet with knees slightly soft." },
+          { focus: "HOP", cue: "Perform small, quick vertical hops, focusing on a fast bounce off the ground." },
+          { focus: "STABILITY", cue: "Keep your core tight and land softly each time without letting the heels slam down." },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Post-Game: The Decompression",
+    tag: "T2",
+    purpose: "Release forearms, hips, and side body after play.",
+    exercises: [
+      {
+        id: 3014,
+        name: "Forearm Extensor Release",
+        start: "Arm extended straight in front of you.",
+        sub: "Unload the outer elbow and backhand tissues.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Point your fingers toward the floor with the palm facing you." },
+          { focus: "STRETCH", cue: "Use the opposite hand to gently pull the back of your hand toward your body until you feel a stretch." },
+          { focus: "RELEASE", cue: "Hold for several breaths, then ease off and switch sides." },
+        ],
+      },
+      {
+        id: 3015,
+        name: "Figure-4 Glute Stretch",
+        start: "Lying on your back with knees bent.",
+        sub: "Open the hips after repeated lunges and changes of direction.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Cross your right ankle over your left knee to create a figure-4 shape." },
+          { focus: "PULL", cue: "Reach through and grab your left thigh, gently pulling it toward your chest." },
+          { focus: "SWITCH", cue: "Hold for several breaths, then repeat on the opposite side." },
+        ],
+      },
+      {
+        id: 3016,
+        name: "Child's Pose with Side Reach",
+        start: "Kneeling on the floor, sitting back on your heels.",
+        sub: "Lengthen lats and side body after serving and overheads.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Fold forward and rest your forehead on the floor with arms extended in front of you." },
+          { focus: "REACH", cue: "Walk both hands to the right until you feel a stretch along your left side and lat." },
+          { focus: "SWITCH", cue: "Walk hands back to center, then over to the left side and repeat." },
+        ],
+      },
+    ],
+  },
+];
+
+const WALKING_SECTIONS = [
+  {
+    label: "Pre-Walk: The Gait Prep",
+    tag: "W1",
+    purpose: "Wake ankles, hips, and arms before a long walk.",
+    exercises: [
+      {
+        id: 3021,
+        name: "Ankle Circles",
+        start: "Standing tall, using a wall for balance if needed.",
+        sub: "Mobilize the ankles before the miles.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Lift one foot off the ground while lightly supporting yourself on the wall if needed." },
+          { focus: "CIRCLE", cue: "Rotate the ankle in slow, controlled clockwise circles." },
+          { focus: "REVERSE", cue: "Switch to counter-clockwise circles, then repeat with the other foot." },
+        ],
+      },
+      {
+        id: 3022,
+        name: "Glute Activation Drive",
+        start: "Standing with feet hip-width apart.",
+        sub: "Fire the glutes to support the pelvis with each step.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Shift weight to your left leg and engage your core." },
+          { focus: "DRIVE", cue: "Lift the right knee toward your chest while squeezing the left glute." },
+          { focus: "SWITCH", cue: "Lower the foot with control and repeat on the other side, staying tall." },
+        ],
+      },
+      {
+        id: 3023,
+        name: "Controlled Arm Swings",
+        start: "Standing tall with shoulders relaxed.",
+        sub: "Rehearse efficient arm swing for walking.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Bend your elbows slightly and let the arms hang by your sides." },
+          { focus: "SWING", cue: "Swing your arms forward and backward from the shoulder joint in a natural rhythm." },
+          { focus: "RELAX", cue: "Keep your neck long and avoid shrugging the shoulders as you move." },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Post-Walk: The Decompression",
+    tag: "W2",
+    purpose: "Release calves, quads, and foot arches after the miles.",
+    exercises: [
+      {
+        id: 3024,
+        name: "Calf Release",
+        start: "Standing facing a wall.",
+        sub: "Lengthen the calf and Achilles after long walks.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Place both hands on the wall and step one foot back." },
+          { focus: "PRESS", cue: "Keep the back heel on the floor and lean into the wall until you feel a stretch in the calf." },
+          { focus: "BEND", cue: "Slightly bend the back knee to target the lower calf and Achilles, then switch sides." },
+        ],
+      },
+      {
+        id: 3025,
+        name: "Standing Quad Stretch",
+        start: "Standing tall, holding a chair for balance.",
+        sub: "Open the front of the thigh after steady forward motion.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Reach back and grab your right ankle or foot." },
+          { focus: "ALIGN", cue: "Pull the heel toward your glute while keeping your knees together and torso upright." },
+          { focus: "SWITCH", cue: "Hold the stretch, then repeat on the left side." },
+        ],
+      },
+      {
+        id: 3026,
+        name: "Foot Arch Massage",
+        start: "Standing or seated.",
+        sub: "Reset the arches after time on your feet.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Place a small ball or firm object under the arch of your foot." },
+          { focus: "ROLL", cue: "Apply gentle pressure and roll the foot forward and backward over the object." },
+          { focus: "FOCUS", cue: "Spend extra time on any tight or tender spots before switching feet." },
+        ],
+      },
+    ],
+  },
+];
+
+const RUNNING_SECTIONS = [
+  {
+    label: "Pre-Run: The Impact Ready",
+    tag: "R1",
+    purpose: "Prime tendons, hips, and hamstrings before impact.",
+    exercises: [
+      {
+        id: 3031,
+        name: "Pogo Hops",
+        start: "Standing with feet hip-width apart.",
+        sub: "Wake up calf and Achilles for impact.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Keep your knees almost straight and stand tall." },
+          { focus: "BOUNCE", cue: "Jump using only your ankles and calves, staying on the balls of your feet." },
+          { focus: "RHYTHM", cue: "Maintain a quick, rhythmic pace to prime the tendons." },
+        ],
+      },
+      {
+        id: 3032,
+        name: "Runner's Lunge with Reach",
+        start: "Standing tall.",
+        sub: "Open hip flexors and side body before the run.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Step back into a lunge, keeping the back leg straight and front knee stacked over the ankle." },
+          { focus: "REACH", cue: "Reach both arms toward the ceiling and tilt your torso slightly away from the back leg." },
+          { focus: "SWITCH", cue: "Return to standing and switch sides with control." },
+        ],
+      },
+      {
+        id: 3033,
+        name: "Hamstring Scoops",
+        start: "Standing with one heel forward and toes pointed up.",
+        sub: "Lengthen the hamstrings and groove front-leg loading.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Hinge at the hips while keeping the front leg straight and back knee soft." },
+          { focus: "SCOOP", cue: "Reach down and scoop your hands toward the floor in front of the foot, then up overhead." },
+          { focus: "SWITCH", cue: "Take a small step forward and repeat on the other leg." },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Post-Run: The Structural Reset",
+    tag: "R2",
+    purpose: "Open hips, front body, and assist venous return after the run.",
+    exercises: [
+      {
+        id: 3034,
+        name: "Seated Figure-4",
+        start: "Seated on the floor with legs extended.",
+        sub: "Decompress the hips after repetitive strides.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Bend your left knee and cross your right ankle over the left thigh." },
+          { focus: "PRESS", cue: "Lean forward slightly or pull the left thigh toward you to feel the stretch in the right hip." },
+          { focus: "SWITCH", cue: "Hold, then repeat on the opposite side." },
+        ],
+      },
+      {
+        id: 3035,
+        name: "Cobra Pose",
+        start: "Lying face down on a mat.",
+        sub: "Restore extension through the front of the body.",
+        type: "time",
+        seconds: 45,
+        steps: [
+          { focus: "SETUP", cue: "Place your hands on the floor next to your shoulders with elbows close to your sides." },
+          { focus: "LIFT", cue: "Gently press through your hands to lift your chest off the floor, keeping your hips grounded." },
+          { focus: "EXTEND", cue: "Draw shoulders away from your ears and breathe into the front of the body." },
+        ],
+      },
+      {
+        id: 3036,
+        name: "Legs Up the Wall",
+        start: "Lying on your back with your glutes as close to a wall as possible.",
+        sub: "Assist circulation and recovery after impact.",
+        type: "time",
+        seconds: 120,
+        steps: [
+          { focus: "SETUP", cue: "Extend your legs straight up against the wall with heels resting lightly." },
+          { focus: "RELAX", cue: "Let your arms rest by your sides with palms up and jaw unclenched." },
+          { focus: "BREATHE", cue: "Stay here for about two minutes, breathing slowly to calm the system." },
+        ],
+      },
+    ],
+  },
+];
+
 const TRACKS = {
   daily:       { id: "daily",       label: "The Baseline Protocol", subtitle: "Spine · Core · Chain", purpose: "Spine, core, and posterior chain. The foundation session.",                          sections: DAILY_SECTIONS,    duration: "25 min" },
   restorative: { id: "restorative", label: "Full Reset", subtitle: "Guided · Circulation · Recovery",         purpose: "Gentle continuous movement for circulation, joint lubrication, and recovery.",      sections: RESTORATIVE_SECTIONS, duration: "15 min" },
@@ -1697,6 +2077,10 @@ const TRACKS = {
   stress:      { id: "stress",     label: "Tension Release",       subtitle: "Discharge · Release · Downshift",        purpose: "Complete the stress cycle the body started. Move the cortisol through. Then downshift.",                        sections: STRESS_SECTIONS,   duration: "18 min" },
   feet:        { id: "feet",        label: "Feet First",             subtitle: "Plantar · Release · Load",      purpose: "PT-backed protocol for plantar fasciitis and foot pain. Release the tissue, wake the muscles, load the chain.", sections: FEET_SECTIONS,     duration: "18 min" },
   knee:        { id: "knee",        label: "Knee Resilience",       subtitle: "Strengthen · Lubricate · Support", purpose: "Bulletproof the joint: strengthen the muscles that support it and use low-load movements to lubricate and offload pressure. Motion is lotion.", sections: KNEE_SECTIONS,     duration: "18 min" },
+  walking:     { id: "walking",     label: "Walking Reset",          subtitle: "Pre-Walk · Post-Walk · Reset",         purpose: "Wake the gait system before the miles, then decompress calves, quads, and arches after.",                      sections: WALKING_SECTIONS,  duration: "8–10 min" },
+  running:     { id: "running",     label: "Running Reset",          subtitle: "Impact · Hips · Recovery",             purpose: "Prime tendons and hips before impact, then restore structure and circulation post-run.",                       sections: RUNNING_SECTIONS,  duration: "8–12 min" },
+  golf:        { id: "golf",        label: "Golf Reset",             subtitle: "Dynamic · Rotational · Recovery",      purpose: "Prepare rotation, wrists, and hips before the first tee, then decompress after the final putt.",               sections: GOLF_SECTIONS,     duration: "8–10 min" },
+  tennis:      { id: "tennis",      label: "Racquet Sports Reset",   subtitle: "Court · Shoulder · Hips",              purpose: "Ready the lateral base and shoulders for court work, then release forearms, hips, and side body after play.",  sections: TENNIS_SECTIONS,   duration: "8–10 min" },
 };
 
 
@@ -2144,7 +2528,12 @@ const css = `
     min-width:0; white-space:nowrap; position:relative;
     border-bottom: 2px solid transparent;
   }
-  .tab.on { color:var(--accent); border-bottom-color: var(--accent); }
+  .tab.on {
+    color:var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+  }
   /* sub-bar: tab-desc + progress live here, bleeds to edges, floats above content */
   .tab-subbar {
     position:sticky; top: var(--hdr-height, 120px); z-index:190;
@@ -2810,9 +3199,12 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
           <div className={`en ${done && !skipped ? "done" : ""} ${skipped ? "skipped" : ""}`}>{ex.name}</div>
           <div className="es">{ex.sub}</div>
           {!skipped && !hideDone && (() => {
-            const isTimed = (ex.type === "time" || ex.type === "flow") && exerciseDurationSeconds != null;
-            const displayReps = isTimed ? (exerciseDurationSeconds === 60 ? "1 min" : `${exerciseDurationSeconds} sec`) : ex.reps;
-            return displayReps ? <div className="ereps">{displayReps}</div> : null;
+            const effectiveSeconds = exerciseDurationSeconds != null ? exerciseDurationSeconds : (ex.seconds || 0);
+            const useOverride = exerciseDurationSeconds != null;
+            const displayText = useOverride
+              ? (effectiveSeconds === 60 ? "1 min" : `${effectiveSeconds} sec`)
+              : ex.reps;
+            return displayText ? <div className="ereps">{displayText}</div> : null;
           })()}
         </div>
         <div className="row-actions" onClick={e => e.stopPropagation()}>
@@ -3028,7 +3420,7 @@ function beep(freq = 880, duration = 0.3) {
   } catch(e) {}
 }
 
-function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onReset, fi = 0, list = [], theme = "dark", activePeriod = null, nightMode = false, large = false }) {
+function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onReset, fi = 0, list = [], theme = "dark", activePeriod = null, nightMode = false, large = false, compactBarGap = false }) {
   const [left, setLeft] = useState(seconds);
   const [running, setRunning] = useState(autoStart);
   const ref = useRef(null);
@@ -3093,6 +3485,8 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
   const marginTop = large ? 0 : 16;
   const marginBottom = large ? 14 : 10;
 
+  const isGuidedStart = large && pct === 0;
+
   if (large) {
     const barHeight = 8;
     const barWidth = 249;
@@ -3107,9 +3501,16 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
             color: timerAccent, lineHeight: 1,
           }}>{display}</div>
         </div>
-        {/* Progress bar: matches GET READY (249×8, 2x margin below) */}
-        <div style={{width: barWidth, height: barHeight, borderRadius: barHeight, background: BAR_TRACK, overflow: "hidden", marginTop: 28}}>
-          <div style={{height: barHeight, borderRadius: barHeight, background: BAR_FILL, width: `${pct*100}%`, transition: "width 1s linear"}} />
+        {/* Progress bar: matches GET READY (249×8); compactBarGap for GUIDED locked position */}
+        <div style={{width: barWidth, height: barHeight, borderRadius: barHeight, background: BAR_TRACK, overflow: "hidden", marginTop: compactBarGap ? 14 : 28}}>
+          <div style={{
+            height: barHeight,
+            borderRadius: barHeight,
+            background: BAR_FILL,
+            width: `${pct*100}%`,
+            transition: "width 1s linear",
+            boxShadow: isGuidedStart ? `0 0 12px 0 ${timerAccentDim}` : "none",
+          }} />
         </div>
       </div>
     );
@@ -3222,6 +3623,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const launchRef = useRef(null);
   const milestoneRef = useRef(null);
   const wakeLockRef = useRef(null);
+  const titleRef = useRef(null);
   const cur = list.length > 0 ? list[Math.min(fi, list.length - 1)] : null;
   const next = list[fi + 1] || null;
 
@@ -3275,6 +3677,17 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     }, 1000);
     return () => clearInterval(readyRef.current);
   }, [phase]);
+  useEffect(() => {
+    if (!titleRef.current) return;
+    const el = titleRef.current;
+    el.style.opacity = "0";
+    el.style.transform = "translateY(4px)";
+    requestAnimationFrame(() => {
+      el.style.transition = "opacity 0.18s ease-out, transform 0.18s ease-out";
+      el.style.opacity = "1";
+      el.style.transform = "translateY(0)";
+    });
+  }, [fi]);
 
   // 3-2-1 launch countdown with beeps then start exercise (primeAudio/beep on user context helps iOS)
   useEffect(() => {
@@ -3364,7 +3777,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         <div style={{ fontSize:14, color:S, marginBottom:24 }}>Add exercises or clear filters and try again.</div>
         <button onClick={onExit} style={{
           padding:"14px 40px", borderRadius:28, cursor:"pointer",
-          background:A, border:"none", color: ct.accentBtnText || "#0a0e1a",
+          background:A, border:"none", color:"#ffffff",
           fontFamily:"'Barlow',sans-serif", fontSize:13, fontWeight:700,
           letterSpacing:"0.18em", textTransform:"uppercase",
         }}>Exit</button>
@@ -3396,13 +3809,14 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         padding:"max(12px, env(safe-area-inset-top)) 20px 10px", flexShrink:0, position:"relative", zIndex:2,
       }}>
         <button onClick={onExit} style={{
-          display:"flex", alignItems:"center", gap:5, padding:"8px 14px",
+          display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44,
           background: "transparent",
           border: "1px solid " + (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)"),
           borderRadius: 999, cursor: "pointer", color: S,
-          fontFamily: "'Barlow', sans-serif", fontSize: 11, letterSpacing: "0.18em",
-          textTransform: "uppercase", opacity: phase === "intro" ? 1 : 0.9,
-        }}>X EXIT</button>
+          opacity: phase === "intro" ? 1 : 0.9,
+        }} aria-label="Exit">
+          <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
         {phase !== "intro" && phase !== "closing" && listTotal > 0 && (() => {
           const size = 46; const r = 19; const C = 2 * Math.PI * r;
           const filled = ((fi + 1) / listTotal) * C;
@@ -3415,7 +3829,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
                   strokeDasharray={C} strokeDashoffset={offset}
                   style={{ transition:"stroke-dashoffset 0.4s ease-out" }} />
               </svg>
-              <span style={{ position:"absolute", fontSize: 11, fontWeight: 600, color: W, fontFamily: "'Barlow', sans-serif" }}>{fi + 1}/{listTotal}</span>
+              <span style={{ position:"absolute", fontSize: 11, fontWeight: 600, color: S, fontFamily: "'Barlow', sans-serif" }}>{fi + 1}/{listTotal}</span>
             </div>
           );
         })()}
@@ -3452,7 +3866,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           </div>
           <button onClick={onExit} style={{
             padding:"16px 48px", borderRadius:28, cursor:"pointer",
-            background:A, border:"none", color: ct.accentBtnText || "#0a0e1a",
+            background:A, border:"none", color:"#ffffff",
             fontFamily:"'Barlow',sans-serif", fontSize:13, fontWeight:700,
             letterSpacing:"0.18em", textTransform:"uppercase",
             boxShadow:`0 0 32px ${ct.accentGlow}`,
@@ -3478,7 +3892,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
             <div style={{fontSize: 12, color: S, opacity: 0.85, maxWidth: 320, lineHeight: 1.4, marginBottom: 28, textAlign: "center"}}>No equipment? You can modify — use a towel instead of a strap, a book instead of a block, or skip props and focus on range of motion.</div>
             <button onClick={() => { primeAudio(); beep(880, 0.3); setReadyLeft(GETREADY_SECONDS); setPhase("getready"); }} style={{
               padding: "14px 48px", borderRadius: 999, cursor: "pointer",
-              background: A, border: "none", color: "#0a0e1a",
+              background: A, border: "none", color: "#ffffff",
               fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
               letterSpacing: "0.24em", textTransform: "uppercase",
               boxShadow: `0 0 24px ${ct.accentGlow}`,
@@ -3501,20 +3915,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
             {phase === "getready" ? "REST & GET READY" : phase === "launch" ? "GET SET" : phase === "exercise" ? "BEGIN" : ""}
           </div>
 
-          {/* Primary title: large, bold — white, centered */}
+          {/* Primary title: large, bold — white, centered (stays locked across phases) */}
           <div style={{display:"flex",flexDirection:"column",alignItems:(phase === "getready" || phase === "launch" || phase === "exercise") ? "center" : "flex-start"}}>
-            {phase === "exercise" && (
-              <div style={{
-                fontSize:10,
-                letterSpacing:"0.24em",
-                textTransform:"uppercase",
-                color:A,
-                marginBottom:6,
-              }}>
-                ACTIVE
-              </div>
-            )}
-            <div style={{
+            <div
+              ref={titleRef}
+              style={{
               fontSize: (phase === "getready" || phase === "launch" || phase === "exercise") ? 38 : 30,
               fontWeight: 700, letterSpacing: "0.02em", lineHeight: 1.08, textTransform: "uppercase",
               color: W,
@@ -3553,9 +3958,28 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
                   </div>
                 )}
                 {ex.steps?.map((step, idx) => (
-                  <div key={idx} style={{ padding: idx === 0 ? "14px 16px 12px" : "12px 16px 14px", borderBottom: (idx < ex.steps.length - 1) || (ex.type === "reps" && ex.reps) ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
-                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 8 }}>{step.focus || (idx === 0 ? "SETUP" : "MOVE")}</div>
-                    <div style={{ fontSize: 17, color: W, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em" }}>{step.cue}</div>
+                  <div
+                    key={idx}
+                    style={{
+                      padding: idx === 0 ? "14px 16px 12px" : "12px 16px 14px",
+                      borderBottom: (idx < ex.steps.length - 1) || (ex.type === "reps" && ex.reps)
+                        ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)")
+                        : "none",
+                      textAlign: "left",
+                    }}
+                  >
+                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 8 }}>
+                      {step.focus || (idx === 0 ? "SETUP" : "MOVE")}
+                    </div>
+                    <div style={{
+                      fontSize: idx === 0 ? 18 : 17,
+                      color: W,
+                      lineHeight: 1.4,
+                      fontWeight: idx === 0 ? 500 : 400,
+                      letterSpacing: "-0.01em",
+                    }}>
+                      {step.cue}
+                    </div>
                   </div>
                 ))}
                 {ex.type === "reps" && ex.reps && (
@@ -3568,43 +3992,69 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
             );
           })()}
 
-          {/* REST & GET READY: timer and progress bar — lower, closer to START button */}
-          {phase === "getready" && (
+          {/* Countdown + progress bar: locked position for getready, launch, and exercise */}
+          {(phase === "getready" || phase === "launch" || phase === "exercise") && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 16, flexShrink: 0, paddingTop: 24 }}>
-              <div style={{
-                minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-                fontFamily: "'Barlow', sans-serif",
-                fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
-                color: "rgba(255,255,255,0.5)", lineHeight: 1,
-              }}>
-                {`0:${readyLeft.toString().padStart(2, "0")}`}
-              </div>
-              <div style={{ width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 28 }}>
-                <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
-              </div>
-            </div>
-          )}
-
-          {/* BEGIN: exercise countdown and progress bar — lower, closer to PAUSE/NEXT */}
-          {phase === "exercise" && cur && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 16, flexShrink: 0, paddingTop: 24 }}>
-              <OverlayTimer key={cur.id + "-" + fi} seconds={cur.type === "time" || cur.type === "flow" ? cur.seconds : 45} onDone={handleTimerDone}
-                autoStart={true} paused={paused} fi={fi} list={list} theme={theme} activePeriod={activePeriod} nightMode={nightMode} large={true} />
-            </div>
-          )}
-
-          {/* Launch: 3, 2, 1 — same size as REST & GET READY / BEGIN timers, centered */}
-          {phase === "launch" && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "auto", marginBottom: 16, flexShrink: 0, paddingTop: 24 }}>
-              <div style={{
-                minWidth: 134, textAlign: "center", fontVariantNumeric: "tabular-nums",
-                fontFamily: "'Barlow', sans-serif",
-                fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
-                color: W, lineHeight: 1,
-                textShadow: NAME_SHAD,
-              }}>
-                {launchCount > 0 ? launchCount : ""}
-              </div>
+              {phase === "exercise" && (
+                <div style={{ width:"100%", display:"flex", justifyContent:"center", marginBottom:10 }}>
+                  <div style={{
+                    padding: "4px 12px",
+                    borderRadius: 999,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 10,
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    fontFamily: "'Barlow', sans-serif",
+                    background: isDark ? "rgba(255,255,255,0.10)" : A,
+                    color: isDark ? A : "#ffffff",
+                    textAlign: "center",
+                    transform: "translateX(0.5px)",
+                  }}>
+                    <span>ACTIVE</span>
+                    <span style={{marginLeft:8,fontSize:9,letterSpacing:"0.12em",opacity:0.8}}>
+                      {fi + 1} of {listTotal}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {phase === "getready" && (
+                <>
+                  <div style={{
+                    minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
+                    color: isDark ? "rgba(255,255,255,0.5)" : W, lineHeight: 1,
+                  }}>
+                    {`0:${readyLeft.toString().padStart(2, "0")}`}
+                  </div>
+                  <div style={{marginTop:8,fontSize:12,color:S,opacity:0.8,textAlign:"center"}}>
+                    Find your mat, lie on your back, breathe easy.
+                  </div>
+                  <div style={{ width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 14 }}>
+                    <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
+                  </div>
+                </>
+              )}
+              {phase === "launch" && (
+                <>
+                  <div style={{
+                    minWidth: 134, textAlign: "center", fontVariantNumeric: "tabular-nums",
+                    fontFamily: "'Barlow', sans-serif",
+                    fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
+                    color: W, lineHeight: 1,
+                    textShadow: NAME_SHAD,
+                  }}>
+                    {launchCount > 0 ? launchCount : ""}
+                  </div>
+                  <div style={{ width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 14 }} />
+                </>
+              )}
+              {phase === "exercise" && cur && (
+                <OverlayTimer key={cur.id + "-" + fi} seconds={cur.type === "time" || cur.type === "flow" ? cur.seconds : 45} onDone={handleTimerDone}
+                  autoStart={true} paused={paused} fi={fi} list={list} theme={theme} activePeriod={activePeriod} nightMode={nightMode} large={true} compactBarGap={true} />
+              )}
             </div>
           )}
 
@@ -3636,7 +4086,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
             <button onClick={handleNext} style={{
               flex: 1, minWidth: 0, borderRadius: 999,
               background: A, border: "none",
-              color: "#0a0e1a",
+              color: "#ffffff",
               fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 700,
               letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
               boxShadow: `0 0 16px ${ct.accentGlow}`,
@@ -3648,7 +4098,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         {phase === "getready" && (
           <button onClick={() => { clearInterval(readyRef.current); primeAudio(); setLaunchCount(3); setPhase("launch"); }} style={{
             flex: 1, width: "100%", minWidth: 0, background: A, border: "none",
-            color: "#0a0e1a", fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
+            color: "#ffffff", fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
             letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer",
             boxShadow: `0 0 20px ${ct.accentGlow}`,
           }}>START NOW</button>
@@ -3656,7 +4106,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
         {/* LAUNCH: no button — 3-2-1 runs automatically */}
         {phase === "launch" && (
-          <div style={{ flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: S, fontSize: 12, letterSpacing: "0.12em" }}>Starting…</div>
+          <div style={{ flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: S, fontSize: 12, letterSpacing: "0.12em" }}>STARTING...</div>
         )}
       </div>
       )}
@@ -4314,16 +4764,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [showStreak, setShowStreak] = useState(() => storageGet("axis_show_streak", true));
   const [showTimer, setShowTimer] = useState(() => storageGet("axis_show_timer", true));
   const [showPct, setShowPct] = useState(() => storageGet("axis_show_pct", true));
-  const [defaultSessionTab, setDefaultSessionTab] = useState(() => storageGet("axis_default_session_tab", "list"));
   const [exerciseDuration, setExerciseDuration] = useState(() => {
     const v = storageGet("axis_exercise_duration", 45);
     return [30, 45, 60].includes(Number(v)) ? Number(v) : 45;
   });
   const [track, setTrack] = useState("daily");
-  const [tab, setTab] = useState(() => {
-    const d = storageGet("axis_default_session_tab", "list");
-    return d === "last" ? storageGet("axis_last_session_tab", "list") : d;
-  });
+  const [tab, setTab] = useState(() => storageGet("axis_last_session_tab", "guided") || "guided");
   const prevViewRef = useRef(null);
   const [fi, setFi] = useState(0);
   const [openId, setOpenId] = useState(null);
@@ -4339,6 +4785,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [sessionSecs, setSessionSecs] = useState(0);
   const [streak, setStreak] = useState(() => storageGet("axis_streak", 0));
   const [history, setHistory] = useState(() => storageGet("axis_history", []));
+  const sessionContentRef = useRef(null);
+  const listScrollRef = useRef(0);
+  const prevTabRef = useRef(tab);
+  const [guidedTimelineExpanded, setGuidedTimelineExpanded] = useState(false);
   const [todayLogged, setTodayLogged] = useState(() => {
     const h = storageGet("axis_history", []);
     return h.some(e => e.date === new Date().toDateString());
@@ -4369,24 +4819,31 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   useEffect(() => { storageSet("axis_show_streak", showStreak); }, [showStreak]);
   useEffect(() => { storageSet("axis_show_timer", showTimer); }, [showTimer]);
   useEffect(() => { storageSet("axis_show_pct", showPct); }, [showPct]);
-  useEffect(() => { storageSet("axis_default_session_tab", defaultSessionTab); }, [defaultSessionTab]);
   useEffect(() => { storageSet("axis_exercise_duration", exerciseDuration); }, [exerciseDuration]);
   useEffect(() => {
     if (view === "session") {
-      const d = storageGet("axis_default_session_tab", "list");
-      const want = d === "last" ? storageGet("axis_last_session_tab", "list") : d;
-      setTab(want);
+      const last = storageGet("axis_last_session_tab", null);
+      setTab(last || "guided");
     }
     prevViewRef.current = view;
   }, [view]);
   useEffect(() => {
-    if (view === "session" && storageGet("axis_default_session_tab") === "last")
-      storageSet("axis_last_session_tab", tab);
+    if (view === "session") storageSet("axis_last_session_tab", tab);
   }, [tab, view]);
   useEffect(() => { storageSet("axis_done", done); }, [done]);
   useEffect(() => { storageSet("axis_skipped", skipped); }, [skipped]);
   useEffect(() => { storageSet("axis_favs", favs); }, [favs]);
   useEffect(() => { storageSet("axis_notes", notes); }, [notes]);
+
+  // Remember LIST scroll position within Session content so switching tabs feels continuous
+  useEffect(() => {
+    if (!sessionContentRef.current) return;
+    const prev = prevTabRef.current;
+    if (tab === "list" && prev !== "list") {
+      sessionContentRef.current.scrollTo(0, listScrollRef.current || 0);
+    }
+    prevTabRef.current = tab;
+  }, [tab]);
 
   const SECTIONS = getSections(track);
   const ALL = getAll(track);
@@ -4398,6 +4855,22 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   });
   const TOTAL = activeAll.length;
   const totalDone = activeAll.filter(e => done[e.id]).length;
+  const perMoveSeconds = exerciseDuration || 45;
+  const fullSeconds = activeAll.reduce(
+    (sum, ex) => sum + (perMoveSeconds || ex.seconds || 0),
+    0
+  );
+  const fullMinutes = Math.round(fullSeconds / 60) || 0;
+  const sessionSeconds = filteredAll.reduce(
+    (sum, ex) => sum + (perMoveSeconds || ex.seconds || 0),
+    0
+  );
+  const sessionMinutes = Math.round(sessionSeconds / 60) || 0;
+  const defaultDurationLabel = TRACKS[track].duration || `${fullMinutes} min`;
+  const sessionDurationLabel =
+    filteredAll.length === activeAll.length
+      ? defaultDurationLabel
+      : `${sessionMinutes} min`;
   const pct = TOTAL > 0 ? Math.round((totalDone / TOTAL) * 100) : 0;
   const cur = activeAll[Math.min(fi, activeAll.length - 1)];
 
@@ -4433,6 +4906,11 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const favCount = Object.values(favs).filter(Boolean).length;
   const skippedCount = Object.values(skipped).filter(Boolean).length;
   const visibleSections = SECTIONS.map(s => ({ ...s, exercises: s.exercises.filter(e => { if (showFavOnly) return favs[e.id]; if (showSkipOnly) return skipped[e.id]; return true; }) })).filter(s => s.exercises.length > 0);
+  const tabSubtitle = tab === "list"
+    ? "See all moves and targets."
+    : tab === "guided"
+      ? "Step-by-step walkthrough."
+      : "Your progress over time.";
 
   const SunIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>;
   const MoonIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
@@ -4469,17 +4947,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         </div>
         <div style={{borderTop:"1px solid var(--border)",paddingTop:24,marginBottom:32}}>
           <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--text-dimmer)",marginBottom:16}}>Session</div>
-          <div style={{marginBottom:24}}>
-            <div style={{fontSize:"14px",fontWeight:500,color:"var(--text-white)",marginBottom:8}}>Default tab</div>
-            <div style={{fontSize:"12px",color:"var(--text-secondary)",lineHeight:1.45,marginBottom:12,maxWidth:280}}>Which tab opens when you start a session.</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-              {["list", "guided", "last"].map(opt => (
-                <button key={opt} onClick={() => setDefaultSessionTab(opt)} style={{fontFamily:"'Barlow',sans-serif",fontSize:12,letterSpacing:"0.06em",textTransform:"uppercase",padding:"8px 14px",borderRadius:8,border:"1px solid",borderColor:defaultSessionTab === opt ? "var(--accent)" : "var(--glass-border)",background:defaultSessionTab === opt ? "var(--accent)" : "var(--glass-bg)",color:defaultSessionTab === opt ? (nightMode ? "#000" : "#fff") : "var(--text-secondary)",cursor:"pointer",fontWeight:600}}>
-                  {opt === "list" ? "List" : opt === "guided" ? "Guided" : "Last used"}
-                </button>
-              ))}
-            </div>
-          </div>
           <div>
             <div style={{fontSize:"14px",fontWeight:500,color:"var(--text-white)",marginBottom:8}}>Exercise duration (LIST)</div>
             <div style={{fontSize:"12px",color:"var(--text-secondary)",lineHeight:1.45,marginBottom:12,maxWidth:280}}>Timer length for each exercise in LIST view.</div>
@@ -4670,6 +5137,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       { label: "Body Maintenance", ids: ["steady", "freely", "feet", "knee"] },
       { label: "Mental Wellness", ids: ["anxiety", "stress"] },
       { label: "Travel", ids: ["transit", "travel"] },
+      { label: "Sports", ids: ["walking", "running", "golf", "tennis"] },
     ];
     return (
       <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
@@ -4831,24 +5299,37 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
               <div className="hdr-title">{TRACKS[track].label}</div>
               <div className="hdr-meta">
                 <div className="hdr-subtitle">{TRACKS[track].subtitle}</div>
-                <div className="hdr-dur">{TRACKS[track].duration}</div>
+                <div className="hdr-dur">{sessionDurationLabel}</div>
+              </div>
+              <div style={{fontSize:11,color:"var(--text-dimmer)",marginTop:8}}>
+                {tabSubtitle}
               </div>
             </div>
           </div>
           <div className="tabs">
             {["list", "guided", "summary"].map(t => (
-              <button key={t} className={`tab ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>{t === "guided" ? "Guided" : t.charAt(0).toUpperCase() + t.slice(1)}</button>
+              <button
+                key={t}
+                className={`tab ${tab === t ? "on" : ""}`}
+                onClick={() => setTab(t)}
+              >
+                {t === "guided" ? "Guided" : t.charAt(0).toUpperCase() + t.slice(1)}
+              </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="content">
+      <div className="content" ref={sessionContentRef} onScroll={e => {
+        if (tab === "list") {
+          listScrollRef.current = e.currentTarget.scrollTop || 0;
+        }
+      }}>
         {/* Sub-bar: description + progress — sticky, bleeds to edges */}
         <div className="tab-subbar">
           <div className="tab-desc-line">
             {tab === "list" && "Your pace. Tap to expand, mark done when ready."}
-            {tab === "guided" && "Hands-free. Auto-timed with audio cues."}
+            {tab === "guided" && "Hands-free. Auto-timed; audio cues coming soon."}
             {tab === "summary" && "Your progress over time."}
           </div>
           {tab !== "summary" && (
@@ -4896,6 +5377,77 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         </div>
         {tab === "list" && (
           <>
+            {(() => {
+              const flat = filteredAll;
+              if (!flat.length) return null;
+              const focusLabel = TRACKS[track].subtitle || TRACKS[track].label;
+              return (
+                <div
+                  style={{
+                    margin:"8px 0 10px",
+                    padding:"10px 12px",
+                    borderRadius:16,
+                    background:"var(--glass-bg)",
+                    border:"1px solid var(--glass-border)",
+                    fontSize:12,
+                    color:"var(--text-secondary)",
+                    display:"flex",
+                    flexDirection:"column",
+                    width:"100%",
+                    boxSizing:"border-box"
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize:11,
+                      letterSpacing:"0.18em",
+                      textTransform:"uppercase",
+                      color:"var(--text-dimmer)",
+                      marginBottom:4
+                    }}
+                  >
+                    THIS SESSION
+                  </div>
+                  <div
+                    style={{
+                      fontSize:14,
+                      fontWeight:600,
+                      color:"var(--text-secondary)",
+                      marginBottom:2
+                    }}
+                  >
+                    {flat.length} moves · {perMoveSeconds} seconds each
+                  </div>
+                  <div
+                    style={{
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"space-between",
+                      gap:8
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize:11,
+                        color:"var(--text-dimmer)"
+                      }}
+                    >
+                      ~{sessionMinutes} minutes · {focusLabel}
+                    </div>
+                    {TOTAL > 0 && (
+                      <div
+                        style={{
+                          fontSize:11,
+                          color:"var(--text-dimmer)"
+                        }}
+                      >
+                        {totalDone} of {TOTAL} done
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
             {visibleSections.map(sec => (
               <div className="sg" key={sec.label}>
                 <div className="sh">
@@ -4925,11 +5477,99 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
                   })}
               </div>
             ))}
+            <div style={{marginTop:24, padding:"4px 0 8px"}}>
+              <button
+                type="button"
+                onClick={() => { if (filteredAll.length > 0) { primeAudio(); setTab("guided"); setGuidedActive(true); } }}
+                disabled={filteredAll.length === 0}
+                style={{
+                  width:"100%", padding:"14px 18px", borderRadius:999, border:"none",
+                  background:"var(--accent)", color:"#ffffff",
+                  fontFamily:"'Barlow',sans-serif", fontSize:12, fontWeight:700,
+                  letterSpacing:"0.18em", textTransform:"uppercase", cursor:"pointer",
+                  opacity: filteredAll.length === 0 ? 0.45 : 1, transition:"opacity 0.18s, transform 0.18s",
+                }}
+              >
+                Start GUIDED with these steps
+              </button>
+            </div>
           </>
         )}
 
         {tab === "guided" && (
           <>
+            {(() => {
+              const flat = filteredAll;
+              if (!flat.length) return null;
+              const perMoveSeconds = exerciseDuration || 45;
+              const focusLabel = TRACKS[track].subtitle || TRACKS[track].label;
+              return (
+                <div
+                  style={{
+                    margin: "8px 0 10px",
+                    padding: "10px 12px",
+                    borderRadius: 16,
+                    background: "var(--glass-bg)",
+                    border: "1px solid var(--glass-border)",
+                    fontSize: 12,
+                    color: "var(--text-secondary)",
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: "var(--text-dimmer)",
+                      marginBottom: 4,
+                    }}
+                  >
+                    THIS SESSION
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "var(--text-secondary)",
+                      marginBottom: 2,
+                    }}
+                  >
+                    {flat.length} moves · {perMoveSeconds} seconds each
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "var(--text-dimmer)",
+                      }}
+                    >
+                      ~{sessionMinutes} minutes · {focusLabel}
+                    </div>
+                    {TOTAL > 0 && (
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color: "var(--text-dimmer)",
+                        }}
+                      >
+                        {totalDone} of {TOTAL} done
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
             {visibleSections.map(sec => (
               <div className="sg" key={sec.label}>
                 <div className="sh">
