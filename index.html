@@ -4642,16 +4642,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 {/* Crisp SVG stroke ring driven by breatheProgress */}
                 <svg className="timer-breathe-ring" width="306" height="306" viewBox="0 0 306 306" style={{position:"absolute", left:0, top:0}}>
                   <circle cx="153" cy="153" r="120" fill="none" stroke="var(--border)" strokeWidth="2" />
-                  <circle
-                    cx="153" cy="153" r="120"
-                    fill="none"
-                    stroke="var(--accent)"
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={Math.round(circumference * (1 - (breatheProgress || 0)))}
-                    style={{ transition: `stroke-dashoffset ${Math.max(0.25, (curBreathPhase?.dur || 0.9) * 0.9)}s linear` }}
-                  />
+                  {/* colored accent stroke removed per user request; only soft glow remains */}
                 </svg>
               </div>
             )}
