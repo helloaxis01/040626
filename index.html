@@ -2216,6 +2216,9 @@ const css = `
     --font-display: 'Barlow', sans-serif;
     --font-text: 'Barlow', sans-serif;
     --label-spacing: 0.24em;
+    /* canonical app colors */
+    --app-white: #f6f7f8;
+    --app-black: #252525;
   }
   .app-page-header { padding: var(--safe-top) var(--page-padding) 0; width: 100%; max-width: 100%; box-sizing: border-box; }
   .app-page-bottom-pad { padding-bottom: var(--safe-bottom); }
@@ -4679,7 +4682,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 <>
                   {/* Countdown in circle — white, fade in/out with timer */}
                   <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    <div style={{...intervalDigitStyle, fontSize:72, minWidth:72, color:"#ffffff", opacity:countdownLabelOpacity, transition: "none"}}>{formatSecondsOnly(bTime)}</div>
+                    <div style={{...intervalDigitStyle, fontSize:72, minWidth:72, color: isDark ? "var(--app-white)" : "var(--app-black)", opacity:countdownLabelOpacity, transition: "none"}}>{formatSecondsOnly(bTime)}</div>
                   </div>
                 </>
               )}
@@ -4698,7 +4701,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 fontWeight:700,
                 letterSpacing:"0.22em",
                 textTransform:"uppercase",
-                color:"#ffffff",
+                color: isDark ? "var(--app-white)" : "var(--app-black)",
                 opacity:countdownLabelOpacity,
                 fontFamily:"'Barlow',sans-serif",
                 transition:`opacity ${breatheOpacityTransition}`,
