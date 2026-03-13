@@ -4724,8 +4724,8 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           )}
           </div>
 
-          <div style={(!bRunning && !bDone)?TIMER_BTN_SPACER_ABOVE_IDLE:TIMER_BTN_SPACER_ABOVE} aria-hidden />
-          <div style={(!bRunning && !bDone)?TIMER_BTN_ROW_IDLE:TIMER_BTN_ROW}>
+          <div style={TIMER_BTN_SPACER_ABOVE} aria-hidden />
+          <div style={TIMER_BTN_ROW}>
             {!bRunning && !bDone && <button type="button" onClick={()=>{primeAudio();bStart();}} className="timer-glass-btn-pri" style={BTN}>Start</button>}
             {bRunning && <>
               <button type="button" onClick={()=>setBRunning(r=>!r)} className="timer-glass-btn-pri" style={{...BTN,padding:"12px 28px"}}>Pause</button>
@@ -4733,7 +4733,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
             </>}
             {bDone && <button type="button" onClick={bReset} className="timer-glass-btn-pri" style={BTN}>Again</button>}
           </div>
-          <div style={(!bRunning && !bDone)?TIMER_BTN_SPACER_BELOW_IDLE:TIMER_BTN_SPACER_BELOW} aria-hidden />
+          <div style={TIMER_BTN_SPACER_BELOW} aria-hidden />
         </div>)}
 
         </div>
