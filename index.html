@@ -4673,7 +4673,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                     strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={Math.round(circumference * (1 - (breatheProgress || 0)))}
-                    style={{ transform: "rotate(-90deg)", transformOrigin: "153px 153px", transition: `stroke-dashoffset ${Math.max(0.25, (curBreathPhase?.dur || 0.9) * 0.9)}s linear`, opacity: "var(--breathe-stroke-opacity, 0.25)" }}
+                    style={{ transform: "rotate(-90deg)", transformOrigin: "153px 153px", transition: `stroke-dashoffset ${Math.max(0.25, (curBreathPhase?.dur || 0.9) * 0.9)}s linear`, opacity: "var(--breathe-stroke-opacity, 0.125)" }}
                   />
                 </svg>
               </div>
