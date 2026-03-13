@@ -4253,8 +4253,13 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     bPhaseRef.current = 0; bCycleRef.current = 1;
     setBPhaseIdx(0); setBCycle(1);
     setBTime(bPatternRef.current[0].dur);
-    setBExpand(bPatternRef.current[0].expand);
+    // ensure scale transition runs on first inhale: set running first, then expand after a brief tick
+    setBExpand(false);
     setBRunning(true);
+    // defer setting expand so CSS transition animates from small -> full
+    setTimeout(() => {
+      setBExpand(bPatternRef.current[0].expand);
+    }, 60);
     beep(528, 0.2);
   }
 
