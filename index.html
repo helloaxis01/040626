@@ -2220,9 +2220,15 @@ const TRACKS = {
   running:     { id: "running",     label: "Running Reset",          subtitle: "Impact · Hips · Recovery",             purpose: "Prime tendons and hips before impact, then restore structure and circulation post-run.",                       sections: RUNNING_SECTIONS,  duration: "8–12 min" },
   golf:        { id: "golf",        label: "Golf Reset",             subtitle: "Dynamic · Rotational · Recovery",      purpose: "Prepare rotation, wrists, and hips before the first tee, then decompress after the final putt.",               sections: GOLF_SECTIONS,     duration: "8–10 min" },
   tennis:      { id: "tennis",      label: "Racquet Sports Reset",   subtitle: "Court · Shoulder · Hips",              purpose: "Ready the lateral base and shoulders for court work, then release forearms, hips, and side body after play.",  sections: TENNIS_SECTIONS,   duration: "8–10 min" },
-  thoracic:    { id: "thoracic",    label: "Thoracic Chest Reset Flow", subtitle: "Thoracic mobility · Upper back · Chest", purpose: "A guided 7–10 minute flow to restore thoracic mobility, reduce upper back tension, and relieve chest/arm symptoms.", sections: THORACIC_SECTIONS, duration: "8–10 min" },
-  wrist:       { id: "wrist",       label: "Wrist & Hand Reset Flow", subtitle: "Glides · Stretches · Nerve glides", purpose: "Short PT-style routine for wrist and hand mobility — perfect for keyboard users.", sections: WRIST_SECTIONS, duration: "5–7 min" },
+  thoracic:    { id: "thoracic",    label: "Thoracic Chest Reset Flow", subtitle: "Thoracic mobility · Upper back · Chest", purpose: "A guided 7–10 minute flow to restore thoracic mobility, reduce upper back tension, and relieve chest/arm symptoms.", sections: null, duration: "8–10 min" },
+  wrist:       { id: "wrist",       label: "Wrist & Hand Reset Flow", subtitle: "Glides · Stretches · Nerve glides", purpose: "Short PT-style routine for wrist and hand mobility — perfect for keyboard users.", sections: null, duration: "5–7 min" },
 };
+
+// Resolve lazy section references (avoid TDZ issues)
+try {
+  if (TRACKS && TRACKS.thoracic && !TRACKS.thoracic.sections) TRACKS.thoracic.sections = THORACIC_SECTIONS;
+  if (TRACKS && TRACKS.wrist && !TRACKS.wrist.sections) TRACKS.wrist.sections = WRIST_SECTIONS;
+} catch (e) {}
 
 
 // ─────────────────────────────────────────────────────────────
