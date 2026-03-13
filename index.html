@@ -4423,7 +4423,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     pointer-events: none;
     mix-blend-mode: screen;
     will-change: opacity, transform;
-    filter: blur(8px);
+    filter: blur(6px);
   }
   .timer-view-body .timer-breathe-ring {
     position: absolute;
@@ -4644,10 +4644,19 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                   <circle cx="160" cy="160" r="140" fill="url(#breatheGlow)" />
                 </svg>
 
-                {/* Crisp SVG stroke ring driven by breatheProgress */}
+                {/* Crisp SVG stroke ring driven by breatheProgress (subtle, low-contrast) */}
                 <svg className="timer-breathe-ring" width="306" height="306" viewBox="0 0 306 306" style={{position:"absolute", left:0, top:0}}>
                   <circle cx="153" cy="153" r="120" fill="none" stroke="var(--border)" strokeWidth="2" />
-                  {/* colored accent stroke removed per user request; only soft glow remains */}
+                  <circle
+                    cx="153" cy="153" r="120"
+                    fill="none"
+                    stroke="var(--accent-dim)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={Math.round(circumference * (1 - (breatheProgress || 0)))}
+                    style={{ transform: "rotate(-90deg)", transformOrigin: "153px 153px", transition: `stroke-dashoffset ${Math.max(0.25, (curBreathPhase?.dur || 0.9) * 0.9)}s linear`, opacity: "var(--breathe-stroke-opacity, 0)" }}
+                  />
                 </svg>
               </div>
             )}
@@ -4724,8 +4733,8 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           )}
           </div>
 
-          <div style={{height:12}} aria-hidden />
-          <div style={{...TIMER_BTN_ROW, marginTop: -40}}>
+          <div style={(!bRunning && !bDone) ? TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE} aria-hidden />
+          <div style={(!bRunning && !bDone) ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW}>
             {!bRunning && !bDone && <button type="button" onClick={()=>{primeAudio();bStart();}} className="timer-glass-btn-pri" style={BTN}>Start</button>}
             {bRunning && <>
               <button type="button" onClick={()=>setBRunning(r=>!r)} className="timer-glass-btn-pri" style={{...BTN,padding:"12px 28px"}}>Pause</button>
@@ -4733,7 +4742,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
             </>}
             {bDone && <button type="button" onClick={bReset} className="timer-glass-btn-pri" style={BTN}>Again</button>}
           </div>
-          <div style={{height:12}} aria-hidden />
+          <div style={(!bRunning && !bDone) ? TIMER_BTN_SPACER_BELOW_IDLE : TIMER_BTN_SPACER_BELOW} aria-hidden />
         </div>)}
 
         </div>
