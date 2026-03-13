@@ -4668,9 +4668,11 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                     position:"absolute",left:0,right:0,bottom:20,height:80,
                     display:"flex",alignItems:"center",justifyContent:"center",gap:6,
                   }}>
-                    <span style={{...timerNumSmall,fontSize:12,letterSpacing:"0.06em"}}>
-                      {bCycle} of {breathCycles}
-                    </span>
+                    <div style={{position:"relative", zIndex:3, display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"6px 10px", borderRadius:12, background:"var(--glass-bg)", border:"1px solid var(--glass-border)", boxSizing:"border-box"}}>
+                      <span style={{...timerNumSmall,fontSize:12,letterSpacing:"0.06em", color:"var(--text-secondary)"}}>
+                        {bCycle} of {breathCycles}
+                      </span>
+                    </div>
                   </div>
                 </>
               )}
