@@ -4695,6 +4695,14 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               }}>{curBreathPhase.label}</div>
             </div>
           )}
+          {/* Cycles pill shown during active run, placed below the phase label and above controls */}
+          {bRunning && (
+            <div style={{display:"flex",width:"100%",justifyContent:"center",marginTop:6,marginBottom:6}}>
+              <div style={{display:"inline-flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:12,background:"var(--glass-bg)",border:"1px solid var(--glass-border)",boxSizing:"border-box"}}>
+                <span style={{...timerNumSmall,fontSize:12,letterSpacing:"0.06em",color:"var(--text-secondary)"}}>{bCycle} of {breathCycles}</span>
+              </div>
+            </div>
+          )}
           {/* Spacer when done so Again aligns with INTERVAL Again */}
           {bDone && (
             <div style={{flexShrink:0,width:"100%",minHeight:TIMER_PHASE_BAND,boxSizing:"border-box"}} aria-hidden />
