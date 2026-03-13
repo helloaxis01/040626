@@ -2175,6 +2175,23 @@ const FIGURES = {
 
 function getSections(trackId) { return TRACKS[trackId].sections; }
 function getAll(trackId) { return getSections(trackId).flatMap(s => s.exercises.map(e => ({ ...e, sectionLabel: s.label }))); }
+function exerciseSeconds(ex, fallbackSec) {
+  const s = ex.seconds;
+  const n = typeof s === 'number' ? s : (typeof s === 'string' ? Number(s) : NaN);
+  return (n > 0 && Number.isFinite(n)) ? n : (fallbackSec || 45);
+}
+function exerciseSecondsFromSections(exId, sections, fallbackSec) {
+  for (const sec of sections || []) {
+    const ex = sec.exercises && sec.exercises.find(e => e.id === exId || Number(e.id) === Number(exId));
+    if (ex != null) {
+      const s = ex.seconds;
+      const n = typeof s === 'number' ? s : (typeof s === 'string' ? Number(s) : NaN);
+      if (n > 0 && Number.isFinite(n)) return n;
+      return (fallbackSec || 45);
+    }
+  }
+  return (fallbackSec || 45);
+}
 
 function storageGet(key, def) {
   try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : def; } catch { return def; }
@@ -4208,23 +4225,22 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   const isHoldPhase   = phaseLabel === "Hold";
   const isExhalePhase = phaseLabel.includes("Exhale");
 
-  // Smooth phase envelope for orbs — same orbs, different opacity/scale over phase duration
-  const phaseDur = curBreathPhase?.dur || 1;
-  const clampedTime = Math.max(0, Math.min(phaseDur, bTime));
-  let orbOpacity = 0;
-  let orbScale = 0.7;
+  // Breathe intensity (4s inhale, 7s hold, 8s exhale): one formula per phase, no div-by-zero
+  const phaseDur = Math.max(1, curBreathPhase?.dur ?? 1);
+  const progress = 1 - bTime / phaseDur; // 0 at phase start (e.g. 4), 1 at phase end (0)
+  let breatheIntensity = 1;
   if (isInhalePhase) {
-    const frac = 1 - clampedTime / phaseDur; // 0 → 1 over inhale
-    orbOpacity = 0.2 + 0.6 * frac;          // 0.2 → 0.8
-    orbScale = 0.7 + 0.4 * frac;            // 0.7 → 1.1
+    const lastSecondProgress = 1 - 1 / phaseDur; // e.g. 0.75 for 4s — full intensity once we're at 1
+    breatheIntensity = progress >= lastSecondProgress ? 1 : progress / lastSecondProgress; // 0 at 4 (off), quickly grow to 1 by "1"
   } else if (isHoldPhase) {
-    orbOpacity = 0.8;
-    orbScale = 1.05;
+    breatheIntensity = 1;
   } else if (isExhalePhase) {
-    const frac = clampedTime / phaseDur;    // 1 → 0 over exhale
-    orbOpacity = 0.8 * frac;                // 0.8 → 0 by end of exhale
-    orbScale = 0.7 + 0.4 * frac;            // 1.1 → 0.7
+    const isLastRound = bCycle >= breathCycles;
+    breatheIntensity = isLastRound && bTime <= 1 ? 0 : 0.25 + 0.75 * (1 - progress); // 1 at 8 → 0.25; only in 4th round at 1: fade out completely
   }
+  const orbOpacity = breatheIntensity;
+  const countdownLabelOpacity = isInhalePhase ? 1 : breatheIntensity;
+  const breatheOpacityTransition = isInhalePhase ? `${Math.max(2.5, phaseDur * 0.85)}s ease` : "0.6s ease";
 
   function bReset() {
     clearInterval(bRef.current);
@@ -4304,10 +4320,11 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   // Circle as large as possible within column; static slot so INTERVAL/BREATHE don’t shift
   const ringSize = 360;
   const TIMER_RING_WRAP = { flexShrink:0, position:"relative", display:"flex", alignItems:"center", justifyContent:"center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft:"auto", marginRight:"auto", marginTop:0, marginBottom:0 };
+  const breatheInset = (ringSize - 306) / 2; // 27 when ringSize 360 — same ring as INTERVAL
   const TIMER_MID_MIN_IDLE = 156; // min height for content
   const TIMER_MID_IDLE_HEIGHT = 176; // fixed height when idle so INTERVAL and BREATHE START align
   const TIMER_PHASE_BAND = 52;    // matches BREATHE phase label block height so Pause/Reset align when running
-  // Toggle: spacer above so INTERVAL/BREATHE sit halfway between top edge and top of circle (toggle ~60px + margin 28 → midpoint = 28px above toggle)
+  // Toggle: spacer above so INTERVAL/BREATHE sit halfway between top edge and top of circle
   const TIMER_TOGGLE_SPACER_TOP = 12;
   const TIMER_TOGGLE_WRAP = { flexShrink:0, display:"flex", gap:10, marginBottom:14, padding:6, minHeight:48, alignItems:"center", boxSizing:"border-box" };
   // Button row: equal spacers when Pause/Reset/Again — when START only, shrink spacer above so START sits same height as Pause/RESET
@@ -4379,28 +4396,19 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     position: absolute;
     border-radius: 999px;
     pointer-events: none;
-    background: radial-gradient(circle at 40% 30%, var(--accent) 0%, transparent 80%);
+    background: radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 80%);
     mix-blend-mode: screen;
     filter: blur(10px);
     animation: timer-breathe-orb-loop 16s ease-in-out infinite;
   }
   .timer-view-body .timer-breathe-orb-soft {
-    background: radial-gradient(circle at 40% 40%, var(--accent-glow, var(--accent-dim)) 0%, transparent 85%);
+    background: radial-gradient(circle at 50% 50%, var(--accent-glow, var(--accent-dim)) 0%, transparent 85%);
     animation-duration: 18s;
   }
   @keyframes timer-breathe-orb-loop {
-    0% {
-      opacity: 0.45;
-      transform: scale(0.9);
-    }
-    50% {
-      opacity: 0.8;
-      transform: scale(1.05);
-    }
-    100% {
-      opacity: 0.45;
-      transform: scale(0.9);
-    }
+    0% { opacity: 0.45; transform: scale(0.9); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+    100% { opacity: 0.45; transform: scale(0.9); }
   }
   .timer-view-body .timer-glass-stepper {
     background: transparent;
@@ -4597,24 +4605,14 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
             <svg width={ringSize} height={ringSize} viewBox="0 0 320 320" style={{position:"absolute",top:0,left:0}} className="timer-breathe-guide-ring">
               <circle cx="160" cy="160" r="140" fill="none" stroke="var(--border)" strokeWidth="1.5"/>
             </svg>
-            <div className={`timer-breathe-expand-ring ${!(bRunning && bExpand) ? "breathe-idle" : ""}`} style={{
-              position:"absolute", left:27, top:27, width:306, height:306, borderRadius:"50%",
-              background: bRunning && bExpand ? "var(--accent-dim)" : "transparent",
-              border:"2px solid var(--accent)",
-              opacity: bRunning && bExpand ? 0.4 : 0.12,
-              transform: bRunning && bExpand ? "scale(1)" : "scale(0.45)",
-              transition: bRunning ? `opacity ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1), transform ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1)` : "opacity 0.6s ease, transform 0.6s ease",
-            }}/>
             {bRunning && !nightMode && (
               <div style={{
-                position:"absolute",left:27,top:27,width:306,height:306,borderRadius:"50%",overflow:"hidden",pointerEvents:"none",
+                position:"absolute",left:breatheInset,top:breatheInset,width:306,height:306,borderRadius:"50%",overflow:"hidden",pointerEvents:"none",
+                transform: bRunning && bExpand ? "scale(1)" : "scale(0.45)",
+                transformOrigin:"center center",
+                transition: bRunning ? `transform ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1)` : "transform 0.6s ease",
               }}>
-                <div style={{
-                  position:"absolute",inset:0,display:"block",
-                  opacity:orbOpacity,
-                  transform:`scale(${orbScale})`,
-                  transition:"opacity 0.9s ease, transform 0.9s ease",
-                }}>
+                <div style={{position:"absolute",inset:0,opacity:orbOpacity,transition:`opacity ${breatheOpacityTransition}`}}>
                   {[0,1,2,3,4,5].map(i => {
                     const base = [
                       { width:260, height:260, left:23,  top:23 },
@@ -4630,7 +4628,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 </div>
               </div>
             )}
-            {/* Same layout as INTERVAL: countdown centered; cycle line in bottom band (bottom 20, height 80) */}
+            {/* Same layout as INTERVAL: countdown centered; cycle line in bottom band */}
             <div style={{position:"absolute",left:0,top:0,width:ringSize,height:ringSize,pointerEvents:"none"}}>
               {!bRunning && !bDone && (
                 <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -4639,9 +4637,9 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               )}
               {bRunning && (
                 <>
-                  {/* Countdown only in circle — phase label moved below circle */}
+                  {/* Countdown in circle — white, fade in/out with timer */}
                   <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    <div style={{...intervalDigitStyle, color: curBreathPhase.color, transition:"color 0.5s"}}>{formatSecondsOnly(bTime)}</div>
+                    <div style={{...intervalDigitStyle, color:"#ffffff", opacity:countdownLabelOpacity, transition:`opacity ${breatheOpacityTransition}`}}>{formatSecondsOnly(bTime)}</div>
                   </div>
                   <div style={{
                     position:"absolute",left:0,right:0,bottom:20,height:80,
@@ -4660,7 +4658,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               )}
             </div>
           </div>
-          {/* Phase label — between circle and Pause/Reset; height locked to TIMER_PHASE_BAND for INTERVAL alignment */}
+          {/* Phase label — white (INHALE/HOLD/EXHALE), fade in/out with timer */}
           {bRunning && (
             <div className="timer-glass-phase" style={{flexShrink:0,width:"100%",textAlign:"center",padding:"9px 20px 10px",marginTop:-5,boxSizing:"border-box",minHeight:TIMER_PHASE_BAND,display:"flex",alignItems:"center",justifyContent:"center"}}>
               <div style={{
@@ -4668,9 +4666,10 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                 fontWeight:700,
                 letterSpacing:"0.22em",
                 textTransform:"uppercase",
-                color:curBreathPhase.color,
+                color:"#ffffff",
+                opacity:countdownLabelOpacity,
                 fontFamily:"'Barlow',sans-serif",
-                transition:"color 0.5s",
+                transition:`opacity ${breatheOpacityTransition}`,
                 lineHeight:1.2,
               }}>{curBreathPhase.label}</div>
             </div>
@@ -4856,19 +4855,18 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const TOTAL = activeAll.length;
   const totalDone = activeAll.filter(e => done[e.id]).length;
   const perMoveSeconds = exerciseDuration || 45;
-  const fullSeconds = activeAll.reduce(
-    (sum, ex) => sum + (perMoveSeconds || ex.seconds || 0),
-    0
-  );
-  const fullMinutes = Math.round(fullSeconds / 60) || 0;
-  const sessionSeconds = filteredAll.reduce(
-    (sum, ex) => sum + (perMoveSeconds || ex.seconds || 0),
-    0
-  );
+  const totalCount = ALL.length;
+  const activeCount = filteredAll.length;
+  const defaultDurationStr = TRACKS[track].duration || "";
+  const defaultMinutes = Number((defaultDurationStr.match(/\d+/) || ["0"])[0]) || 0;
+  const fullSecondsFromLabel = defaultMinutes * 60;
+  const sessionSeconds = totalCount > 0 && fullSecondsFromLabel > 0
+    ? Math.round((fullSecondsFromLabel * activeCount) / totalCount)
+    : 0;
   const sessionMinutes = Math.round(sessionSeconds / 60) || 0;
-  const defaultDurationLabel = TRACKS[track].duration || `${fullMinutes} min`;
+  const defaultDurationLabel = TRACKS[track].duration || `${sessionMinutes} min`;
   const sessionDurationLabel =
-    filteredAll.length === activeAll.length
+    activeCount === totalCount
       ? defaultDurationLabel
       : `${sessionMinutes} min`;
   const pct = TOTAL > 0 ? Math.round((totalDone / TOTAL) * 100) : 0;
@@ -5121,6 +5119,19 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   // TODAY (formerly Home)
   if (view === "home") {
     const nowPeriod = getCircadianPeriod();
+    const perMove = exerciseDuration || 45;
+    const getTrackDisplayDuration = (trackId) => {
+      const sections = getSections(trackId);
+      const allCount = (sections || []).reduce((n, sec) => n + (sec.exercises || []).length, 0);
+      const activeCount = (sections || []).reduce((n, sec) => n + (sec.exercises || []).filter(e => !skipped[e.id]).length, 0);
+      const defaultStr = TRACKS[trackId].duration || "";
+      const defaultMins = Number((defaultStr.match(/\d+/) || ["0"])[0]) || 0;
+      const fullSecs = defaultMins * 60;
+      const sessionSecs = allCount > 0 && fullSecs > 0 ? Math.round((fullSecs * activeCount) / allCount) : 0;
+      const mins = Math.round(sessionSecs / 60) || 0;
+      const defaultLabel = TRACKS[trackId].duration || `${mins} min`;
+      return activeCount === allCount ? defaultLabel : `${mins} min`;
+    };
     const TODAY_SUGGESTIONS = {
       dawn:   { trackId: "morning", suggestion: "Good morning! Ready for a stretch?" },
       midday: { trackId: "desk",    suggestion: "Take a break and undo an hour of sitting." },
@@ -5162,8 +5173,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
               <div style={{fontSize:11,letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent)",marginBottom:8,fontWeight:600}}>Today</div>
               <div style={{fontSize:20,fontWeight:500,color:"var(--text-white)",marginBottom:6}}>{periodLabels[nowPeriod]}</div>
               <div style={{fontSize:14,color:"var(--text-secondary)",marginBottom:6,lineHeight:1.4}}>{todaySug.suggestion}</div>
-              <div style={{fontSize:13,color:"var(--text-dim)",letterSpacing:"0.06em",marginBottom:18}}>{todayTrack.duration}</div>
-              <button className="begin-btn" onClick={() => beginTrack(todayTrack.id)} style={{width:"100%",padding:"14px 24px",fontSize:15}} aria-label={`Start ${todayTrack.label}, ${todayTrack.duration}`}>
+              <div style={{fontSize:13,color:"var(--text-dim)",letterSpacing:"0.06em",marginBottom:18}}>{getTrackDisplayDuration(todayTrack.id)}</div>
+              <button className="begin-btn" onClick={() => beginTrack(todayTrack.id)} style={{width:"100%",padding:"14px 24px",fontSize:15}} aria-label={`Start ${todayTrack.label}, ${getTrackDisplayDuration(todayTrack.id)}`}>
                 {todayTrack.label}
               </button>
             </div>
@@ -5172,15 +5183,15 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
               <div className="track-group" key={g.label}>
                 <div className="track-group-label">{g.label}</div>
                 <div className="track-cards">
-                  {g.ids.map(id => { const t = TRACKS[id]; return (
-                    <div className="track-card" key={t.id} onClick={() => beginTrack(t.id)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); beginTrack(t.id); } }} aria-label={`${t.label}, ${t.duration}. Begin session`}>
+                  {g.ids.map(id => { const t = TRACKS[id]; const cardDur = getTrackDisplayDuration(t.id); return (
+                    <div className="track-card" key={t.id} onClick={() => beginTrack(t.id)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); beginTrack(t.id); } }} aria-label={`${t.label}, ${cardDur}. Begin session`}>
                       <div className="track-card-left">
                         <div className="track-card-name">{t.label}</div>
                         <div className="track-card-sub">{t.subtitle}</div>
                         <div className="track-card-purpose">{t.purpose}</div>
                       </div>
                       <div className="track-card-right">
-                        <div className="track-card-dur">{t.duration}</div>
+                        <div className="track-card-dur">{cardDur}</div>
                         <button className="begin-btn" onClick={e => { e.stopPropagation(); beginTrack(t.id); }} aria-label={`Begin ${t.label}`}>Begin</button>
                       </div>
                     </div>
@@ -5380,7 +5391,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             {(() => {
               const flat = filteredAll;
               if (!flat.length) return null;
-              const focusLabel = TRACKS[track].subtitle || TRACKS[track].label;
               return (
                 <div
                   style={{
@@ -5412,38 +5422,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
                     style={{
                       fontSize:14,
                       fontWeight:600,
-                      color:"var(--text-secondary)",
-                      marginBottom:2
+                      color:"var(--text-secondary)"
                     }}
                   >
                     {flat.length} moves · {perMoveSeconds} seconds each
-                  </div>
-                  <div
-                    style={{
-                      display:"flex",
-                      alignItems:"center",
-                      justifyContent:"space-between",
-                      gap:8
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize:11,
-                        color:"var(--text-dimmer)"
-                      }}
-                    >
-                      ~{sessionMinutes} minutes · {focusLabel}
-                    </div>
-                    {TOTAL > 0 && (
-                      <div
-                        style={{
-                          fontSize:11,
-                          color:"var(--text-dimmer)"
-                        }}
-                      >
-                        {totalDone} of {TOTAL} done
-                      </div>
-                    )}
                   </div>
                 </div>
               );
@@ -5502,7 +5484,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
               const flat = filteredAll;
               if (!flat.length) return null;
               const perMoveSeconds = exerciseDuration || 45;
-              const focusLabel = TRACKS[track].subtitle || TRACKS[track].label;
               return (
                 <div
                   style={{
@@ -5535,37 +5516,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
                       fontSize: 14,
                       fontWeight: 600,
                       color: "var(--text-secondary)",
-                      marginBottom: 2,
                     }}
                   >
                     {flat.length} moves · {perMoveSeconds} seconds each
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 8,
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: "var(--text-dimmer)",
-                      }}
-                    >
-                      ~{sessionMinutes} minutes · {focusLabel}
-                    </div>
-                    {TOTAL > 0 && (
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color: "var(--text-dimmer)",
-                        }}
-                      >
-                        {totalDone} of {TOTAL} done
-                      </div>
-                    )}
                   </div>
                 </div>
               );
