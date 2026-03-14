@@ -2344,8 +2344,18 @@ const FIGURES = {
 // New Tracks: Thoracic Chest Reset Flow + Wrist & Hand Reset Flow
 
 
-function getSections(trackId) { return TRACKS[trackId].sections; }
-function getAll(trackId) { return getSections(trackId).flatMap(s => s.exercises.map(e => ({ ...e, sectionLabel: s.label }))); }
+function getSections(trackId) {
+  try {
+    if (!TRACKS || !trackId || !TRACKS[trackId]) return [];
+    return TRACKS[trackId].sections || [];
+  } catch (e) {
+    return [];
+  }
+}
+function getAll(trackId) {
+  const secs = getSections(trackId) || [];
+  return secs.flatMap(s => (s.exercises || []).map(e => ({ ...e, sectionLabel: s.label })));
+}
 function exerciseSeconds(ex, fallbackSec) {
   const s = ex.seconds;
   const n = typeof s === 'number' ? s : (typeof s === 'string' ? Number(s) : NaN);
