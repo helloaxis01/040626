@@ -5173,12 +5173,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const perMoveSeconds = exerciseDuration || 45;
   const totalCount = ALL.length;
   const activeCount = filteredAll.length;
-  const defaultDurationStr = TRACKS[track].duration || "";
+  const defaultDurationStr = (TRACKS[track] && TRACKS[track].duration) || "";
   const defaultMinutes = Number((defaultDurationStr.match(/\d+/) || ["0"])[0]) || 0;
   const fullSecondsFromLabel = defaultMinutes * 60;
   const sessionSeconds = computeSessionSeconds(totalCount, fullSecondsFromLabel, activeCount);
   const sessionMinutes = Math.round(sessionSeconds / 60) || 0;
-  const defaultDurationLabel = TRACKS[track].duration || `${sessionMinutes} min`;
+  const defaultDurationLabel = (TRACKS[track] && TRACKS[track].duration) || `${sessionMinutes} min`;
   const sessionDurationLabel =
     activeCount === totalCount
       ? defaultDurationLabel
@@ -5191,7 +5191,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       const next = { ...d, [id]: !d[id] };
       if (next[id] && !todayLogged) {
         const today = new Date().toDateString();
-        const newEntry = { date: today, track: TRACKS[track].label, duration: Math.round(sessionSecs / 60) };
+        const newEntry = { date: today, track: (TRACKS[track] && TRACKS[track].label) || track, duration: Math.round(sessionSecs / 60) };
         const newHistory = [newEntry, ...history].slice(0, 30);
         setHistory(newHistory); storageSet("axis_history", newHistory);
         const yesterday = new Date(Date.now() - 86400000).toDateString();
@@ -5438,12 +5438,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       const sections = getSections(trackId);
       const allCount = (sections || []).reduce((n, sec) => n + (sec.exercises || []).length, 0);
       const activeCount = (sections || []).reduce((n, sec) => n + (sec.exercises || []).filter(e => !skipped[e.id]).length, 0);
-      const defaultStr = TRACKS[trackId].duration || "";
+      const defaultStr = (TRACKS[trackId] && TRACKS[trackId].duration) || "";
       const defaultMins = Number((defaultStr.match(/\d+/) || ["0"])[0]) || 0;
       const fullSecs = defaultMins * 60;
       const sessionSecs = allCount > 0 && fullSecs > 0 ? Math.round((fullSecs * activeCount) / allCount) : 0;
       const mins = Math.round(sessionSecs / 60) || 0;
-      const defaultLabel = TRACKS[trackId].duration || `${mins} min`;
+      const defaultLabel = (TRACKS[trackId] && TRACKS[trackId].duration) || `${mins} min`;
       return activeCount === allCount ? defaultLabel : `${mins} min`;
     };
     const TODAY_SUGGESTIONS = {
