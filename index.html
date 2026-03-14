@@ -530,12 +530,12 @@ function Onboarding({ theme, onComplete }) {
           {/* 1: ALPHA BUILD */}
           {cur === 1 && <div className="ob-screen">
             <div className="ob-pad">
-              <div className="ob-eyebrow" style={{letterSpacing:"0.5em", fontSize:12}}>ALPHA BUILD</div>
-              <div className="ob-heading" style={{fontSize:32, fontWeight:700, color:"var(--ob-text-head)", lineHeight:0.96, letterSpacing:"-0.01em"}}>Welcome to AXIS.</div>
-              <div className="ob-body" style={{marginBottom:24, fontSize:16, opacity:0.6, lineHeight:1.28}}>
+              <div className="ob-eyebrow" style={{letterSpacing:"0.5em"}}>ALPHA BUILD</div>
+              <div className="ob-heading" style={{fontWeight:700, color:"var(--ob-text-head)", lineHeight:0.96, letterSpacing:"-0.01em"}}>Welcome to AXIS.</div>
+              <div className="ob-body" style={{marginBottom:24, opacity:0.6, lineHeight:1.28}}>
                 You’re accessing an early prototype. While we refine the final experience, the core science is fully active. Your usage and feedback help shape the future of AXIS.
               </div>
-              <div className="ob-body" style={{marginTop:16, fontSize:14, color:"var(--ob-text-sec)", lineHeight:1.28}}>
+              <div className="ob-body" style={{marginTop:16, color:"var(--ob-text-sec)", lineHeight:1.28}}>
                 When you’re done using the app, please quit it so you receive the latest updates automatically.
               </div>
             </div>
@@ -716,8 +716,8 @@ function Onboarding({ theme, onComplete }) {
           {cur === 5 && <div className="ob-screen">
             <div className="ob-pad">
               <div className="ob-eyebrow">APPEARANCE</div>
-              <div className="ob-heading" style={{fontSize:36, lineHeight:0.96, letterSpacing:"-0.01em"}}>Personalize your <em>space.</em></div>
-              <div className="ob-body" style={{marginBottom:28, fontSize:16, lineHeight:1.28}}>
+              <div className="ob-heading" style={{lineHeight:0.96, letterSpacing:"-0.01em"}}>Personalize your <em>space.</em></div>
+              <div className="ob-body" style={{marginBottom:28, lineHeight:1.28}}>
                 Choose a theme that fits your environment or intent. Select from light or dark mode, or color themes — amber, teal, blue, or purple. Set Auto and AXIS adapts to the time of day.
               </div>
               <div style={{display:"flex",gap:10,marginBottom:24}}>
@@ -813,7 +813,7 @@ function Onboarding({ theme, onComplete }) {
           {cur === 6 && <div className="ob-screen">
             <div className="ob-pad">
               <div className="ob-eyebrow">THE ETHICS & SAFETY</div>
-              <div className="ob-heading" style={{fontSize:36, lineHeight:0.96, letterSpacing:"-0.01em"}}>Your body. Your <em>data.</em></div>
+              <div className="ob-heading" style={{lineHeight:0.96, letterSpacing:"-0.01em"}}>Your body. Your <em>data.</em></div>
             <div className="ob-body" style={{marginBottom:24, lineHeight:1.28}}>
               No accounts, no tracking, and your data never leaves this device. AXIS is about mending, not pushing, so always listen to your body. If a movement causes pain, skip it.
             </div>
@@ -831,7 +831,7 @@ function Onboarding({ theme, onComplete }) {
           {cur === 7 && <div className="ob-screen ob-cta-screen">
             <div className="ob-pad">
               <div className="ob-eyebrow" style={{marginBottom:8}}>MEDICAL DISCLAIMER</div>
-              <div className="ob-heading" style={{fontSize:36, marginBottom:16, lineHeight:0.96, letterSpacing:"-0.01em"}}><span style={{fontWeight:800,color:"var(--ob-text-head)"}}>The</span> <em>Fine Print.</em></div>
+              <div className="ob-heading" style={{marginBottom:16, lineHeight:0.96, letterSpacing:"-0.01em"}}><span style={{fontWeight:800,color:"var(--ob-text-head)"}}>The</span> <em>Fine Print.</em></div>
               <div className="ob-disclaimer-scroll" style={{lineHeight:1.28}}>
                 AXIS provides movement and breath guidance for general wellness. It is not a substitute for professional medical advice, diagnosis, or treatment.
                 <br/><br/>
