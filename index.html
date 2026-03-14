@@ -2456,6 +2456,18 @@ const css = `
     --app-white: #f6f7f8;
     --app-black: #252525;
   }
+  /* Onboarding typography scale (uniform across slides) */
+  :root {
+    --ob-heading-size: 36px;
+    --ob-subhead-size: 18px;
+    --ob-body-size: 15px;
+    --ob-eyebrow-size: 13px;
+  }
+  /* Enforce consistent onboarding sizes (override inline styles if present) */
+  .ob-heading { font-size: var(--ob-heading-size) !important; font-weight: 700 !important; }
+  .ob-subhead, .ob-cta-head { font-size: var(--ob-subhead-size) !important; }
+  .ob-body { font-size: var(--ob-body-size) !important; line-height:1.28 !important; }
+  .ob-eyebrow { font-size: var(--ob-eyebrow-size) !important; }
   /* App-shell scrolling: single scroll container for native iOS feel */
   .app { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
   .app-body, .app-shell, .app-content { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
