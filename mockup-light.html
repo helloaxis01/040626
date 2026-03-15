@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root{
+    --bg-top:#F28B78;
+    --bg-bottom:#FDE6E0;
+    --bg:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+    --accent:#D85F4E;
+    --accent-dim:rgba(216,95,78,0.12);
+    --accent-glow:rgba(216,95,78,0.18);
+    --text:#252525;
+    --card:rgba(255,255,255,0.94);
+  }
+  html,body{height:100%;margin:0;font-family:Barlow,system-ui,Arial;}
+  body{background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;}
+  .hero{width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;padding:48px;}
+  .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.02));pointer-events:none}
+  .card{position:relative;background:var(--card);border-radius:16px;padding:36px;max-width:920px;width:100%;box-shadow:0 14px 40px rgba(10,10,12,0.08);display:flex;gap:28px;align-items:center}
+  .left{flex:1}
+  .title{font-size:32px;font-weight:700;line-height:1;margin:0 0 8px}
+  .subtitle{font-size:18px;margin:0 0 16px;color:#444}
+  .body{font-size:15px;color:#333;margin-bottom:20px}
+  .cta{display:inline-flex;align-items:center;gap:12px;background:var(--accent);color:white;padding:12px 20px;border-radius:12px;font-weight:700;text-decoration:none;box-shadow:0 8px 28px var(--accent-glow);}
+  .right{width:220px;display:flex;justify-content:center}
+  .badge{background:var(--accent-dim);border-radius:12px;padding:10px 12px;color:var(--accent);font-weight:700}
+  @media (prefers-reduced-motion: reduce){ .card{transition:none} }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="card" role="region" aria-label="Hero">
+      <div class="left">
+        <h1 class="title">Welcome to AXIS.</h1>
+        <div class="subtitle">Personal movement, daily resets</div>
+        <p class="body">Short, focused sessions designed to restore posture, reset tension, and give you a quick energy boost. Start with the Baseline Protocol.</p>
+        <a class="cta" href="#">Start Reset</a>
+      </div>
+      <div class="right">
+        <div style="text-align:center">
+          <div class="badge">8 min</div>
+          <div style="margin-top:12px;color:#666;font-size:13px">Spine · Core · Posterior</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
