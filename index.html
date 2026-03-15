@@ -35,6 +35,29 @@
   <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load Babel. Check your connection and try again.')"></script>
+  <script>
+    // Try to synchronously load axis_data.json so the inline app can initialize from it.
+    // Synchronous XHR is used here intentionally to ensure compatibility with the existing inline script initialization.
+    (function(){
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/axis_data.json', false); // synchronous
+        xhr.send(null);
+        if (xhr.status === 200) {
+          try {
+            window.AXIS_JSON = JSON.parse(xhr.responseText);
+            console.log('AXIS: loaded axis_data.json');
+          } catch(e) { console.error('AXIS: parse axis_data.json failed', e); }
+        } else {
+          // not found — no-op, app will fall back to inline data
+          // console.log('AXIS: axis_data.json not present (status ' + xhr.status + ')');
+        }
+      } catch(e) {
+        // network errors or cross-origin — silently ignore and fallback to inline data
+        console.error('AXIS: axis_data.json fetch failed', e);
+      }
+    })();
+  </script>
   <script type="text/babel" data-presets="react">
 // Development flag: add ?dev=1 to the URL or set localStorage.axis_dev = "1" to enable debug UI and verbose logs.
 window.AXIS_DEV = (location.search.indexOf('dev=1') !== -1) || (localStorage.getItem && localStorage.getItem('axis_dev') === '1');
@@ -2260,7 +2283,7 @@ const WRIST_SECTIONS = [
   },
 ];
 
-const TRACKS = {
+const TRACKS = (window.AXIS_JSON && window.AXIS_JSON.TRACKS) ? window.AXIS_JSON.TRACKS : {
   daily:       { id: "daily",       label: "The Baseline Protocol", subtitle: "Spine, Core, Posterior", purpose: "Spine, core, and posterior chain. The foundation session.", sections: DAILY_SECTIONS, duration: "25 min" },
   restorative: { id: "restorative", label: "Lymph & Flow", subtitle: "Circulation, Mobility, Recovery", purpose: "Gentle continuous movement for circulation, joint lubrication, and recovery.", sections: RESTORATIVE_SECTIONS, duration: "15 min" },
   morning:     { id: "morning",     label: "Sunrise Stretch", subtitle: "Wake, Spine, Energy", purpose: "Seven movements to wake the spine before you look at your phone.", sections: MORNING_SECTIONS, duration: "8 min" },
