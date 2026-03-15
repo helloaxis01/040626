@@ -161,6 +161,16 @@ html,body,#root{width:100%;margin:0;padding:0;}
 .ob-ndots { display:flex; gap:8px; align-items:center; justify-content:center; }
 .ob-nd { width:8px; height:8px; border-radius:50%; background:var(--ob-dot-bg, rgba(255,255,255,0.18)); transition:all 220ms ease; }
 .ob-nd.a { background:var(--accent, #D85F4E); transform:scale(1.25); box-shadow:0 6px 18px var(--accent-glow, rgba(216,95,78,0.18)); }
+/* Use onboarding-specific accent tokens so nav stays neutral until user selects mood */
+.ob-nav-next {
+  background: var(--ob-accent, #f4f6f8) !important;
+  color: var(--ob-accent-btn-text, #0f1720) !important;
+  box-shadow: 0 6px 20px var(--ob-accent-glow, rgba(0,0,0,0.06)) !important;
+}
+.ob-nd.a {
+  background: var(--ob-accent, #cfcfcf) !important;
+  box-shadow: 0 6px 18px var(--ob-accent-glow, rgba(0,0,0,0.06)) !important;
+}
 /* inner nav layout */
 .ob-nav-inner {
   display:flex;
