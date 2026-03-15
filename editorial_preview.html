@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AXIS — Editorial Guided Preview</title>
   <style>
+    /* Use current app fonts and colors (Barlow + coral accent) */
     @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap');
-    body { margin:0; font-family: 'Barlow', sans-serif; background:#F6F2EE; color:#2b2724; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-    .phone { width: 420px; height: 800px; margin:48px auto; border-radius:28px; background:linear-gradient(180deg,#fbf7f4,#f6f1ee); box-shadow: 0 20px 60px rgba(30,24,20,0.08); display:flex; flex-direction:column; align-items:center; padding:36px; position:relative; }
-    .wordmark { font-family: Georgia, serif; color:#2b2724; margin-top:4px; margin-bottom:18px; font-size:18px; letter-spacing:0.12em; }
-    .heading { font-family: Georgia, serif; font-size:44px; line-height:1.02; text-align:center; color:#2b2724; margin-bottom:18px; }
-    .card { width: 320px; border-radius:16px; background: linear-gradient(#FBF7F4,#F6F1EE); box-shadow: 0 12px 28px rgba(30,24,20,0.06); padding:18px; text-align:left; }
-    .eyebrow { font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#D85F4E; margin-bottom:6px; }
-    .subdur { font-family: Georgia, serif; font-size:13px; color:#50483f; margin-bottom:8px; font-weight:600; }
-    .desc { font-size:14px; color:#403a36; line-height:1.5; margin-bottom:12px; }
-    .pill { display:inline-block; padding:6px 12px; border-radius:999px; background:#F0ECE9; border:1px solid rgba(30,24,20,0.04); color:#3c3632; font-size:13px; }
-    .cta { margin-top:20px; width:320px; background:#D85F4E; color:#fff; border-radius:28px; padding:14px 18px; text-align:center; font-weight:700; box-shadow:0 8px 18px rgba(216,95,78,0.22); cursor:pointer; }
-    .note { margin-top:14px; font-size:12px; color:#6e6762; text-transform:uppercase; letter-spacing:0.12em; }
-    .bg-wash { position:absolute; inset:0; background: radial-gradient(circle at 50% 40%, rgba(200,180,170,0.12), transparent 30%); pointer-events:none; border-radius:28px; }
+    body { margin:0; font-family: 'Barlow', sans-serif; background: linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%); color:#0f1020; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    .phone { width: 420px; height: 800px; margin:48px auto; border-radius:28px; background: linear-gradient(180deg,#f7fbff,#f4f8fc); box-shadow: 0 20px 60px rgba(15,24,40,0.08); display:flex; flex-direction:column; align-items:center; padding:36px; position:relative; }
+    .wordmark { font-family: 'Barlow', sans-serif; color:#0f1020; margin-top:4px; margin-bottom:18px; font-size:18px; letter-spacing:0.12em; font-weight:600; }
+    .heading { font-family: 'Barlow', sans-serif; font-size:44px; line-height:1.02; text-align:center; color:#0f1020; margin-bottom:18px; font-weight:700; }
+    .card { width: 320px; border-radius:16px; background: linear-gradient(180deg,#ffffff,#fbfdff); box-shadow: 0 12px 28px rgba(12,24,40,0.06); padding:18px; text-align:left; }
+    .eyebrow { font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#D85F4E; margin-bottom:6px; font-weight:700; }
+    .subdur { font-size:13px; color:#23303a; margin-bottom:8px; font-weight:600; }
+    .desc { font-size:14px; color:#2b3a43; line-height:1.5; margin-bottom:12px; }
+    .pill { display:inline-block; padding:6px 12px; border-radius:999px; background:#f4f7fa; border:1px solid rgba(10,20,30,0.04); color:#23303a; font-size:13px; }
+    .cta { margin-top:20px; width:320px; background:#D85F4E; color:#fff; border-radius:28px; padding:14px 18px; text-align:center; font-weight:700; box-shadow:0 8px 18px rgba(216,95,78,0.18); cursor:pointer; border:none; }
+    .note { margin-top:14px; font-size:12px; color:#55656d; text-transform:uppercase; letter-spacing:0.12em; }
+    .bg-wash { position:absolute; inset:0; background: radial-gradient(circle at 50% 40%, rgba(80,140,200,0.06), transparent 30%); pointer-events:none; border-radius:28px; }
   </style>
 </head>
 <body>
