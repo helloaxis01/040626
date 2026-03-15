@@ -35,7 +35,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load Babel. Check your connection and try again.')"></script>
+  <!-- Babel standalone removed for production builds; app is precompiled in dist/ -->
   <script>
     // Try to synchronously load axis_data.json so the inline app can initialize from it.
     // Synchronous XHR is used here intentionally to ensure compatibility with the existing inline script initialization.
