@@ -4906,9 +4906,20 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                   <circle cx="160" cy="160" r="140" fill="url(#breatheGlow)" />
                 </svg>
 
-                {/* Static outer ring using theme accent (no animated stroke) */}
-                <svg className="timer-breathe-ring" width="306" height="306" viewBox="0 0 306 306" style={{position:"absolute", left:0, top:0}}>
-                  <circle cx="153" cy="153" r="120" fill="none" stroke="var(--accent)" strokeWidth="3" />
+                {/* Animated inner ring using the existing inner circle (fills to match outer) */}
+                <svg className="timer-breathe-ring" width="306" height="306" viewBox="0 0 306 306" style={{position:"absolute", left:0, top:0, pointerEvents:"none"}}>
+                  <circle
+                    cx="153"
+                    cy="153"
+                    r="120"
+                    fill="none"
+                    stroke="var(--accent)"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={Math.max(0, Math.round(circumference * (1 - breatheProgress)))}
+                    style={{ transition: "stroke-dashoffset 0.35s linear, stroke 0.3s ease" }}
+                  />
                 </svg>
               </div>
             )}
