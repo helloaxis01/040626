@@ -119,188 +119,15 @@ function AxisIcon({ size = 72, color = "#F0EEEB" }) {
   );
 }
 
-// ── ONBOARDING ────────────────────────────────────────────────
-const obCss = `
-  @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-  html,body,#root{width:100%;margin:0;padding:0;}
-  .ob-wrap {
-    min-height:100%; width:100%; display:flex; flex-direction:column; position:relative; overflow:clip;
-    background:var(--ob-page-bg); font-family:'Barlow',sans-serif; font-weight:300;
-    box-sizing:border-box;
-  }
-  /* orbs — static layer + sheen when in color mode */
-  .ob-orbs-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
-  .ob-orbs-layer::after { content:''; position:absolute; inset:0; pointer-events:none; background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%); }
-  .ob-label { display:none; }
-  .ob-shell { width:100%; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:relative; z-index:1; flex:1; display:flex; flex-direction:column; box-sizing:border-box; }
-  .ob-screen { width:100%; min-height:100vh; display:flex; flex-direction:column; position:relative; box-sizing:border-box; animation:obFadeIn 0.3s ease; }
-  @keyframes obFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes obColorFadeIn { from { opacity:0; } to { opacity:1; } }
-  .ob-color-reveal { animation: obColorFadeIn 2.5s ease-out forwards; }
-  .ob-pad { padding:calc(env(safe-area-inset-top, 0px) + 72px) 32px calc(env(safe-area-inset-bottom, 0px) + 70px); flex:1; box-sizing:border-box; width:100%; }
-  /* Disclosure / CTA: extra scroll space under Let's Go — matches .ob-pad bottom */
-  .ob-pad-after-cta { min-height:calc(env(safe-area-inset-bottom, 0px) + 70px); flex-shrink:0; width:100%; pointer-events:none; }
-  .ob-s0 {
-    display:flex; flex-direction:column; justify-content:space-between; align-items:center; text-align:center;
-    min-height:100vh; padding:60px 32px 80px; box-sizing:border-box;
-  }
-  .ob-s0-top { flex:1; display:flex; align-items:flex-end; justify-content:center; width:100%; min-height:0; padding-bottom:24px; }
-  .ob-s0-bottom { flex:1; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; padding-top:24px; }
-  .ob-splash-icon {
-    width:110px; height:110px; border-radius:28px; margin-bottom:32px;
-    background:var(--ob-nav-bg); border-top:1px solid var(--ob-box-border);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
-  }
-  .ob-splash-name { font-size:48px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-text-head); line-height:1; margin-top:44px; }
-  .ob-splash-tag { margin-top:24px; font-size:13px; letter-spacing:0.28em; text-transform:uppercase; color:var(--ob-text-sec); }
-  .ob-eyebrow { font-size:13px; font-weight:500; letter-spacing:0.26em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:16px; }
-  .ob-heading { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:18px; }
-  .ob-heading em { font-style:italic; font-weight:300; color:var(--ob-accent); }
-  /* tightened heading leading and body leading for compact readable onboarding */
-  .ob-heading { line-height:0.96; letter-spacing:-0.01em; margin-bottom:14px; }
-  .ob-body { font-size:15px; line-height:1.28; color:var(--ob-text-body); font-weight:400; margin-bottom:16px; }
-  :root { --ob-box-bg: rgba(255,255,255,0.08); --ob-box-border: rgba(255,255,255,0.13); }
-  .ob-sci-blocks { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
-  .ob-sci {
-    padding:14px 16px; border-radius:14px;
-    background:var(--ob-box-bg); border:1px solid var(--ob-box-border);
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .ob-sci-label { font-size:13px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:var(--ob-text-sec); margin-bottom:6px; }
-  .ob-sci-text { font-size:15px; line-height:1.5; color:var(--ob-text-body); font-weight:400; }
-  .ob-sci-text strong { color:var(--ob-text-head); font-weight:500; }
-  .ob-benefits { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
-  .ob-benefit {
-    display:flex; gap:14px; align-items:flex-start; padding:14px 16px; border-radius:14px;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .ob-bi { flex-shrink:0; opacity:0.9; display:flex; align-items:center; padding-top:1px; }
-  .ob-bt { font-size:15px; color:var(--ob-text-body); line-height:1.48; font-weight:300; }
-  .ob-bt strong { color:var(--ob-text-head); font-weight:500; }
-  .ob-disc { margin-top:20px; }
-  .ob-disc-box {
-    padding:14px 16px; border-radius:14px; margin-top:12px;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .ob-disc-label { font-size:13px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:var(--ob-text-sec); margin-bottom:8px; }
-  .ob-disc-text { font-size:15px; line-height:1.52; color:var(--ob-text-body); font-weight:400; }
-  .ob-disc-text strong { color:var(--ob-text-head); font-weight:500; }
-  .ob-cal-glass {
-    padding:20px 20px 24px; border-radius:20px; margin:16px 0 24px;
-    background:var(--ob-box-bg); border:1px solid var(--ob-box-border);
-    backdrop-filter:blur(24px) saturate(1.2); -webkit-backdrop-filter:blur(24px) saturate(1.2);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.12);
-  }
-  .ob-cta { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; min-height:100vh; padding:calc(env(safe-area-inset-top, 0px) + 60px) 32px 60px; }
-  .ob-cta-icon {
-    width:80px; height:80px; border-radius:22px; margin-bottom:32px;
-    background:var(--ob-nav-bg); border-top:1px solid var(--ob-box-border);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
-  }
-  .ob-cta-head { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:14px; }
-  .ob-cta-head em { font-style:italic; font-weight:300; color:var(--ob-accent); }
-  .ob-cta-sub { font-size:15px; color:var(--ob-text-body); line-height:1.52; margin-bottom:40px; font-weight:400; }
-  .ob-btn-primary {
-    width:100%; padding:16px; border-radius:14px; border:none; cursor:pointer;
-    background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff);
-    font-family:'Barlow',sans-serif; font-weight:700; font-size:13px;
-    letter-spacing:0.22em; text-transform:uppercase;
-    transition:opacity 0.2s; margin-bottom:10px; display:block;
-    box-shadow:0 4px 20px var(--ob-accent-glow);
-  }
-  .ob-btn-outline {
-    width:100%; padding:16px; border-radius:14px; cursor:pointer;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.18);
-    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-    color:var(--ob-text-body); font-family:'Barlow',sans-serif; font-weight:500;
-    font-size:13px; letter-spacing:0.22em; text-transform:uppercase;
-    transition:all 0.2s; margin-bottom:16px; display:block;
-  }
-  .ob-btn-outline:hover { border-color:var(--ob-accent); color:var(--ob-accent); }
-  .ob-btn-ghost { background:none; border:none; font-family:'Barlow',sans-serif; font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ob-text-sec); cursor:pointer; transition:color 0.15s; }
-  .ob-btn-ghost:hover { color:var(--ob-text-body); }
-  .ob-ndots { display:flex; gap:6px; align-items:center; }
-  .ob-nd { width:6px; height:6px; border-radius:50%; background:var(--ob-dot-bg); transition:all 0.3s; }
-  .ob-nd.a { background:var(--ob-accent); transform:scale(1.3); box-shadow:0 0 8px var(--ob-accent-glow); }
-  .ob-nav-bar {
-    position:fixed; bottom:0; left:0; right:0;
-    /* make onboarding nav bar consistent with main tab bar height (slightly larger for emphasis) */
-    min-height: calc(62px * 1.25 + env(safe-area-inset-bottom, 0px));
-    padding:0 18px calc(env(safe-area-inset-bottom, 0px) + 10px);
-    display:flex; justify-content:space-between; align-items:flex-start; z-index:100;
-    background:var(--ob-nav-bg);
-    backdrop-filter:blur(40px) saturate(1.8); -webkit-backdrop-filter:blur(40px) saturate(1.8);
-    border-top:1px solid rgba(255,255,255,0.14);
-  }
-  .ob-nav-inner {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    width:100%;
-    padding:8px 0;
-  }
-  .ob-nav-next {
-    padding:8px 20px; border-radius:18px; cursor:pointer; transition:all 0.15s;
-    background:var(--ob-accent-dim); border:1px solid var(--ob-accent);
-    color:var(--ob-accent); font-family:'Barlow',sans-serif; font-size:12px;
-    font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
-  }
-  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff); }
-  .ob-nav-back {
-    background:none; border:none; cursor:pointer; padding:6px 8px;
-    font-family:'Barlow',sans-serif; font-size:18px; color:var(--ob-text-sec);
-    opacity:0.6; transition:opacity 0.15s; line-height:1;
-  }
-  /* onboarding icon color tokens — follow theme: dark => light icons, light => dark icons */
-  :root, [data-theme="dark"], [data-theme="light"] {
-    --ob-icon-color: var(--app-white);
-  }
-  [data-theme="light"] .ob-wrap, [data-theme="light"] [data-theme="light"] {
-    --ob-icon-color: var(--app-black);
-  }
-  .ob-bi svg, .ob-splash-icon svg, .ob-cta-icon svg, .ob-sci svg { stroke: var(--ob-icon-color); color: var(--ob-icon-color); fill: none; }
-  .ob-splash-icon { background: var(--ob-nav-bg); }
-  .ob-nav-back:hover { opacity:1; }
-  .ob-nav-skip { background:none; border:none; font-family:'Barlow',sans-serif; font-size:13px; letter-spacing:0.16em; text-transform:uppercase; color:var(--ob-text-sec); cursor:pointer; }
-  .ob-ext-nav { display:none; }
-  .ob-en-btn { display:none; }
-  /* 7-step onboarding: top progress bar */
-  .ob-progress-wrap { position:fixed; top:0; left:0; right:0; z-index:50; padding:calc(env(safe-area-inset-top, 0px) + 12px) 20px 10px; background:transparent; pointer-events:none; }
-  .ob-progress-bar { height:4px; border-radius:2px; background:rgba(255,255,255,0.12); overflow:hidden; transition:width 0.4s ease; }
-  .ob-progress-fill { height:100%; border-radius:2px; background:var(--ob-accent); transition:width 0.35s ease; }
-  /* Horizontal slide transitions */
-  .ob-slider { flex:1; width:100%; overflow:hidden; position:relative; display:flex; }
-  .ob-slide { min-width:100%; width:100%; flex-shrink:0; padding:calc(env(safe-area-inset-top, 0px) + 56px) 24px calc(env(safe-area-inset-bottom, 0px) + 80px); box-sizing:border-box; animation:obSlideIn 0.35s ease; }
-  @keyframes obSlideIn { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:translateX(0); } }
-  .ob-title { font-size:22px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ob-text-head); margin-bottom:12px; line-height:1.2; font-family:'Barlow',sans-serif; }
-  .ob-method-card { padding:18px 20px; border-radius:16px; margin-bottom:14px; cursor:default; text-align:left; transition:all 0.2s ease; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.06); }
-  .ob-method-card:hover { border-color:var(--ob-accent); background:rgba(255,255,255,0.08); }
-  .ob-method-card-title { font-size:13px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:8px; font-family:'Barlow',sans-serif; }
-  .ob-method-card-body { font-size:14px; line-height:1.5; color:var(--ob-text-body); font-weight:400; }
-  .ob-disclaimer-scroll { max-height:180px; overflow-y:auto; padding:14px 16px; border-radius:12px; margin-bottom:20px; background:var(--ob-box-bg); border:1px solid var(--ob-box-border); font-size:13px; line-height:1.5; color:var(--ob-text-body); -webkit-overflow-scrolling:touch; }
-  .ob-method-feature { padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .ob-method-feature:last-child { border-bottom: none; padding-bottom: 0; }
-  .ob-method-feature-title { font-size: 28px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ob-text-head); margin-bottom: 12px; font-family: 'Barlow', sans-serif; line-height: 1.1; }
-  .ob-method-feature-body { font-size: 15px; line-height: 1.55; color: var(--ob-text-body); font-weight: 400; }
-`;
-
+// ── ONBOARDING
+/* onboarding CSS moved to onboarding.css */
 const obDarkVars = `
   --ob-page-bg: radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%);
   --ob-orb1: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99,179,237,0.18) 0%, transparent 70%);
   --ob-orb2: radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.15) 0%, transparent 70%);
   --ob-orb3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(251,191,36,0.10) 0%, transparent 70%);
   --ob-text-head:#ffffff; --ob-text-body:rgba(255,255,255,0.78); --ob-text-sec:rgba(255,255,255,0.50); --ob-text-dim:rgba(255,255,255,0.32);
-  --ob-accent:#D85F4E; --ob-accent-text:#0a0e1a; --ob-accent-dim:rgba(216,95,78,0.18); --ob-accent-glow:rgba(216,95,78,0.30);
+  --ob-accent:#FF9F43; --ob-accent-text:#0a0e1a; --ob-accent-dim:rgba(255,159,67,0.18); --ob-accent-glow:rgba(255,159,67,0.30);
   --ob-nav-bg:rgba(8,13,24,0.80); --ob-dot-bg:rgba(255,255,255,0.20);
 `;
 const obLightVars = `
@@ -363,7 +190,7 @@ const CIRCADIAN_THEMES = {
       // orb2: large orb bottom-left for balance and more organic spread
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(255,175,75,0.50) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(205,80,20,0.60) 0%, transparent 76%)",
-      accent: "#D85F4E", accentDim: "rgba(216,95,78,0.25)", accentGlow: "rgba(216,95,78,0.55)",
+      accent: "#FF9F43", accentDim: "rgba(255,159,67,0.25)", accentGlow: "rgba(255,159,67,0.55)",
       accentBtnText: "#1a0800",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#FFF0E0",
@@ -892,7 +719,7 @@ function Onboarding({ theme, onComplete }) {
                 By continuing, you confirm that you are participating voluntarily and assume full responsibility for your use of this app.
               </div>
 
-              <div style={{width:"100%", marginBottom:20}}>
+              <div style={{width:"100%", marginTop:16, marginBottom:20}}>
                 <div style={{fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--ob-text-sec)", marginBottom:8, fontWeight:500}}>Name:</div>
                 <input
                   type="text"
@@ -997,7 +824,7 @@ function Onboarding({ theme, onComplete }) {
         {["Splash","Alpha","Perspective+Foundation","Benefits","Method+Tools","Appearance","Ethics+Safety","Disclaimer"].map((l, i) => (
           <button key={l} className="ob-en-btn" onClick={() => go(i)}>{l}</button>
         ))}
-        <button className="ob-en-btn" style={{ borderColor: "#D85F4E", color: "#D85F4E" }} onClick={onComplete}>→ Launch App</button>
+        <button className="ob-en-btn" style={{ borderColor: "#FF9F43", color: "#FF9F43" }} onClick={onComplete}>→ Launch App</button>
       </div>
       <div className="ob-label">Tap screen or use controls · Begin buttons launch the app</div>
     </div>
@@ -2334,29 +2161,29 @@ const FIGURES = {
   <line x1="60" y1="54" x2="78" y2="76" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="60" y1="88" x2="48" y2="128" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="48" y1="128" x2="42" y2="144" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="60" y1="88" x2="72" y2="128" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-                      <line x1="72" y1="128" x2="78" y2="144" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="60" y1="88" x2="72" y2="128" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+                      <line x1="72" y1="128" x2="78" y2="144" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
   <line x1="28" y1="148" x2="92" y2="148" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                      <path d="M54 108 Q68 100 74 108" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M70 104 L74 108 L70 112" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="78" cy="144" r="3" fill="#D85F4E"/>
+                      <path d="M54 108 Q68 100 74 108" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M70 104 L74 108 L70 112" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="78" cy="144" r="3" fill="#FF9F43"/>
   <circle cx="42" cy="144" r="3" fill="rgba(255,255,255,0.3)"/>
 </svg>`,
   802: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="60" cy="26" r="10" stroke="#E8E4DF" stroke-width="2"/>
-  <line x1="70" y1="24" x2="84" y2="22" stroke="#D85F4E" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/>
-  <circle cx="86" cy="21" r="2" fill="#D85F4E"/>
+  <line x1="70" y1="24" x2="84" y2="22" stroke="#FF9F43" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/>
+  <circle cx="86" cy="21" r="2" fill="#FF9F43"/>
   <line x1="60" y1="36" x2="60" y2="46" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="60" y1="46" x2="60" y2="86" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="60" y1="52" x2="40" y2="70" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="60" y1="52" x2="80" y2="70" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="60" y1="86" x2="56" y2="126" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="56" y1="126" x2="52" y2="144" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="60" y1="86" x2="56" y2="126" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="56" y1="126" x2="52" y2="144" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
   <line x1="60" y1="86" x2="74" y2="106" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="74" y1="106" x2="68" y2="124" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M52 86 Q60 83 68 86" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M52 86 Q60 83 68 86" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   <line x1="28" y1="148" x2="92" y2="148" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-  <circle cx="52" cy="144" r="3" fill="#D85F4E"/>
+  <circle cx="52" cy="144" r="3" fill="#FF9F43"/>
 </svg>`,
   803: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="52" cy="26" r="10" stroke="#E8E4DF" stroke-width="2"/>
@@ -2366,13 +2193,13 @@ const FIGURES = {
   <line x1="52" y1="56" x2="76" y2="64" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="54" y1="86" x2="44" y2="126" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="44" y1="126" x2="38" y2="144" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="54" y1="86" x2="66" y2="116" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="66" y1="116" x2="72" y2="134" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="20" y1="148" x2="100" y2="148" stroke="#D85F4E" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 3"/>
+  <line x1="54" y1="86" x2="66" y2="116" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="66" y1="116" x2="72" y2="134" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="20" y1="148" x2="100" y2="148" stroke="#FF9F43" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 3"/>
   <circle cx="38" cy="144" r="3.5" fill="rgba(255,255,255,0.4)"/>
-  <circle cx="72" cy="134" r="3.5" fill="#D85F4E"/>
-  <path d="M72 134 Q74 141 72 144" stroke="#D85F4E" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-  <circle cx="72" cy="146" r="1.5" fill="#D85F4E"/>
+  <circle cx="72" cy="134" r="3.5" fill="#FF9F43"/>
+  <path d="M72 134 Q74 141 72 144" stroke="#FF9F43" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <circle cx="72" cy="146" r="1.5" fill="#FF9F43"/>
 </svg>`,
   804: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="58" cy="26" r="10" stroke="#E8E4DF" stroke-width="2"/>
@@ -2382,13 +2209,13 @@ const FIGURES = {
   <line x1="58" y1="54" x2="82" y2="62" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="58" y1="84" x2="70" y2="124" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="70" y1="124" x2="76" y2="142" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="58" y1="84" x2="46" y2="110" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="46" y1="110" x2="58" y2="130" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="58" y1="130" x2="58" y2="142" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <path d="M88 100 L100 100 L96 96 M100 100 L96 104" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="58" y1="84" x2="46" y2="110" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="46" y1="110" x2="58" y2="130" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="58" y1="130" x2="58" y2="142" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <path d="M88 100 L100 100 L96 96 M100 100 L96 104" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <line x1="20" y1="148" x2="100" y2="148" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
   <circle cx="76" cy="142" r="3" fill="rgba(255,255,255,0.35)"/>
-  <circle cx="58" cy="142" r="3" fill="#D85F4E"/>
+  <circle cx="58" cy="142" r="3" fill="#FF9F43"/>
 </svg>`,
   805: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect x="20" y="114" width="58" height="10" rx="2" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
@@ -2399,14 +2226,14 @@ const FIGURES = {
   <line x1="46" y1="34" x2="46" y2="44" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="46" y1="44" x2="48" y2="82" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="46" y1="54" x2="24" y2="62" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="22" cy="62" r="3" stroke="#D85F4E" stroke-width="1.5" fill="none"/>
+  <circle cx="22" cy="62" r="3" stroke="#FF9F43" stroke-width="1.5" fill="none"/>
   <line x1="46" y1="54" x2="64" y2="58" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="48" y1="82" x2="42" y2="114" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="42" y1="114" x2="38" y2="122" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="48" y1="82" x2="42" y2="114" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="42" y1="114" x2="38" y2="122" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
   <line x1="48" y1="82" x2="62" y2="112" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="62" y1="112" x2="68" y2="138" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M74 118 L80 130 L76 128 M80 130 L76 134" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="38" cy="122" r="3" fill="#D85F4E"/>
+  <path d="M74 118 L80 130 L76 128 M80 130 L76 134" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="38" cy="122" r="3" fill="#FF9F43"/>
   <circle cx="68" cy="138" r="3.5" fill="rgba(232,228,223,0.4)"/>
 </svg>`,
 };
@@ -2611,7 +2438,7 @@ const css = `
     --text-dim: rgba(255,255,255,0.42);
     --text-dimmer: rgba(255,255,255,0.32);
     --text-white: #f6f7f8;
-    --accent: #D85F4E;
+    --accent: #FF9F43;
     --accent-secondary: rgba(255,191,101,0.62);
     --accent-dim: rgba(255,191,101,0.18);
     --accent-glow: rgba(255,191,101,0.30);
