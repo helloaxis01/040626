@@ -4890,8 +4890,11 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
             {bRunning && !nightMode && (
                 <div className={isHoldPhase ? "timer-breathe-hold" : ""} style={{
                 position:"absolute", left:breatheInset, top:breatheInset, width:306, height:306, borderRadius:"50%", overflow:"visible", pointerEvents:"none",
-                // scale so the inner stroke visually meets the outer ring (outer r 140 / inner r 120 ≈ 1.1667)
-                transform: bRunning && bExpand ? "scale(1.167)" : "scale(0.45)",
+                // precise scale computed from rendered radii and stroke widths so inner stroke edge meets outer stroke edge
+                // outer rendered radius = (ringSize / 320) * 140; outer stroke half = (ringSize / 320) * (1.5/2)
+                // inner rendered radius = 120; inner stroke half = 4/2
+                // computed scale ≈ 1.298
+                transform: bRunning && bExpand ? "scale(1.298)" : "scale(0.45)",
                 transformOrigin:"center center",
                 transition: bRunning ? `transform ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1)` : "transform 0.6s ease",
               }}>
