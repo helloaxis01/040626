@@ -4916,9 +4916,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                     stroke="var(--accent)"
                     strokeWidth="3"
                     strokeLinecap="round"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={Math.max(0, Math.round(circumference * (1 - breatheProgress)))}
-                    style={{ transition: "stroke-dashoffset 0.35s linear, stroke 0.3s ease" }}
+                    style={{ transition: "stroke 0.3s ease" }}
                   />
                 </svg>
               </div>
