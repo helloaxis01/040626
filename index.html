@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/onboarding.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { height: 100%; height: 100dvh; min-height: 100dvh; width: 100%; max-width: 100vw; overflow-x: hidden; overflow-y: hidden; background: #0a0a0f; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
@@ -20,6 +24,12 @@
   </style>
 </head>
 <body>
+  <!-- BUILD BANNER: visible until you confirm refresh on iPhone; helps detect cached builds -->
+  <div id="build-banner" style="position:fixed;left:0;right:0;top:0;z-index:2147483647;background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;font-weight:700;text-align:center;font-family:Arial,Helvetica,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+    BUILD LOADED — please hard-refresh (tap Refresh / long-press) — <span id="build-ts">loading...</span>
+  </div>
+  <div style="height:44px" aria-hidden="true"></div>
+  <script>try{document.getElementById('build-ts').textContent=new Date().toISOString();}catch(e){};</script>
   <div id="root"></div>
   <div id="load-err"></div>
   <script>
@@ -34,9 +44,68 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load Babel. Check your connection and try again.')"></script>
+  <!-- Babel standalone removed for production builds; app is precompiled in dist/ -->
+  <script>
+    // Try to synchronously load axis_data.json so the inline app can initialize from it.
+    // Synchronous XHR is used here intentionally to ensure compatibility with the existing inline script initialization.
+    (function(){
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/axis_data.json', false); // synchronous
+        xhr.send(null);
+        if (xhr.status === 200) {
+          try {
+            window.AXIS_JSON = JSON.parse(xhr.responseText);
+            console.log('AXIS: loaded axis_data.json');
+          } catch(e) { console.error('AXIS: parse axis_data.json failed', e); }
+        } else {
+          // not found — no-op, app will fall back to inline data
+          // console.log('AXIS: axis_data.json not present (status ' + xhr.status + ')');
+        }
+      } catch(e) {
+        // network errors or cross-origin — silently ignore and fallback to inline data
+        console.error('AXIS: axis_data.json fetch failed', e);
+      }
+    })();
+  </script>
   <script type="text/babel" data-presets="react">
+// Development flag: add ?dev=1 to the URL or set localStorage.axis_dev = "1" to enable debug UI and verbose logs.
+window.AXIS_DEV = (location.search.indexOf('dev=1') !== -1) || (localStorage.getItem && localStorage.getItem('axis_dev') === '1');
+if (window.AXIS_DEV) {
+  try {
+    // Minimal debug overlay
+    const _dbg = document.createElement('div');
+    _dbg.id = 'axis-debug-overlay';
+    _dbg.style = 'position:fixed;right:12px;bottom:12px;z-index:99999;background:rgba(0,0,0,0.6);color:#fff;padding:8px 10px;border-radius:8px;font-family:monospace;font-size:12px;cursor:pointer';
+    _dbg.textContent = 'AXIS DEV';
+    _dbg.title = 'Click to toggle verbose logging (persists)';
+    _dbg.onclick = () => {
+      const v = localStorage.getItem('axis_verbose') === '1' ? '0' : '1';
+      localStorage.setItem('axis_verbose', v);
+      alert('axis_verbose = ' + v);
+    };
+    document.addEventListener('DOMContentLoaded', () => { document.body.appendChild(_dbg); });
+    // Verbose logger if axis_verbose=1
+    const origLog = console.log.bind(console);
+    console.log = function(...args) {
+      try {
+        if (localStorage.getItem('axis_verbose') === '1') origLog('[AXIS]', ...args);
+      } catch(e) { origLog('[AXIS]', ...args); }
+    };
+    const origError = console.error.bind(console);
+    console.error = function(...args) { origError('[AXIS ERROR]', ...args); };
+  } catch(e) {}
+}
+
 const { useState, useEffect, useLayoutEffect, useRef } = React;
+
+// Ensure a global fallback 'highlight' exists for any older references or cached builds.
+try {
+  if (typeof window !== 'undefined' && !window.highlight) {
+    const cssAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent') || '';
+    window.highlight = (cssAccent || '').trim() || '#FF9F43';
+  }
+} catch (e) {}
 
 // ─────────────────────────────────────────────────────────────
 //  AXIS — COMPLETE APP (Onboarding → Home → Sessions)
@@ -67,188 +136,15 @@ function AxisIcon({ size = 72, color = "#F0EEEB" }) {
   );
 }
 
-// ── ONBOARDING ────────────────────────────────────────────────
-const obCss = `
-  @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-  html,body,#root{width:100%;margin:0;padding:0;}
-  .ob-wrap {
-    min-height:100%; width:100%; display:flex; flex-direction:column; position:relative; overflow:clip;
-    background:var(--ob-page-bg); font-family:'Barlow',sans-serif; font-weight:300;
-    box-sizing:border-box;
-  }
-  /* orbs — static layer + sheen when in color mode */
-  .ob-orbs-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
-  .ob-orbs-layer::after { content:''; position:absolute; inset:0; pointer-events:none; background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%); }
-  .ob-label { display:none; }
-  .ob-shell { width:100%; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; position:relative; z-index:1; flex:1; display:flex; flex-direction:column; box-sizing:border-box; }
-  .ob-screen { width:100%; min-height:100vh; display:flex; flex-direction:column; position:relative; box-sizing:border-box; animation:obFadeIn 0.3s ease; }
-  @keyframes obFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes obColorFadeIn { from { opacity:0; } to { opacity:1; } }
-  .ob-color-reveal { animation: obColorFadeIn 2.5s ease-out forwards; }
-  .ob-pad { padding:calc(env(safe-area-inset-top, 0px) + 72px) 32px calc(env(safe-area-inset-bottom, 0px) + 70px); flex:1; box-sizing:border-box; width:100%; }
-  /* Disclosure / CTA: extra scroll space under Let's Go — matches .ob-pad bottom */
-  .ob-pad-after-cta { min-height:calc(env(safe-area-inset-bottom, 0px) + 70px); flex-shrink:0; width:100%; pointer-events:none; }
-  .ob-s0 {
-    display:flex; flex-direction:column; justify-content:space-between; align-items:center; text-align:center;
-    min-height:100vh; padding:60px 32px 80px; box-sizing:border-box;
-  }
-  .ob-s0-top { flex:1; display:flex; align-items:flex-end; justify-content:center; width:100%; min-height:0; padding-bottom:24px; }
-  .ob-s0-bottom { flex:1; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; padding-top:24px; }
-  .ob-splash-icon {
-    width:110px; height:110px; border-radius:28px; margin-bottom:32px;
-    background:var(--ob-nav-bg); border-top:1px solid var(--ob-box-border);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
-  }
-  .ob-splash-name { font-size:48px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-text-head); line-height:1; margin-top:44px; }
-  .ob-splash-tag { margin-top:24px; font-size:13px; letter-spacing:0.28em; text-transform:uppercase; color:var(--ob-text-sec); }
-  .ob-eyebrow { font-size:13px; font-weight:500; letter-spacing:0.26em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:16px; }
-  .ob-heading { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:18px; }
-  .ob-heading em { font-style:italic; font-weight:300; color:var(--ob-accent); }
-  /* tightened heading leading and body leading for compact readable onboarding */
-  .ob-heading { line-height:0.96; letter-spacing:-0.01em; margin-bottom:14px; }
-  .ob-body { font-size:15px; line-height:1.28; color:var(--ob-text-body); font-weight:400; margin-bottom:16px; }
-  :root { --ob-box-bg: rgba(255,255,255,0.08); --ob-box-border: rgba(255,255,255,0.13); }
-  .ob-sci-blocks { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
-  .ob-sci {
-    padding:14px 16px; border-radius:14px;
-    background:var(--ob-box-bg); border:1px solid var(--ob-box-border);
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .ob-sci-label { font-size:13px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:var(--ob-text-sec); margin-bottom:6px; }
-  .ob-sci-text { font-size:15px; line-height:1.5; color:var(--ob-text-body); font-weight:400; }
-  .ob-sci-text strong { color:var(--ob-text-head); font-weight:500; }
-  .ob-benefits { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
-  .ob-benefit {
-    display:flex; gap:14px; align-items:flex-start; padding:14px 16px; border-radius:14px;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .ob-bi { flex-shrink:0; opacity:0.9; display:flex; align-items:center; padding-top:1px; }
-  .ob-bt { font-size:15px; color:var(--ob-text-body); line-height:1.48; font-weight:300; }
-  .ob-bt strong { color:var(--ob-text-head); font-weight:500; }
-  .ob-disc { margin-top:20px; }
-  .ob-disc-box {
-    padding:14px 16px; border-radius:14px; margin-top:12px;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .ob-disc-label { font-size:13px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:var(--ob-text-sec); margin-bottom:8px; }
-  .ob-disc-text { font-size:15px; line-height:1.52; color:var(--ob-text-body); font-weight:400; }
-  .ob-disc-text strong { color:var(--ob-text-head); font-weight:500; }
-  .ob-cal-glass {
-    padding:20px 20px 24px; border-radius:20px; margin:16px 0 24px;
-    background:var(--ob-box-bg); border:1px solid var(--ob-box-border);
-    backdrop-filter:blur(24px) saturate(1.2); -webkit-backdrop-filter:blur(24px) saturate(1.2);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.12);
-  }
-  .ob-cta { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; min-height:100vh; padding:calc(env(safe-area-inset-top, 0px) + 60px) 32px 60px; }
-  .ob-cta-icon {
-    width:80px; height:80px; border-radius:22px; margin-bottom:32px;
-    background:var(--ob-nav-bg); border-top:1px solid var(--ob-box-border);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
-  }
-  .ob-cta-head { font-size:42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:14px; }
-  .ob-cta-head em { font-style:italic; font-weight:300; color:var(--ob-accent); }
-  .ob-cta-sub { font-size:15px; color:var(--ob-text-body); line-height:1.52; margin-bottom:40px; font-weight:400; }
-  .ob-btn-primary {
-    width:100%; padding:16px; border-radius:14px; border:none; cursor:pointer;
-    background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff);
-    font-family:'Barlow',sans-serif; font-weight:700; font-size:13px;
-    letter-spacing:0.22em; text-transform:uppercase;
-    transition:opacity 0.2s; margin-bottom:10px; display:block;
-    box-shadow:0 4px 20px var(--ob-accent-glow);
-  }
-  .ob-btn-outline {
-    width:100%; padding:16px; border-radius:14px; cursor:pointer;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.18);
-    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-    color:var(--ob-text-body); font-family:'Barlow',sans-serif; font-weight:500;
-    font-size:13px; letter-spacing:0.22em; text-transform:uppercase;
-    transition:all 0.2s; margin-bottom:16px; display:block;
-  }
-  .ob-btn-outline:hover { border-color:var(--ob-accent); color:var(--ob-accent); }
-  .ob-btn-ghost { background:none; border:none; font-family:'Barlow',sans-serif; font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ob-text-sec); cursor:pointer; transition:color 0.15s; }
-  .ob-btn-ghost:hover { color:var(--ob-text-body); }
-  .ob-ndots { display:flex; gap:6px; align-items:center; }
-  .ob-nd { width:6px; height:6px; border-radius:50%; background:var(--ob-dot-bg); transition:all 0.3s; }
-  .ob-nd.a { background:var(--ob-accent); transform:scale(1.3); box-shadow:0 0 8px var(--ob-accent-glow); }
-  .ob-nav-bar {
-    position:fixed; bottom:0; left:0; right:0;
-    /* make onboarding nav bar consistent with main tab bar height (slightly larger for emphasis) */
-    min-height: calc(62px * 1.25 + env(safe-area-inset-bottom, 0px));
-    padding:0 18px calc(env(safe-area-inset-bottom, 0px) + 10px);
-    display:flex; justify-content:space-between; align-items:flex-start; z-index:100;
-    background:var(--ob-nav-bg);
-    backdrop-filter:blur(40px) saturate(1.8); -webkit-backdrop-filter:blur(40px) saturate(1.8);
-    border-top:1px solid rgba(255,255,255,0.14);
-  }
-  .ob-nav-inner {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    width:100%;
-    padding:8px 0;
-  }
-  .ob-nav-next {
-    padding:8px 20px; border-radius:18px; cursor:pointer; transition:all 0.15s;
-    background:var(--ob-accent-dim); border:1px solid var(--ob-accent);
-    color:var(--ob-accent); font-family:'Barlow',sans-serif; font-size:12px;
-    font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
-  }
-  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff); }
-  .ob-nav-back {
-    background:none; border:none; cursor:pointer; padding:6px 8px;
-    font-family:'Barlow',sans-serif; font-size:18px; color:var(--ob-text-sec);
-    opacity:0.6; transition:opacity 0.15s; line-height:1;
-  }
-  /* onboarding icon color tokens — follow theme: dark => light icons, light => dark icons */
-  :root, [data-theme="dark"], [data-theme="light"] {
-    --ob-icon-color: var(--app-white);
-  }
-  [data-theme="light"] .ob-wrap, [data-theme="light"] [data-theme="light"] {
-    --ob-icon-color: var(--app-black);
-  }
-  .ob-bi svg, .ob-splash-icon svg, .ob-cta-icon svg, .ob-sci svg { stroke: var(--ob-icon-color); color: var(--ob-icon-color); fill: none; }
-  .ob-splash-icon { background: var(--ob-nav-bg); }
-  .ob-nav-back:hover { opacity:1; }
-  .ob-nav-skip { background:none; border:none; font-family:'Barlow',sans-serif; font-size:13px; letter-spacing:0.16em; text-transform:uppercase; color:var(--ob-text-sec); cursor:pointer; }
-  .ob-ext-nav { display:none; }
-  .ob-en-btn { display:none; }
-  /* 7-step onboarding: top progress bar */
-  .ob-progress-wrap { position:fixed; top:0; left:0; right:0; z-index:50; padding:calc(env(safe-area-inset-top, 0px) + 12px) 20px 10px; background:transparent; pointer-events:none; }
-  .ob-progress-bar { height:4px; border-radius:2px; background:rgba(255,255,255,0.12); overflow:hidden; transition:width 0.4s ease; }
-  .ob-progress-fill { height:100%; border-radius:2px; background:var(--ob-accent); transition:width 0.35s ease; }
-  /* Horizontal slide transitions */
-  .ob-slider { flex:1; width:100%; overflow:hidden; position:relative; display:flex; }
-  .ob-slide { min-width:100%; width:100%; flex-shrink:0; padding:calc(env(safe-area-inset-top, 0px) + 56px) 24px calc(env(safe-area-inset-bottom, 0px) + 80px); box-sizing:border-box; animation:obSlideIn 0.35s ease; }
-  @keyframes obSlideIn { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:translateX(0); } }
-  .ob-title { font-size:22px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ob-text-head); margin-bottom:12px; line-height:1.2; font-family:'Barlow',sans-serif; }
-  .ob-method-card { padding:18px 20px; border-radius:16px; margin-bottom:14px; cursor:default; text-align:left; transition:all 0.2s ease; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.06); }
-  .ob-method-card:hover { border-color:var(--ob-accent); background:rgba(255,255,255,0.08); }
-  .ob-method-card-title { font-size:13px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:8px; font-family:'Barlow',sans-serif; }
-  .ob-method-card-body { font-size:14px; line-height:1.5; color:var(--ob-text-body); font-weight:400; }
-  .ob-disclaimer-scroll { max-height:180px; overflow-y:auto; padding:14px 16px; border-radius:12px; margin-bottom:20px; background:var(--ob-box-bg); border:1px solid var(--ob-box-border); font-size:13px; line-height:1.5; color:var(--ob-text-body); -webkit-overflow-scrolling:touch; }
-  .ob-method-feature { padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .ob-method-feature:last-child { border-bottom: none; padding-bottom: 0; }
-  .ob-method-feature-title { font-size: 28px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ob-text-head); margin-bottom: 12px; font-family: 'Barlow', sans-serif; line-height: 1.1; }
-  .ob-method-feature-body { font-size: 15px; line-height: 1.55; color: var(--ob-text-body); font-weight: 400; }
-`;
-
+// ── ONBOARDING
+/* onboarding CSS moved to onboarding.css */
 const obDarkVars = `
   --ob-page-bg: radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%);
   --ob-orb1: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99,179,237,0.18) 0%, transparent 70%);
   --ob-orb2: radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.15) 0%, transparent 70%);
   --ob-orb3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(251,191,36,0.10) 0%, transparent 70%);
   --ob-text-head:#ffffff; --ob-text-body:rgba(255,255,255,0.78); --ob-text-sec:rgba(255,255,255,0.50); --ob-text-dim:rgba(255,255,255,0.32);
-  --ob-accent:#D85F4E; --ob-accent-text:#0a0e1a; --ob-accent-dim:rgba(216,95,78,0.18); --ob-accent-glow:rgba(216,95,78,0.30);
+  --ob-accent:#FF9F43; --ob-accent-text:#0a0e1a; --ob-accent-dim:rgba(255,159,67,0.18); --ob-accent-glow:rgba(255,159,67,0.30);
   --ob-nav-bg:rgba(8,13,24,0.80); --ob-dot-bg:rgba(255,255,255,0.20);
 `;
 const obLightVars = `
@@ -311,7 +207,7 @@ const CIRCADIAN_THEMES = {
       // orb2: large orb bottom-left for balance and more organic spread
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(255,175,75,0.50) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(205,80,20,0.60) 0%, transparent 76%)",
-      accent: "#D85F4E", accentDim: "rgba(216,95,78,0.25)", accentGlow: "rgba(216,95,78,0.55)",
+      accent: "#FF9F43", accentDim: "rgba(255,159,67,0.25)", accentGlow: "rgba(255,159,67,0.55)",
       accentBtnText: "#1a0800",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#FFF0E0",
@@ -482,7 +378,7 @@ function Onboarding({ theme, onComplete }) {
 
   return (
     <div className="ob-wrap" style={{ background: t.bg, transition: "background 0.6s ease" }}>
-      <style>{obCss}{`:root,body,[data-ob]{${vars}}.ob-wrap{${vars}}`}</style>
+      <style>{`:root,body,[data-ob]{${vars}}.ob-wrap{${vars}}`}</style>
       <div className="ob-orbs-layer" style={{
         background:`${t.orb1}, ${t.orb2}, ${t.orb3}`,
         transition:"background 0.6s ease",
@@ -829,10 +725,10 @@ function Onboarding({ theme, onComplete }) {
 
           {/* 7: MEDICAL DISCLAIMER */}
           {cur === 7 && <div className="ob-screen ob-cta-screen">
-            <div className="ob-pad">
+            <div className="ob-pad" style={{ color: nightMode ? '#ffffff' : undefined }}>
               <div className="ob-eyebrow" style={{marginBottom:8}}>MEDICAL DISCLAIMER</div>
-              <div className="ob-heading" style={{marginBottom:16, lineHeight:0.96, letterSpacing:"-0.01em"}}><span style={{fontWeight:800,color:"var(--ob-text-head)"}}>The</span> <em>Fine Print.</em></div>
-              <div className="ob-disclaimer-scroll" style={{lineHeight:1.28}}>
+              <div className="ob-heading" style={{marginBottom:16, lineHeight:0.96, letterSpacing:"-0.01em", color: nightMode ? '#ffffff' : 'var(--ob-text-head)'}}><span style={{fontWeight:800,color: nightMode ? '#ffffff' : 'var(--ob-text-head)'}}>The</span> <em>Fine Print.</em></div>
+              <div className="ob-disclaimer-scroll" style={{lineHeight:1.28, color: '#ffffff'}}>
                 AXIS provides movement and breath guidance for general wellness. It is not a substitute for professional medical advice, diagnosis, or treatment.
                 <br/><br/>
                 If you have any medical condition, injury, or concern, consult a qualified healthcare professional before starting. Stop immediately and seek attention if you experience pain, dizziness, shortness of breath, or discomfort.
@@ -840,8 +736,8 @@ function Onboarding({ theme, onComplete }) {
                 By continuing, you confirm that you are participating voluntarily and assume full responsibility for your use of this app.
               </div>
 
-              <div style={{width:"100%", marginBottom:20}}>
-                <div style={{fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--ob-text-sec)", marginBottom:8, fontWeight:500}}>Name:</div>
+              <div style={{width:"100%", marginTop:16, marginBottom:20}}>
+                <div style={{fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color: nightMode ? '#ffffff' : 'var(--ob-text-sec)', marginBottom:8, fontWeight:500}}>Name:</div>
                 <input
                   type="text"
                   placeholder="Full name"
@@ -851,7 +747,7 @@ function Onboarding({ theme, onComplete }) {
                     width:"100%", padding:"12px 16px", borderRadius:12, fontSize:15,
                     fontFamily:"'Barlow',sans-serif", fontWeight:400,
                     background:"var(--ob-box-bg)", border: disclaimerWarning && !disclaimerName ? "1.5px solid rgba(255,100,100,0.7)" : "1px solid var(--ob-box-border)",
-                    color:"var(--ob-text-head)", outline:"none", boxSizing:"border-box",
+                    color: nightMode ? '#ffffff' : 'var(--ob-text-head)', outline:"none", boxSizing:"border-box",
                     WebkitAppearance:"none",
                   }}
                 />
@@ -945,7 +841,7 @@ function Onboarding({ theme, onComplete }) {
         {["Splash","Alpha","Perspective+Foundation","Benefits","Method+Tools","Appearance","Ethics+Safety","Disclaimer"].map((l, i) => (
           <button key={l} className="ob-en-btn" onClick={() => go(i)}>{l}</button>
         ))}
-        <button className="ob-en-btn" style={{ borderColor: "#D85F4E", color: "#D85F4E" }} onClick={onComplete}>→ Launch App</button>
+        <button className="ob-en-btn" style={{ borderColor: "#FF9F43", color: "#FF9F43" }} onClick={onComplete}>→ Launch App</button>
       </div>
       <div className="ob-label">Tap screen or use controls · Begin buttons launch the app</div>
     </div>
@@ -961,7 +857,7 @@ const DAILY_SECTIONS = [
     label: "Warm-up & Mobility", tag: "01",
     purpose: "Prepare the spine and joints for load. These movements are not a formality. They set the neurological tone for everything that follows. Move slowly and with full attention.",
     exercises: [
-      { id: 1, name: "Cat–Cow", start: "On all fours — hands under shoulders, knees under hips.", sub: "Segmental Spinal Flexion/Extension", type: "flow", seconds: 45, steps: [
+      { id: 1, name: "Cat–Cow", start: "On all fours — hands under shoulders, knees under hips.", sub: "Segmental Spinal Flexion/Extension", type: "flow", seconds: 45, demoVideo: "/assets/videos/cat_cow.mp4", steps: [
         { pos: "A", label: "Neutral Tabletop", focus: "SPINE", cue: "Hands under shoulders, knees under hips. Spine flat and parallel to floor. Neck long." },
         { pos: "B", label: "Cat — Exhale", focus: "FLEX", cue: "Round spine toward ceiling. Tuck chin to chest, tuck pelvis under. Breathe out fully." },
         { pos: "C", label: "Cow — Inhale", focus: "EXT", cue: "Let belly drop toward floor. Lift gaze and tailbone gently. Do not compress the lower back." },
@@ -1182,7 +1078,7 @@ const MORNING_SECTIONS = [
         { pos: "B", label: "Drop Right", focus: "ROTATE", cue: "Let both knees fall to the right. Turn gaze left if comfortable. Breathe and let gravity do the work for 30 seconds." },
         { pos: "C", label: "Drop Left", focus: "ROTATE", cue: "Return knees through center, drop left. Hold another 30 seconds. No forcing — just releasing." },
       ]},
-      { id: 203, name: "Cat–Cow", start: "On all fours — hands under shoulders, knees under hips.", sub: "Segmental spinal warm-up", type: "flow", seconds: 45, steps: [
+      { id: 203, name: "Cat–Cow", start: "On all fours — hands under shoulders, knees under hips.", sub: "Segmental spinal warm-up", type: "flow", seconds: 45, demoVideo: "/assets/videos/cat_cow.mp4", steps: [
         { pos: "A", label: "Neutral Tabletop", focus: "SETUP", cue: "Hands under shoulders, knees under hips. Spine flat. Take one breath here before moving." },
         { pos: "B", label: "Cat", focus: "FLEX", cue: "Round spine to ceiling, tuck pelvis and chin. Full exhale." },
         { pos: "C", label: "Cow", focus: "EXT", cue: "Let belly drop, lift gaze and tailbone gently. Full inhale. 8–10 slow cycles." },
@@ -1370,7 +1266,7 @@ const BACK_SECTIONS = [
         { pos: "B", label: "Posterior Tilt", focus: "CORE", cue: "Gently press the lower back into the floor by engaging the deep abdominals. Hold 2s. The movement is subtle — this is not a crunch." },
         { pos: "C", label: "Return to Neutral", focus: "RELEASE", cue: "Let the arch return. Move slowly and smoothly between positions. This re-educates the muscles that stabilise the lumbar spine." },
       ]},
-      { id: 703, name: "Cat–Cow", start: "On all fours — hands under shoulders, knees under hips.", sub: "Slow and segmental, 10 cycles", type: "flow", seconds: 45, steps: [
+      { id: 703, name: "Cat–Cow", start: "On all fours — hands under shoulders, knees under hips.", sub: "Slow and segmental, 10 cycles", type: "flow", seconds: 45, demoVideo: "/assets/videos/cat_cow.mp4", steps: [
         { pos: "A", label: "Neutral Tabletop", focus: "SETUP", cue: "Spine neutral. Take one full breath here before moving. This is the most therapeutic movement for the lumbar spine." },
         { pos: "B", label: "Cat — Exhale", focus: "FLEX", cue: "Round the spine segment by segment toward the ceiling. Tuck chin and pelvis. Exhale fully. Move slowly — feel each vertebra." },
         { pos: "C", label: "Cow — Inhale", focus: "EXT", cue: "Let the belly drop, lift gaze and tailbone gently. Do not compress — open. Inhale fully. 10 slow cycles. Increase the range gradually as the back warms." },
@@ -2174,7 +2070,7 @@ const THORACIC_SECTIONS = [
         { pos: "B", label: "Extend", focus: "EXTEND", cue: "Support your head with hands and gently arch back over the roller. Pause and breathe for 3-5 breaths." },
         { pos: "C", label: "Alternative", focus: "VARIATION", cue: "If no roller, use a chair back, wall, or puppy-pose quadruped variation to find comfortable extension." },
       ]},
-      { id: 2001, name: "Cat–Cow", start: "On all fours, neutral spine.", sub: "Segmental flexion/extension", type: "reps", reps: "10 reps", steps: [
+      { id: 2001, name: "Cat–Cow", start: "On all fours, neutral spine.", sub: "Segmental flexion/extension", type: "reps", reps: "10 reps", demoVideo: "/assets/videos/cat_cow.mp4", steps: [
         { pos: "A", label: "Neutral Tabletop", focus: "SETUP", cue: "Hands under shoulders, knees under hips. Neutral spine, neck long." },
         { pos: "B", label: "Cow — Inhale", focus: "EXTEND", cue: "Inhale, drop the belly, lift the chest and tailbone." },
         { pos: "C", label: "Cat — Exhale", focus: "FLEX", cue: "Exhale, round through the spine segment by segment. Move slowly for 10 cycles." },
@@ -2232,7 +2128,7 @@ const WRIST_SECTIONS = [
   },
 ];
 
-const TRACKS = {
+const TRACKS = (window.AXIS_JSON && window.AXIS_JSON.TRACKS) ? window.AXIS_JSON.TRACKS : {
   daily:       { id: "daily",       label: "The Baseline Protocol", subtitle: "Spine, Core, Posterior", purpose: "Spine, core, and posterior chain. The foundation session.", sections: DAILY_SECTIONS, duration: "25 min" },
   restorative: { id: "restorative", label: "Lymph & Flow", subtitle: "Circulation, Mobility, Recovery", purpose: "Gentle continuous movement for circulation, joint lubrication, and recovery.", sections: RESTORATIVE_SECTIONS, duration: "15 min" },
   morning:     { id: "morning",     label: "Sunrise Stretch", subtitle: "Wake, Spine, Energy", purpose: "Seven movements to wake the spine before you look at your phone.", sections: MORNING_SECTIONS, duration: "8 min" },
@@ -2282,29 +2178,29 @@ const FIGURES = {
   <line x1="60" y1="54" x2="78" y2="76" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="60" y1="88" x2="48" y2="128" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="48" y1="128" x2="42" y2="144" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="60" y1="88" x2="72" y2="128" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-                      <line x1="72" y1="128" x2="78" y2="144" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="60" y1="88" x2="72" y2="128" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+                      <line x1="72" y1="128" x2="78" y2="144" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
   <line x1="28" y1="148" x2="92" y2="148" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-                      <path d="M54 108 Q68 100 74 108" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M70 104 L74 108 L70 112" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="78" cy="144" r="3" fill="#D85F4E"/>
+                      <path d="M54 108 Q68 100 74 108" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M70 104 L74 108 L70 112" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="78" cy="144" r="3" fill="#FF9F43"/>
   <circle cx="42" cy="144" r="3" fill="rgba(255,255,255,0.3)"/>
 </svg>`,
   802: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="60" cy="26" r="10" stroke="#E8E4DF" stroke-width="2"/>
-  <line x1="70" y1="24" x2="84" y2="22" stroke="#D85F4E" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/>
-  <circle cx="86" cy="21" r="2" fill="#D85F4E"/>
+  <line x1="70" y1="24" x2="84" y2="22" stroke="#FF9F43" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/>
+  <circle cx="86" cy="21" r="2" fill="#FF9F43"/>
   <line x1="60" y1="36" x2="60" y2="46" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="60" y1="46" x2="60" y2="86" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="60" y1="52" x2="40" y2="70" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="60" y1="52" x2="80" y2="70" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="60" y1="86" x2="56" y2="126" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="56" y1="126" x2="52" y2="144" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="60" y1="86" x2="56" y2="126" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="56" y1="126" x2="52" y2="144" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
   <line x1="60" y1="86" x2="74" y2="106" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="74" y1="106" x2="68" y2="124" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M52 86 Q60 83 68 86" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M52 86 Q60 83 68 86" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   <line x1="28" y1="148" x2="92" y2="148" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
-  <circle cx="52" cy="144" r="3" fill="#D85F4E"/>
+  <circle cx="52" cy="144" r="3" fill="#FF9F43"/>
 </svg>`,
   803: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="52" cy="26" r="10" stroke="#E8E4DF" stroke-width="2"/>
@@ -2314,13 +2210,13 @@ const FIGURES = {
   <line x1="52" y1="56" x2="76" y2="64" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="54" y1="86" x2="44" y2="126" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="44" y1="126" x2="38" y2="144" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="54" y1="86" x2="66" y2="116" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="66" y1="116" x2="72" y2="134" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="20" y1="148" x2="100" y2="148" stroke="#D85F4E" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 3"/>
+  <line x1="54" y1="86" x2="66" y2="116" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="66" y1="116" x2="72" y2="134" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="20" y1="148" x2="100" y2="148" stroke="#FF9F43" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 3"/>
   <circle cx="38" cy="144" r="3.5" fill="rgba(255,255,255,0.4)"/>
-  <circle cx="72" cy="134" r="3.5" fill="#D85F4E"/>
-  <path d="M72 134 Q74 141 72 144" stroke="#D85F4E" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-  <circle cx="72" cy="146" r="1.5" fill="#D85F4E"/>
+  <circle cx="72" cy="134" r="3.5" fill="#FF9F43"/>
+  <path d="M72 134 Q74 141 72 144" stroke="#FF9F43" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <circle cx="72" cy="146" r="1.5" fill="#FF9F43"/>
 </svg>`,
   804: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="58" cy="26" r="10" stroke="#E8E4DF" stroke-width="2"/>
@@ -2330,13 +2226,13 @@ const FIGURES = {
   <line x1="58" y1="54" x2="82" y2="62" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="58" y1="84" x2="70" y2="124" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="70" y1="124" x2="76" y2="142" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="58" y1="84" x2="46" y2="110" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="46" y1="110" x2="58" y2="130" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="58" y1="130" x2="58" y2="142" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <path d="M88 100 L100 100 L96 96 M100 100 L96 104" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="58" y1="84" x2="46" y2="110" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="46" y1="110" x2="58" y2="130" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="58" y1="130" x2="58" y2="142" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <path d="M88 100 L100 100 L96 96 M100 100 L96 104" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <line x1="20" y1="148" x2="100" y2="148" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
   <circle cx="76" cy="142" r="3" fill="rgba(255,255,255,0.35)"/>
-  <circle cx="58" cy="142" r="3" fill="#D85F4E"/>
+  <circle cx="58" cy="142" r="3" fill="#FF9F43"/>
 </svg>`,
   805: `<svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect x="20" y="114" width="58" height="10" rx="2" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
@@ -2347,14 +2243,14 @@ const FIGURES = {
   <line x1="46" y1="34" x2="46" y2="44" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
   <line x1="46" y1="44" x2="48" y2="82" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="46" y1="54" x2="24" y2="62" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="22" cy="62" r="3" stroke="#D85F4E" stroke-width="1.5" fill="none"/>
+  <circle cx="22" cy="62" r="3" stroke="#FF9F43" stroke-width="1.5" fill="none"/>
   <line x1="46" y1="54" x2="64" y2="58" stroke="#E8E4DF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="48" y1="82" x2="42" y2="114" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
-  <line x1="42" y1="114" x2="38" y2="122" stroke="#D85F4E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="48" y1="82" x2="42" y2="114" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
+  <line x1="42" y1="114" x2="38" y2="122" stroke="#FF9F43" stroke-width="3" stroke-linecap="round"/>
   <line x1="48" y1="82" x2="62" y2="112" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="62" y1="112" x2="68" y2="138" stroke="#E8E4DF" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M74 118 L80 130 L76 128 M80 130 L76 134" stroke="#D85F4E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="38" cy="122" r="3" fill="#D85F4E"/>
+  <path d="M74 118 L80 130 L76 128 M80 130 L76 134" stroke="#FF9F43" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="38" cy="122" r="3" fill="#FF9F43"/>
   <circle cx="68" cy="138" r="3.5" fill="rgba(232,228,223,0.4)"/>
 </svg>`,
 };
@@ -2559,7 +2455,7 @@ const css = `
     --text-dim: rgba(255,255,255,0.42);
     --text-dimmer: rgba(255,255,255,0.32);
     --text-white: #f6f7f8;
-    --accent: #D85F4E;
+    --accent: #FF9F43;
     --accent-secondary: rgba(255,191,101,0.62);
     --accent-dim: rgba(255,191,101,0.18);
     --accent-glow: rgba(255,191,101,0.30);
@@ -2597,7 +2493,7 @@ const css = `
     --text-dim: rgba(15,30,46,0.65);
     --text-dimmer: rgba(15,30,46,0.52);
     --text-white: #252525;
-    --accent: #2a5f8f;
+    --accent: var(--accent);
     --accent-secondary: rgba(42,95,143,0.58);
     --accent-dim: rgba(42,95,143,0.12);
     --accent-glow: rgba(42,95,143,0.22);
@@ -2605,7 +2501,7 @@ const css = `
     --cue-bar-label: rgba(42,95,143,0.85);
     --border: rgba(160,195,225,0.30);
     --border-card: rgba(160,195,225,0.40);
-    --text-teal: #2a5f8f;
+    --text-teal: var(--accent);
     --text-done: rgba(15,30,46,0.30);
     --dot-bg: rgba(15,30,46,0.12);
     --dot-done: rgba(15,30,46,0.38);
@@ -3451,9 +3347,55 @@ function RestTimer({ onDone }) {
 const FOCUS_SPELL = { EXT: "Extension", FLEX: "Flexion", SETUP: "Setup", SPINE: "Spine", STRETCH: "Stretch", CORE: "Core", RELEASE: "Release", GLUTES: "Glutes", STABILITY: "Stability", CONTROL: "Control", HOLD: "Hold", ECCENTRIC: "Eccentric", PUSH: "Push", ISO: "Isometric", PULL: "Pull", RAISE: "Raise", LOWER: "Lower", ROTATE: "Rotation", TWIST: "Twist", CERVICAL: "Cervical", LATERAL: "Lateral", CIRCULATE: "Circulate", FLOW: "Flow", MOBILIZE: "Mobilize", MOMENTUM: "Momentum", ISOLATE: "Isolate", DECOMPRESS: "Decompress", FORWARD: "Forward", BACKWARD: "Backward", GROUND: "Ground", "END-RANGE": "End Range", TARGET: "Target", EXHALE: "Exhale", INHALE: "Inhale", FLEX: "Flexion" };
 function spellFocus(f) { return (f && FOCUS_SPELL[f.toUpperCase()]) ? FOCUS_SPELL[f.toUpperCase()] : (f || ""); }
 
-function Steps({ steps, small, start: startText }) {
+// Small wrapper to autoplay muted demos and hide native controls where possible.
+function VideoDemo({ src, poster, style, ariaLabel }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const prefersReduce = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Prefer autoplay muted loop when user hasn't requested reduced motion.
+    if (prefersReduce) {
+      el.controls = true;
+      el.preload = "metadata";
+    } else {
+      try {
+        el.controls = false;
+        el.muted = true;
+        el.playsInline = true;
+        el.loop = true;
+        el.preload = "metadata";
+        const p = el.play();
+        if (p && p.catch) p.catch(() => {});
+      } catch (e) {}
+    }
+    const onContext = (ev) => ev.preventDefault();
+    el.addEventListener("contextmenu", onContext);
+    return () => el.removeEventListener("contextmenu", onContext);
+  }, [src]);
+  return <video
+    ref={ref}
+    src={src}
+    poster={poster}
+    style={style}
+    aria-label={ariaLabel}
+    onError={e => { try { const c = e.target.closest && e.target.closest('div'); if (c) c.style.display = 'none'; } catch (err) {} }}
+    onLoadedMetadata={e => { try { e.target.style.display = 'block'; } catch (err) {} }}
+  />;
+}
+
+function Steps({ steps, small, start: startText, demoVideo }) {
+  const [collapsed, setCollapsed] = useState(false);
   return (
     <div className={small ? "steps" : "fc-steps"}>
+      {!small && (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderBottom: "1px solid var(--border)" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em" }}>Instructions</div>
+          <button onClick={() => setCollapsed(c => !c)} style={{ background: "transparent", border: "none", color: "inherit", cursor: "pointer", fontWeight: 700 }}>
+            {collapsed ? "Show" : "Hide"}
+          </button>
+        </div>
+      )}
       {small && (steps?.length > 0 || startText) && (
         <div style={{fontSize:9, letterSpacing:"0.22em", textTransform:"uppercase",
           color:"var(--text-dimmer)", fontWeight:600, paddingBottom:8,
@@ -3462,8 +3404,18 @@ function Steps({ steps, small, start: startText }) {
         </div>
       )}
 
+      {/* Demo video for small (list) view */}
+      {(!collapsed) && small && demoVideo && (
+        <div style={{ padding: "10px 16px 8px", textAlign: "center", borderBottom: steps?.length ? "1px solid var(--border)" : "none", marginBottom: 6 }}>
+          <VideoDemo
+            src={demoVideo}
+            style={{ width: "100%", borderRadius: 8, display: "block" }}
+            ariaLabel="Exercise demo"
+          />
+        </div>
+      )}
       {/* START row — no badge, matches Guided \"START\" block */}
-      {startText && (small ? (
+      {(!collapsed) && startText && (small ? (
         <div className="step">
           <div className="step-right">
             <div className="step-focus" style={{marginBottom:4}}>Start</div>
@@ -3555,6 +3507,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
             steps={ex.steps}
             small
             start={ex.start || undefined}
+            demoVideo={ex.demoVideo}
           />
           {!skipped && (
             <>
@@ -3847,10 +3800,11 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
     );
   }
 
+  const displayColor = isTimerDark ? "#ffffff" : "#1a1048";
   return (
     <div style={{display:"flex", flexDirection:"column", gap:gap, marginTop, alignItems:"flex-start"}}>
       <div style={{display:"flex", alignItems:"baseline", gap: 6, marginBottom: marginBottom}}>
-        <div style={{minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontFamily: "'Barlow', sans-serif", fontSize: numSize, fontWeight:600, letterSpacing:"-0.04em", color:TN, lineHeight:1}}>{display}</div>
+        <div style={{minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontFamily: "'Barlow', sans-serif", fontSize: numSize, fontWeight:600, letterSpacing:"-0.04em", color:displayColor, lineHeight:1}}>{display}</div>
       </div>
       <div style={{height: barH, width: "auto", background:"transparent", borderRadius: barH, overflow:"hidden"}}>
         <div style={{height: barH, borderRadius: barH, background:BAR_FILL,
@@ -3941,6 +3895,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const list = listRef.current;
   const listTotal = list.length;
   const filteredCount = listTotal;
+  const [instrCollapsed, setInstrCollapsed] = useState(false);
+  // per-exercise instruction collapse state (Guided cards)
+  const [collapsedById, setCollapsedById] = useState(() => ({}));
+  const toggleCollapseFor = (id) => setCollapsedById(m => ({ ...(m || {}), [id]: !m[id] }));
 
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
@@ -3957,6 +3915,48 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const titleRef = useRef(null);
   const cur = list.length > 0 ? list[Math.min(fi, list.length - 1)] : null;
   const next = list[fi + 1] || null;
+  // Display string for large countdown area (falls back to exercise duration if no running timer)
+  const guidedExerciseSeconds = cur?.seconds || cur?.duration || 0;
+  const guidedDefaultDisplay = guidedExerciseSeconds ? `${Math.floor(guidedExerciseSeconds / 60)}:${(guidedExerciseSeconds % 60).toString().padStart(2, "0")}` : "";
+  // Guided large countdown state (per-exercise running timer)
+  const [gLeft, setGLeft] = useState(null);
+  const gRef = useRef(null);
+  const [gRunning, setGRunning] = useState(false);
+
+  // Start/stop guided countdown when phase changes or current exercise changes or paused toggles
+  useEffect(() => {
+    // clear any existing
+    clearInterval(gRef.current);
+    if (phase === "exercise" && cur) {
+      const secs = cur.seconds || cur.duration || 0;
+      setGLeft(secs);
+      // auto-start unless paused
+      setGRunning(!paused);
+      if (!paused && secs > 0) {
+        gRef.current = setInterval(() => {
+          setGLeft(l => {
+            if (l <= 1 || l == null) {
+              clearInterval(gRef.current);
+              setGRunning(false);
+              // call handler to complete current exercise
+              handleTimerDone();
+              return 0;
+            }
+            return l - 1;
+          });
+        }, 1000);
+      }
+    } else {
+      setGLeft(null);
+      setGRunning(false);
+    }
+    return () => clearInterval(gRef.current);
+  }, [phase, fi, cur && cur.id, paused]);
+
+  // helper display and pct for guided large timer
+  const gTotal = (cur && (cur.seconds || cur.duration)) || 0;
+  const gPct = gTotal > 0 && gLeft != null ? ((gTotal - gLeft) / gTotal) : (phase === "launch" ? ((3 - launchCount) / 3) : 0);
+  const gDisplay = gLeft != null ? `${Math.floor(gLeft / 60)}:${(gLeft % 60).toString().padStart(2, "0")}` : guidedDefaultDisplay;
 
   // GUIDED phase flags
   const isExercisePhase = phase === "exercise";
@@ -4214,10 +4214,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         }}>
           <div style={{flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
             <div style={{letterSpacing:"0.3em", textTransform:"uppercase", color:S, marginBottom:24}}>GUIDED SESSION</div>
-            <div style={{fontWeight:600, letterSpacing:"-0.03em", lineHeight:1.1, color:W, marginBottom:16, textShadow: NAME_SHAD}}>
+            <div style={{fontWeight:700, fontSize: 34, letterSpacing:"-0.03em", lineHeight:1.02, color:W, marginBottom:16, textShadow: NAME_SHAD}}>
               {trackLabel}
             </div>
-            <div style={{fontSize: 13, color: S, marginBottom: 24}}>{filteredCount} exercises • {trackDuration}</div>
+            <div style={{fontSize: 20, color: S, marginBottom: 24, opacity: 0.9}}>{filteredCount} exercises • {trackDuration}</div>
           </div>
           <div style={{display:"flex", flexDirection:"column", alignItems:"center", paddingBottom:8}}>
             <div style={{fontSize: 12, color: S, opacity: 0.85, maxWidth: 320, lineHeight: 1.4, marginBottom: 28, textAlign: "center"}}>No equipment? You can modify — use a towel instead of a strap, a book instead of a block, or skip props and focus on range of motion.</div>
@@ -4247,20 +4247,75 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           </div>
 
           {/* Primary title: large, bold — white, centered (stays locked across phases) */}
+          {/* Phase label and large countdown at top */}
+          {(phase === "getready" || phase === "launch" || phase === "exercise") && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 8 }}>
+              <div style={{
+                fontSize: 14,
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                color: W,
+                textTransform: "uppercase",
+                marginBottom: 8,
+                padding: "6px 12px",
+                borderRadius: 999,
+                background: "rgba(255,255,255,0.06)",
+                display: "inline-block"
+              }}>
+                {phase === "getready" ? "REST & GET READY" : phase === "launch" ? "GET SET" : "BEGIN"}
+              </div>
+            </div>
+          )}
+
+          {/* Primary title: large, bold — white, centered (stays locked across phases) */}
           <div style={{display:"flex",flexDirection:"column",alignItems:(phase === "getready" || phase === "launch" || phase === "exercise") ? "center" : "flex-start"}}>
             <div
               ref={titleRef}
               style={{
-              fontSize: (phase === "getready" || phase === "launch" || phase === "exercise") ? 38 : 30,
+              fontSize: (phase === "getready" || phase === "launch" || phase === "exercise") ? 34 : 30,
               fontWeight: 700, letterSpacing: "0.02em", lineHeight: 1.08, textTransform: "uppercase",
               color: W,
-              marginBottom: 16, flexShrink: 0, fontFamily: "'Barlow', sans-serif",
+              marginBottom: 8, flexShrink: 0, fontFamily: "'Barlow', sans-serif",
               textShadow: NAME_SHAD,
               textAlign: (phase === "getready" || phase === "launch" || phase === "exercise") ? "center" : "left",
             }}>
               {cur?.name}
             </div>
           </div>
+
+          {/* Countdown + progress bar: locked position for getready, launch, and exercise (placed under title) */}
+          {(phase === "getready" || phase === "launch" || phase === "exercise") && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 6, marginBottom: 12, flexShrink: 0 }}>
+              {phase === "getready" && (
+                <>
+                  <div style={{ minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "'Barlow', sans-serif", fontSize: 64, fontWeight: 700, letterSpacing: "-0.02em", color: isDark ? "rgba(255,255,255,0.5)" : W, lineHeight: 1 }}>
+                    {`0:${readyLeft.toString().padStart(2, "0")}`}
+                  </div>
+                  <div style={{ width: 240, height: 10, borderRadius: 10, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 8 }}>
+                    <div style={{ height: 10, borderRadius: 10, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
+                  </div>
+                </>
+              )}
+              {phase === "launch" && (
+                <>
+                  <div style={{ minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "'Barlow', sans-serif", fontSize: 60, fontWeight: 700, letterSpacing: "-0.02em", color: W, lineHeight: 1 }}>
+                    {launchCount > 0 ? launchCount : ""}
+                  </div>
+                  <div style={{ width: 240, height: 10, borderRadius: 10, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 8 }}>
+                    <div style={{ height: 10, borderRadius: 10, background: `linear-gradient(90deg, ${A}, ${A})`, width: `${((3 - launchCount) / 3) * 100}%` }} />
+                  </div>
+                </>
+              )}
+              {phase === "exercise" && cur && (
+                <>
+                  <div style={{ minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "'Barlow', sans-serif", fontSize: 60, fontWeight: 700, letterSpacing: "-0.02em", color: W, lineHeight: 1 }}>{gDisplay}</div>
+                  <div style={{ width: 240, height: 10, borderRadius: 10, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 8 }}>
+                    <div style={{ height: 10, borderRadius: 10, background: `linear-gradient(90deg, ${A}, ${A})`, width: `${gPct * 100}%` }} />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* ── GLASS CUE CARD ── */}
           {(() => {
@@ -4282,100 +4337,68 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
                   : (isDark ? "0 4px 24px rgba(0,0,0,0.15)" : "0 4px 20px rgba(0,0,0,0.06)"),
                 overflow: "hidden", flexShrink: 0, marginBottom: 16,
               }}>
-                {ex.start && (
-                  <div style={{ padding: "10px 16px 8px", borderBottom: ex.steps?.length ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
-                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 4 }}>START</div>
-                    <div style={{ fontSize: 15, color: W, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em" }}>{ex.start}</div>
-                  </div>
-                )}
-                {ex.steps?.map((step, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      padding: idx === 0 ? "14px 16px 12px" : "12px 16px 14px",
-                      borderBottom: (idx < ex.steps.length - 1) || (ex.type === "reps" && ex.reps)
-                        ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)")
-                        : "none",
-                      textAlign: "left",
-                    }}
+                {/* Card header with collapse control */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: "1px solid rgba(0,0,0,0)" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", color: W }}>Instructions</div>
+                  <button
+                    onClick={() => toggleCollapseFor(ex.id)}
+                    style={{ background: "transparent", border: "none", color: W, cursor: "pointer", fontWeight: 700, fontSize: 13 }}
+                    aria-expanded={!collapsedById[ex.id]}
+                    aria-controls={`instr-${ex.id}`}
                   >
-                    <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 8 }}>
-                      {step.focus || (idx === 0 ? "SETUP" : "MOVE")}
-                    </div>
-                    <div style={{
-                      fontSize: 15,
-                      color: W,
-                      lineHeight: 1.4,
-                      fontWeight: 400,
-                      letterSpacing: "-0.01em",
-                    }}>
-                      {step.cue}
-                    </div>
-                  </div>
-                ))}
+                    {collapsedById[ex.id] ? "Show" : "Hide"}
+                  </button>
+                </div>
+
+                {!collapsedById[ex.id] && (
+                  <>
+                    {ex.demoVideo && (
+                      <div style={{ padding: "10px 16px 8px", borderBottom: ex.steps?.length ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "center" }}>
+                        <VideoDemo
+                          src={ex.demoVideo}
+                          style={{ width: "100%", borderRadius: 10, display: "block" }}
+                          ariaLabel={ex && ex.name ? `Demo: ${ex.name}` : "Exercise demo"}
+                        />
+                      </div>
+                    )}
+                    {ex.start && (
+                      <div id={`instr-${ex.id}`} style={{ padding: "10px 16px 8px", borderBottom: ex.steps?.length ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)") : "none", textAlign: "left" }}>
+                        <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 4 }}>START</div>
+                        <div style={{ fontSize: 15, color: W, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em" }}>{ex.start}</div>
+                      </div>
+                    )}
+                    {ex.steps?.map((step, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: idx === 0 ? "14px 16px 12px" : "12px 16px 14px",
+                          borderBottom: (idx < ex.steps.length - 1) || (ex.type === "reps" && ex.reps)
+                            ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)")
+                            : "none",
+                          textAlign: "left",
+                        }}
+                      >
+                        <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: A, marginBottom: 8 }}>
+                          {step.focus || (idx === 0 ? "SETUP" : "MOVE")}
+                        </div>
+                        <div style={{
+                          fontSize: 15,
+                          color: W,
+                          lineHeight: 1.4,
+                          fontWeight: 400,
+                          letterSpacing: "-0.01em",
+                        }}>
+                          {step.cue}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             );
           })()}
 
-          {/* Countdown + progress bar: locked position for getready, launch, and exercise */}
-          {(phase === "getready" || phase === "launch" || phase === "exercise") && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 10, flexShrink: 0, paddingTop: 18 }}>
-              {(phase === "getready" || phase === "launch" || phase === "exercise") && (
-                <div style={{ width:"100%", display:"flex", justifyContent:"center", marginBottom:10 }}>
-                  <div style={{
-                    padding: "4px 12px",
-                    borderRadius: 999,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 10,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    fontFamily: "'Barlow', sans-serif",
-                    background: isDark ? "rgba(255,255,255,0.10)" : A,
-                    color: isDark ? A : "#ffffff",
-                    textAlign: "center",
-                    transform: "translateX(0.5px)",
-                  }}>
-                    <span>{phase === "getready" ? "REST & GET READY" : phase === "launch" ? "GET SET" : "BEGIN"}</span>
-                  </div>
-                </div>
-              )}
-              {phase === "getready" && (
-                <>
-                  <div style={{
-                    minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-                    fontFamily: "'Barlow', sans-serif",
-                    fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
-                    color: isDark ? "rgba(255,255,255,0.5)" : W, lineHeight: 1,
-                  }}>
-                    {`0:${readyLeft.toString().padStart(2, "0")}`}
-                  </div>
-                  <div style={{ width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 14 }}>
-                    <div style={{ height: 8, borderRadius: 8, background: `linear-gradient(90deg,${A},${ct.accentDim || A + "99"})`, width: `${((GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS) * 100}%`, transition: "width 1s linear" }} />
-                  </div>
-                </>
-              )}
-              {phase === "launch" && (
-                <>
-                  <div style={{
-                    minWidth: 134, textAlign: "center", fontVariantNumeric: "tabular-nums",
-                    fontFamily: "'Barlow', sans-serif",
-                    fontSize: 80, fontWeight: 600, letterSpacing: "-0.02em",
-                    color: W, lineHeight: 1,
-                    textShadow: NAME_SHAD,
-                  }}>
-                    {launchCount > 0 ? launchCount : ""}
-                  </div>
-                  <div style={{ width: 249, height: 8, borderRadius: 8, background: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)", overflow: "hidden", marginTop: 14 }} />
-                </>
-              )}
-              {phase === "exercise" && cur && (
-                <OverlayTimer key={cur.id + "-" + fi} seconds={cur.type === "time" || cur.type === "flow" ? cur.seconds : 45} onDone={handleTimerDone}
-                  autoStart={true} paused={paused} fi={fi} list={list} theme={theme} activePeriod={activePeriod} nightMode={nightMode} large={true} compactBarGap={true} />
-              )}
-            </div>
-          )}
+          
 
           </div>
         </div>
@@ -4725,7 +4748,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     pointer-events: none;
     background: radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 80%);
     mix-blend-mode: screen;
-    filter: blur(10px);
+    filter: blur(6px);
     animation: timer-breathe-orb-loop 16s ease-in-out infinite;
   }
   .timer-view-body .timer-breathe-orb-soft {
@@ -4960,9 +4983,13 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
               <circle cx="160" cy="160" r="140" fill="none" stroke="var(--border)" strokeWidth="1.5"/>
             </svg>
             {bRunning && !nightMode && (
-              <div className={isHoldPhase ? "timer-breathe-hold" : ""} style={{
+                <div className={isHoldPhase ? "timer-breathe-hold" : ""} style={{
                 position:"absolute", left:breatheInset, top:breatheInset, width:306, height:306, borderRadius:"50%", overflow:"visible", pointerEvents:"none",
-                transform: bRunning && bExpand ? "scale(1)" : "scale(0.45)",
+                // precise scale computed from rendered radii and stroke widths so inner stroke edge meets outer stroke edge
+                // outer rendered radius = (ringSize / 320) * 140; outer stroke half = (ringSize / 320) * (1.5/2)
+                // inner rendered radius = 120; inner stroke half = 4/2
+                // computed scale ≈ 1.298
+                transform: bRunning && bExpand ? "scale(1.298)" : "scale(0.45)",
                 transformOrigin:"center center",
                 transition: bRunning ? `transform ${curBreathPhase?.dur || 4}s cubic-bezier(0.4,0,0.2,1)` : "transform 0.6s ease",
               }}>
@@ -4978,9 +5005,18 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
                   <circle cx="160" cy="160" r="140" fill="url(#breatheGlow)" />
                 </svg>
 
-                {/* Static outer ring using theme accent (no animated stroke) */}
-                <svg className="timer-breathe-ring" width="306" height="306" viewBox="0 0 306 306" style={{position:"absolute", left:0, top:0}}>
-                  <circle cx="153" cy="153" r="120" fill="none" stroke="var(--accent)" strokeWidth="3" />
+                {/* Animated inner ring using the existing inner circle (fills to match outer) */}
+                <svg className="timer-breathe-ring" width="306" height="306" viewBox="0 0 306 306" style={{position:"absolute", left:0, top:0, pointerEvents:"none"}}>
+                  <circle
+                    cx="153"
+                    cy="153"
+                    r="120"
+                    fill="none"
+                    stroke="var(--accent)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    style={{ transition: "stroke 0.3s ease" }}
+                  />
                 </svg>
               </div>
             )}
@@ -5376,6 +5412,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.5 5.5 6 .5-4.5 4 1.5 5.5L12 16l-4.5 2 1.5-5.5-4.5-4 6-.5L12 3z"/></svg> },
     ];
     const nowPeriod = getCircadianPeriod();
+    // derive highlight color from circadian theme for Today's suggestion card (home)
+    const highlightCt = CIRCADIAN_THEMES[nowPeriod][theme === "dark" ? "dark" : "light"];
+    const highlight = highlightCt && highlightCt.accent ? highlightCt.accent : "var(--accent)";
     return (
       <div className="app" data-theme={theme} data-night={nightMode ? "true" : "false"}>
         <style>{css}</style>
@@ -5474,6 +5513,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   // TODAY (formerly Home)
   if (view === "home") {
     const nowPeriod = getCircadianPeriod();
+    const usedPeriod = activePeriod || nowPeriod;
+    const homeCt = CIRCADIAN_THEMES[usedPeriod][theme === "dark" ? "dark" : "light"];
+    const homeHighlight = homeCt && homeCt.accent ? homeCt.accent : "var(--accent)";
     const perMove = exerciseDuration || 45;
     const getTrackDisplayDuration = (trackId) => {
       const sections = getSections(trackId);
@@ -5513,7 +5555,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         <div className="home">
           <div className="home-hdr app-page-header">
             <div className="home-brand">
-              <div className="home-wordmark">AXIS</div>
+              <div className="app-label" style={{fontSize:24,fontWeight:600,textTransform:"uppercase",color:"var(--text-secondary)",marginBottom:20}}>AXIS</div>
             </div>
             <div className="home-tagline">Listen to your body. Select your focus.</div>
           </div>
@@ -5521,15 +5563,15 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             {/* Today block: time-of-day + suggestion + primary CTA */}
             <div className="track-group start-here-group" role="region" aria-label="Today's suggestion" style={{
               marginBottom:28, padding:"20px 20px 22px", borderRadius:24,
-              background:"var(--glass-bg)", border:"1px solid var(--glass-border)",
-              backdropFilter:"blur(24px) saturate(1.2)", WebkitBackdropFilter:"blur(24px) saturate(1.2)",
-              boxShadow:"0 24px 48px rgba(0,0,0,0.06), var(--glass-shadow), inset 0 1px 0 var(--glass-specular)",
+              background: homeHighlight, border:`2px solid ${homeHighlight}`,
+              backdropFilter:"blur(8px) saturate(1.05)", WebkitBackdropFilter:"blur(8px) saturate(1.05)",
+              boxShadow:`0 12px 32px ${homeHighlight}33, inset 0 1px 0 rgba(255,255,255,0.05)`,
             }}>
-              <div style={{letterSpacing:"0.22em",textTransform:"uppercase",color:"var(--accent)",marginBottom:8,fontWeight:600}}>Today</div>
-              <div style={{fontWeight:500,color:"var(--text-white)",marginBottom:6}}>{periodLabels[nowPeriod]}</div>
-              <div style={{color:"var(--text-secondary)",marginBottom:6,lineHeight:1.4}}>{todaySug.suggestion}</div>
-              <div style={{color:"var(--text-dim)",letterSpacing:"0.06em",marginBottom:18}}>{getTrackDisplayDuration(todayTrack.id)}</div>
-              <button className="begin-btn" onClick={() => beginTrack(todayTrack.id)} style={{width:"100%",padding:"14px 24px",fontSize:15}} aria-label={`Start ${todayTrack.label}, ${getTrackDisplayDuration(todayTrack.id)}`}>
+              <div style={{letterSpacing:"0.22em",textTransform:"uppercase",color:"rgba(255,255,255,0.92)",marginBottom:8,fontWeight:600}}>Today</div>
+              <div style={{fontWeight:600,color:"rgba(255,255,255,0.98)",marginBottom:6}}>{periodLabels[nowPeriod]}</div>
+              <div style={{color:"rgba(255,255,255,0.92)",marginBottom:6,lineHeight:1.4}}>{todaySug.suggestion}</div>
+              <div style={{color:"rgba(255,255,255,0.86)",letterSpacing:"0.06em",marginBottom:18}}>{getTrackDisplayDuration(todayTrack.id)}</div>
+              <button className="begin-btn" onClick={() => beginTrack(todayTrack.id)} style={{width:"100%",padding:"14px 24px",fontSize:15, background:"#ffffff", color: homeHighlight, border:"none", fontWeight:700}} aria-label={`Start ${todayTrack.label}, ${getTrackDisplayDuration(todayTrack.id)}`}>
                 {todayTrack.label}
               </button>
             </div>
