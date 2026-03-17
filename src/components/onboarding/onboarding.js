@@ -9,38 +9,41 @@
       setTimeout(mountWhenReady, 50);
       return;
     }
-    // Provide a minimal, safe onboarding component that won't crash.
+    // Prefer composed slides if they exist (we extract slides into separate files)
     window.AXIS_Onboarding = function OnboardingExternal(props) {
       const { theme, onComplete } = props || {};
+      const [cur, setCur] = React.useState(0);
+      const total = 8;
+      const go = (n) => setCur(Math.max(0, Math.min(total - 1, n)));
+
+      // Resolve slide components if registered globally
+      const Slide0 = window.AXIS_Onboarding_Slide0;
+      const Slide1 = window.AXIS_Onboarding_Slide1;
+      const Slide2 = window.AXIS_Onboarding_Slide2;
+
+      // If slides are available, render composed flow for slides 0–2 then fall back to a finish button
+      if (cur === 0 && Slide0) {
+        return React.createElement(Slide0, { go, theme });
+      }
+      if (cur === 1 && Slide1) {
+        return React.createElement(Slide1, { go, theme });
+      }
+      if (cur === 2 && Slide2) {
+        return React.createElement(Slide2, { go, theme });
+      }
+
+      // Fallback minimal UI for remaining steps / when slides not present
       return React.createElement(
         "div",
         { style: { padding: 24, fontFamily: "'Barlow',sans-serif", color: "var(--ob-text-body)" } },
-        React.createElement("div", { style: { fontWeight: 700, fontSize: 20, marginBottom: 8 } }, "Onboarding (external)"),
-        React.createElement("div", { style: { marginBottom: 12, color: "var(--ob-text-sec)" } }, "This is a temporary external onboarding module while we move logic out of index.html."),
+        React.createElement("div", { style: { fontWeight: 700, fontSize: 20, marginBottom: 8 } }, "Onboarding"),
+        React.createElement("div", { style: { marginBottom: 12, color: "var(--ob-text-sec)" } }, "Continue through onboarding."),
         React.createElement(
           "div",
           null,
-          React.createElement(
-            "button",
-            {
-              onClick: function () {
-                try {
-                  if (typeof onComplete === "function") onComplete();
-                } catch (e) {
-                  console.error("AXIS_Onboarding: onComplete failed", e);
-                }
-              },
-              style: {
-                padding: "10px 16px",
-                borderRadius: 10,
-                background: "var(--ob-accent, #FF9F43)",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-              },
-            },
-            "Finish Onboarding"
-          )
+          cur < 7
+            ? React.createElement("button", { onClick: () => go(cur + 1), style: { padding: "10px 16px", borderRadius: 10, background: "var(--ob-accent, #FF9F43)", color: "white", border: "none", cursor: "pointer" } }, "Next")
+            : React.createElement("button", { onClick: () => { try { if (typeof onComplete === "function") onComplete(); } catch (e) { console.error(e); } }, style: { padding: "10px 16px", borderRadius: 10, background: "var(--ob-accent, #FF9F43)", color: "white", border: "none", cursor: "pointer" } }, "Finish Onboarding")
         )
       );
     };
