@@ -38,6 +38,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
+  <script src="/src/components/onboarding/onboarding.js"></script>
   <!-- Babel standalone removed for production builds; app is precompiled in dist/ -->
   <script>
     // Try to synchronously load axis_data.json so the inline app can initialize from it.
@@ -312,7 +313,7 @@ function applyCircadianTheme(isDark, period) {
   return { bg: t.bg };
 }
 
-function Onboarding({ theme, onComplete }) {
+function Onboarding_orig({ theme, onComplete }) {
   const [cur, setCur] = useState(0);
   const total = 8; // Splash, Alpha, Perspective+Foundation, Benefits, Method+Tools, Appearance, Ethics+Safety, Disclaimer
   const [disclaimerName, setDisclaimerName] = useState("");
@@ -6063,6 +6064,16 @@ function App() {
     transition: "filter 600ms ease, opacity 600ms ease, transform 600ms ease",
     willChange: "filter, opacity, transform",
   };
+
+  // If an external onboarding module is available, prefer it.
+  try {
+    if (typeof window !== 'undefined' && window.AXIS_Onboarding) {
+      // Override the Onboarding symbol to point to the external implementation.
+      Onboarding = window.AXIS_Onboarding;
+    } else if (typeof Onboarding_orig !== 'undefined') {
+      Onboarding = Onboarding_orig;
+    }
+  } catch (e) {}
 
   if (!onboarded) {
     return (
