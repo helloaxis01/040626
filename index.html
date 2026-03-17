@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/onboarding.css" />
+  <link rel="stylesheet" href="/src/components/onboarding/onboarding.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { height: 100%; height: 100dvh; min-height: 100dvh; width: 100%; max-width: 100vw; overflow-x: hidden; overflow-y: hidden; background: #0a0a0f; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
@@ -2366,6 +2367,9 @@ const css = `
     --app-white: #f6f7f8;
     --app-black: #252525;
   }
+  /* ONBOARDING STYLES MOVED TO src/components/onboarding/onboarding.css
+     (kept here commented for verification before removal) */
+  /*
   /* Onboarding typography scale (uniform across slides) */
   :root {
     --ob-heading-size: 32px;
@@ -2383,6 +2387,7 @@ const css = `
   .ob-subhead, .ob-cta-head { font-size: var(--ob-subhead-size) !important; }
   .ob-body { font-size: var(--ob-body-size) !important; line-height:1.28 !important; }
   .ob-eyebrow { font-size: var(--ob-eyebrow-size) !important; }
+  */
   /* Apply normalized sizes to common app areas for consistency */
   .app .app-label,
   .app .home-wordmark,
@@ -2519,10 +2524,13 @@ const css = `
   [data-theme="light"] .track-card-purpose,
   [data-theme="light"] .hdr-subtitle,
   [data-theme="light"] .purpose-text,
+  /* ONBOARDING LIGHT-MODE OVERRIDES MOVED (commented) */
+  /*
   [data-theme="light"] .ob-body,
   [data-theme="light"] .ob-sci-text {
     font-weight: 400;
   }
+  */
   /* Light mode small text accessibility */
   [data-theme="light"] .track-group-label,
   [data-theme="light"] .track-card-dur,
