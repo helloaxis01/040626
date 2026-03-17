@@ -66,6 +66,18 @@
       );
     };
   }
-  mountWhenReady();
+  // Ensure DOM exists before mounting; some local previews load scripts early.
+  function onReady() {
+    try {
+      mountWhenReady();
+    } catch (e) {
+      console.error('Onboarding mount failed:', e);
+    }
+  }
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
 })();
 

@@ -2,7 +2,10 @@
 /* Onboarding component styles (slides, nav, orbs, layout) */
 .ob-wrap {
   min-height:100%; width:100%; display:flex; flex-direction:column; position:relative; overflow:clip;
-  background:var(--ob-page-bg); font-family:'Barlow',sans-serif; font-weight:300;
+  /* fallback to a visible dark gray if CSS vars are missing (prevents pure-black blank screen) */
+  background:var(--ob-page-bg, #1f1f23);
+  font-family:'Barlow',sans-serif;
+  font-weight:300;
   box-sizing:border-box;
 }
 /* orbs — static layer + sheen when in color mode */
