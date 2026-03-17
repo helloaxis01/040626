@@ -1,5 +1,10 @@
 // Emergency execution log — helps detect if the onboarding script is being loaded
 console.log('ONBOARDING_JS_EXECUTING');
+// Quick visual test: attempt to write TEST into root so we know the script can modify the DOM
+try {
+  const _root = document.getElementById('root');
+  if (_root) { _root.innerHTML = '<h1>TEST</h1>'; console.log('TEST injected into #root'); }
+} catch (e) { console.warn('TEST inject failed', e); }
 // Lightweight external onboarding component for incremental extraction.
 // This registers a global factory `window.AXIS_Onboarding` so the main
 // inline app can optionally delegate to this implementation while we
