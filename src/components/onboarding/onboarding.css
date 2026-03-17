@@ -1,23 +1,14 @@
 .ob-wrap { font-family: 'Barlow', sans-serif; }
 /* Onboarding component styles (slides, nav, orbs, layout) */
+/* Default onboarding background gradient (used if JS doesn't inject theme vars) */
+:root { --ob-page-bg-default: radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%); }
 .ob-wrap {
   min-height:100%; width:100%; display:flex; flex-direction:column; position:relative; overflow:clip;
-  /* fallback to a visible dark gray if CSS vars are missing (prevents pure-black blank screen) */
-  background:var(--ob-page-bg, #1f1f23);
+  /* use injected CSS var if present, otherwise fall back to the default gradient */
+  background:var(--ob-page-bg, var(--ob-page-bg-default));
   font-family:'Barlow',sans-serif;
   font-weight:300;
   box-sizing:border-box;
-}
-/* Temporary visible test border to confirm onboarding container is present */
-.ob-wrap { border: 5px solid red !important; }
-
-/* Force root visibility and sizing to aid debugging (temporary) */
-#root {
-  min-height: 100vh !important;
-  width: 100vw !important;
-  display: block !important;
-  position: relative !important;
-  z-index: 10 !important;
 }
 /* orbs — static layer + sheen when in color mode */
 .ob-orbs-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }

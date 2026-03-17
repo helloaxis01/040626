@@ -1,10 +1,5 @@
 // Emergency execution log — helps detect if the onboarding script is being loaded
 console.log('ONBOARDING_JS_EXECUTING');
-// Nuclear visual breakthrough — replace entire body with an unmistakable overlay
-try {
-  document.body.innerHTML = '<div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:red; color:white; z-index:99999; display:flex; align-items:center; justify-content:center; font-size:100px; font-family:sans-serif;">JS IS ALIVE</div>';
-  console.log('NUCLEAR TEST injected into body');
-} catch (e) { console.warn('NUCLEAR TEST inject failed', e); }
 // Lightweight external onboarding component for incremental extraction.
 // This registers a global factory `window.AXIS_Onboarding` so the main
 // inline app can optionally delegate to this implementation while we
@@ -32,13 +27,14 @@ try {
     }
     // Ensure the root element exists before mounting onboarding UI
     if (!document.getElementById('root')) {
-      console.log('AXIS: waiting for #root to exist before mounting onboarding (public)'); 
+      console.log('AXIS: waiting for #root to exist before mounting onboarding');
       setTimeout(mountWhenReady, 50);
       return;
     }
     // Prefer composed slides if they exist (we extract slides into separate files)
     window.AXIS_Onboarding = function OnboardingExternal(props) {
       const { theme, onComplete } = props || {};
+      // Allow an external signal to force the initial slide index (useful for emergency forcing)
       const initialCur = (typeof window.AXIS_FORCE_ONBOARDING_INDEX === 'number') ? window.AXIS_FORCE_ONBOARDING_INDEX : 0;
       const [cur, setCur] = React.useState(() => initialCur);
       const total = 8;
@@ -90,8 +86,6 @@ try {
   // Ensure DOM exists before mounting; some local previews load scripts early.
   function onReady() {
     try {
-      // Make root visible in case inline styles set opacity:0
-      try { const r = document.getElementById('root'); if (r) r.style.opacity = '1'; } catch (e) {}
       mountWhenReady();
     } catch (e) {
       console.error('Onboarding mount failed:', e);
@@ -102,5 +96,7 @@ try {
   } else {
     onReady();
   }
+  // Also run on full window load to ensure all resources and DOM nodes are present
+  window.addEventListener('load', onReady);
 })();
 
