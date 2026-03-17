@@ -4543,12 +4543,26 @@ function EolMarker() {
 }
 
 
-try {
-  if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-    showLoadErr('App libraries did not load. Check your connection and refresh.');
-  } else {
-    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+function mountApp() {
+  try {
+    if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+      // If libraries aren't present yet, try again shortly
+      setTimeout(mountApp, 250);
+      return;
+    }
+    const el = document.getElementById('root');
+    if (!el) {
+      // Wait for DOM ready
+      document.addEventListener('DOMContentLoaded', mountApp, { once: true });
+      return;
+    }
+    ReactDOM.createRoot(el).render(React.createElement(App));
+  } catch (e) {
+    try { showLoadErr('Error: ' + (e && e.message ? e.message : String(e)) + (e && e.stack ? '\n\n' + e.stack : '')); } catch (_) {}
   }
-} catch (e) {
-  showLoadErr('Error: ' + (e && e.message ? e.message : String(e)) + (e && e.stack ? '\n\n' + e.stack : ''));
+// Start mounting once scripts executed / DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', mountApp, { once: true });
+} else {
+  mountApp();
 }
