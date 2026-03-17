@@ -1,10 +1,8 @@
-alert("SCRIPT EXECUTING");
-console.log("APP.JS IS RUNNING");
 const { useState, useEffect, useRef } = React;
 
-// ---------------------------------------------------------------------
-//  AXIS - COMPLETE APP (Onboarding -> Home -> Sessions)
-// ---------------------------------------------------------------------
+// ─────────────────────────────────────────────────────────────
+//  AXIS — COMPLETE APP (Onboarding → Home → Sessions)
+// ─────────────────────────────────────────────────────────────
 
 // ── ICON RENDERER ─────────────────────────────────────────────
 function AxisIcon({ size = 72, color = "#F0EEEB" }) {
@@ -317,54 +315,29 @@ const CIRCADIAN_THEMES = {
 
 function applyCircadianTheme(isDark, period) {
   const p = period || getCircadianPeriod();
-  // Defensive: ensure we always have a valid theme object
-  const themeEntry = CIRCADIAN_THEMES[p] || CIRCADIAN_THEMES["rest"] || Object.values(CIRCADIAN_THEMES)[0];
-  const t = (themeEntry && themeEntry[isDark ? "dark" : "light"]) || themeEntry?.dark || CIRCADIAN_THEMES.rest.dark;
+  const t = CIRCADIAN_THEMES[p][isDark ? "dark" : "light"];
   let el = document.getElementById("circadian-style");
-  if (!el) { el = document.createElement("style"); el.id = "circadian-style"; document.head.appendChild(el); }
-  // Safely derive values with fallbacks
-  try {
-    const safe = (v, fallback) => (typeof v !== "undefined" && v !== null ? v : fallback);
-    const accent = safe(t.accent, "#FFBF65");
-    const accentDim = safe(t.accentDim, "rgba(255,191,101,0.18)");
-    const accentGlow = safe(t.accentGlow, "rgba(255,191,101,0.30)");
-    const orb1 = safe(t.orb1, "none");
-    const orb2 = safe(t.orb2, "none");
-    const orb3 = safe(t.orb3, "none");
-    const tabBg = safe(t.tabBg, "rgba(8,12,18,0.85)");
-    const textPrimary = safe(t.textPrimary, (isDark ? "#f6f7f8" : "#252525"));
-    const accentBtnText = safe(t.accentBtnText, "#0a0e1a");
-    const accentSecondary = (typeof accent === "string" && /^#[0-9a-fA-F]{6}$/.test(accent)) ? accent + "99" : (t.accentSecondary || accent);
-    // guard accentDim replace usage
-    const cueBar = typeof accentDim === "string" ? accentDim.replace(/[\d.]+\)$/, "0.7)") : accentDim;
-    const cueBarLabel = typeof accentDim === "string" ? accentDim.replace(/[\d.]+\)$/, "0.9)") : accentDim;
-
-    el.textContent = `
-      [data-theme]:not([data-night="true"]) {
-        --orb1: ${orb1} !important;
-        --orb2: ${orb2} !important;
-        --orb3: ${orb3} !important;
-        --accent: ${accent} !important;
-        --accent-secondary: ${accentSecondary} !important;
-        --accent-dim: ${accentDim} !important;
-        --accent-glow: ${accentGlow} !important;
-        --cue-bar: ${cueBar} !important;
-        --cue-bar-label: ${cueBarLabel} !important;
-        --text-white: ${textPrimary} !important;
-        --accent-btn-text: ${accentBtnText} !important;
-        --tab-bg: ${tabBg} !important;
-      }
-      .app-orbs { transition: background 2s ease !important; }
-    `;
-  } catch (err) {
-    // fallback minimal style to avoid breaking the script/runtime
-    el.textContent = `
-      :root { --accent: #FFBF65; --accent-dim: rgba(255,191,101,0.18); --tab-bg: rgba(8,12,18,0.85); --text-white: #f6f7f8; }
-      .app-orbs { transition: background 2s ease !important; }
-    `;
-    console.error("applyCircadianTheme fallback:", err);
-  }
-  return { bg: t.bg || MAIN_APP_BG.dark };
+  if (!el) {el = document.createElement("style");el.id = "circadian-style";document.head.appendChild(el);}
+  // Derive cue-bar, tab-bg, and accent-secondary from accent so they always match
+  const accentSec = t.accent && t.accent.match(/^#[0-9a-fA-F]{6}$/) ? t.accent + "99" : t.accentSecondary || t.accent;
+  el.textContent = `
+    [data-theme]:not([data-night="true"]) {
+      --orb1: ${t.orb1} !important;
+      --orb2: ${t.orb2} !important;
+      --orb3: ${t.orb3} !important;
+      --accent: ${t.accent} !important;
+      --accent-secondary: ${accentSec} !important;
+      --accent-dim: ${t.accentDim} !important;
+      --accent-glow: ${t.accentGlow} !important;
+      --cue-bar: ${t.accentDim.replace(/[\d.]+\)$/, "0.7)")} !important;
+      --cue-bar-label: ${t.accentDim.replace(/[\d.]+\)$/, "0.9)")} !important;
+      ${t.textPrimary ? `--text-white: ${t.textPrimary} !important;` : ""}
+      ${t.accentBtnText ? `--accent-btn-text: ${t.accentBtnText} !important;` : ""}
+      ${t.tabBg ? `--tab-bg: ${t.tabBg} !important;` : ""}
+    }
+    .app-orbs { transition: background 2s ease !important; }
+  `;
+  return { bg: t.bg };
 }
 
 function Onboarding({ theme, onComplete }) {
@@ -4493,8 +4466,26 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 //  ROOT — orchestrates onboarding → app
 // ─────────────────────────────────────────────────────────────
 function App() {
-  // Temporary mount test: render a minimal component to verify React mounting.
-  return /*#__PURE__*/React.createElement("div", { style: { color: "#fff", padding: 24, fontFamily: "'Barlow', sans-serif", fontSize: 18 } }, "Hello from React");
+  const [onboarded, setOnboarded] = useState(() => storageGet("axis_onboarded", false));
+  const [theme, setTheme] = useState(() => storageGet("axis_theme", "dark"));
+  const [nightMode, setNightMode] = useState(() => storageGet("axis_night", false));
+  const toggleNight = () => setNightMode((n) => {const v = !n;storageSet("axis_night", v);return v;});
+  const toggleTheme = () => setTheme((t) => {const n = t === "dark" ? "light" : "dark";storageSet("axis_theme", n);return n;});
+  const complete = () => {storageSet("axis_onboarded", true);setOnboarded(true);};
+
+  // Flow overlay state lives here — outside WorkoutApp/.app — so position:fixed is never trapped
+  const SunIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "5" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "2", x2: "12", y2: "4" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "20", x2: "12", y2: "22" }), /*#__PURE__*/React.createElement("line", { x1: "4.22", y1: "4.22", x2: "5.64", y2: "5.64" }), /*#__PURE__*/React.createElement("line", { x1: "18.36", y1: "18.36", x2: "19.78", y2: "19.78" }), /*#__PURE__*/React.createElement("line", { x1: "2", y1: "12", x2: "4", y2: "12" }), /*#__PURE__*/React.createElement("line", { x1: "20", y1: "12", x2: "22", y2: "12" }), /*#__PURE__*/React.createElement("line", { x1: "4.22", y1: "19.78", x2: "5.64", y2: "18.36" }), /*#__PURE__*/React.createElement("line", { x1: "18.36", y1: "5.64", x2: "19.78", y2: "4.22" }));
+  const MoonIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("path", { d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" }));
+
+  if (!onboarded) {
+    return (/*#__PURE__*/
+      React.createElement("div", { style: { position: "relative" } }, /*#__PURE__*/
+      React.createElement(Onboarding, { theme: theme, onComplete: complete })
+      ));
+
+  }
+
+  return /*#__PURE__*/React.createElement(WorkoutApp, { theme: theme, toggleTheme: toggleTheme, nightMode: nightMode, toggleNight: toggleNight, onFlowOpen: () => {} });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -4527,26 +4518,12 @@ function EolMarker() {
 }
 
 
-function mountApp() {
-  try {
-    if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-      // If libraries aren't present yet, try again shortly
-      setTimeout(mountApp, 250);
-      return;
-    }
-    const el = document.getElementById('root');
-    if (!el) {
-      // Wait for DOM ready
-      document.addEventListener('DOMContentLoaded', mountApp, { once: true });
-      return;
-    }
-    ReactDOM.createRoot(el).render(React.createElement(App));
-  } catch (e) {
-    try { showLoadErr('Error: ' + (e && e.message ? e.message : String(e)) + (e && e.stack ? '\n\n' + e.stack : '')); } catch (_) {}
+try {
+  if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+    showLoadErr('App libraries did not load. Check your connection and refresh.');
+  } else {
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
   }
-// Start mounting once scripts executed / DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', mountApp, { once: true });
-} else {
-  mountApp();
+} catch (e) {
+  showLoadErr('Error: ' + (e && e.message ? e.message : String(e)) + (e && e.stack ? '\n\n' + e.stack : ''));
 }
