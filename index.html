@@ -135,6 +135,8 @@ function AxisIcon({ size = 72, color = "#F0EEEB" }) {
   );
 }
 
+/* END ONBOARDING_ORIG */
+
 // ── ONBOARDING
 /* onboarding CSS moved to onboarding.css */
 const obDarkVars = `
@@ -317,6 +319,7 @@ function applyCircadianTheme(isDark, period) {
   return { bg: t.bg };
 }
 
+/* ONBOARDING_ORIG REMOVED - moved to src/components/onboarding/OnboardingFull.js */
 function Onboarding_orig({ theme, onComplete }) {
   const [cur, setCur] = useState(0);
   const total = 8; // Splash, Alpha, Perspective+Foundation, Benefits, Method+Tools, Appearance, Ethics+Safety, Disclaimer
@@ -2367,27 +2370,7 @@ const css = `
     --app-white: #f6f7f8;
     --app-black: #252525;
   }
-  /* ONBOARDING STYLES MOVED TO src/components/onboarding/onboarding.css
-     (kept here commented for verification before removal) */
-  /*
-  /* Onboarding typography scale (uniform across slides) */
-  :root {
-    --ob-heading-size: 32px;
-    --ob-subhead-size: 18px;
-    --ob-body-size: 15px;
-    --ob-eyebrow-size: 12px;
-    /* Global app typography to align with onboarding sizes */
-    --global-heading-size: 32px;
-    --global-subhead-size: 18px;
-    --global-body-size: 15px;
-    --global-eyebrow-size: 12px;
-  }
-  /* Enforce consistent onboarding sizes (override inline styles if present) */
-  .ob-heading { font-size: var(--ob-heading-size) !important; font-weight: 700 !important; }
-  .ob-subhead, .ob-cta-head { font-size: var(--ob-subhead-size) !important; }
-  .ob-body { font-size: var(--ob-body-size) !important; line-height:1.28 !important; }
-  .ob-eyebrow { font-size: var(--ob-eyebrow-size) !important; }
-  */
+  /* Onboarding styles have been moved to src/components/onboarding/onboarding.css and removed here */
   /* Apply normalized sizes to common app areas for consistency */
   .app .app-label,
   .app .home-wordmark,
@@ -2524,13 +2507,7 @@ const css = `
   [data-theme="light"] .track-card-purpose,
   [data-theme="light"] .hdr-subtitle,
   [data-theme="light"] .purpose-text,
-  /* ONBOARDING LIGHT-MODE OVERRIDES MOVED (commented) */
-  /*
-  [data-theme="light"] .ob-body,
-  [data-theme="light"] .ob-sci-text {
-    font-weight: 400;
-  }
-  */
+  /* Onboarding light-mode overrides moved into src/components/onboarding/onboarding.css */
   /* Light mode small text accessibility */
   [data-theme="light"] .track-group-label,
   [data-theme="light"] .track-card-dur,
