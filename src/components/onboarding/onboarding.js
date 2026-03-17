@@ -20,17 +20,21 @@
       const Slide0 = window.AXIS_Onboarding_Slide0;
       const Slide1 = window.AXIS_Onboarding_Slide1;
       const Slide2 = window.AXIS_Onboarding_Slide2;
+      const Slide3 = window.AXIS_Onboarding_Slide3;
+      const Slide4 = window.AXIS_Onboarding_Slide4;
+      const Slide5 = window.AXIS_Onboarding_Slide5;
+      const Slide6 = window.AXIS_Onboarding_Slide6;
+      const Slide7 = window.AXIS_Onboarding_Slide7;
 
       // If slides are available, render composed flow for slides 0–2 then fall back to a finish button
-      if (cur === 0 && Slide0) {
-        return React.createElement(Slide0, { go, theme });
-      }
-      if (cur === 1 && Slide1) {
-        return React.createElement(Slide1, { go, theme });
-      }
-      if (cur === 2 && Slide2) {
-        return React.createElement(Slide2, { go, theme });
-      }
+      if (cur === 0 && Slide0) return React.createElement(Slide0, { go, theme });
+      if (cur === 1 && Slide1) return React.createElement(Slide1, { go, theme });
+      if (cur === 2 && Slide2) return React.createElement(Slide2, { go, theme });
+      if (cur === 3 && Slide3) return React.createElement(Slide3, { go, theme });
+      if (cur === 4 && Slide4) return React.createElement(Slide4, { go, theme, obTheme: theme });
+      if (cur === 5 && Slide5) return React.createElement(Slide5, { go, theme });
+      if (cur === 6 && Slide6) return React.createElement(Slide6, { go, theme });
+      if (cur === 7 && Slide7) return React.createElement(Slide7, { go, onComplete, theme });
 
       // Fallback minimal UI for remaining steps / when slides not present
       return React.createElement(
