@@ -11,35 +11,37 @@ if (!fs.existsSync(dist)) fs.mkdirSync(dist, { recursive: true });
 const htmlPath = path.join(root, 'index.html');
 let html = fs.readFileSync(htmlPath, 'utf8');
 
-const openTag = '<script type="text/babel" data-presets="react">';
+// If an inline Babel script exists in index.html, transform it; otherwise preserve index.html as-is.
+const openTag = '<script type=\"text/babel\" data-presets=\"react\">';
 const closeTag = '</script>';
 
+let builtHtml = html;
 const startIdx = html.indexOf(openTag);
-if (startIdx === -1) {
-  console.error('Could not find Babel script tag in index.html');
-  process.exit(1);
+if (startIdx !== -1) {
+  const contentStart = startIdx + openTag.length;
+  const contentEnd = html.lastIndexOf(closeTag);
+  const jsx = html.slice(contentStart, contentEnd).trim();
+
+  const result = babel.transformSync(jsx, {
+    presets: ['@babel/preset-react'],
+    retainLines: true,
+  });
+
+  if (!result || !result.code) {
+    console.error('Babel transform failed');
+    process.exit(1);
+  }
+
+  // Inline the compiled script so we don't depend on /app.js (avoids rewrite/CORS issues on mobile)
+  const safeCode = result.code.replace(/<\/script/gi, '<\\/script');
+  const newScript = '<script>' + safeCode + '</script>';
+  builtHtml = html.slice(0, startIdx) + newScript + html.slice(contentEnd + closeTag.length);
+  builtHtml = builtHtml.replace(/<script src=\"[^\"]*babel[^\"]*\"[^>]*><\/script>\n?/i, '');
+  fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
+} else {
+  // No inline Babel script found — simply copy the HTML into dist for static hosting.
+  fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
 }
-
-const contentStart = startIdx + openTag.length;
-const contentEnd = html.lastIndexOf(closeTag);
-const jsx = html.slice(contentStart, contentEnd).trim();
-
-const result = babel.transformSync(jsx, {
-  presets: ['@babel/preset-react'],
-  retainLines: true,
-});
-
-if (!result || !result.code) {
-  console.error('Babel transform failed');
-  process.exit(1);
-}
-
-// Inline the compiled script so we don't depend on /app.js (avoids rewrite/CORS issues on mobile)
-const safeCode = result.code.replace(/<\/script/gi, '<\\/script');
-const newScript = '<script>' + safeCode + '</script>';
-let builtHtml = html.slice(0, startIdx) + newScript + html.slice(contentEnd + closeTag.length);
-builtHtml = builtHtml.replace(/<script src="[^"]*babel[^"]*"[^>]*><\/script>\n?/i, '');
-fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
 
 function copyRecursive(src, dest) {
   if (!fs.existsSync(src)) return;
