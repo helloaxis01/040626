@@ -6,13 +6,15 @@
   min-height:100%; width:100%; display:flex; flex-direction:column; position:relative; overflow:clip;
   /* use injected CSS var if present, otherwise fall back to the default gradient */
   background:var(--ob-page-bg, var(--ob-page-bg-default));
-  font-family:'Barlow',sans-serif;
+  font-family:'Barlow',sans-serif !important;
   font-weight:300;
   box-sizing:border-box;
   display:flex !important;
   visibility:visible !important;
   opacity:1 !important;
 }
+/* Force body/type to Barlow as well */
+body, .ob-wrap { font-family: 'Barlow', sans-serif !important; }
 /* orbs — static layer + sheen when in color mode */
 .ob-orbs-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
 .ob-orbs-layer::after { content:''; position:absolute; inset:0; pointer-events:none; background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%); }

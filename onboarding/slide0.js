@@ -8,7 +8,8 @@
 
     window.AXIS_Onboarding_Slide0 = function Slide0(props) {
       const { go = () => {}, theme = "dark" } = props || {};
-      const logo = theme === "dark" ? (typeof AXIS_LOGO_DARK !== "undefined" ? AXIS_LOGO_DARK : "") : (typeof AXIS_LOGO_LIGHT !== "undefined" ? AXIS_LOGO_LIGHT : "");
+    // Use root-level icon as a reliable fallback for branding
+    const logo = './axis-icon.png';
       return React.createElement("div", { className: "ob-screen ob-s0", style: { minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", textAlign: "center", padding: "60px 32px 80px", boxSizing: "border-box" } },
         React.createElement("div", { className: "ob-s0-top", style: { flex: 1, display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 24 } },
           React.createElement("img", { src: logo, alt: "AXIS", style: { height: 200, width: "auto", objectFit: "contain" } })
