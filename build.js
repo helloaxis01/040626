@@ -66,8 +66,8 @@ if (fs.existsSync(iconPngRoot)) {
   builtHtml = builtHtml.replace(/(<meta name="apple-mobile-web-app-status-bar-style"[^>]*>\s*)/i, '$1\n  ' + iconLink + '\n  ');
   fs.writeFileSync(path.join(dist, 'index.html'), builtHtml, 'utf8');
 }
-// Copy onboarding source assets into dist so runtime script/link tags can reference /assets/onboarding/
-copyRecursive(path.join(root, 'src', 'components', 'onboarding'), path.join(dist, 'assets', 'onboarding'));
+// onboarding assets are now served from /public/onboarding/ (Vercel serves public/ automatically)
+// previous copy step removed in favor of placing files in /public/onboarding/
 finish();
 
 function finish() {
