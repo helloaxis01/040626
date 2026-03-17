@@ -4,6 +4,8 @@ console.log('ONBOARDING_JS_EXECUTING');
 // This registers a global factory `window.AXIS_Onboarding` so the main
 // inline app can optionally delegate to this implementation while we
 // move the full onboarding code out of index.html incrementally.
+// Emergency execution log
+console.log('ONBOARDING_JS_EXECUTING');
 (function () {
   console.log('Onboarding CSS attempting to load...'); // debug: check onboarding JS executes
   // Ensure onboarding CSS variables have a sensible default so the page isn't left visually blank.
@@ -25,10 +27,18 @@ console.log('ONBOARDING_JS_EXECUTING');
       setTimeout(mountWhenReady, 50);
       return;
     }
+    // Ensure the root element exists before mounting onboarding UI
+    if (!document.getElementById('root')) {
+      console.log('AXIS: waiting for #root to exist before mounting onboarding');
+      setTimeout(mountWhenReady, 50);
+      return;
+    }
     // Prefer composed slides if they exist (we extract slides into separate files)
     window.AXIS_Onboarding = function OnboardingExternal(props) {
       const { theme, onComplete } = props || {};
-      const [cur, setCur] = React.useState(0);
+      // Allow an external signal to force the initial slide index (useful for emergency forcing)
+      const initialCur = (typeof window.AXIS_FORCE_ONBOARDING_INDEX === 'number') ? window.AXIS_FORCE_ONBOARDING_INDEX : 0;
+      const [cur, setCur] = React.useState(() => initialCur);
       const total = 8;
       const go = (n) => setCur(Math.max(0, Math.min(total - 1, n)));
 
@@ -68,6 +78,13 @@ console.log('ONBOARDING_JS_EXECUTING');
       );
     };
   }
+  // If axis JSON already loaded, set force index to 0 to ensure first slide is shown
+  try {
+    if (typeof window !== 'undefined' && window.AXIS_JSON) {
+      window.AXIS_FORCE_ONBOARDING_INDEX = 0;
+      console.log('AXIS_JSON detected — forcing onboarding initial index 0');
+    }
+  } catch (e) {}
   // Ensure DOM exists before mounting; some local previews load scripts early.
   function onReady() {
     try {
@@ -81,5 +98,7 @@ console.log('ONBOARDING_JS_EXECUTING');
   } else {
     onReady();
   }
+  // Also run on full window load to ensure all resources and DOM nodes are present
+  window.addEventListener('load', onReady);
 })();
 

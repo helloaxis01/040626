@@ -8,6 +8,17 @@
   font-weight:300;
   box-sizing:border-box;
 }
+/* Temporary visible test border to confirm onboarding container is present */
+.ob-wrap { border: 5px solid red !important; }
+
+/* Force root visibility and sizing to aid debugging (temporary) */
+#root {
+  min-height: 100vh !important;
+  width: 100vw !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
 /* orbs — static layer + sheen when in color mode */
 .ob-orbs-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
 .ob-orbs-layer::after { content:''; position:absolute; inset:0; pointer-events:none; background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%); }

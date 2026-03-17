@@ -25,6 +25,12 @@ console.log('ONBOARDING_JS_EXECUTING');
       setTimeout(mountWhenReady, 50);
       return;
     }
+    // Ensure the root element exists before mounting onboarding UI
+    if (!document.getElementById('root')) {
+      console.log('AXIS: waiting for #root to exist before mounting onboarding (public)'); 
+      setTimeout(mountWhenReady, 50);
+      return;
+    }
     // Prefer composed slides if they exist (we extract slides into separate files)
     window.AXIS_Onboarding = function OnboardingExternal(props) {
       const { theme, onComplete } = props || {};
