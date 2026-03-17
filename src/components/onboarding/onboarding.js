@@ -3,6 +3,7 @@
 // inline app can optionally delegate to this implementation while we
 // move the full onboarding code out of index.html incrementally.
 (function () {
+  console.log('Onboarding CSS attempting to load...'); // debug: check onboarding JS executes
   // Wait until React is available (index.html loads React before inline app).
   function mountWhenReady() {
     if (typeof React === "undefined") {
