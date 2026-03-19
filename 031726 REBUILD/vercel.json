@@ -1,7 +1,8 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/AXIS_031926_911am_MAIN.html" },
-    { "source": "/onboarding", "destination": "/AXIS_031926_123pm_ONBOARDING.html" },
+    { "source": "/", "destination": "/AXIS_031926_238pm_MAIN.html" },
+    { "source": "/onboarding", "destination": "/AXIS_031926_238pm_ONBOARDING.html" },
+    { "source": "/onboarding-123pm", "destination": "/AXIS_031926_123pm_ONBOARDING.html" },
     { "source": "/onboarding-911am", "destination": "/AXIS_031926_911am_ONBOARDING.html" }
   ],
   "headers": [
