@@ -1,1 +1,25 @@
-{}
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/031726 REBUILD/AXIS_031926_911am_MAIN.html"
+    },
+    {
+      "source": "/onboarding",
+      "destination": "/031726 REBUILD/AXIS_031926_123pm_ONBOARDING.html"
+    },
+    {
+      "source": "/onboarding-911am",
+      "destination": "/031726 REBUILD/AXIS_031926_911am_ONBOARDING.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ]
+}
