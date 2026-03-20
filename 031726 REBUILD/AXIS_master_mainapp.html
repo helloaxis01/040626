@@ -4303,8 +4303,9 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   const TIMER_BTN_SPACER_ABOVE = { flex: 1, minHeight: 0, width: "100%" };
   const TIMER_BTN_SPACER_BELOW = { flex: 1, minHeight: 0, width: "100%" };
   // Idle: START halfway between Work/Rest/Rounds (or patterns) and tab bar — balanced flex + no pull-up
-  const TIMER_BTN_SPACER_ABOVE_IDLE = { flex: 0.15, minHeight: 0, width: "100%" };
-  const TIMER_BTN_SPACER_BELOW_IDLE = { flex: 1.85, minHeight: 0, width: "100%" };
+  // Shift START upward by ~5% (reduce top flex share, increase bottom share evenly)
+  const TIMER_BTN_SPACER_ABOVE_IDLE = { flex: 0.1425, minHeight: 0, width: "100%" };
+  const TIMER_BTN_SPACER_BELOW_IDLE = { flex: 1.8575, minHeight: 0, width: "100%" };
   const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", gap: 8, width: "100%", justifyContent: "center", boxSizing: "border-box", paddingTop: 6, paddingBottom: 6 };
   const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW, marginTop: 0 };
 
@@ -5078,7 +5079,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       ), /*#__PURE__*/
 
 
-      React.createElement("div", { style: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginBottom: 32 } }, /*#__PURE__*/
+      React.createElement("div", { style: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginBottom: 56 } }, /*#__PURE__*/
       React.createElement("div", null, /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "14px", fontWeight: 500, color: "var(--text-white)", marginBottom: 4 } }, "Night mode"), /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.45, maxWidth: 280 } }, "Pure black with vibrant red \u2014 like Apple Watch Ultra. For low-light use.")
