@@ -2,19 +2,19 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/031726%20REBUILD/AXIS_master_mainapp.html"
+      "destination": "/AXIS_master_mainapp.html"
     },
     {
       "source": "/onboarding",
-      "destination": "/031726%20REBUILD/AXIS_master_onboarding.html"
+      "destination": "/AXIS_master_onboarding.html"
     },
     {
       "source": "/onboarding-123pm",
-      "destination": "/031726%20REBUILD/AXIS_master_onboarding.html"
+      "destination": "/AXIS_master_onboarding.html"
     },
     {
       "source": "/onboarding-911am",
-      "destination": "/031726%20REBUILD/AXIS_master_onboarding.html"
+      "destination": "/AXIS_master_onboarding.html"
     }
   ],
   "headers": [
