@@ -208,7 +208,7 @@ const OB_GREY = {
     orb2: "radial-gradient(ellipse 55% 65% at 90% 75%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     orb3: "radial-gradient(ellipse 50% 45% at 55% 5%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     accent: "#4b5563", accentDim: "rgba(75,85,99,0.18)", accentGlow: "rgba(75,85,99,0.2)",
-    accentBtnText: "#ffffff", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.82)"
+    accentBtnText: "var(--axis-white)", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.82)"
   }
 };
 
@@ -241,7 +241,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(255,165,70,0.20) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(220,120,30,0.18) 0%, transparent 76%)",
       accent: "#C85A00", accentDim: "rgba(200,90,0,0.18)", accentGlow: "rgba(200,90,0,0.38)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #ffe8c8 0%, #ffd4a0 35%, #ffbf78 70%, #ffd4a8 100%)",
       textPrimary: "#2a1200"
     }
@@ -263,7 +263,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(0,195,155,0.22) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(0,150,125,0.22) 0%, transparent 76%)",
       accent: "#007A6A", accentDim: "rgba(0,122,106,0.16)", accentGlow: "rgba(0,122,106,0.34)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #f0fffc 0%, #e0fff8 35%, #d0fff4 70%, #e8fff9 100%)",
       textPrimary: "#00261f"
     }
@@ -285,7 +285,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(70,160,230,0.22) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 118%, rgba(40,90,200,0.22) 0%, transparent 76%)",
       accent: "#1060C0", accentDim: "rgba(16,96,192,0.17)", accentGlow: "rgba(16,96,192,0.38)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #d8eeff 0%, #c0e0ff 35%, #a8d4ff 70%, #c8e8ff 100%)",
       textPrimary: "#001830"
     }
@@ -307,7 +307,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(150,70,230,0.20) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 120%, rgba(90,40,180,0.20) 0%, transparent 76%)",
       accent: "#6030B0", accentDim: "rgba(96,48,176,0.18)", accentGlow: "rgba(96,48,176,0.38)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #ece0ff 0%, #ddd0ff 35%, #cec0ff 70%, #e0d4ff 100%)",
       textPrimary: "#180030"
     }
@@ -326,7 +326,9 @@ function applyCircadianTheme(isDark, period) {
       --orb1: ${t.orb1} !important;
       --orb2: ${t.orb2} !important;
       --orb3: ${t.orb3} !important;
+      --mood-accent: ${t.accent} !important;
       --accent: ${t.accent} !important;
+      ${t.bg ? `--bg-app: ${t.bg} !important;` : ""}
       --accent-secondary: ${accentSec} !important;
       --accent-dim: ${t.accentDim} !important;
       --accent-glow: ${t.accentGlow} !important;
@@ -1852,14 +1854,12 @@ const css = `
   /* ── LAYOUT TOKENS (one source of truth for safe area + page padding) ── */
   :root, [data-theme="dark"], [data-theme="light"] {
     --safe-top: calc(env(safe-area-inset-top, 0px) + 72px);
-    --safe-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+    --axis-safe-bottom-inset: 34px;
+    --safe-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--axis-safe-bottom-inset));
     --page-padding: 24px;
     --font-display: 'Barlow', sans-serif;
     --font-text: 'Barlow', sans-serif;
     --label-spacing: 0.24em;
-    /* canonical app colors */
-    --app-white: #f6f7f8;
-    --app-black: #252525;
   }
   /* Onboarding typography scale (uniform across slides) */
   :root {
@@ -1873,10 +1873,17 @@ const css = `
     --global-body-size: 15px;
     --global-eyebrow-size: 12px;
   }
-  /* AXIS canonical colors */
+  /* AXIS design tokens — foundation */
   :root {
     --axis-white: #f6f7f8;
     --axis-black: #252525;
+    --axis-radius: 12px;
+    --app-white: var(--axis-white);
+    --app-black: var(--axis-black);
+    --mood-accent: var(--accent, #FF9F43);
+    --bg-app: var(--bg-gradient, #080d18);
+    /* Captions / secondary labels: dimmed brand white */
+    --text-secondary-toned: color-mix(in srgb, var(--axis-white) 70%, transparent);
   }
 
   /* Map app text/colors to canonical axis colors */
@@ -1966,12 +1973,12 @@ const css = `
     --glass-shadow-lg: 0 20px 60px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.4);
     --tab-bg: rgba(8,12,18,0.75);
     --hdr-bg: rgba(10,14,26,0.72);
-    --text-primary: #f6f7f8;
-    --text-secondary: rgba(255,255,255,0.75);
+    --text-primary: var(--axis-white);
+    --text-secondary: var(--text-secondary-toned);
     --text-tertiary: rgba(255,255,255,0.50);
     --text-dim: rgba(255,255,255,0.42);
     --text-dimmer: rgba(255,255,255,0.32);
-    --text-white: #f6f7f8;
+    --text-white: var(--axis-white);
     --accent: #FF9F43;
     --accent-secondary: rgba(255,191,101,0.62);
     --accent-dim: rgba(255,191,101,0.18);
@@ -1989,6 +1996,7 @@ const css = `
     --bg-hover: rgba(255,255,255,0.05);
     --summary-grid-bg: rgba(255,255,255,0.04);
     --eol-color: rgba(255,255,255,0.30);
+    --bg-app: var(--bg-gradient);
   }
   [data-theme="light"] {
     --bg-gradient: linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%);
@@ -2004,12 +2012,12 @@ const css = `
     --glass-shadow-lg: 0 10px 32px rgba(20,50,90,0.13), 0 2px 10px rgba(20,50,90,0.07);
     --tab-bg: rgba(255,255,255,0.52);
     --hdr-bg: rgba(235,243,250,0.75);
-    --text-primary: #252525;
-    --text-secondary: rgba(15,30,46,0.82);
+    --text-primary: var(--axis-black);
+    --text-secondary: color-mix(in srgb, var(--axis-black) 82%, transparent);
     --text-tertiary: rgba(15,30,46,0.72);
     --text-dim: rgba(15,30,46,0.65);
     --text-dimmer: rgba(15,30,46,0.52);
-    --text-white: #252525;
+    --text-white: var(--axis-black);
     --accent: var(--accent);
     --accent-secondary: rgba(42,95,143,0.58);
     --accent-dim: rgba(42,95,143,0.12);
@@ -2022,7 +2030,7 @@ const css = `
     --text-done: rgba(15,30,46,0.30);
     --dot-bg: rgba(15,30,46,0.12);
     --dot-done: rgba(15,30,46,0.38);
-    --accent-btn-text: #ffffff;
+    --accent-btn-text: var(--axis-white);
     --step-connector: rgba(160,195,225,0.40);
     --bg-hover: rgba(255,255,255,0.38);
     --summary-grid-bg: rgba(255,255,255,0.32);
@@ -2030,6 +2038,7 @@ const css = `
     --text-dim: rgba(15,30,46,0.68);
     --text-dimmer: rgba(15,30,46,0.58);
     --text-tertiary: rgba(15,30,46,0.75);
+    --bg-app: var(--bg-gradient);
   }
 
   /* ── LIGHT MODE TEXT WEIGHT BOOST ── */
@@ -2092,6 +2101,7 @@ const css = `
   /* ── NIGHT MODE — Apple Watch Ultra style: #000000 + vibrant red only ── */
   .app[data-night="true"] {
     --bg-gradient: #000000;
+    --bg-app: #000000;
     --orb1: none; --orb2: none; --orb3: none;
     --glass-bg: #000000;
     --glass-bg-hover: #000000;
@@ -2120,7 +2130,7 @@ const css = `
     --dot-bg: #000000;
     --dot-done: #FF0000;
     --step-connector: #FF0000;
-    --accent-btn-text: #000000;
+    --accent-btn-text: var(--axis-black);
     --bg-hover: #000000;
     --summary-grid-bg: #000000;
     --text-teal: #FF0000;
@@ -2178,7 +2188,7 @@ const css = `
     overflow-y:auto;
     overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
-    background: var(--bg-gradient);
+    background: var(--bg-app, var(--bg-gradient));
     background-color: var(--bg-fallback, #0a1525);
     color:var(--text-primary);
     font-family:'Barlow',sans-serif;
@@ -2311,6 +2321,9 @@ const css = `
 
   /* ── CONTENT ── */
   .content { padding:0 20px 24px; max-width:100%; position:relative; z-index:1; }
+  .content.content--session { padding-bottom: 12px; }
+  /* LIST + GUIDED: breathing room above tab bar for primary CTAs */
+  .session-cta-pad { padding-bottom: var(--safe-bottom); }
   .sg {
     margin-top:32px;
     background:var(--glass-bg);
@@ -2683,17 +2696,17 @@ const css = `
     background:transparent; color: rgba(225,236,252,0.68);
     transition:color 0.15s; position:relative; flex:0 0 auto;
   }
-  .tab-bar[data-night="false"][data-theme="light"] .tab-btn { color:rgba(37,37,37,0.25); }
-  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active { color:#252525; }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn { color: color-mix(in srgb, var(--axis-black) 25%, transparent); }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active { color: var(--axis-black); }
 
-  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn { color:rgba(246,247,248,0.25); }
-  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active { color:#f6f7f8; }
+  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn { color: color-mix(in srgb, var(--axis-white) 25%, transparent); }
+  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active { color: var(--axis-white); }
 
-  .tab-bar[data-night="false"][data-theme="light"] .tab-btn:hover { color:rgba(37,37,37,0.25); }
-  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active:hover { color:#252525; }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn:hover { color: color-mix(in srgb, var(--axis-black) 25%, transparent); }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active:hover { color: var(--axis-black); }
 
-  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn:hover { color:rgba(246,247,248,0.25); }
-  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active:hover { color:#f6f7f8; }
+  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn:hover { color: color-mix(in srgb, var(--axis-white) 25%, transparent); }
+  .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active:hover { color: var(--axis-white); }
   .tab-icon-shell {
     position:relative; display:flex; align-items:center; justify-content:center;
     width:30px; height:30px;
@@ -2718,6 +2731,12 @@ const css = `
   /* TODAY (solid highlight) sometimes needs extra breathing room */
   .tab-bar-spacer--today {
     height: calc(var(--axis-bottom-content-inset) + var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 140px);
+  }
+
+  /* Active SESSION (LIST / GUIDED / SUMMARY): tight tail above tab bar — no duplicate --axis-bottom-content-inset + 56px stack */
+  .tab-bar-spacer--session {
+    height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 12px);
+    min-height: 0;
   }
 
   /* MOOD: avoid stacking full tab-bar-spacer + large list padding (was ~1/4 screen gap). Spacer collapsed; padding carries clearance. */
@@ -2822,7 +2841,7 @@ const css = `
   .track-card-dur { font-size:14px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); font-weight:500; }
   .begin-btn {
     padding:9px 22px; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700;
-    letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:20px;
+    letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:var(--axis-radius);
     background:var(--accent); border:none; color:var(--accent-btn-text);
     transition:all 0.2s;
     box-shadow:0 2px 12px var(--accent-glow);
@@ -3101,7 +3120,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
 // ─────────────────────────────────────────────────────────────
 //  MOMENTUM — 7-day strip (device-only)
 // ─────────────────────────────────────────────────────────────
-function MomentumMap({ history }) {
+function MomentumMap({ history, nightMode = false }) {
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
@@ -3112,21 +3131,32 @@ function MomentumMap({ history }) {
     acc[e.date] = (acc[e.date] || 0) + 1;
     return acc;
   }, {});
-  const maxCount = Math.max(1, ...Object.values(sessionCounts));
   return (/*#__PURE__*/
     React.createElement("div", { className: "summary summary-momentum", style: { marginTop: 24 } }, /*#__PURE__*/
     React.createElement("div", { className: "summary-title", style: { marginBottom: 12 } }, "Momentum"), /*#__PURE__*/
     React.createElement("div", { className: "momentum-strip" },
     days.map((dateStr, i) => {
       const count = sessionCounts[dateStr] || 0;
-      const intensity = count > 0 ? 0.35 + count / maxCount * 0.65 : 0;
-      const isToday = i === 6;
+      const styleNight = {
+        background: count > 0 ? "#FF0000" : "#000000",
+        boxShadow: "none",
+        border: "1px solid #FF0000"
+      };
+      const styleDay = count > 0 ? {
+        background: "var(--accent)",
+        border: "1px solid var(--accent)",
+        boxShadow: "inset 0 1px 0 var(--glass-specular), 0 0 12px var(--accent-glow)",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none"
+      } : {
+        background: "var(--glass-bg)",
+        border: "1px solid var(--glass-border)",
+        boxShadow: "inset 0 1px 0 var(--glass-specular)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)"
+      };
       return (/*#__PURE__*/
-        React.createElement("div", { key: i, className: "momentum-cell", style: {
-            background: count > 0 ? "#FF0000" : "#000000",
-            boxShadow: "none",
-            border: "1px solid #FF0000"
-          } }));
+        React.createElement("div", { key: i, className: "momentum-cell", style: nightMode ? styleNight : styleDay }));
 
     })
     ), /*#__PURE__*/
@@ -3307,13 +3337,13 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
   CIRCADIAN_THEMES[timerPeriod][isTimerDark ? "dark" : "light"];
   const timerAccent = timerCt.accent;
   const timerAccentDim = timerCt.accentDim;
-  const TN = nightMode ? "#FF0000" : isTimerDark ? "#ffffff" : "#1a1048";
+  const TN = nightMode ? "#FF0000" : isTimerDark ? "var(--axis-white)" : "#1a1048";
   const TU = nightMode ? "#FF0000" : isTimerDark ? "rgba(232,228,223,0.45)" : "rgba(26,16,72,0.55)";
   const TC = nightMode ? "#FF0000" : isTimerDark ? "rgba(232,228,223,0.50)" : "rgba(26,16,72,0.55)";
-  const TCB = nightMode ? "#FF0000" : isTimerDark ? "#ffffff" : "#1a1048";
+  const TCB = nightMode ? "#FF0000" : isTimerDark ? "var(--axis-white)" : "#1a1048";
   const BAR_TRACK = nightMode ? "#FF0000" : isTimerDark ? "rgba(255,255,255,0.10)" : "rgba(15,30,46,0.10)";
   const BAR_FILL = `linear-gradient(90deg,${timerAccent},${timerAccentDim})`;
-  const DOT_CURR = nightMode ? "#FF0000" : isTimerDark ? "#ffffff" : "#0f1e2e";
+  const DOT_CURR = nightMode ? "#FF0000" : isTimerDark ? "var(--axis-white)" : "#0f1e2e";
   const DOT_DONE = timerAccent;
   const DOT_REST = nightMode ? "#FF0000" : isTimerDark ? "rgba(255,255,255,0.18)" : "rgba(15,30,46,0.15)";
   const LINE_DONE = `${timerAccent}44`;
@@ -3359,7 +3389,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 
   }
 
-  const displayColor = nightMode ? "#FF0000" : isTimerDark ? "#ffffff" : "#1a1048";
+  const displayColor = nightMode ? "#FF0000" : isTimerDark ? "var(--axis-white)" : "#1a1048";
   return (/*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: gap, marginTop, alignItems: "flex-start" } }, /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 6, marginBottom: marginBottom } }, /*#__PURE__*/
@@ -3394,7 +3424,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
   const A = ct.accent;
   // Night Mode: all text is red at varying opacities — no white at all
-  const W = isNight ? "#FF0000" : ct.textPrimary || (isDark ? "#ffffff" : "#0f1020");
+  const W = isNight ? "#FF0000" : ct.textPrimary || (isDark ? "var(--axis-white)" : "#0f1020");
   const S = isNight ? "#FF0000" : isDark ? "rgba(232,228,223,0.60)" : ct.textPrimary ? ct.textPrimary + "cc" : "rgba(15,30,46,0.75)";
   const D = isNight ? "#FF0000" : isDark ? "rgba(232,228,223,0.35)" : ct.textPrimary ? ct.textPrimary + "88" : "rgba(15,30,46,0.50)";
   const BG = isNight ? "#000000" : MAIN_APP_BG[isDark ? "dark" : "light"];
@@ -3667,7 +3697,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       React.createElement("div", { style: { fontSize: 14, color: S, marginBottom: 24 } }, "Add exercises or clear filters and try again."), /*#__PURE__*/
       React.createElement("button", { onClick: onExit, style: {
           padding: "14px 40px", borderRadius: 28, cursor: "pointer",
-          background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "#000000" : "#ffffff",
+          background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "var(--axis-black)" : "var(--axis-white)",
           fontFamily: "'Barlow',sans-serif", fontSize: 13, fontWeight: 700,
           letterSpacing: "0.18em", textTransform: "uppercase"
         } }, "Exit")
@@ -3756,7 +3786,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     ), /*#__PURE__*/
     React.createElement("button", { onClick: onExit, style: {
         padding: "16px 48px", borderRadius: 28, cursor: "pointer",
-        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "#000000" : "#ffffff",
+        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "var(--axis-black)" : "var(--axis-white)",
         fontFamily: "'Barlow',sans-serif", fontSize: 13, fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase",
         boxShadow: `0 0 32px ${ct.accentGlow}`
@@ -3782,7 +3812,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     React.createElement("div", { style: { fontSize: 12, color: S, opacity: 0.85, maxWidth: 320, lineHeight: 1.4, marginBottom: 28, textAlign: "center" } }, "No equipment? You can modify \u2014 use a towel instead of a strap, a book instead of a block, or skip props and focus on range of motion."), /*#__PURE__*/
     React.createElement("button", { onClick: () => {primeAudio();beep(880, 0.3);setReadyLeft(GETREADY_SECONDS);setPhase("getready");}, style: {
         padding: "14px 48px", borderRadius: 999, cursor: "pointer",
-        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "#000000" : "#ffffff",
+        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "var(--axis-black)" : "var(--axis-white)",
         fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
         letterSpacing: "0.24em", textTransform: "uppercase",
         boxShadow: `0 0 24px ${ct.accentGlow}`
@@ -3987,7 +4017,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     React.createElement("button", { onClick: handleNext, style: {
         flex: 1, minWidth: 0, borderRadius: 999,
         background: A, border: nightMode ? "1px solid #FF0000" : "none",
-        color: isNight ? "#000000" : "#ffffff",
+        color: isNight ? "var(--axis-black)" : "var(--axis-white)",
         fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
         boxShadow: `0 0 16px ${ct.accentGlow}`
@@ -3999,7 +4029,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     phase === "getready" && /*#__PURE__*/
     React.createElement("button", { onClick: () => {clearInterval(readyRef.current);primeAudio();setLaunchCount(3);setPhase("launch");}, style: {
         flex: 1, width: "100%", minWidth: 0, background: A, border: nightMode ? "1px solid #FF0000" : "none",
-        color: isNight ? "#000000" : "#ffffff", fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
+        color: isNight ? "var(--axis-black)" : "var(--axis-white)", fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 700,
         letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer",
         boxShadow: `0 0 20px ${ct.accentGlow}`
       } }, "START NOW"),
@@ -5090,10 +5120,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           backdropFilter: "blur(8px) saturate(1.05)", WebkitBackdropFilter: "blur(8px) saturate(1.05)",
           boxShadow: nightMode ? "none" : `0 12px 32px ${homeHighlight}33, inset 0 1px 0 rgba(255,255,255,0.05)`
         } }, /*#__PURE__*/
-      React.createElement("div", { style: { letterSpacing: "0.22em", textTransform: "uppercase", color: nightMode ? "#000000" : theme === "dark" ? "#252525" : "#f6f7f8", marginBottom: 8, fontWeight: 600 } }, "Today"), /*#__PURE__*/
-      React.createElement("div", { style: { fontWeight: 600, color: nightMode ? "#000000" : theme === "dark" ? "#252525" : "#f6f7f8", marginBottom: 6 } }, periodLabels[nowPeriod]), /*#__PURE__*/
-      React.createElement("div", { style: { color: nightMode ? "#000000" : theme === "dark" ? "#252525" : "#f6f7f8", marginBottom: 6, lineHeight: 1.4 } }, todaySug.suggestion), /*#__PURE__*/
-      React.createElement("div", { style: { color: nightMode ? "#000000" : theme === "dark" ? "#252525" : "#f6f7f8", letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
+      React.createElement("div", { style: { letterSpacing: "0.22em", textTransform: "uppercase", color: nightMode ? "var(--axis-black)" : theme === "dark" ? "var(--axis-black)" : "var(--axis-white)", marginBottom: 8, fontWeight: 600 } }, "Today"), /*#__PURE__*/
+      React.createElement("div", { style: { fontWeight: 600, color: nightMode ? "var(--axis-black)" : theme === "dark" ? "var(--axis-black)" : "var(--axis-white)", marginBottom: 6 } }, periodLabels[nowPeriod]), /*#__PURE__*/
+      React.createElement("div", { style: { color: nightMode ? "var(--axis-black)" : theme === "dark" ? "var(--axis-black)" : "var(--axis-white)", marginBottom: 6, lineHeight: 1.4 } }, todaySug.suggestion), /*#__PURE__*/
+      React.createElement("div", { style: { color: nightMode ? "var(--axis-black)" : theme === "dark" ? "var(--axis-black)" : "var(--axis-white)", letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
       React.createElement("button", {
         className: "begin-btn begin-btn--today-primary",
         onClick: () => beginTrack(todayTrack.id),
@@ -5101,8 +5131,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           width: "100%",
           padding: "14px 24px",
           fontSize: 15,
-          background: nightMode ? "#000000" : theme === "dark" ? "#252525" : "#f6f7f8",
-          color: nightMode ? "#FF0000" : theme === "dark" ? "#f6f7f8" : "#252525",
+          background: nightMode ? "#000000" : theme === "dark" ? "var(--axis-black)" : "var(--axis-white)",
+          color: nightMode ? "#FF0000" : theme === "dark" ? "var(--axis-white)" : "var(--axis-black)",
           border: nightMode ? "1px solid #FF0000" : "none",
           fontWeight: 700,
           ["--axis-today-glow"]: homeHighlight
@@ -5167,7 +5197,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         } }, /*#__PURE__*/
 
       React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "100%" } }, /*#__PURE__*/
-      React.createElement("div", { style: { fontSize: 14, fontWeight: 300, color: nightMode ? "#FF0000" : "#ffffff", marginBottom: 20, textAlign: "center" } }, "Ready for movement."
+      React.createElement("div", { style: { fontSize: 14, fontWeight: 300, color: nightMode ? "#FF0000" : "var(--axis-white)", marginBottom: 20, textAlign: "center" } }, "Ready for movement."
 
       ), /*#__PURE__*/
       React.createElement("button", {
@@ -5278,7 +5308,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     ), /*#__PURE__*/
 
-    React.createElement("div", { className: "content", ref: sessionContentRef, onScroll: (e) => {
+    React.createElement("div", { className: "content content--session", ref: sessionContentRef, onScroll: (e) => {
         if (tab === "list") {
           listScrollRef.current = e.currentTarget.scrollTop || 0;
         }
@@ -5306,7 +5336,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
 
     tab === "guided" && /*#__PURE__*/
-    React.createElement("div", { style: { padding: "14px 0 6px" } }, /*#__PURE__*/
+    React.createElement("div", { className: "session-cta-pad", style: { paddingTop: "14px" } }, /*#__PURE__*/
     React.createElement("button", {
       className: "fv-cta",
       disabled: filteredAll.length === 0,
@@ -5406,14 +5436,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     })
     )
     ), /*#__PURE__*/
-    React.createElement("div", { style: { marginTop: 24, padding: "4px 0 8px" } }, /*#__PURE__*/
+    React.createElement("div", { className: "session-cta-pad", style: { marginTop: 24, paddingTop: "4px" } }, /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       onClick: () => {if (filteredAll.length > 0) {primeAudio();setTab("guided");setGuidedActive(true);}},
       disabled: filteredAll.length === 0,
       style: {
         width: "100%", padding: "14px 18px", borderRadius: 999, border: nightMode ? "1px solid #FF0000" : "none",
-        background: "var(--accent)", color: nightMode ? "#000000" : "#ffffff",
+        background: "var(--accent)", color: nightMode ? "var(--axis-black)" : "var(--axis-white)",
         fontFamily: "'Barlow',sans-serif", fontSize: 12, fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
         opacity: filteredAll.length === 0 ? 0.45 : 1, transition: "opacity 0.18s, transform 0.18s"
@@ -5513,7 +5543,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "summary-cell" }, /*#__PURE__*/React.createElement("div", { className: "summary-num" }, weekMinutes, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, "m")), /*#__PURE__*/React.createElement("div", { className: "summary-lbl" }, "Minutes"))
     )
     ), /*#__PURE__*/
-    React.createElement(MomentumMap, { history: history }),
+    React.createElement(MomentumMap, { history: history, nightMode: nightMode }),
     history.length > 0 && /*#__PURE__*/
     React.createElement("div", { className: "history", style: { marginTop: 24 } }, /*#__PURE__*/
     React.createElement("div", { className: "summary-title", style: { marginBottom: 8 } }, "Recent Sessions"),
@@ -5551,7 +5581,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
 
 
-    React.createElement("div", { className: "tab-bar-spacer" })
+    React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--session" })
     )
     ), /*#__PURE__*/
     React.createElement(TabBar, { view: view, setView: setView, hasActiveSession: hasActiveSession, theme: theme, nightMode: nightMode })

@@ -32,7 +32,12 @@
 /* AXIS canonical colors — text colors are set dynamically via JS vars on .ob-wrap */
 :root {
   --axis-white: #f6f7f8;
-  --axis-black: #1a1a1a;
+  --axis-black: #252525;
+  --axis-radius: 12px;
+  --axis-safe-bottom-inset: 34px;
+  --safe-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--axis-safe-bottom-inset));
+  --mood-accent: var(--ob-accent, #FFBF65);
+  --bg-app: var(--ob-page-bg, var(--current-bg, #0a0e1a));
 }
 
 /* Mood icon box uses inline --accent; SVG stroke reads it—do not override */
@@ -57,8 +62,8 @@ body { font-family: 'Barlow', sans-serif !important; }
 .ob-pad { padding: 0 24px; max-width: 480px; margin: 0 auto; }
 
 /* Button/icon reset ONLY for the main app shell so onboarding keeps themed controls */
-.app button, .app button * { color: #000000 !important; }
-.app button svg { fill: #000000 !important; stroke: #000000 !important; }
+.app button, .app button * { color: var(--axis-black) !important; }
+.app button svg { fill: var(--axis-black) !important; stroke: var(--axis-black) !important; }
 
   /* Mood button labels use inline colors; do not force button color (breaks icon accent) */
   .ob-wrap {
@@ -117,10 +122,10 @@ body { font-family: 'Barlow', sans-serif !important; }
   /* Liquid Glass footer buttons — hover/active fill effect */
   .ob-nav-glass-btn:hover { background: rgba(255,255,255,0.15) !important; box-shadow: inset 0 0 12px rgba(255,255,255,0.12) !important; }
   .ob-nav-glass-btn:active { background: rgba(255,255,255,0.2) !important; box-shadow: inset 0 0 14px rgba(255,255,255,0.15) !important; }
-  /* Light footer: BACK/NEXT readable (#252525); glass hover uses slate tint not white wash */
-  .ob-wrap[data-theme="light"] .ob-nav-footer .ob-nav-glass-btn { color: #252525 !important; }
-  .ob-wrap[data-theme="light"] .ob-nav-footer .ob-nav-glass-btn:hover { color: #252525 !important; background: rgba(15,23,42,0.08) !important; box-shadow: inset 0 0 12px rgba(15,23,42,0.06) !important; }
-  .ob-wrap[data-theme="light"] .ob-nav-footer .ob-nav-glass-btn:active { color: #252525 !important; background: rgba(15,23,42,0.12) !important; }
+  /* Light footer: BACK/NEXT readable (brand black); glass hover uses slate tint not white wash */
+  .ob-wrap[data-theme="light"] .ob-nav-footer .ob-nav-glass-btn { color: var(--axis-black) !important; }
+  .ob-wrap[data-theme="light"] .ob-nav-footer .ob-nav-glass-btn:hover { color: var(--axis-black) !important; background: rgba(15,23,42,0.08) !important; box-shadow: inset 0 0 12px rgba(15,23,42,0.06) !important; }
+  .ob-wrap[data-theme="light"] .ob-nav-footer .ob-nav-glass-btn:active { color: var(--axis-black) !important; background: rgba(15,23,42,0.12) !important; }
   .ob-nav-letsgo { transition: opacity 0.2s ease, transform 0.2s ease, background 0.6s ease, color 0.6s ease; }
   .ob-nav-letsgo:hover { opacity: 0.92; transform: scale(1.02); }
   .ob-nav-letsgo:active { opacity: 0.88; transform: scale(0.98); }
@@ -212,8 +217,8 @@ body { font-family: 'Barlow', sans-serif !important; }
   .ob-cta-head em { font-style:italic; font-weight:300; color:var(--ob-accent); }
   .ob-cta-sub { font-size:15px; color:var(--ob-text-body); line-height:1.52; margin-bottom:40px; font-weight:400; }
   .ob-btn-primary {
-    width:100%; padding:16px; border-radius:14px; border:none; cursor:pointer;
-    background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff);
+    width:100%; padding:16px; border-radius:var(--axis-radius); border:none; cursor:pointer;
+    background:var(--ob-accent); color:var(--ob-accent-btn-text, var(--axis-white));
     font-family:'Barlow',sans-serif; font-weight:700; font-size:13px;
     letter-spacing:0.22em; text-transform:uppercase;
     transition:opacity 0.2s; margin-bottom:10px;
@@ -224,9 +229,9 @@ body { font-family: 'Barlow', sans-serif !important; }
   /* Limit button reset to the main app shell only so onboarding controls keep their styles */
   .app button {
     font-family: 'Barlow', sans-serif !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    border-radius: 12px !important;
+    background: var(--axis-white) !important;
+    color: var(--axis-black) !important;
+    border-radius: var(--axis-radius) !important;
     padding: 10px 16px !important;
     border: none !important;
     font-weight: 500 !important;
@@ -267,7 +272,7 @@ body { font-family: 'Barlow', sans-serif !important; }
     color:var(--ob-accent); font-family:'Barlow',sans-serif; font-size:12px;
     font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
   }
-  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff); }
+  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, var(--axis-white)); }
   .ob-nav-back {
     background:none; border:none; cursor:pointer; padding:6px 8px;
     font-family:'Barlow',sans-serif; font-size:18px; color:var(--ob-text-sec);
@@ -372,8 +377,8 @@ body { font-family: 'Barlow', sans-serif !important; }
   .ob-cta-head em { font-style:italic; font-weight:300; color:var(--ob-accent); }
   .ob-cta-sub { font-size:15px; color:var(--ob-text-body); line-height:1.52; margin-bottom:40px; font-weight:400; }
   .ob-btn-primary {
-    width:100%; padding:16px; border-radius:14px; border:none; cursor:pointer;
-    background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff);
+    width:100%; padding:16px; border-radius:var(--axis-radius); border:none; cursor:pointer;
+    background:var(--ob-accent); color:var(--ob-accent-btn-text, var(--axis-white));
     font-family:'Barlow',sans-serif; font-weight:700; font-size:13px;
     letter-spacing:0.22em; text-transform:uppercase;
     transition:opacity 0.2s; margin-bottom:10px;
@@ -410,12 +415,12 @@ body { font-family: 'Barlow', sans-serif !important; }
     padding:10px 0;
   }
   .ob-nav-next {
-    padding:8px 12px; border-radius:12px; cursor:pointer; transition:all 0.15s;
+    padding:8px 12px; border-radius:var(--axis-radius); cursor:pointer; transition:all 0.15s;
     background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);
-    color:#ffffff; font-family:'Barlow',sans-serif; font-size:12px;
+    color:var(--axis-white); font-family:'Barlow',sans-serif; font-size:12px;
     font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
   }
-  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff); }
+  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, var(--axis-white)); }
   .ob-nav-back {
     background:none; border:none; cursor:pointer; padding:6px 8px;
     font-family:'Barlow',sans-serif; font-size:18px; color:var(--ob-text-sec);
@@ -567,8 +572,8 @@ const obCss = `
   .ob-cta-head em { font-style:italic; font-weight:300; color:var(--ob-accent); }
   .ob-cta-sub { font-size:15px; color:var(--ob-text-body); line-height:1.52; margin-bottom:40px; font-weight:400; }
   .ob-btn-primary {
-    width:100%; padding:16px; border-radius:14px; border:none; cursor:pointer;
-    background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff);
+    width:100%; padding:16px; border-radius:var(--axis-radius); border:none; cursor:pointer;
+    background:var(--ob-accent); color:var(--ob-accent-btn-text, var(--axis-white));
     font-family:'Barlow',sans-serif; font-weight:700; font-size:13px;
     letter-spacing:0.22em; text-transform:uppercase;
     transition:opacity 0.2s; margin-bottom:10px; display:block;
@@ -609,7 +614,7 @@ const obCss = `
     color:var(--ob-accent); font-family:'Barlow',sans-serif; font-size:12px;
     font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
   }
-  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, #ffffff); }
+  .ob-nav-next:hover { background:var(--ob-accent); color:var(--ob-accent-btn-text, var(--axis-white)); }
   .ob-nav-back {
     background:none; border:none; cursor:pointer; padding:6px 8px;
     font-family:'Barlow',sans-serif; font-size:18px; color:var(--ob-text-sec);
@@ -626,7 +631,7 @@ const obDarkVars = `
   --ob-orb1: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99,179,237,0.18) 0%, transparent 70%);
   --ob-orb2: radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.15) 0%, transparent 70%);
   --ob-orb3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(251,191,36,0.10) 0%, transparent 70%);
-  --ob-text-head:#ffffff; --ob-text-body:rgba(255,255,255,0.78); --ob-text-sec:rgba(255,255,255,0.50); --ob-text-dim:rgba(255,255,255,0.32);
+  --ob-text-head:var(--axis-white); --ob-text-body:rgba(255,255,255,0.78); --ob-text-sec:rgba(255,255,255,0.50); --ob-text-dim:rgba(255,255,255,0.32);
   --ob-accent:#FFBF65; --ob-accent-text:#0a0e1a; --ob-accent-dim:rgba(255,191,101,0.18); --ob-accent-glow:rgba(255,191,101,0.30);
   --ob-nav-bg:rgba(8,13,24,0.80); --ob-dot-bg:rgba(255,255,255,0.20);
 `;
@@ -636,7 +641,7 @@ const obLightVars = `
   --ob-orb2: radial-gradient(ellipse 55% 65% at 90% 75%, rgba(100,160,210,0.10) 0%, transparent 65%);
   --ob-orb3: radial-gradient(ellipse 50% 45% at 55% 5%,  rgba(140,180,220,0.08) 0%, transparent 65%);
   --ob-text-head:#0f1e2e; --ob-text-body:rgba(15,30,46,0.88); --ob-text-sec:rgba(15,30,46,0.68); --ob-text-dim:rgba(15,30,46,0.50);
-  --ob-accent:#1a4f7a; --ob-accent-text:#ffffff; --ob-accent-btn-text:#ffffff; --ob-accent-dim:rgba(26,79,122,0.14); --ob-accent-glow:rgba(26,79,122,0.28);
+  --ob-accent:#1a4f7a; --ob-accent-text:var(--axis-white); --ob-accent-btn-text:var(--axis-white); --ob-accent-dim:rgba(26,79,122,0.14); --ob-accent-glow:rgba(26,79,122,0.28);
   --ob-nav-bg:rgba(220,232,244,0.92); --ob-dot-bg:rgba(15,30,46,0.22);
 `;
 
@@ -668,7 +673,7 @@ const OB_GREY = {
     orb2: "radial-gradient(ellipse 55% 65% at 90% 75%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     orb3: "radial-gradient(ellipse 50% 45% at 55% 5%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     accent: "#4b5563", accentDim: "rgba(75,85,99,0.18)", accentGlow: "rgba(75,85,99,0.2)",
-    accentBtnText: "#ffffff", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.92)",
+    accentBtnText: "var(--axis-white)", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.92)",
   },
 };
 
@@ -708,7 +713,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(255,165,70,0.20) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(220,120,30,0.18) 0%, transparent 76%)",
       accent: "#C85A00", accentDim: "rgba(200,90,0,0.18)", accentGlow: "rgba(200,90,0,0.38)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #ffe8c8 0%, #ffd4a0 35%, #ffbf78 70%, #ffd4a8 100%)",
       textPrimary: "#2a1200",
     },
@@ -730,7 +735,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(0,195,155,0.22) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(0,150,125,0.22) 0%, transparent 76%)",
       accent: "#007A6A", accentDim: "rgba(0,122,106,0.16)", accentGlow: "rgba(0,122,106,0.34)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #f0fffc 0%, #e0fff8 35%, #d0fff4 70%, #e8fff9 100%)",
       textPrimary: "#00261f",
     },
@@ -752,7 +757,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(70,160,230,0.22) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 118%, rgba(40,90,200,0.22) 0%, transparent 76%)",
       accent: "#1060C0", accentDim: "rgba(16,96,192,0.17)", accentGlow: "rgba(16,96,192,0.38)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #d8eeff 0%, #c0e0ff 35%, #a8d4ff 70%, #c8e8ff 100%)",
       textPrimary: "#001830",
     },
@@ -774,7 +779,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(150,70,230,0.20) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 120%, rgba(90,40,180,0.20) 0%, transparent 76%)",
       accent: "#6030B0", accentDim: "rgba(96,48,176,0.18)", accentGlow: "rgba(96,48,176,0.38)",
-      accentBtnText: "#ffffff",
+      accentBtnText: "var(--axis-white)",
       bg: "linear-gradient(160deg, #ece0ff 0%, #ddd0ff 35%, #cec0ff 70%, #e0d4ff 100%)",
       textPrimary: "#180030",
     },
@@ -825,7 +830,7 @@ function Onboarding({ theme, onComplete }) {
   const [obTime, setObTime] = useState(null); // 5 | 10 | 15 | 20 (minutes) for calibration
   const [hasChosenMood, setHasChosenMood] = useState(false); // Grey until user picks a mood on Appearance
   const [colorRevealed, setColorRevealed] = useState(false); // true after fade-in completes so we switch theme
-  const iconColor = obTheme === "dark" ? "#ffffff" : "#111111";
+  const iconColor = obTheme === "dark" ? "var(--axis-white)" : "var(--axis-black)";
   const periodForTheme = obPeriod ?? getCircadianPeriod();
   const ct = CIRCADIAN_THEMES[periodForTheme][obTheme === "dark" ? "dark" : "light"];
   const useGrey = cur < 5 || (cur === 5 && !colorRevealed); // Navy for Splash–Appearance (until mood); Launch inherits chosen appearance color
@@ -846,10 +851,11 @@ function Onboarding({ theme, onComplete }) {
     --ob-orb2: ${t.orb2};
     --ob-orb3: ${t.orb3};
     --ob-accent: ${t.accent};
+    --mood-accent: ${t.accent};
     --ob-accent-dim: ${t.accentDim};
     --ob-accent-glow: ${t.accentGlow};
     --ob-accent-btn-text: ${t.accentBtnText || "#0a0e1a"};
-    --ob-text-head: ${t.textPrimary || (obTheme === "dark" ? "#ffffff" : "#1a1a1a")};
+    --ob-text-head: ${t.textPrimary || (obTheme === "dark" ? "var(--axis-white)" : "var(--axis-black)")};
     --ob-text-body: ${obTheme === "dark" ? "rgba(232,228,223,0.82)" : "rgba(26,26,26,0.88)"};
     --ob-text-sec: ${obTheme === "dark" ? "rgba(232,228,223,0.55)" : "rgba(26,26,26,0.72)"};
     --ob-text-dim: ${obTheme === "dark" ? "rgba(232,228,223,0.35)" : "rgba(26,26,26,0.55)"};
@@ -898,7 +904,7 @@ function Onboarding({ theme, onComplete }) {
   };
 
   return (
-    <div className="ob-wrap" data-theme={obTheme} style={{ background: t.bg, color: obTheme === "dark" ? "#ffffff" : "#1a1a1a", transition: "background 0.6s ease, color 0.6s ease" }}>
+    <div className="ob-wrap" data-theme={obTheme} style={{ background: t.bg, color: obTheme === "dark" ? "var(--axis-white)" : "var(--axis-black)", transition: "background 0.6s ease, color 0.6s ease" }}>
       <style>{obCss}{`:root,body,[data-ob]{${vars}}.ob-wrap{${vars}}`}</style>
       <div className="ob-orbs-layer" style={{
         background:`${t.orb1}, ${t.orb2}, ${t.orb3}`,
@@ -1248,7 +1254,7 @@ function Onboarding({ theme, onComplete }) {
                 background: obTheme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)',
                 border: obTheme === 'dark' ? 'none' : '1px solid rgba(15,23,42,0.35)',
                 borderRadius: 8,
-                padding: '10px 18px', color: obTheme === 'dark' ? '#ffffff' : '#252525',
+                padding: '10px 18px', color: obTheme === 'dark' ? 'var(--axis-white)' : 'var(--axis-black)',
                 cursor: 'pointer', pointerEvents: 'auto',
                 fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.12em',
               }}
@@ -1261,8 +1267,8 @@ function Onboarding({ theme, onComplete }) {
               style={{
                 pointerEvents: 'auto',
                 padding: '12px 28px', borderRadius: 999, border: 'none',
-                background: obTheme === 'dark' ? '#ffffff' : '#1a1a1a',
-                color: obTheme === 'dark' ? '#1a1a1a' : '#ffffff',
+                background: obTheme === 'dark' ? 'var(--axis-white)' : 'var(--axis-black)',
+                color: obTheme === 'dark' ? 'var(--axis-black)' : 'var(--axis-white)',
                 fontFamily: "'Barlow', sans-serif", fontSize: 13, fontWeight: 700,
                 letterSpacing: '0.18em', textTransform: 'uppercase',
                 cursor: 'pointer', transition: 'all 0.25s ease',
@@ -1281,7 +1287,7 @@ function Onboarding({ theme, onComplete }) {
                 background: obTheme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)',
                 border: obTheme === 'dark' ? 'none' : '1px solid rgba(15,23,42,0.35)',
                 borderRadius: 8,
-                padding: '10px 18px', color: obTheme === 'dark' ? '#ffffff' : '#252525',
+                padding: '10px 18px', color: obTheme === 'dark' ? 'var(--axis-white)' : 'var(--axis-black)',
                 cursor: 'pointer', pointerEvents: 'auto',
                 fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.12em',
               }}
@@ -1296,7 +1302,7 @@ function Onboarding({ theme, onComplete }) {
                       style={{
                         width: active ? 8 : 6,
                         height: active ? 8 : 6,
-                        background: active ? (obTheme === 'dark' ? '#ffffff' : '#1a1a1a') : (obTheme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'),
+                        background: active ? (obTheme === 'dark' ? 'var(--axis-white)' : 'var(--axis-black)') : (obTheme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'),
                       }}
                     />
                   </div>
@@ -1317,7 +1323,7 @@ function Onboarding({ theme, onComplete }) {
                 background: obTheme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)',
                 border: obTheme === 'dark' ? 'none' : '1px solid rgba(15,23,42,0.35)',
                 borderRadius: 8,
-                padding: '10px 18px', color: obTheme === 'dark' ? '#ffffff' : '#252525',
+                padding: '10px 18px', color: obTheme === 'dark' ? 'var(--axis-white)' : 'var(--axis-black)',
                 fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.12em',
                 opacity: cur === 4 && !disclaimerChecked ? 0.3 : 1,
                 cursor: cur === 4 && (!disclaimerName.trim() || !disclaimerChecked) ? 'not-allowed' : 'pointer',
