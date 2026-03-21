@@ -200,7 +200,7 @@ const OB_GREY = {
     orb2: "radial-gradient(ellipse 65% 55% at 110% 70%, rgba(80,160,220,0.14) 0%, transparent 72%)",
     orb3: "radial-gradient(ellipse 55% 50% at 55% 0%, rgba(180,200,255,0.10) 0%, transparent 75%)",
     accent: "#9ca3af", accentDim: "rgba(156,163,175,0.2)", accentGlow: "rgba(156,163,175,0.15)",
-    accentBtnText: "#0f0f12", textPrimary: "#f4f4f5", tabBg: "rgba(8,12,20,0.90)"
+    accentBtnText: "#0f0f12", textPrimary: "#f4f4f5", tabBg: "rgba(8,12,20,0.80)"
   },
   light: {
     bg: "linear-gradient(145deg, #e5e7eb 0%, #d1d5db 35%, #e5e7eb 70%, #f3f4f6 100%)",
@@ -208,7 +208,7 @@ const OB_GREY = {
     orb2: "radial-gradient(ellipse 55% 65% at 90% 75%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     orb3: "radial-gradient(ellipse 50% 45% at 55% 5%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     accent: "#4b5563", accentDim: "rgba(75,85,99,0.18)", accentGlow: "rgba(75,85,99,0.2)",
-    accentBtnText: "#ffffff", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.92)"
+    accentBtnText: "#ffffff", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.82)"
   }
 };
 
@@ -234,7 +234,7 @@ const CIRCADIAN_THEMES = {
       accentBtnText: "#1a0800",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#FFF0E0",
-      tabBg: "rgba(7,9,18,0.94)"
+      tabBg: "rgba(7,9,18,0.84)"
     },
     light: {
       orb1: "radial-gradient(ellipse 120% 120% at 88% 18%, rgba(255,120,40,0.26) 0%, transparent 70%)",
@@ -256,7 +256,7 @@ const CIRCADIAN_THEMES = {
       accentBtnText: "#001f1a",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#D0FFF5",
-      tabBg: "rgba(0,8,4,0.88)"
+      tabBg: "rgba(0,8,4,0.78)"
     },
     light: {
       orb1: "radial-gradient(ellipse 120% 120% at 88% 18%, rgba(0,210,175,0.30) 0%, transparent 70%)",
@@ -278,7 +278,7 @@ const CIRCADIAN_THEMES = {
       accentBtnText: "#00102a",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#D8EEFF",
-      tabBg: "rgba(0,6,14,0.88)"
+      tabBg: "rgba(0,6,14,0.78)"
     },
     light: {
       orb1: "radial-gradient(ellipse 120% 120% at 88% 18%, rgba(40,120,230,0.28) 0%, transparent 70%)",
@@ -300,7 +300,7 @@ const CIRCADIAN_THEMES = {
       accentBtnText: "#0a0020",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#E8D8FF",
-      tabBg: "rgba(3,0,8,0.90)"
+      tabBg: "rgba(3,0,8,0.80)"
     },
     light: {
       orb1: "radial-gradient(ellipse 120% 120% at 88% 18%, rgba(120,40,220,0.26) 0%, transparent 70%)",
@@ -1964,7 +1964,7 @@ const css = `
     --glass-specular: rgba(255,255,255,0.08);
     --glass-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
     --glass-shadow-lg: 0 20px 60px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.4);
-    --tab-bg: rgba(8,12,18,0.85);
+    --tab-bg: rgba(8,12,18,0.75);
     --hdr-bg: rgba(10,14,26,0.72);
     --text-primary: #f6f7f8;
     --text-secondary: rgba(255,255,255,0.75);
@@ -2002,7 +2002,7 @@ const css = `
     --glass-specular: rgba(255,255,255,0.88);
     --glass-shadow: 0 2px 12px rgba(20,50,90,0.11), 0 1px 4px rgba(20,50,90,0.06);
     --glass-shadow-lg: 0 10px 32px rgba(20,50,90,0.13), 0 2px 10px rgba(20,50,90,0.07);
-    --tab-bg: rgba(255,255,255,0.62);
+    --tab-bg: rgba(255,255,255,0.52);
     --hdr-bg: rgba(235,243,250,0.75);
     --text-primary: #252525;
     --text-secondary: rgba(15,30,46,0.82);
@@ -2131,8 +2131,8 @@ const css = `
   [data-night="true"] .app-body { background: #000000 !important; }
   [data-night="true"] .hdr-wrap,
   [data-night="true"] .tab-subbar,
-  [data-night="true"] .tab-bar,
   [data-night="true"] .tab-bar-spacer { background: #000000 !important; border-color: #FF0000 !important; }
+  [data-night="true"] .tab-bar { background: rgba(0,0,0,0.9) !important; border-color: #FF0000 !important; }
   [data-night="true"] .tab-subbar { box-shadow: none !important; border-top: 1px solid #FF0000 !important; }
   [data-night="true"] .track-card,
   [data-night="true"] .er,
