@@ -3825,7 +3825,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const periodLabels = { dawn: "Rise", midday: "Midday", prime: "Prime", rest: "Rest" };
     const todaySug = TODAY_SUGGESTIONS[nowPeriod];
     const todayTrack = TRACKS[todaySug.trackId];
-    const todayInk = nightMode ? "#FF0000" : theme === "dark"
+    const todayInk = nightMode ? "#000000" : theme === "dark"
       ? "var(--axis-black)"
       : (() => {
           const fromHex = /^#/.test(homeHighlight) ? inkForAccentHex(homeHighlight) : null;
