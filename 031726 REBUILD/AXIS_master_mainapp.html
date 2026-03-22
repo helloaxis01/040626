@@ -921,6 +921,31 @@ const css = `
   [data-night="true"] .fv-cta, [data-night="true"] .fv-cta:hover, [data-night="true"] .fv-cta:active,
   [data-night="true"] .fv-skip, [data-night="true"] .fv-prev { box-shadow: none !important; }
   [data-night="true"] .tab-live-dot { box-shadow: none !important; }
+  /* Night accent-fill CTAs: black ink on #FF0000 (Safari/WebKit; beats any broad * { color: red !important }) */
+  .app[data-night="true"] .content .fv-cta:not(.done),
+  .app[data-night="true"] .content .fv-cta:not(.done) *,
+  .app[data-night="true"] .content .tb {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  .app[data-night="true"] .content .fv-cta:not(.done) {
+    background: #FF0000 !important;
+    border: none !important;
+  }
+  .app[data-night="true"] .content .tb {
+    background: #FF0000 !important;
+    border: none !important;
+  }
+  [data-night="true"].guided-overlay .guided-cta-fill {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  .app[data-night="true"] .timer-view-body .timer-glass-btn-pri {
+    background: #FF0000 !important;
+    border: none !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
   /* ── BASE ── */
   .app {
     --axis-tab-h: 64px;
@@ -2450,7 +2475,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   // No exercises: show message and exit (avoids cur.id / cur.name access on undefined)
   if (listTotal === 0 || !cur) {
     return (/*#__PURE__*/
-      React.createElement("div", { "data-theme": theme, "data-night": isNight ? "true" : "false", style: {
+      React.createElement("div", { className: "guided-overlay", "data-theme": theme, "data-night": isNight ? "true" : "false", style: {
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
           background: BG, display: "flex", flexDirection: "column",
           fontFamily: "var(--font-display)", color: W, WebkitFontSmoothing: "antialiased",
@@ -2459,9 +2484,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       React.createElement("style", null, css), /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: 12, color: W } }, "No exercises in this flow"), /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-sm)", color: S, marginBottom: 24 } }, "Add exercises or clear filters and try again."), /*#__PURE__*/
-      React.createElement("button", { onClick: onExit, style: {
+      React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: onExit, style: {
           padding: "14px 40px", borderRadius: 28, cursor: "pointer",
-          background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "var(--axis-black)" : "var(--axis-white)",
+          background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "#000000" : "var(--axis-white)",
+          WebkitTextFillColor: isNight ? "#000000" : undefined,
           fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 700,
           letterSpacing: "0.18em", textTransform: "uppercase"
         } }, "Exit")
@@ -2470,7 +2496,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   }
 
   return (/*#__PURE__*/
-    React.createElement("div", { "data-theme": theme, "data-night": isNight ? "true" : "false", style: {
+    React.createElement("div", { className: "guided-overlay", "data-theme": theme, "data-night": isNight ? "true" : "false", style: {
         position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
         background: GUIDED_BG, display: "flex", flexDirection: "column",
         fontFamily: "var(--font-display)", color: W, WebkitFontSmoothing: "antialiased",
@@ -2548,9 +2574,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: D, marginBottom: 40, maxWidth: 280, lineHeight: 1.6 } }, "Click Exit to return to the main menu."
 
     ), /*#__PURE__*/
-    React.createElement("button", { onClick: onExit, style: {
+    React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: onExit, style: {
         padding: "16px 48px", borderRadius: 28, cursor: "pointer",
-        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "var(--axis-black)" : "var(--axis-white)",
+        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "#000000" : "var(--axis-white)",
+        WebkitTextFillColor: isNight ? "#000000" : undefined,
         fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase",
         boxShadow: `0 0 32px ${ct.accentGlow}`
@@ -2574,9 +2601,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     ), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: 8 } }, /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: S, opacity: 0.85, maxWidth: 320, lineHeight: 1.4, marginBottom: 28, textAlign: "center" } }, "No equipment? You can modify \u2014 use a towel instead of a strap, a book instead of a block, or skip props and focus on range of motion."), /*#__PURE__*/
-    React.createElement("button", { onClick: () => {primeAudio();beep(880, 0.3);setReadyLeft(GETREADY_SECONDS);setPhase("getready");}, style: {
+    React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: () => {primeAudio();beep(880, 0.3);setReadyLeft(GETREADY_SECONDS);setPhase("getready");}, style: {
         padding: "14px 48px", borderRadius: 999, cursor: "pointer",
-        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "var(--axis-black)" : "var(--axis-white)",
+        background: A, border: nightMode ? "1px solid #FF0000" : "none", color: isNight ? "#000000" : "var(--axis-white)",
+        WebkitTextFillColor: isNight ? "#000000" : undefined,
         fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 700,
         letterSpacing: "0.24em", textTransform: "uppercase",
         boxShadow: `0 0 24px ${ct.accentGlow}`
@@ -2778,10 +2806,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
         transition: "all 0.2s", boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.2)" : "0 4px 16px rgba(0,0,0,0.08)"
       } }, paused ? "RESUME" : "PAUSE"), /*#__PURE__*/
-    React.createElement("button", { onClick: handleNext, style: {
+    React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: handleNext, style: {
         flex: 1, minWidth: 0, borderRadius: 999,
         background: A, border: nightMode ? "1px solid #FF0000" : "none",
-        color: isNight ? "var(--axis-black)" : "var(--axis-white)",
+        color: isNight ? "#000000" : "var(--axis-white)",
+        WebkitTextFillColor: isNight ? "#000000" : undefined,
         fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
         boxShadow: `0 0 16px ${ct.accentGlow}`
@@ -2791,9 +2820,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
 
     phase === "getready" && /*#__PURE__*/
-    React.createElement("button", { onClick: () => {clearInterval(readyRef.current);primeAudio();setLaunchCount(3);setPhase("launch");}, style: {
+    React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: () => {clearInterval(readyRef.current);primeAudio();setLaunchCount(3);setPhase("launch");}, style: {
         flex: 1, width: "100%", minWidth: 0, background: A, border: nightMode ? "1px solid #FF0000" : "none",
-        color: isNight ? "var(--axis-black)" : "var(--axis-white)", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 700,
+        color: isNight ? "#000000" : "var(--axis-white)",
+        WebkitTextFillColor: isNight ? "#000000" : undefined,
+        fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 700,
         letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer",
         boxShadow: `0 0 20px ${ct.accentGlow}`
       } }, "START NOW"),
