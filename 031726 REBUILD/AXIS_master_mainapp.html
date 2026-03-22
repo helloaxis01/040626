@@ -891,6 +891,31 @@ const css = `
   [data-night="true"] .tab.on::after { background: #FF0000 !important; }
   [data-night="true"] .purpose-note { background: #000000 !important; border-color: #FF0000 !important; }
 
+  /* TODAY hero (night): .app color is red — force black copy on red card; CTA = black pill + red label (Safari/WebKit) */
+  .app[data-night="true"] .start-here-group > div {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+  }
+  .app[data-night="true"] .start-here-group .begin-btn--today-primary {
+    background: #000000 !important;
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+    border: 1px solid #FF0000 !important;
+    box-shadow: none !important;
+  }
+  /* Red accent fill + red text = invisible in WebKit — black ink on red; home uses black pill + red ink below */
+  .app[data-night="true"] .begin-btn.session-browse-btn {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  .app[data-night="true"] .home .track-card .begin-btn:not(.begin-btn--today-primary) {
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+    background: #000000 !important;
+    border: 1px solid #FF0000 !important;
+    box-shadow: none !important;
+  }
+
   /* Keep Night Mode simple: no glows/shadows */
   [data-night="true"] .tab-btn.active .tab-icon-shell::before { background: none !important; filter: none !important; -webkit-filter: none !important; }
   [data-night="true"] .fv-cta, [data-night="true"] .fv-cta:hover, [data-night="true"] .fv-cta:active,
@@ -1577,15 +1602,20 @@ const css = `
     padding:9px 22px; font-family:var(--font-display); font-size: var(--text-sm); font-weight:700;
     letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:var(--axis-radius);
     background:var(--accent); border:none; color:var(--accent-btn-text);
+    -webkit-text-fill-color: currentColor;
     transition:all 0.2s;
     box-shadow:0 2px 12px var(--accent-glow);
   }
   .begin-btn:hover { opacity:0.88; transform:scale(1.03); }
   .session-browse-btn {
     background: var(--accent) !important; border: none !important; color: var(--accent-btn-text) !important;
+    -webkit-text-fill-color: currentColor !important;
     box-shadow: 0 2px 12px var(--accent-glow); transition: all 0.2s;
   }
   .session-browse-btn:hover { opacity: 0.88; transform: scale(1.03); }
+  .app .begin-btn, .app .session-browse-btn, .app .track-card {
+    -webkit-tap-highlight-color: transparent;
+  }
 
   /* ── THEME TOGGLE ── */
   .theme-toggle {

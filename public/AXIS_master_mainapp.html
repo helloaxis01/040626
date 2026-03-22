@@ -2185,10 +2185,26 @@ const css = `
     border: 2px solid #FF0000 !important;
     box-shadow: none !important;
   }
-  [data-night="true"] .start-here-group * { color: #000000 !important; }
-  [data-night="true"] .begin-btn--today-primary {
-    background: #FF0000 !important;
+  /* TODAY hero: black copy on red (not .app red inherit); CTA black + red label — do not use * (conflicts with .begin-btn below) */
+  .app[data-night="true"] .start-here-group > div {
     color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+  }
+  .app[data-night="true"] .start-here-group .begin-btn--today-primary {
+    background: #000000 !important;
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+    border: 1px solid #FF0000 !important;
+    box-shadow: none !important;
+  }
+  .app[data-night="true"] .begin-btn.session-browse-btn {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  .app[data-night="true"] .home .track-card .begin-btn:not(.begin-btn--today-primary) {
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+    background: #000000 !important;
     border: 1px solid #FF0000 !important;
     box-shadow: none !important;
   }
@@ -2211,14 +2227,8 @@ const css = `
   [data-night="true"] .track-card-name,
   [data-night="true"] .track-card-purpose,
   [data-night="true"] .track-card-dur,
-  [data-night="true"] .track-card-sub,
-  [data-night="true"] .begin-btn {
+  [data-night="true"] .track-card-sub {
     color: #FF0000 !important;
-  }
-  [data-night="true"] .home .begin-btn:not(.begin-btn--today-primary) {
-    color: #FF0000 !important;
-    background: #000000 !important;
-    border: 1px solid #FF0000 !important;
   }
   [data-night="true"] .glass-label {
     background: #000000 !important;
@@ -2934,15 +2944,20 @@ const css = `
     padding:9px 22px; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700;
     letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:20px;
     background:var(--accent); border:none; color:var(--accent-btn-text);
+    -webkit-text-fill-color: currentColor;
     transition:all 0.2s;
     box-shadow:0 2px 12px var(--accent-glow);
   }
   .begin-btn:hover { opacity:0.88; transform:scale(1.03); }
   .session-browse-btn {
     background: var(--accent) !important; border: none !important; color: var(--accent-btn-text) !important;
+    -webkit-text-fill-color: currentColor !important;
     box-shadow: 0 2px 12px var(--accent-glow); transition: all 0.2s;
   }
   .session-browse-btn:hover { opacity: 0.88; transform: scale(1.03); }
+  .app .begin-btn, .app .session-browse-btn, .app .track-card {
+    -webkit-tap-highlight-color: transparent;
+  }
 
   /* ── THEME TOGGLE ── */
   .theme-toggle {
