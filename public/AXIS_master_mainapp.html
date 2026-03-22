@@ -187,6 +187,8 @@ const MAIN_APP_BG = {
 // Brand logo PNGs: 02 = black on light (light theme), 05 = white on dark (dark theme)
 const AXIS_LOGO_LIGHT = "./AXIS_LOGO_LIGHT.png";
 const AXIS_LOGO_DARK = "./AXIS_LOGO_DARK.png";
+// Session empty state: same gray wordmark in light + dark theme
+const AXIS_BRANDING_SESSION = "./AXIS_Branding_7d7d7d.svg";
 
 // Onboarding intro (screens 0–4) — uses deep navy shell; color blooms in at Appearance
 const OB_GREY = {
@@ -5217,11 +5219,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const sessionEmptyDark = theme === "dark";
     const sessionBg = sessionEmptyDark ? "#0B121C" : MAIN_APP_BG.light;
     const sessionHeadline = nightMode && sessionEmptyDark ? "#FF0000" : sessionEmptyDark ? "#ffffff" : "rgba(15,30,46,0.92)";
-    // Tagline tints match each Session logo asset (AXIS_LOGO_LIGHT ≈ axis-white ink; AXIS_LOGO_DARK ≈ navy wordmark)
-    const sessionTagline = sessionEmptyDark
-      ? "rgba(246, 247, 248, 0.52)"
-      : "rgba(15, 30, 46, 0.56)";
-    const sessionLogo = sessionEmptyDark ? AXIS_LOGO_LIGHT : AXIS_LOGO_DARK;
+    const sessionTagline = "#7d7d7d";
+    const sessionLogo = AXIS_BRANDING_SESSION;
     return (/*#__PURE__*/
       React.createElement("div", { className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
