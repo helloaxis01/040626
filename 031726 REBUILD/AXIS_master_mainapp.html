@@ -26,6 +26,8 @@
       --text-xl: 32px;
       --axis-white: #f6f7f8;
       --axis-black: #252525;
+      --motion-slow: 800ms ease-in-out;
+      --motion-fast: 200ms ease-out;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #root { height: 100dvh; margin: 0; }
@@ -341,7 +343,9 @@ function applyCircadianTheme(isDark, period) {
       ${t.accentBtnText ? `--accent-btn-text: ${t.accentBtnText} !important;` : ""}
       ${t.tabBg ? `--tab-bg: ${t.tabBg} !important;` : ""}
     }
-    .app-orbs { transition: background 0.4s ease !important; }
+    @media (prefers-reduced-motion: no-preference) {
+      .app-orbs { transition: background var(--motion-slow) !important; }
+    }
   `;
   return { bg: t.bg };
 }
@@ -591,6 +595,8 @@ const css = `
     --app-black: var(--axis-black);
     --mood-accent: var(--accent, #FF9F43);
     --bg-app: var(--bg-gradient, #080d18);
+    --motion-slow: 800ms ease-in-out;
+    --motion-fast: 200ms ease-out;
     /* Captions / secondary labels: dimmed brand white */
     --text-secondary-toned: color-mix(in srgb, var(--axis-white) 70%, transparent);
   }
@@ -1015,8 +1021,50 @@ const css = `
     transition:color 0.3s;
     box-sizing:border-box;
   }
-  .app-body { flex:1; display:flex; flex-direction:column; width:100%; position:relative; min-height:0; }
-  .app-orbs { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-theme]:not([data-night="true"]) .app {
+      background: var(--bg-fallback, #0a1525);
+      transition: color 0.3s ease, background var(--motion-slow), background-color var(--motion-slow);
+    }
+    [data-theme]:not([data-night="true"]) .app::before,
+    [data-theme]:not([data-night="true"]) .app::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      transition: opacity var(--motion-slow);
+    }
+    [data-theme]:not([data-night="true"]) .app::before {
+      background: var(--bg-app-a, var(--bg-app, var(--bg-gradient)));
+      opacity: 1;
+    }
+    [data-theme]:not([data-night="true"]) .app::after {
+      background: var(--bg-app-b, var(--bg-app, var(--bg-gradient)));
+      opacity: 0;
+    }
+    html.axis-mood-xfade--b-top [data-theme]:not([data-night="true"]) .app::before {
+      opacity: 0;
+    }
+    html.axis-mood-xfade--b-top [data-theme]:not([data-night="true"]) .app::after {
+      opacity: 1;
+    }
+    [data-theme]:not([data-night="true"]) .tab-btn.active .tab-icon-shell::before,
+    [data-theme]:not([data-night="true"]) .tab-live-dot,
+    [data-theme]:not([data-night="true"]) .track-btn.active,
+    [data-theme]:not([data-night="true"]) .fav-toggle.on {
+      transition: background var(--motion-slow), color var(--motion-slow), border-color var(--motion-slow), box-shadow var(--motion-slow);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-theme]:not([data-night="true"]) .app::before,
+    [data-theme]:not([data-night="true"]) .app::after {
+      content: none !important;
+      display: none !important;
+    }
+  }
+  .app-body { flex:1; display:flex; flex-direction:column; width:100%; position:relative; min-height:0; z-index: 1; }
+  .app-orbs { position:fixed; inset:0; z-index:1; pointer-events:none; }
   .app-orbs::after {
     content:''; position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%);
@@ -2907,9 +2955,25 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   const [iPhase, setIPhase] = useState("idle");
   const [iRound, setIRound] = useState(1);
   const [iTime, setITime] = useState(0);
+  const [intervalRingSnap, setIntervalRingSnap] = useState(false);
   const iRef = useRef(null);
 
-  function iReset() {clearInterval(iRef.current);setIRunning(false);setIPhase("idle");setIRound(1);setITime(0);}
+  useEffect(() => {
+    if (!intervalRingSnap) return;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setIntervalRingSnap(false));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [intervalRingSnap]);
+
+  function iReset() {
+    setIntervalRingSnap(true);
+    clearInterval(iRef.current);
+    setIRunning(false);
+    setIPhase("idle");
+    setIRound(1);
+    setITime(0);
+  }
   function iStart() {setIPhase("work");setIRound(1);setITime(work);setIRunning(true);}
 
   useEffect(() => {
@@ -3302,6 +3366,14 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   .timer-view-body .timer-breathe-guide-ring circle {
     stroke: var(--border);
   }
+  @media (prefers-reduced-motion: no-preference) {
+    .timer-view-body .timer-interval-ring .timer-interval-progress {
+      transition: stroke-dashoffset 1s linear, stroke 0.4s ease;
+    }
+    .timer-view-body .timer-interval-ring.timer-ring--snap .timer-interval-progress {
+      transition: stroke-dashoffset 0s linear, stroke 0s !important;
+    }
+  }
   `;
 
   return (/*#__PURE__*/
@@ -3329,14 +3401,13 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     mode === "interval" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", flex: 1, minHeight: 0 } }, /*#__PURE__*/
     React.createElement("div", { className: "timer-glass-orb timer-ring-slot", style: TIMER_RING_WRAP }, /*#__PURE__*/
-    React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", className: "timer-interval-ring", style: { transform: "rotate(-90deg)", display: "block", margin: "0 auto" } }, /*#__PURE__*/
+    React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", className: "timer-interval-ring" + (intervalRingSnap ? " timer-ring--snap" : ""), style: { transform: "rotate(-90deg)", display: "block", margin: "0 auto" } }, /*#__PURE__*/
     React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: "var(--border)", strokeWidth: "2.5" }),
     iPhase !== "idle" && iPhase !== "done" && /*#__PURE__*/
-    React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none",
+    React.createElement("circle", { className: "timer-interval-progress", cx: "160", cy: "160", r: "140", fill: "none",
       stroke: iRingColor, strokeWidth: "4", strokeLinecap: "round",
       strokeDasharray: iCircumference,
-      strokeDashoffset: iCircumference * (1 - iPct / 100),
-      style: { transition: "stroke-dashoffset 0.9s linear, stroke 0.4s" } }
+      strokeDashoffset: iCircumference * (1 - iPct / 100) }
     )
 
     ), /*#__PURE__*/
@@ -3619,6 +3690,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const h = storageGet("axis_history", []);
     return h.some((e) => e.date === new Date().toDateString());
   });
+  const prevMoodBgRef = useRef(null);
+  const moodXfadeTimerRef = useRef(null);
 
   useEffect(() => {
     if (!guidedActive) {setSessionComplete(false);return;}
@@ -3630,17 +3703,72 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   // Paint gradient on body + apply circadian theme (useLayoutEffect to avoid flash on tab switch)
   useLayoutEffect(() => {
+    if (moodXfadeTimerRef.current) {
+      clearTimeout(moodXfadeTimerRef.current);
+      moodXfadeTimerRef.current = null;
+    }
     const isDark = theme === "dark";
     const period = activePeriod || getCircadianPeriod();
+    const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const circadian = nightMode ? { bg: "#000000" } : applyCircadianTheme(isDark, period);
-    document.body.style.transition = "background 0.4s ease";
-    document.body.style.background = circadian?.bg || (
-    isDark ? "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)" :
-    "linear-gradient(145deg, #c8d8e8 0%, #d0dcea 35%, #dce4ec 70%, #e8eef4 100%)");
+    const fallback = isDark ?
+    "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)" :
+    "linear-gradient(145deg, #c8d8e8 0%, #d0dcea 35%, #dce4ec 70%, #e8eef4 100%)";
+    const newBg = circadian?.bg || fallback;
     document.body.style.width = "100%";
     document.documentElement.style.width = "100%";
     document.body.style.minHeight = "100vh";
-    return () => {document.body.style.background = "";};
+
+    if (reduced) {
+      document.documentElement.classList.remove("axis-mood-xfade--b-top");
+      document.documentElement.style.removeProperty("--bg-app-a");
+      document.documentElement.style.removeProperty("--bg-app-b");
+      document.body.style.transition = "none";
+      document.body.style.background = newBg;
+      prevMoodBgRef.current = newBg;
+      return () => {document.body.style.background = "";};
+    }
+
+    document.body.style.transition = "background var(--motion-slow)";
+
+    if (nightMode) {
+      document.documentElement.classList.remove("axis-mood-xfade--b-top");
+      document.documentElement.style.removeProperty("--bg-app-a");
+      document.documentElement.style.removeProperty("--bg-app-b");
+      document.body.style.background = newBg;
+      prevMoodBgRef.current = newBg;
+      return () => {document.body.style.background = "";};
+    }
+
+    const oldBg = prevMoodBgRef.current;
+    if (oldBg != null && oldBg !== newBg) {
+      document.documentElement.style.setProperty("--bg-app-a", oldBg);
+      document.documentElement.style.setProperty("--bg-app-b", newBg);
+      document.documentElement.classList.remove("axis-mood-xfade--b-top");
+      void document.documentElement.offsetHeight;
+      requestAnimationFrame(() => {
+        document.documentElement.classList.add("axis-mood-xfade--b-top");
+      });
+      moodXfadeTimerRef.current = setTimeout(() => {
+        document.documentElement.style.setProperty("--bg-app-a", newBg);
+        document.documentElement.classList.remove("axis-mood-xfade--b-top");
+        prevMoodBgRef.current = newBg;
+        moodXfadeTimerRef.current = null;
+      }, 800);
+    } else {
+      document.documentElement.style.setProperty("--bg-app-a", newBg);
+      document.documentElement.style.setProperty("--bg-app-b", newBg);
+      prevMoodBgRef.current = newBg;
+    }
+
+    document.body.style.background = newBg;
+    return () => {
+      document.body.style.background = "";
+      if (moodXfadeTimerRef.current) {
+        clearTimeout(moodXfadeTimerRef.current);
+        moodXfadeTimerRef.current = null;
+      }
+    };
   }, [theme, activePeriod, nightMode]);
   useEffect(() => {storageSet("axis_show_streak", showStreak);}, [showStreak]);
   useEffect(() => {storageSet("axis_show_timer", showTimer);}, [showTimer]);
