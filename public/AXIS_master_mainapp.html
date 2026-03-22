@@ -5212,8 +5212,13 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   }
 
-  // SESSION — empty state: spec — #0B121C bg, Inter, CTA pill (#1A232E + #5EEAD4), logo, tagline
+  // SESSION — empty state: dark #0B121C + light mark, or light gradient + dark mark (matches app theme)
   if (view === "session" && !hasActiveSession) {
+    const sessionEmptyDark = theme === "dark";
+    const sessionBg = sessionEmptyDark ? "#0B121C" : MAIN_APP_BG.light;
+    const sessionHeadline = nightMode && sessionEmptyDark ? "#FF0000" : sessionEmptyDark ? "#ffffff" : "rgba(15,30,46,0.92)";
+    const sessionTagline = sessionEmptyDark ? "rgba(255,255,255,0.42)" : "rgba(15,30,46,0.48)";
+    const sessionLogo = sessionEmptyDark ? AXIS_LOGO_LIGHT : AXIS_LOGO_DARK;
     return (/*#__PURE__*/
       React.createElement("div", { className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
@@ -5229,12 +5234,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           minHeight: "100dvh",
           padding: "calc(25vh + 48px) 32px 80px 48px",
           textAlign: "center",
-          background: "#0B121C",
+          background: sessionBg,
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
         } }, /*#__PURE__*/
 
       React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "100%" } }, /*#__PURE__*/
-      React.createElement("div", { style: { fontSize: 14, fontWeight: 300, color: nightMode ? "#FF0000" : "#ffffff", marginBottom: 20, textAlign: "center" } }, "Ready for movement."
+      React.createElement("div", { style: { fontSize: 14, fontWeight: 300, color: sessionHeadline, marginBottom: 20, textAlign: "center" } }, "Ready for movement."
 
       ), /*#__PURE__*/
       React.createElement("button", {
@@ -5254,8 +5259,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       ), /*#__PURE__*/
       React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" } }, /*#__PURE__*/
       React.createElement("img", {
-        /* Empty state bg is always #0B121C — always use light logo, not theme (light theme + dark logo = invisible). */
-        src: AXIS_LOGO_LIGHT,
+        src: sessionLogo,
         alt: "AXIS Logo",
         style: { width: 72, height: "auto", objectFit: "contain", opacity: 1, marginBottom: 48 } }
       ), /*#__PURE__*/
@@ -5266,7 +5270,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           letterSpacing: "0.28em",
           textTransform: "uppercase",
           fontWeight: 300,
-          color: "rgba(255, 255, 255, 0.3)",
+          color: sessionTagline,
           whiteSpace: "nowrap",
           width: "100%",
           maxWidth: "100%",
