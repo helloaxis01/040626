@@ -3256,9 +3256,13 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
   const timerFlatCss = `
   .timer-view-body .timer-mode-outer-pill {
-    border: 1px solid var(--border);
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
-    background: transparent;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    position: relative;
   }
   .timer-view-body .timer-glass-wrap {
     background: transparent;
@@ -3280,10 +3284,14 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     position: relative;
   }
   .timer-view-body .timer-glass-panel {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
-    position: relative; overflow: hidden;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
   .timer-view-body .timer-glass-phase {
     background: transparent;
@@ -3300,14 +3308,17 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     border: 1px solid var(--border);
   }
   .timer-view-body .timer-glass-pattern-btn {
-    background: transparent;
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     transition: all 0.2s ease;
   }
   .timer-view-body .timer-glass-pattern-btn.active {
-    background: var(--accent-dim);
-    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent-dim) 55%, rgba(255, 255, 255, 0.04));
+    border-top-color: color-mix(in srgb, var(--accent) 45%, transparent);
     color: var(--accent);
   }
   .timer-view-body .timer-breathe-orb {
@@ -3351,6 +3362,10 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     pointer-events: none;
     transform-origin: center center;
     will-change: stroke-dashoffset, transform;
+    transition: filter 1s ease-in-out;
+  }
+  .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="soft"] .timer-breathe-ring {
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 22%, transparent)) drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 12%, transparent));
   }
   /* subtle hold pulse: animate glow opacity and blur (respects reduced motion) */
   @media (prefers-reduced-motion: no-preference) {
@@ -3358,15 +3373,34 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
       animation: breathe-hold-glow 1.2s ease-in-out infinite;
       will-change: filter;
     }
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="inhale"] .timer-breathe-ring {
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="inhale"] .timer-breathe-ring {
+      animation: none;
+      filter: drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 50%, transparent)) drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 28%, transparent));
+    }
   }
   @keyframes breathe-hold-glow {
     from { filter: blur(3px); }
     to   { filter: blur(4px); }
   }
+  @keyframes pulse-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 40%, transparent)) drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 22%, transparent));
+    }
+    50% {
+      filter: drop-shadow(0 0 22px color-mix(in srgb, var(--accent) 72%, transparent)) drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 48%, transparent));
+    }
+  }
   .timer-view-body .timer-glass-stepper {
-    background: transparent;
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
   /* Work/Rest/Rounds: 44px min touch target, spacing so taps don’t overlap */
   .timer-view-body .timer-interval-stepper {
@@ -3393,7 +3427,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     gap: 10px;
     min-height: 44px;
     padding: 4px 10px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     box-sizing: border-box;
   }
   .timer-view-body .timer-interval-row:last-child {
@@ -3403,11 +3437,63 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     flex: 0 0 auto;
     width: 60px;
     font-size: var(--text-xs);
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--text-dimmer);
+    color: rgba(246, 247, 248, 0.5);
     font-family: var(--font-display);
+  }
+  .timer-view-body .timer-instrument-val {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-white);
+    font-family: var(--font-display);
+    text-shadow:
+      0 0 20px color-mix(in srgb, var(--mood-accent) 32%, transparent),
+      0 0 2px rgba(246, 247, 248, 0.12);
+  }
+  .timer-view-body .timer-round-pips {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .timer-view-body .timer-round-pip {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+  }
+  .timer-view-body .timer-round-pip.is-done {
+    background: color-mix(in srgb, var(--mood-accent) 70%, transparent);
+    border-color: var(--mood-accent);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--mood-accent) 45%, transparent);
+  }
+  .timer-view-body .timer-round-pip.is-active {
+    background: var(--mood-accent);
+    border-color: transparent;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--mood-accent) 65%, transparent), 0 0 4px color-mix(in srgb, var(--mood-accent) 40%, transparent);
+    transform: scale(1.05);
+  }
+  .timer-view-body .timer-breathe-cycle-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-sizing: border-box;
   }
   .timer-view-body .timer-interval-row-controls {
     display: flex;
@@ -3504,11 +3590,22 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     (iPhase === "idle" || iPhase === "work" || iPhase === "rest") && /*#__PURE__*/
     React.createElement("div", { style: {
         position: "absolute", left: 0, right: 0, bottom: 20, height: 80,
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+        display: "flex", alignItems: "center", justifyContent: "center"
       } }, /*#__PURE__*/
-    React.createElement("span", { style: { ...timerNumSmall, fontSize: "var(--text-xs)", letterSpacing: "0.06em" } },
-    iPhase === "idle" ? 1 : iRound, " of ", rounds
-    )
+    React.createElement("div", {
+      className: "timer-round-pips",
+      role: "group",
+      "aria-label": `Round ${iPhase === "idle" ? 1 : iRound} of ${rounds}`
+    }, Array.from({ length: rounds }, (_, i) => {
+      const activeIdx = iPhase === "idle" ? 0 : iRound - 1;
+      const done = (iPhase === "work" || iPhase === "rest") && i < iRound - 1;
+      const active = i === activeIdx;
+      return /*#__PURE__*/React.createElement("div", {
+        key: i,
+        className: "timer-round-pip" + (done ? " is-done" : "") + (active ? " is-active" : ""),
+        "aria-hidden": true
+      });
+    }))
     )
 
     )
@@ -3528,7 +3625,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement("div", { className: "timer-interval-row-controls" }, /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": `${label} decrease`, onClick: () => set((v) => Math.max(min, v - step)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "\u2212"), /*#__PURE__*/
     React.createElement("div", { className: "timer-interval-row-value", style: { display: "flex", alignItems: "baseline", justifyContent: "center", gap: 2 } }, /*#__PURE__*/
-    React.createElement("span", { style: { ...timerNumMedium, fontSize: "var(--text-lg)" } }, val),
+    React.createElement("span", { className: "timer-instrument-val" }, val),
     !isRound && /*#__PURE__*/React.createElement("span", { style: { fontSize: "var(--text-xs)", color: "var(--text-dimmer)", fontFamily: "var(--font-display)" } }, "s")
     ), /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": `${label} increase`, onClick: () => set((v) => Math.min(max, v + step)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "+")
@@ -3558,7 +3655,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
     mode === "breathe" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", flex: 1, minHeight: 0 } }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot", style: TIMER_RING_WRAP }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning ? (isInhalePhase ? "inhale" : "soft") : undefined }, /*#__PURE__*/
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
     React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: "var(--border)", strokeWidth: "1.5" })
     ),
@@ -3641,8 +3738,17 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
     bRunning && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", width: "100%", justifyContent: "center", marginTop: 6, marginBottom: 6 } }, /*#__PURE__*/
-    React.createElement("div", { style: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "6px 12px", borderRadius: 12, background: "var(--glass-bg)", border: "1px solid var(--glass-border)", boxSizing: "border-box" } }, /*#__PURE__*/
-    React.createElement("span", { style: { ...timerNumSmall, fontSize: "var(--text-xs)", letterSpacing: "0.06em", color: "var(--text-secondary)" } }, bCycle, " of ", breathCycles)
+    React.createElement("div", { className: "timer-breathe-cycle-chip", role: "group", "aria-label": `Cycle ${bCycle} of ${breathCycles}` }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-round-pips" }, Array.from({ length: breathCycles }, (_, i) => {
+      const activeIdx = bCycle - 1;
+      const done = i < activeIdx;
+      const active = i === activeIdx;
+      return /*#__PURE__*/React.createElement("div", {
+        key: i,
+        className: "timer-round-pip" + (done ? " is-done" : "") + (active ? " is-active" : ""),
+        "aria-hidden": true
+      });
+    }))
     )
     ),
 
@@ -3665,7 +3771,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)", fontFamily: "var(--font-display)", marginRight: 8 } }, "Cycles"), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6 } }, /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": "Cycles decrease", onClick: () => setBreathCycles((v) => Math.max(1, v - 1)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "\u2212"), /*#__PURE__*/
-    React.createElement("div", { style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { style: { ...timerNumMedium, fontSize: "var(--text-lg)" } }, breathCycles)), /*#__PURE__*/
+    React.createElement("div", { style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { className: "timer-instrument-val" }, breathCycles)), /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": "Cycles increase", onClick: () => setBreathCycles((v) => Math.min(12, v + 1)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "+")
     )
     )

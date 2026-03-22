@@ -4677,11 +4677,22 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     (iPhase === "idle" || iPhase === "work" || iPhase === "rest") && /*#__PURE__*/
     React.createElement("div", { style: {
         position: "absolute", left: 0, right: 0, bottom: 20, height: 80,
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+        display: "flex", alignItems: "center", justifyContent: "center"
       } }, /*#__PURE__*/
-    React.createElement("span", { style: { ...timerNumSmall, fontSize: 12, letterSpacing: "0.06em" } },
-    iPhase === "idle" ? 1 : iRound, " of ", rounds
-    )
+    React.createElement("div", {
+      className: "timer-round-pips",
+      role: "group",
+      "aria-label": `Round ${iPhase === "idle" ? 1 : iRound} of ${rounds}`
+    }, Array.from({ length: rounds }, (_, i) => {
+      const activeIdx = iPhase === "idle" ? 0 : iRound - 1;
+      const done = (iPhase === "work" || iPhase === "rest") && i < iRound - 1;
+      const active = i === activeIdx;
+      return /*#__PURE__*/React.createElement("div", {
+        key: i,
+        className: "timer-round-pip" + (done ? " is-done" : "") + (active ? " is-active" : ""),
+        "aria-hidden": true
+      });
+    }))
     )
 
     )
@@ -4701,7 +4712,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement("div", { className: "timer-interval-row-controls" }, /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": `${label} decrease`, onClick: () => set((v) => Math.max(min, v - step)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "\u2212"), /*#__PURE__*/
     React.createElement("div", { className: "timer-interval-row-value", style: { display: "flex", alignItems: "baseline", justifyContent: "center", gap: 2 } }, /*#__PURE__*/
-    React.createElement("span", { style: { ...timerNumMedium, fontSize: 20 } }, val),
+    React.createElement("span", { className: "timer-instrument-val" }, val),
     !isRound && /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: "var(--text-dimmer)", fontFamily: "'Barlow',sans-serif" } }, "s")
     ), /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": `${label} increase`, onClick: () => set((v) => Math.min(max, v + step)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "+")
@@ -4731,7 +4742,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
     mode === "breathe" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", flex: 1, minHeight: 0 } }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot", style: TIMER_RING_WRAP }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning ? (isInhalePhase ? "inhale" : "soft") : undefined }, /*#__PURE__*/
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
     React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: "var(--border)", strokeWidth: "1.5" })
     ),
@@ -4814,8 +4825,17 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
     bRunning && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", width: "100%", justifyContent: "center", marginTop: 6, marginBottom: 6 } }, /*#__PURE__*/
-    React.createElement("div", { style: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "6px 12px", borderRadius: 12, background: "var(--glass-bg)", border: "1px solid var(--glass-border)", boxSizing: "border-box" } }, /*#__PURE__*/
-    React.createElement("span", { style: { ...timerNumSmall, fontSize: 12, letterSpacing: "0.06em", color: "var(--text-secondary)" } }, bCycle, " of ", breathCycles)
+    React.createElement("div", { className: "timer-breathe-cycle-chip", role: "group", "aria-label": `Cycle ${bCycle} of ${breathCycles}` }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-round-pips" }, Array.from({ length: breathCycles }, (_, i) => {
+      const activeIdx = bCycle - 1;
+      const done = i < activeIdx;
+      const active = i === activeIdx;
+      return /*#__PURE__*/React.createElement("div", {
+        key: i,
+        className: "timer-round-pip" + (done ? " is-done" : "") + (active ? " is-active" : ""),
+        "aria-hidden": true
+      });
+    }))
     )
     ),
 
@@ -4838,7 +4858,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement("div", { style: { fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)", fontFamily: "'Barlow',sans-serif", marginRight: 8 } }, "Cycles"), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6 } }, /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": "Cycles decrease", onClick: () => setBreathCycles((v) => Math.max(1, v - 1)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "\u2212"), /*#__PURE__*/
-    React.createElement("div", { style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { style: { ...timerNumMedium, fontSize: 18 } }, breathCycles)), /*#__PURE__*/
+    React.createElement("div", { style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { className: "timer-instrument-val" }, breathCycles)), /*#__PURE__*/
     React.createElement("button", { type: "button", "aria-label": "Cycles increase", onClick: () => setBreathCycles((v) => Math.min(12, v + 1)), className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "+")
     )
     )
