@@ -3899,7 +3899,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", width: "100%", minHeight: 0 } }, /*#__PURE__*/
       React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", marginTop: "20vh" } }, /*#__PURE__*/
       React.createElement("img", {
-        src: theme === "dark" ? AXIS_BRANDING_DARK_UI : AXIS_BRANDING_LIGHT_UI,
+        /* Empty state bg is always dark — use DarkMode branding (visible on #0B121C), not LightMode strokes. */
+        src: AXIS_BRANDING_DARK_UI,
         alt: "AXIS Logo",
         style: { width: 72, height: "auto", objectFit: "contain", opacity: 1, marginBottom: 48 } }
       ), /*#__PURE__*/

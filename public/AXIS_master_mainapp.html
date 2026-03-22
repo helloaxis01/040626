@@ -5254,7 +5254,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       ), /*#__PURE__*/
       React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" } }, /*#__PURE__*/
       React.createElement("img", {
-        src: theme === "dark" ? AXIS_LOGO_LIGHT : AXIS_LOGO_DARK,
+        /* Empty state bg is always #0B121C — always use light logo, not theme (light theme + dark logo = invisible). */
+        src: AXIS_LOGO_LIGHT,
         alt: "AXIS Logo",
         style: { width: 72, height: "auto", objectFit: "contain", opacity: 1, marginBottom: 48 } }
       ), /*#__PURE__*/
