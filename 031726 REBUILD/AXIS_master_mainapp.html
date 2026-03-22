@@ -915,6 +915,12 @@ const css = `
     border: 1px solid #FF0000 !important;
     box-shadow: none !important;
   }
+  /* TODAY hero: explicit red card (public .track-group { transparent } must not win over this) */
+  .app[data-night="true"] .home .track-group.start-here-group {
+    background: #FF0000 !important;
+    border: 2px solid #FF0000 !important;
+    box-shadow: none !important;
+  }
 
   /* Keep Night Mode simple: no glows/shadows */
   [data-night="true"] .tab-btn.active .tab-icon-shell::before { background: none !important; filter: none !important; -webkit-filter: none !important; }
@@ -3923,7 +3929,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-group start-here-group", role: "region", "aria-label": "Today's suggestion", style: {
           marginBottom: 28, padding: "20px 20px 22px", borderRadius: 24,
           background: homeHighlight, border: `2px solid ${homeHighlight}`,
-          backdropFilter: "blur(8px) saturate(1.05)", WebkitBackdropFilter: "blur(8px) saturate(1.05)",
+          backdropFilter: nightMode ? "none" : "blur(8px) saturate(1.05)", WebkitBackdropFilter: nightMode ? "none" : "blur(8px) saturate(1.05)",
           boxShadow: nightMode ? "none" : `0 12px 32px ${homeHighlight}33, inset 0 1px 0 rgba(255,255,255,0.05)`
         } }, /*#__PURE__*/
       React.createElement("div", { style: { letterSpacing: "0.22em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 600 } }, "Today"), /*#__PURE__*/

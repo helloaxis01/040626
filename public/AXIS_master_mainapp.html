@@ -2218,7 +2218,8 @@ const css = `
     color: #FF0000 !important;
     box-shadow: none !important;
   }
-  [data-night="true"] .track-group {
+  /* Exclude .start-here-group — it also has .track-group; transparent would hide the red TODAY hero */
+  [data-night="true"] .track-group:not(.start-here-group) {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -5190,7 +5191,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const nowPeriod = getCircadianPeriod();
     const usedPeriod = activePeriod || nowPeriod;
     const homeCt = CIRCADIAN_THEMES[usedPeriod][theme === "dark" ? "dark" : "light"];
-    const homeHighlight = homeCt && homeCt.accent ? homeCt.accent : "var(--accent)";
+    const homeHighlight = nightMode ? "#FF0000" : homeCt && homeCt.accent ? homeCt.accent : "var(--accent)";
     const perMove = exerciseDuration || 45;
     const getTrackDisplayDuration = (trackId) => {
       const sections = getSections(trackId);
@@ -5250,8 +5251,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-group start-here-group", role: "region", "aria-label": "Today's suggestion", style: {
           marginBottom: 28, padding: "20px 20px 22px", borderRadius: 24,
           background: homeHighlight, border: `2px solid ${homeHighlight}`,
-          backdropFilter: "blur(8px) saturate(1.05)", WebkitBackdropFilter: "blur(8px) saturate(1.05)",
-          boxShadow: `0 12px 32px ${homeHighlight}33, inset 0 1px 0 rgba(255,255,255,0.05)`
+          backdropFilter: nightMode ? "none" : "blur(8px) saturate(1.05)", WebkitBackdropFilter: nightMode ? "none" : "blur(8px) saturate(1.05)",
+          boxShadow: nightMode ? "none" : `0 12px 32px ${homeHighlight}33, inset 0 1px 0 rgba(255,255,255,0.05)`
         } }, /*#__PURE__*/
       React.createElement("div", { style: { letterSpacing: "0.22em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 600 } }, "Today"), /*#__PURE__*/
       React.createElement("div", { style: { fontWeight: 600, color: todayInk, marginBottom: 6 } }, periodLabels[nowPeriod]), /*#__PURE__*/
