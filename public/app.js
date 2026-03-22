@@ -1,4 +1,3 @@
-console.log("APP.JS IS RUNNING");
 const { useState, useEffect, useRef } = React;
 
 // ---------------------------------------------------------------------
@@ -4489,11 +4488,17 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 }
 
 // ─────────────────────────────────────────────────────────────
-//  ROOT — orchestrates onboarding → app
+//  ROOT — legacy index.html shell: send users to the standalone main app HTML
+//  (Production Vercel uses vercel.json redirect / → AXIS_master_mainapp.html)
 // ─────────────────────────────────────────────────────────────
 function App() {
-  // Temporary mount test: render a minimal component to verify React mounting.
-  return /*#__PURE__*/React.createElement("div", { style: { color: "#fff", padding: 24, fontFamily: "'Barlow', sans-serif", fontSize: 18 } }, "Hello from React");
+  useEffect(function () {
+    try {
+      if (/\/AXIS_master_mainapp\.html$/i.test(window.location.pathname || "")) return;
+      window.location.replace(new URL("AXIS_master_mainapp.html", window.location.href).href);
+    } catch (e) {}
+  }, []);
+  return /*#__PURE__*/React.createElement("div", { style: { color: "#94a3b8", padding: 24, fontFamily: "'Barlow', sans-serif", fontSize: 15, textAlign: "center" } }, "Loading AXIS…");
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -4543,10 +4548,11 @@ function mountApp() {
   } catch (e) {
     try { showLoadErr('Error: ' + (e && e.message ? e.message : String(e)) + (e && e.stack ? '\n\n' + e.stack : '')); } catch (_) {}
   }
+}
+
 // Start mounting once scripts executed / DOM ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', mountApp, { once: true });
 } else {
   mountApp();
-}
 }
