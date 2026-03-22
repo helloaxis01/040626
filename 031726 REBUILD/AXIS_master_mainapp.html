@@ -921,6 +921,37 @@ const css = `
     border: 2px solid #FF0000 !important;
     box-shadow: none !important;
   }
+  .app[data-night="true"] .hdr-title,
+  .app[data-night="true"] .hdr-subtitle,
+  .app[data-night="true"] .tab-desc-line {
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+  }
+  .app[data-night="true"] .hdr-wrap .glass-label,
+  .app[data-night="true"] .hdr-meta .glass-label {
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+    background: #000000 !important;
+    border-color: #FF0000 !important;
+  }
+  .app[data-night="true"] .tab.on {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .app[data-night="true"] .content--session .er:not(.open) {
+    border: none !important;
+    border-bottom: 1px solid #FF0000 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .app[data-night="true"] .content--session .er:not(.open):hover {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 13px 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #FF0000 !important;
+  }
 
   /* Keep Night Mode simple: no glows/shadows */
   [data-night="true"] .tab-btn.active .tab-icon-shell::before { background: none !important; filter: none !important; -webkit-filter: none !important; }

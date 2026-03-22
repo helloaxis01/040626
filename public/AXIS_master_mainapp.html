@@ -2101,7 +2101,9 @@ const css = `
   }
 
   /* ── NIGHT MODE — Apple Watch Ultra style: #000000 + vibrant red only ── */
-  [data-night="true"] {
+  /* Must use .app[data-night="true"] (same specificity as .app[data-theme="dark"]) or
+     Safari keeps --text-white from dark theme (#f6f7f8) and headers read as white. */
+  .app[data-night="true"] {
     --bg-gradient: #000000;
     --orb1: none; --orb2: none; --orb3: none;
     --glass-bg: #000000;
@@ -2122,7 +2124,7 @@ const css = `
     --accent: #FF0000;
     --accent-secondary: #FF0000;
     --accent-dim: #000000;
-    --accent-glow: #FF0000;
+    --accent-glow: #000000;
     --cue-bar: #FF0000;
     --cue-bar-label: #FF0000;
     --border: #FF0000;
@@ -2136,6 +2138,39 @@ const css = `
     --summary-grid-bg: #000000;
     --text-teal: #FF0000;
     --eol-color: #FF0000;
+  }
+  /* WebKit: explicit red ink on session chrome (var(--text-white) can still resolve wrong) */
+  .app[data-night="true"] .hdr-title,
+  .app[data-night="true"] .hdr-subtitle,
+  .app[data-night="true"] .tab-desc-line {
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+  }
+  .app[data-night="true"] .hdr-wrap .glass-label,
+  .app[data-night="true"] .hdr-meta .glass-label {
+    color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
+    background: #000000 !important;
+    border-color: #FF0000 !important;
+  }
+  .app[data-night="true"] .tab.on {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  /* LIST: divider lines only (not a red box per row) — match Chromium session list */
+  .app[data-night="true"] .content--session .er:not(.open) {
+    border: none !important;
+    border-bottom: 1px solid #FF0000 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .app[data-night="true"] .content--session .er:not(.open):hover {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 13px 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #FF0000 !important;
   }
   [data-night="true"] .app { background: #000000 !important; }
   [data-night="true"] .app-orbs { background: none !important; display: none !important; }
