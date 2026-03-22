@@ -927,12 +927,13 @@ const css = `
     color: #FF0000 !important;
     -webkit-text-fill-color: #FF0000 !important;
   }
-  .app[data-night="true"] .hdr-wrap .glass-label,
-  .app[data-night="true"] .hdr-meta .glass-label {
+  /* All night pills (track cards + session header): base uses rgba white border — invisible on #000 in Chromium */
+  .app[data-night="true"] .glass-label {
+    background: #000000 !important;
+    border: 1px solid #FF0000 !important;
     color: #FF0000 !important;
     -webkit-text-fill-color: #FF0000 !important;
-    background: #000000 !important;
-    border-color: #FF0000 !important;
+    box-shadow: none !important;
   }
   .app[data-night="true"] .tab.on {
     background: transparent !important;

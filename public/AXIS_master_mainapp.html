@@ -2146,13 +2146,6 @@ const css = `
     color: #FF0000 !important;
     -webkit-text-fill-color: #FF0000 !important;
   }
-  .app[data-night="true"] .hdr-wrap .glass-label,
-  .app[data-night="true"] .hdr-meta .glass-label {
-    color: #FF0000 !important;
-    -webkit-text-fill-color: #FF0000 !important;
-    background: #000000 !important;
-    border-color: #FF0000 !important;
-  }
   .app[data-night="true"] .tab.on {
     background: transparent !important;
     box-shadow: none !important;
@@ -2266,10 +2259,11 @@ const css = `
   [data-night="true"] .track-card-sub {
     color: #FF0000 !important;
   }
-  [data-night="true"] .glass-label {
+  .app[data-night="true"] .glass-label {
     background: #000000 !important;
     border: 1px solid #FF0000 !important;
     color: #FF0000 !important;
+    -webkit-text-fill-color: #FF0000 !important;
     box-shadow: none !important;
   }
   /* Timer: avoid .timer-view-body * { color: red } — it makes red-on-red on primary CTAs in WebKit */
