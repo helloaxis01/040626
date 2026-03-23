@@ -2974,7 +2974,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       style: {
         fontSize: phase === "getready" || phase === "exercise" ? 34 : 30,
         fontWeight: 700, letterSpacing: "0.02em", lineHeight: 1.08, textTransform: "uppercase",
-        color: W,
+        color: !isNight && !isDark ? "#252525" : W,
         height: 80,
         maxWidth: Math.min(420, carouselCardW + 80),
         display: "flex",
