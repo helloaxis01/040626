@@ -782,9 +782,9 @@ const css = `
     --bg-app: var(--bg-gradient);
   }
   [data-theme="light"] .glass-card {
-    background: rgba(246, 247, 248, 0.9) !important;
-    backdrop-filter: blur(20px) brightness(1.1);
-    -webkit-backdrop-filter: blur(20px) brightness(1.1);
+    background: rgba(246, 247, 248, 0.92) !important;
+    backdrop-filter: blur(20px) brightness(1.1) !important;
+    -webkit-backdrop-filter: blur(20px) brightness(1.1) !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   }
   [data-theme="light"] .glass-bar {
@@ -1715,11 +1715,11 @@ const css = `
 
   /* Light mode: distinct tab strip + separation from page (Safari frosted read) */
   .tab-bar[data-theme="light"] {
-    background: rgba(246, 247, 248, 0.9) !important;
+    background: rgba(246, 247, 248, 0.92) !important;
     border-top: 1px solid rgba(100, 130, 175, 0.38);
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    backdrop-filter: blur(20px) brightness(1.1);
-    -webkit-backdrop-filter: blur(20px) brightness(1.1);
+    backdrop-filter: blur(20px) brightness(1.1) !important;
+    -webkit-backdrop-filter: blur(20px) brightness(1.1) !important;
   }
 
   /* MOOD: avoid stacking full tab-bar-spacer + large list padding (was ~1/4 screen gap). Spacer collapsed; padding carries clearance. */
@@ -1819,7 +1819,7 @@ const css = `
   .track-card:active { transform:scale(0.98); }
   .track-card-left { flex:1; min-width:0; width:100%; }
   .track-card-name { font-size: var(--text-lg); font-weight:600; color:var(--text-white); margin-bottom:6px; letter-spacing:-0.02em; }
-  .track-card-sub { font-size: var(--text-sm); color:var(--accent-secondary); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; line-height:1.4; }
+  .track-card-sub { font-size: 11px; color:var(--mood-accent); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px; line-height:1.4; text-align:left; }
   .track-card-sub .glass-label {
     background: none;
     border: none;
@@ -1830,6 +1830,7 @@ const css = `
     border-radius: 0;
     color: var(--mood-accent);
     font-family: 'Barlow', sans-serif;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.05em;
     white-space: nowrap;
