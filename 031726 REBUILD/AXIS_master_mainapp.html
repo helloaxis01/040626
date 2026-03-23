@@ -1241,15 +1241,16 @@ const css = `
     min-height: 0;
   }
   .content.content--session.content--session-list { padding-bottom: 100px; }
-  /* LIST + GUIDED: “golden zone” clearance above tab bar — footer controls live only in GuidedOverlay */
+  /* LIST + GUIDED: “golden zone” clearance above tab bar */
   .session-cta-pad {
-    position: relative;
+    position: relative !important;
+    z-index: 999999 !important;
     margin-bottom: 120px !important;
     pointer-events: auto;
   }
   .session-cta-hitbox {
     pointer-events: auto !important;
-    z-index: 99999 !important;
+    z-index: 999999 !important;
     position: relative !important;
   }
   .sg {
@@ -2836,7 +2837,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, done, totalDone, sessionSecs,
   onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete,
   showFavOnly = false, showSkipOnly = false, onToggleFavOnly = () => {}, onToggleSkipOnly = () => {}, onResetSession = () => {},
-  initialPhase = "intro", guidedActive = true }) {
+  initialPhase = "intro" }) {
 
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
@@ -3450,12 +3451,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     phase === "launch" && /*#__PURE__*/
     React.createElement("div", { style: { flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: S, fontSize: "var(--text-xs)", letterSpacing: "0.12em" } }, "STARTING...")
 
-    ),
-    guidedActive && (phase === "getready" || phase === "launch" || phase === "exercise") && /*#__PURE__*/
-    React.createElement("div", { className: "fav-filter guided-interaction-footer guided-interaction-footer--fixed" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", className: `fav-toggle ${showFavOnly ? "on" : ""}`, onClick: onToggleFavOnly }, "\u2605 Favorites"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: `fav-toggle ${showSkipOnly ? "on" : ""}`, onClick: onToggleSkipOnly }, "\u2014 Skipped"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "fav-toggle reset-pill", onClick: onResetSession }, "\u21BA Reset Session")
     )
     )
 
@@ -4908,7 +4903,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   React.createElement(GuidedOverlay, {
     theme: theme, activePeriod: activePeriod, activeAll: filteredAll, TOTAL: filteredAll.length,
     done: done, totalDone: totalDone, sessionSecs: sessionSecs,
-    guidedActive: guidedActive,
     initialPhase: guidedPhase,
     onExit: () => {setGuidedActive(false);setSessionComplete(false);setPhase("intro");},
     onToggle: toggle,
@@ -5014,7 +5008,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("button", {
       type: "button",
       className: "fv-cta axis-cta-core session-cta-hitbox",
-      style: { pointerEvents: "auto", zIndex: 99999, position: "relative" },
+      style: { pointerEvents: "auto", zIndex: 999999, position: "relative" },
       onClick: () => { setShowFavOnly(false); setShowSkipOnly(false); setGuidedActive(true); setPhase("getready"); } }, /*#__PURE__*/
 
     React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10 } }, /*#__PURE__*/
@@ -5113,7 +5107,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
         opacity: 1, transition: "opacity 0.18s, transform 0.18s",
-        pointerEvents: "auto", zIndex: 99999, position: "relative"
+        pointerEvents: "auto", zIndex: 999999, position: "relative"
       } },
     "Start GUIDED with these steps"
 
