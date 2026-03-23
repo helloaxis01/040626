@@ -1644,13 +1644,13 @@ const css = `
   }
   .tab-btn:active { transform: scale(0.95); opacity: 0.88; }
   .tab-bar[data-night="false"][data-theme="light"] .tab-btn { color: color-mix(in srgb, var(--axis-black) 46%, transparent); }
-  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active { color: var(--axis-white); }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active { color: #252525; }
 
   .tab-bar[data-night="false"][data-theme="dark"] .tab-btn { color: color-mix(in srgb, var(--axis-white) 25%, transparent); }
   .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active { color: var(--axis-white); }
 
   .tab-bar[data-night="false"][data-theme="light"] .tab-btn:hover { color: color-mix(in srgb, var(--axis-black) 58%, transparent); }
-  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active:hover { color: var(--axis-white); }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active:hover { color: #252525; }
 
   .tab-bar[data-night="false"][data-theme="dark"] .tab-btn:hover { color: color-mix(in srgb, var(--axis-white) 25%, transparent); }
   .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active:hover { color: var(--axis-white); }
@@ -4363,7 +4363,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const periodLabels = { dawn: "Rise", midday: "Midday", prime: "Prime", rest: "Rest" };
     const todaySug = TODAY_SUGGESTIONS[nowPeriod];
     const todayTrack = TRACKS[todaySug.trackId];
-    const todayInk = "#f6f7f8";
+    const todayInk = nightMode ? "#FF0000" : theme === "light" ? "#252525" : "#f6f7f8";
     const todayBtn = nightMode
       ? { background: "#000000", color: "#FF0000", border: "1px solid #FF0000" }
       : theme === "dark"
