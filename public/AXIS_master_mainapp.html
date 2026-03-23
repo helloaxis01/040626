@@ -2520,8 +2520,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     window.addEventListener("resize", onResize, { passive: true });
     return () => window.removeEventListener("resize", onResize);
   }, []);
-  const carouselCardW = Math.min(300, Math.max(240, carouselWrapW - 60));
+  const carouselSidePad = 24;
+  const carouselCardW = Math.min(300, Math.max(240, carouselWrapW - 24));
   const carouselGap = 12;
+  const carouselTrackRef = useRef(null);
+  const [carouselActiveIdx, setCarouselActiveIdx] = useState(0);
 
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
@@ -2539,6 +2542,16 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const guidedFocusReturnRef = useRef(null);
   const cur = list.length > 0 ? list[Math.min(fi, list.length - 1)] : null;
   const next = list[fi + 1] || null;
+  const guidedStepCards = (() => {
+    if (!cur) return [];
+    const cards = [];
+    if (cur.start) cards.push({ label: "POSITION", cue: cur.start });
+    (cur.steps || []).forEach((step, idx) => {
+      cards.push({ label: `STEP ${idx + 1}`, cue: step.cue });
+    });
+    return cards;
+  })();
+  const guidedStepTotal = guidedStepCards.length;
 
   useEffect(() => {
     guidedFocusReturnRef.current = document.activeElement;
@@ -2669,6 +2682,14 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       el.style.transform = "translateY(0)";
     });
   }, [fi]);
+  useEffect(() => {
+    // Reset carousel position and active dot when exercise changes.
+    setCarouselActiveIdx(0);
+    const track = carouselTrackRef.current;
+    if (track && typeof track.scrollTo === "function") {
+      try {track.scrollTo({ left: 0, behavior: "auto" });} catch (e) {}
+    }
+  }, [fi, phase, cur && cur.id, carouselCardW]);
 
   const completeCurrent = () => {
     beep(660, 0.4);
@@ -2943,9 +2964,9 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
     phase === "exercise" && cur && /*#__PURE__*/
     React.createElement(React.Fragment, null, /*#__PURE__*/
-    React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 60, fontWeight: 700, letterSpacing: "-0.02em", color: "#f6f7f8", lineHeight: 1 } }, gDisplay), /*#__PURE__*/
+    React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 64, fontWeight: 700, letterSpacing: "-0.02em", color: "#f6f7f8", lineHeight: 1 } }, gDisplay), /*#__PURE__*/
     React.createElement("div", { style: { width: carouselCardW, height: 4, borderRadius: 999, background: isNight ? "#140000" : isDark ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0.12)", overflow: "hidden", marginTop: 14 } }, /*#__PURE__*/
-    React.createElement("div", { style: { height: 4, borderRadius: 999, background: A, width: `${gPct * 100}%` } })
+    React.createElement("div", { style: { height: 4, borderRadius: 999, background: A, width: `${gPct * 100}%`, transition: "width 1s linear", willChange: "width" } })
     )
     )
 
@@ -2954,22 +2975,8 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
 
     (() => {
-      const ex = cur;
-      if (!ex?.steps?.length && !ex?.start) return null;
-
-      // V1.5: Build flat "step cards" list for the horizontal carousel.
-      const stepCards = [];
-      if (ex.start) stepCards.push({ label: "START", cue: ex.start });
-      (ex.steps || []).forEach((step, idx) => {
-        stepCards.push({
-          label: step.focus || (idx === 0 ? "SETUP" : "MOVE"),
-          cue: step.cue
-        });
-      });
-
-      const stepTotal = stepCards.length;
-      const activeStepIdx = phase === "exercise" ? Math.min(stepTotal - 1, Math.floor(gPct * stepTotal)) : 0;
-      const stepCardEls = stepCards.map((card, idx) => /*#__PURE__*/React.createElement("div", {
+      if (!guidedStepTotal) return null;
+      const stepCardEls = guidedStepCards.map((card, idx) => /*#__PURE__*/React.createElement("div", {
         key: idx,
         style: {
           width: carouselCardW,
@@ -2988,8 +2995,8 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           boxShadow: isExercisePhase && !isNight ?
             (isDark ? "0 8px 26px rgba(0,0,0,0.55)" : "0 10px 32px rgba(12,24,48,0.26)") :
             (isDark ? "0 4px 24px rgba(0,0,0,0.15)" : "0 4px 20px rgba(0,0,0,0.06)"),
-          opacity: idx === activeStepIdx ? 1 : 0.78,
-          transform: idx === activeStepIdx ? "scale(1)" : "scale(0.98)",
+          opacity: idx === carouselActiveIdx ? 1 : 0.78,
+          transform: idx === carouselActiveIdx ? "scale(1)" : "scale(0.98)",
           transition: "opacity 0.25s ease-out, transform 0.25s ease-out"
         }
       }, /*#__PURE__*/
@@ -2999,24 +3006,44 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
       return (/*#__PURE__*/
         React.createElement(React.Fragment, null,
-        ex.demoVideo && /*#__PURE__*/
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 16 } },
+        guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
+          key: `dot-${idx}`,
+          "aria-hidden": true,
+          style: {
+            width: 3,
+            height: 3,
+            borderRadius: "50%",
+            background: idx === carouselActiveIdx ? "var(--mood-accent)" : isNight ? "#300000" : isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.2)",
+            boxShadow: idx === carouselActiveIdx ? "0 0 8px var(--mood-accent)" : "none",
+            opacity: idx === carouselActiveIdx ? 1 : 0.7
+          }
+        }))
+        ),
+        cur.demoVideo && /*#__PURE__*/
         React.createElement("div", { style: { padding: "8px 16px 12px", textAlign: "center" } }, /*#__PURE__*/
         React.createElement(VideoDemo, {
-          src: ex.demoVideo,
+          src: cur.demoVideo,
           style: { width: "100%", borderRadius: 10, display: "block" },
-          ariaLabel: ex && ex.name ? `Demo: ${ex.name}` : "Exercise demo" }
+          ariaLabel: cur && cur.name ? `Demo: ${cur.name}` : "Exercise demo" }
         )
         ), /*#__PURE__*/
-        React.createElement("div", { id: `instr-${ex.id}`, style: { marginBottom: 12 } }, /*#__PURE__*/
-        React.createElement("div", { style: {
+        React.createElement("div", { id: `instr-${cur.id}`, style: { marginBottom: 12 } }, /*#__PURE__*/
+        React.createElement("div", { ref: carouselTrackRef, onScroll: (e) => {
+          const el = e.currentTarget;
+          const stride = carouselCardW + carouselGap;
+          const idx = Math.round((el.scrollLeft || 0) / stride);
+          const bounded = Math.max(0, Math.min(guidedStepTotal - 1, idx));
+          if (bounded !== carouselActiveIdx) setCarouselActiveIdx(bounded);
+        }, style: {
           display: "flex",
           gap: carouselGap,
           overflowX: "auto",
           scrollSnapType: "x mandatory",
           WebkitOverflowScrolling: "touch",
-          padding: "0 20px",
-          scrollPaddingLeft: 20,
-          scrollPaddingRight: 20
+          padding: `0 ${carouselSidePad}px`,
+          scrollPaddingLeft: carouselSidePad,
+          scrollPaddingRight: carouselSidePad
         } }, stepCardEls)
         )));
 
