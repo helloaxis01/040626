@@ -49,14 +49,6 @@
   </style>
 </head>
 <body>
-  <script>
-    /* Remove after audit: proves which file URL + load time the browser is running */
-    (function () {
-      try {
-        alert("AXIS load check\n" + window.location.href + "\n" + new Date().toISOString());
-      } catch (e) {}
-    })();
-  </script>
   <div id="root"></div>
   <div id="load-err"></div>
   <script>
@@ -1201,6 +1193,11 @@ const css = `
     box-shadow: 0 4px 20px rgba(0,0,0,0.18), 0 1px 0 var(--glass-border);
     margin: 0 -20px;
     padding: 10px 20px 12px;
+    /* Let taps pass through the sticky layer’s “empty” area so START GUIDED below isn’t dead (z-index was eating hits). */
+    pointer-events: none;
+  }
+  .tab-subbar > * {
+    pointer-events: auto;
   }
   .tab-desc-line {
     font-size: var(--text-sm); color:var(--text-secondary);
@@ -1221,8 +1218,14 @@ const css = `
     min-height: 0;
   }
   .content.content--session.content--session-list { padding-bottom: 100px; }
-  /* LIST + GUIDED: breathing room above tab bar for primary CTAs */
-  .session-cta-pad { margin-bottom: var(--axis-safe-bottom); padding-bottom: 12px; }
+  /* LIST + GUIDED: breathing room above tab bar for primary CTAs — stack above .tab-subbar (190) for hit-testing */
+  .session-cta-pad {
+    position: relative;
+    z-index: 201;
+    margin-bottom: var(--axis-safe-bottom);
+    padding-bottom: 12px;
+    pointer-events: auto;
+  }
   .sg {
     margin-top:32px;
     background:var(--glass-bg);
