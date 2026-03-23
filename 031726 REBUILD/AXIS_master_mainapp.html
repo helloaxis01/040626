@@ -1210,13 +1210,35 @@ const css = `
     min-height: 0;
   }
   .content.content--session.content--session-list { padding-bottom: 100px; }
-  /* LIST + GUIDED: breathing room above tab bar for primary CTAs — stack above .tab-subbar (190) for hit-testing */
+  /* LIST + GUIDED: breathing room above tab bar for primary CTAs — stack above .tab-subbar for hit-testing */
   .session-cta-pad {
     position: relative;
-    z-index: 201;
+    z-index: 9999 !important;
     margin-bottom: var(--axis-safe-bottom);
-    padding-bottom: 12px;
+    padding-bottom: 80px !important;
     pointer-events: auto;
+  }
+  .session-cta-pad button {
+    pointer-events: auto !important;
+  }
+  /* Session: Favorites / Skipped / Reset — glass shell above scroll content, below .session-cta-pad */
+  .session-fav-glass-wrap {
+    position: relative;
+    z-index: 120;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    padding: 14px 16px;
+    border-radius: 20px;
+    box-sizing: border-box;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
+  }
+  .session-fav-glass-wrap .fav-filter.fav-filter--session {
+    margin-top: 0;
+    padding: 0;
   }
   .sg {
     margin-top:32px;
@@ -1663,7 +1685,7 @@ const css = `
   }
   .guided-step-cue {
     font-size: var(--text-lg);
-    line-height: 1.3;
+    line-height: 1.2;
     letter-spacing: -0.01em;
     font-weight: 400;
   }
@@ -1927,7 +1949,7 @@ const css = `
     left: 16px;
     right: 16px;
     bottom: max(20px, env(safe-area-inset-bottom, 20px));
-    z-index: 40;
+    z-index: 9999;
     margin: 0;
     padding: 10px 12px;
     box-sizing: border-box;
@@ -2801,7 +2823,8 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 
 function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, done, totalDone, sessionSecs,
   onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete,
-  showFavOnly = false, showSkipOnly = false, onToggleFavOnly = () => {}, onToggleSkipOnly = () => {}, onResetSession = () => {} }) {
+  showFavOnly = false, showSkipOnly = false, onToggleFavOnly = () => {}, onToggleSkipOnly = () => {}, onResetSession = () => {},
+  initialPhase = "intro" }) {
 
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
@@ -2882,7 +2905,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const filteredCount = listTotal;
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
-  const [phase, setPhase] = useState("intro"); // "intro" | "getready" | "launch" | "exercise" | "milestone" | "closing"
+  const [phase, setPhase] = useState(initialPhase); // "intro" | "getready" | "launch" | "exercise" | "milestone" | "closing"
   const GETREADY_SECONDS = 15;
   const [readyLeft, setReadyLeft] = useState(GETREADY_SECONDS);
   const [paused, setPaused] = useState(false);
@@ -3191,19 +3214,18 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         padding: "max(10px, env(safe-area-inset-top)) 16px 8px", flexShrink: 0, position: "relative", zIndex: 2,
         gap: 8
       } }, /*#__PURE__*/
-    React.createElement("div", { style: { flex: "0 0 52px", display: "flex", justifyContent: "flex-start", alignItems: "center" } }, /*#__PURE__*/
-    React.createElement("button", { ref: guidedCloseBtnRef, type: "button", onClick: onExit, style: {
-        display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44,
-        background: "transparent",
-        border: "1px solid " + (isNight ? "#FF0000" : isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)"),
-        borderRadius: 999, cursor: "pointer", color: S,
-        opacity: phase === "intro" ? 1 : 0.9
-      }, "aria-label": "Close" }, /*#__PURE__*/
-    React.createElement("svg", { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M19 12H5M12 19l-7-7 7-7" }))
-    )
-    ),
-    React.createElement("div", { style: { flex: "1 1 0", minWidth: 0, display: "flex", justifyContent: "center", alignItems: "center" } }, /*#__PURE__*/
     phase !== "milestone" && /*#__PURE__*/
+    React.createElement("div", { style: {
+        position: "absolute",
+        left: "50%",
+        top: "max(10px, env(safe-area-inset-top))",
+        transform: "translateX(-50%)",
+        zIndex: 3,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        pointerEvents: "none"
+      } }, /*#__PURE__*/
     React.createElement("div", { className: "guided-hud-timer guided-hud-timer--header", "aria-hidden": true }, /*#__PURE__*/
     React.createElement("div", { className: "guided-hud-timer__value" }, headerTimerDisplay), /*#__PURE__*/
     React.createElement("div", { className: "guided-hud-timer__bar" }, /*#__PURE__*/
@@ -3215,6 +3237,18 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     )
     )
     ),
+    React.createElement("div", { style: { flex: "0 0 52px", display: "flex", justifyContent: "flex-start", alignItems: "center" } }, /*#__PURE__*/
+    React.createElement("button", { ref: guidedCloseBtnRef, type: "button", onClick: onExit, style: {
+        display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44,
+        background: "transparent",
+        border: "1px solid " + (isNight ? "#FF0000" : isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)"),
+        borderRadius: 999, cursor: "pointer", color: S,
+        opacity: phase === "intro" ? 1 : 0.9
+      }, "aria-label": "Close" }, /*#__PURE__*/
+    React.createElement("svg", { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M19 12H5M12 19l-7-7 7-7" }))
+    )
+    ),
+    React.createElement("div", { style: { flex: "1 1 0", minWidth: 0 } }),
     React.createElement("div", { style: { flex: "0 0 52px", display: "flex", justifyContent: "flex-end", alignItems: "center" } }, /*#__PURE__*/
     phase !== "intro" && phase !== "closing" && phase !== "milestone" && listTotal > 0 && /*#__PURE__*/
     React.createElement("div", { className: "hud-session-ring", "aria-label": `Exercise ${fi + 1} of ${listTotal}` }, /*#__PURE__*/
@@ -4271,6 +4305,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [showSkipOnly, setShowSkipOnly] = useState(false);
   const [resting, setResting] = useState(false);
   const [guidedActive, setGuidedActive] = useState(false);
+  const [guidedPhase, setPhase] = useState("intro");
   const [sessionComplete, setSessionComplete] = useState(false);
   const [done, setDone] = useState(() => storageGet("axis_done", {}));
   const [skipped, setSkipped] = useState(() => storageGet("axis_skipped", {}));
@@ -4454,24 +4489,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const tabSubtitle = tab === "list" ?
   "See all moves and targets." :
   "Step-by-step walkthrough.";
-
-  const openGuidedOverlay = () => {
-    try {console.log("START BUTTON CLICKED");} catch (e) {}
-    setShowFavOnly(false);
-    setShowSkipOnly(false);
-    axisHapticSuccess();
-    primeAudio();
-    setGuidedActive(true);
-  };
-  const openGuidedFromList = () => {
-    try {console.log("START BUTTON CLICKED");} catch (e) {}
-    setShowFavOnly(false);
-    setShowSkipOnly(false);
-    axisHapticSuccess();
-    primeAudio();
-    setTab("guided");
-    setGuidedActive(true);
-  };
 
   const SunIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "5" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "2", x2: "12", y2: "4" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "20", x2: "12", y2: "22" }), /*#__PURE__*/React.createElement("line", { x1: "4.22", y1: "4.22", x2: "5.64", y2: "5.64" }), /*#__PURE__*/React.createElement("line", { x1: "18.36", y1: "18.36", x2: "19.78", y2: "19.78" }), /*#__PURE__*/React.createElement("line", { x1: "2", y1: "12", x2: "4", y2: "12" }), /*#__PURE__*/React.createElement("line", { x1: "20", y1: "12", x2: "22", y2: "12" }), /*#__PURE__*/React.createElement("line", { x1: "4.22", y1: "19.78", x2: "5.64", y2: "18.36" }), /*#__PURE__*/React.createElement("line", { x1: "18.36", y1: "5.64", x2: "19.78", y2: "4.22" }));
   const MoonIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("path", { d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" }));
@@ -4879,7 +4896,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   React.createElement(GuidedOverlay, {
     theme: theme, activePeriod: activePeriod, activeAll: filteredAll, TOTAL: filteredAll.length,
     done: done, totalDone: totalDone, sessionSecs: sessionSecs,
-    onExit: () => {setGuidedActive(false);setSessionComplete(false);},
+    initialPhase: guidedPhase,
+    onExit: () => {setGuidedActive(false);setSessionComplete(false);setPhase("intro");},
     onToggle: toggle,
     onSkip: toggleSkip,
     formatTime: formatTime,
@@ -4970,7 +4988,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("button", {
       type: "button",
       className: "fv-cta axis-cta-core",
-      onClick: () => { try {console.log("Click detected");} catch (e) {} setTimeout(() => openGuidedOverlay(), 0); } }, /*#__PURE__*/
+      onClick: () => { setShowFavOnly(false); setShowSkipOnly(false); setGuidedActive(true); setPhase("getready"); } }, /*#__PURE__*/
 
     React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10 } }, /*#__PURE__*/
     React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "currentColor" }, /*#__PURE__*/React.createElement("polygon", { points: "5,3 19,12 5,21" })), /*#__PURE__*/
@@ -5061,7 +5079,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("button", {
       type: "button",
       className: "axis-cta-core",
-      onClick: () => { try {console.log("Click detected");} catch (e) {} setTimeout(() => openGuidedFromList(), 0); },
+      onClick: () => { setShowFavOnly(false); setShowSkipOnly(false); setGuidedActive(true); setPhase("getready"); },
       style: {
         width: "100%", padding: "14px 18px", borderRadius: 999, border: nightMode ? "1px solid #FF0000" : "none",
         color: nightMode ? "var(--axis-black)" : "var(--axis-white)",
@@ -5172,6 +5190,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
     ), /*#__PURE__*/
 
+    React.createElement("div", { className: "session-fav-glass-wrap" }, /*#__PURE__*/
     React.createElement("div", { className: "fav-filter fav-filter--session" }, /*#__PURE__*/
     React.createElement("button", { className: `fav-toggle ${showFavOnly ? "on" : ""}`, onClick: () => {axisHapticTick();setShowFavOnly((f) => !f);setShowSkipOnly(false);} }, "\u2605 Favorites"), /*#__PURE__*/
     React.createElement("button", { className: `fav-toggle ${showSkipOnly ? "on" : ""}`, onClick: () => {axisHapticTick();setShowSkipOnly((f) => !f);setShowFavOnly(false);} }, "\u2014 Skipped"), /*#__PURE__*/
@@ -5181,6 +5200,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         storageSet("axis_done", {});storageSet("axis_skipped", {});
         setShowFavOnly(false);setShowSkipOnly(false);
       } }, "\u21BA Reset Session")
+    )
     ),
     React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--session" }),
     /*#__PURE__*/
