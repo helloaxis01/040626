@@ -1671,6 +1671,11 @@ const css = `
     transition: opacity 0.15s ease;
   }
   .tab-btn.active .nav-glow-dot { opacity: 1; }
+  .tab-bar[data-night="false"][data-theme="light"] .tab-btn.active .nav-glow-dot {
+    background: #252525;
+    box-shadow: 0 0 8px #252525;
+    opacity: 1;
+  }
   @keyframes tabPulse {
     0%, 100% { opacity:1; transform:scale(1); }
     50% { opacity:0.7; transform:scale(1.2); }
@@ -1803,6 +1808,24 @@ const css = `
   .track-card-left { flex:1; min-width:0; width:100%; }
   .track-card-name { font-size: var(--text-lg); font-weight:600; color:var(--text-white); margin-bottom:6px; letter-spacing:-0.02em; }
   .track-card-sub { font-size: var(--text-sm); color:var(--accent-secondary); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; line-height:1.4; }
+  .track-card-sub .glass-label {
+    background: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 0;
+    border-radius: 0;
+    color: var(--mood-accent);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-card-sub { margin-bottom: 8px; }
   .track-card-purpose { font-size: var(--text-base); color:var(--text-secondary); font-style:italic; line-height:1.45; margin-top:10px; }
   .track-card-right { display:flex; align-items:center; justify-content:space-between; width:100%; }
   .track-card-dur { font-size: var(--text-sm); letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); font-weight: 600; }
