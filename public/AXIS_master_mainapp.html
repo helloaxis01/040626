@@ -4425,6 +4425,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   "Step-by-step walkthrough.";
 
   const openGuidedOverlay = () => {
+    if (typeof window !== "undefined" && window.AXIS_DEV) {
+      try {console.log("Guided Triggered", { showFavOnly, showSkipOnly, session: { tab, view, track, hasActiveSession } });} catch (e) {}
+    }
     setShowFavOnly(false);
     setShowSkipOnly(false);
     axisHapticSuccess();
