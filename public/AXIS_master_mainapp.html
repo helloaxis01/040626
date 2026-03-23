@@ -38,14 +38,6 @@
     /* Ensure onboarding screens are centered if the onboarding CSS isn't loaded */
     .ob-screen { display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100dvh; box-sizing:border-box; }
 
-    /* ── AUDIT (2026-03): stacking / hit-testing — remove .axis-debug-* after verification ──
-       Likely click-blockers (fixed/sticky, high z-index): #load-err (full viewport when shown);
-       .tab-bar z-index:300 (bottom nav); .hdr-wrap sticky z-index:200; GuidedOverlay portal z-index:99999;
-       AXIS dev chip z-index:99999 (small, bottom-right). .app-orbs z-index:1 + pointer-events:none (does NOT steal clicks).
-       Session CTAs sit in .content z-index:1 — nothing in CSS should sit above them except modals/overlays.
-       Event model: buttons use React onClick (synthetic); grep shows no code assigning element.onclick to these CTAs after mount. */
-    button.axis-debug-start-guided-hitbox { border: 5px solid red !important; box-sizing: border-box !important; }
-    .guided-interaction-footer.axis-debug-footer-hitbox { border: 5px solid red !important; box-sizing: border-box !important; }
   </style>
 </head>
 <body>
@@ -1918,7 +1910,7 @@ const css = `
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
-  /* Guided HUD: same row as session (Barlow 11 bold / 0.15em) — visible on Get Ready / Get Set / Work */
+  /* Guided HUD: Favorites / Skipped / Reset — fixed above safe area so flex/stacking can’t swallow it */
   .guided-interaction-footer {
     display: flex;
     flex-direction: row;
@@ -1926,11 +1918,25 @@ const css = `
     align-items: center;
     flex-wrap: nowrap;
     gap: 10px;
-    margin: 10px 16px 0;
-    padding: 0 0 6px;
     font-size: 11px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
+  }
+  .guided-interaction-footer.guided-interaction-footer--fixed {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: max(20px, env(safe-area-inset-bottom, 20px));
+    z-index: 40;
+    margin: 0;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    background: var(--glass-bg, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.12));
+    border-radius: 20px;
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    box-shadow: var(--glass-shadow, 0 8px 32px rgba(0, 0, 0, 0.2)), inset 0 1px 0 var(--glass-specular, rgba(255, 255, 255, 0.12));
   }
   .guided-interaction-footer .fav-toggle {
     font-family: "Barlow", sans-serif;
@@ -2994,6 +3000,8 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const hudRingOffset = hudRingC * (1 - hudProgress01);
 
   const timerDisplay = phase === "getready" ? `0:${readyLeft.toString().padStart(2, "0")}` : phase === "launch" ? (launchCount > 0 ? String(launchCount) : "") : phase === "exercise" ? gDisplay : "";
+  const headerTimerDisplay = timerDisplay || "00:00";
+  const headerTimerBarPct = phase === "getready" ? (GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS * 100 : phase === "launch" ? (3 - launchCount) / 3 * 100 : phase === "exercise" ? gPct * 100 : 0;
 
   // GUIDED phase flags
   const isExercisePhase = phase === "exercise";
@@ -3195,12 +3203,12 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     )
     ),
     React.createElement("div", { style: { flex: "1 1 0", minWidth: 0, display: "flex", justifyContent: "center", alignItems: "center" } }, /*#__PURE__*/
-    (phase === "getready" || phase === "launch" || phase === "exercise") && /*#__PURE__*/
+    phase !== "milestone" && /*#__PURE__*/
     React.createElement("div", { className: "guided-hud-timer guided-hud-timer--header", "aria-hidden": true }, /*#__PURE__*/
-    React.createElement("div", { className: "guided-hud-timer__value" }, timerDisplay), /*#__PURE__*/
+    React.createElement("div", { className: "guided-hud-timer__value" }, headerTimerDisplay), /*#__PURE__*/
     React.createElement("div", { className: "guided-hud-timer__bar" }, /*#__PURE__*/
     React.createElement("div", { className: "guided-hud-timer__fill", style: {
-        width: `${phase === "getready" ? (GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS * 100 : phase === "launch" ? (3 - launchCount) / 3 * 100 : gPct * 100}%`,
+        width: `${headerTimerBarPct}%`,
         background: `linear-gradient(90deg, ${A}, ${ct.accentDim || A + "99"})`,
         transition: phase === "getready" ? "width 1s linear" : "width 0.35s ease-out"
       } } )
@@ -3346,8 +3354,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
     phase !== "closing" && phase !== "milestone" && phase !== "intro" && /*#__PURE__*/
     React.createElement(React.Fragment, null, /*#__PURE__*/
-    React.createElement("div", { style: {
-        margin: "0 16px", marginBottom: (phase === "getready" || phase === "launch" || phase === "exercise") ? 8 : `max(28px, env(safe-area-inset-bottom, 28px))`,
+    React.createElement("div", {
+      className: "guided-bottom-controls",
+      style: {
+        margin: "0 16px",
+        marginBottom: (phase === "getready" || phase === "launch" || phase === "exercise") ? 72 : `max(28px, env(safe-area-inset-bottom, 28px))`,
         flexShrink: 0, position: "relative", zIndex: 2,
         display: "flex", alignItems: "stretch", height: 56, gap: phase === "exercise" ? 12 : 0,
         ...(phase === "exercise" ? {} : { borderRadius: 24, overflow: "hidden", background: BAR_BG, backdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)", WebkitBackdropFilter: isDark ? "blur(40px) saturate(2)" : "blur(28px) saturate(1.4)", border: BAR_BDR, boxShadow: BAR_SHAD })
@@ -3395,7 +3406,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
     ),
     (phase === "getready" || phase === "launch" || phase === "exercise") && /*#__PURE__*/
-    React.createElement("div", { className: "fav-filter guided-interaction-footer axis-debug-footer-hitbox", style: { marginBottom: `max(20px, env(safe-area-inset-bottom, 20px))` } }, /*#__PURE__*/
+    React.createElement("div", { className: "fav-filter guided-interaction-footer guided-interaction-footer--fixed" }, /*#__PURE__*/
     React.createElement("button", { type: "button", className: `fav-toggle ${showFavOnly ? "on" : ""}`, onClick: onToggleFavOnly }, "\u2605 Favorites"), /*#__PURE__*/
     React.createElement("button", { type: "button", className: `fav-toggle ${showSkipOnly ? "on" : ""}`, onClick: onToggleSkipOnly }, "\u2014 Skipped"), /*#__PURE__*/
     React.createElement("button", { type: "button", className: "fav-toggle reset-pill", onClick: onResetSession }, "\u21BA Reset Session")
@@ -4445,9 +4456,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   "Step-by-step walkthrough.";
 
   const openGuidedOverlay = () => {
-    if (typeof window !== "undefined" && window.AXIS_DEV) {
-      try {console.log("Guided Triggered", { showFavOnly, showSkipOnly, session: { tab, view, track, hasActiveSession } });} catch (e) {}
-    }
+    try {console.log("START BUTTON CLICKED");} catch (e) {}
     setShowFavOnly(false);
     setShowSkipOnly(false);
     axisHapticSuccess();
@@ -4455,6 +4464,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     setGuidedActive(true);
   };
   const openGuidedFromList = () => {
+    try {console.log("START BUTTON CLICKED");} catch (e) {}
     setShowFavOnly(false);
     setShowSkipOnly(false);
     axisHapticSuccess();
@@ -4959,8 +4969,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "session-cta-pad", style: { paddingTop: "14px" } }, /*#__PURE__*/
     React.createElement("button", {
       type: "button",
-      className: "fv-cta axis-cta-core axis-debug-start-guided-hitbox",
-      onClick: openGuidedOverlay }, /*#__PURE__*/
+      className: "fv-cta axis-cta-core",
+      onClick: () => { try {console.log("Click detected");} catch (e) {} setTimeout(() => openGuidedOverlay(), 0); } }, /*#__PURE__*/
 
     React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10 } }, /*#__PURE__*/
     React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "currentColor" }, /*#__PURE__*/React.createElement("polygon", { points: "5,3 19,12 5,21" })), /*#__PURE__*/
@@ -5050,8 +5060,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "session-cta-pad", style: { marginTop: 24, paddingTop: "4px" } }, /*#__PURE__*/
     React.createElement("button", {
       type: "button",
-      className: "axis-cta-core axis-debug-start-guided-hitbox",
-      onClick: openGuidedFromList,
+      className: "axis-cta-core",
+      onClick: () => { try {console.log("Click detected");} catch (e) {} setTimeout(() => openGuidedFromList(), 0); },
       style: {
         width: "100%", padding: "14px 18px", borderRadius: 999, border: nightMode ? "1px solid #FF0000" : "none",
         color: nightMode ? "var(--axis-black)" : "var(--axis-white)",
