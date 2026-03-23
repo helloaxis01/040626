@@ -4393,6 +4393,30 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   "See all moves and targets." :
   "Step-by-step walkthrough.";
 
+  // Favorites / Skipped filters can make filteredAll empty while activeAll still has moves — old logic disabled Start Guided and no-op'd clicks.
+  const openGuidedOverlay = () => {
+    if (activeAll.length === 0) return;
+    axisHapticSuccess();
+    primeAudio();
+    if (filteredAll.length === 0) {
+      setShowFavOnly(false);
+      setShowSkipOnly(false);
+    }
+    setGuidedActive(true);
+  };
+  const openGuidedFromList = () => {
+    if (activeAll.length === 0) return;
+    axisHapticSuccess();
+    primeAudio();
+    if (filteredAll.length === 0) {
+      setShowFavOnly(false);
+      setShowSkipOnly(false);
+    }
+    setTab("guided");
+    setGuidedActive(true);
+  };
+  const guidedCtaDisabled = activeAll.length === 0;
+
   const SunIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "5" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "2", x2: "12", y2: "4" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "20", x2: "12", y2: "22" }), /*#__PURE__*/React.createElement("line", { x1: "4.22", y1: "4.22", x2: "5.64", y2: "5.64" }), /*#__PURE__*/React.createElement("line", { x1: "18.36", y1: "18.36", x2: "19.78", y2: "19.78" }), /*#__PURE__*/React.createElement("line", { x1: "2", y1: "12", x2: "4", y2: "12" }), /*#__PURE__*/React.createElement("line", { x1: "20", y1: "12", x2: "22", y2: "12" }), /*#__PURE__*/React.createElement("line", { x1: "4.22", y1: "19.78", x2: "5.64", y2: "18.36" }), /*#__PURE__*/React.createElement("line", { x1: "18.36", y1: "5.64", x2: "19.78", y2: "4.22" }));
   const MoonIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("path", { d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" }));
   const GearIcon = () => /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "3" }), /*#__PURE__*/React.createElement("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" }));
@@ -4878,9 +4902,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     tab === "guided" && /*#__PURE__*/
     React.createElement("div", { className: "session-cta-pad", style: { paddingTop: "14px" } }, /*#__PURE__*/
     React.createElement("button", {
+      type: "button",
       className: "fv-cta axis-cta-core",
-      disabled: filteredAll.length === 0,
-      onClick: () => {if (filteredAll.length > 0) {axisHapticSuccess();primeAudio();setGuidedActive(true);}} }, /*#__PURE__*/
+      disabled: guidedCtaDisabled,
+      onClick: openGuidedOverlay }, /*#__PURE__*/
 
     React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10 } }, /*#__PURE__*/
     React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "currentColor" }, /*#__PURE__*/React.createElement("polygon", { points: "5,3 19,12 5,21" })), /*#__PURE__*/
@@ -4971,14 +4996,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("button", {
       type: "button",
       className: "axis-cta-core",
-      onClick: () => {if (filteredAll.length > 0) {axisHapticSuccess();primeAudio();setTab("guided");setGuidedActive(true);}},
-      disabled: filteredAll.length === 0,
+      onClick: openGuidedFromList,
+      disabled: guidedCtaDisabled,
       style: {
         width: "100%", padding: "14px 18px", borderRadius: 999, border: nightMode ? "1px solid #FF0000" : "none",
         color: nightMode ? "var(--axis-black)" : "var(--axis-white)",
         fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 700,
         letterSpacing: "0.18em", textTransform: "uppercase", cursor: "pointer",
-        opacity: filteredAll.length === 0 ? 0.45 : 1, transition: "opacity 0.18s, transform 0.18s"
+        opacity: guidedCtaDisabled ? 0.45 : 1, transition: "opacity 0.18s, transform 0.18s"
       } },
     "Start GUIDED with these steps"
 
