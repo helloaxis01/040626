@@ -1615,9 +1615,9 @@ const css = `
 
   /* ── FAV FILTER (iPhone: single row, tight pills) ── */
   .fav-filter {
-    display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:8px;
-    margin-top:16px;
-    padding:10px 0 10px; position:relative;
+    display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:8px;
+    margin:10px 0;
+    padding:6px 0; position:relative;
     overflow: visible; -webkit-overflow-scrolling:touch;
     scrollbar-width:none; -ms-overflow-style:none;
     visibility: visible;
@@ -1625,9 +1625,8 @@ const css = `
     min-height: 22px;
   }
   .fav-filter::-webkit-scrollbar { display:none; }
-  .fav-filter.fav-filter--after-guided-cta { margin-top:16px !important; padding-top:10px; }
-  .fav-filter > * { margin-right: 8px; }
-  .fav-filter > *:last-child { margin-right: 0; }
+  .fav-filter.fav-filter--after-guided-cta { margin:10px 0 !important; }
+  .reset-pill { margin-left:auto; }
   .fav-filter::before {
     display:none;
   }
