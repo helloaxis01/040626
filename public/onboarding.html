@@ -24,7 +24,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { margin: 0; min-height: 100%; min-height: 100dvh; }
   html { width: 100%; max-width: 100vw; overflow-x: hidden; -webkit-text-size-adjust: 100%; touch-action: auto; scrollbar-gutter: stable; }
-  body { width: 100%; max-width: 100vw; min-height: 100vh; min-height: 100dvh; padding: 0; overflow-x: hidden; background: var(--ob-page-bg, var(--current-bg, #0a0e1a)); transition: background-color 0.6s ease; touch-action: auto; }
+  body { width: 100%; max-width: 100vw; min-height: 100vh; min-height: 100dvh; padding: 0; overflow-x: hidden; background: var(--ob-page-bg, var(--current-bg, #FFFFFF)); transition: background-color 0.6s ease; touch-action: auto; }
   #root { width: 100%; max-width: 100vw; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
   /* Ensure ob-wrap fills viewport and background extends (onboarding.css sets transparent) */
   .ob-wrap { min-height: 100vh; min-height: 100dvh; }
@@ -40,7 +40,7 @@
 /* AXIS canonical colors — text colors are set dynamically via JS vars on .ob-wrap */
 :root {
   --font-display: 'Barlow', sans-serif;
-  --font-ui: 'Inter', sans-serif;
+  --font-ui: 'Barlow', sans-serif;
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px;
@@ -89,7 +89,7 @@ body { font-family: var(--font-ui), sans-serif !important; }
   /* Mood button labels use inline colors; do not force button color (breaks icon accent) */
   .ob-wrap {
     width: 100%; position: relative; box-sizing: border-box;
-    background: var(--ob-page-bg); font-family: var(--font-ui), sans-serif; font-weight: 400;
+    background: var(--ob-page-bg); font-family: var(--font-ui), sans-serif; font-weight: 500;
     transition: color 0.6s ease, background-color 0.6s ease;
   }
   /* Footer progress dots — 8px fixed slots; inner 6↔8px so row width never shifts */
@@ -184,7 +184,7 @@ body { font-family: var(--font-ui), sans-serif !important; }
     box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
   }
   .ob-splash-name { font-size: 48px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-text-head); line-height:1; margin-top:44px; }
-.ob-splash-tag { margin-top:24px; font-family:'Barlow', sans-serif !important; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ob-text-sec); white-space:nowrap; display:block; text-align:center; }
+.ob-splash-tag { margin-top:24px; font-family:'Barlow', sans-serif !important; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ob-text-sec); white-space:nowrap; display:block; text-align:center; }
   .ob-eyebrow { font-size: var(--text-sm); font-weight: 600; letter-spacing:0.26em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:16px; flex-shrink:0; }
   .ob-heading { font-size: 42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:18px; flex-shrink:0; }
   .ob-heading em { font-style:italic; font-weight: 400; color:var(--ob-accent); }
@@ -366,7 +366,7 @@ body { font-family: var(--font-ui), sans-serif !important; }
     box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
   }
   .ob-splash-name { font-size: 48px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-text-head); line-height:1; margin-top:44px; }
-  .ob-splash-tag { margin-top:24px; font-family:'Barlow', sans-serif !important; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ob-text-sec); white-space:nowrap; display:block; text-align:center; }
+  .ob-splash-tag { margin-top:24px; font-family:'Barlow', sans-serif !important; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ob-text-sec); white-space:nowrap; display:block; text-align:center; }
   .ob-eyebrow { font-size: var(--text-sm); font-weight: 600; letter-spacing:0.26em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:16px; }
   .ob-heading { font-size: 42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:18px; }
   .ob-heading em { font-style:italic; font-weight: 400; color:var(--ob-accent); }
@@ -561,7 +561,7 @@ const obCss = `
     box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
   }
   .ob-splash-name { font-size: 48px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ob-text-head); line-height:1; margin-top:44px; }
-  .ob-splash-tag { margin-top:24px; font-family:'Barlow', sans-serif !important; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ob-text-sec); white-space:nowrap; display:block; text-align:center; }
+  .ob-splash-tag { margin-top:24px; font-family:'Barlow', sans-serif !important; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ob-text-sec); white-space:nowrap; display:block; text-align:center; }
   .ob-eyebrow { font-size: var(--text-sm); font-weight: 600; letter-spacing:0.26em; text-transform:uppercase; color:var(--ob-accent); margin-bottom:16px; }
   .ob-heading { font-size: 42px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; color:var(--ob-text-head); margin-bottom:18px; }
   .ob-heading em { font-style:italic; font-weight: 400; color:var(--ob-accent); }
@@ -679,20 +679,20 @@ const obDarkVars = `
   --ob-nav-bg:rgba(8,13,24,0.80); --ob-dot-bg:rgba(255,255,255,0.20);
 `;
 const obLightVars = `
-  --ob-page-bg: linear-gradient(145deg, #c8d8e8 0%, #d0dcea 35%, #dce4ec 70%, #e8eef4 100%);
+  --ob-page-bg: #FFFFFF;
   --ob-orb1: radial-gradient(ellipse 65% 55% at 10% 15%, rgba(80,140,200,0.13) 0%, transparent 65%);
   --ob-orb2: radial-gradient(ellipse 55% 65% at 90% 75%, rgba(100,160,210,0.10) 0%, transparent 65%);
   --ob-orb3: radial-gradient(ellipse 50% 45% at 55% 5%,  rgba(140,180,220,0.08) 0%, transparent 65%);
-  --ob-text-head:#0f1e2e; --ob-text-body:rgba(15,30,46,0.88); --ob-text-sec:rgba(15,30,46,0.68); --ob-text-dim:rgba(15,30,46,0.50);
+  --ob-text-head:#1D1D1F; --ob-text-body:rgba(29,29,31,0.88); --ob-text-sec:rgba(29,29,31,0.68); --ob-text-dim:rgba(29,29,31,0.50);
   --ob-accent:#1a4f7a; --ob-accent-text:var(--axis-white); --ob-accent-btn-text:var(--axis-white); --ob-accent-dim:rgba(26,79,122,0.14); --ob-accent-glow:rgba(26,79,122,0.28);
-  --ob-nav-bg:rgba(220,232,244,0.92); --ob-dot-bg:rgba(15,30,46,0.22);
+  --ob-nav-bg:rgba(255,255,255,0.92); --ob-dot-bg:rgba(29,29,31,0.22);
 `;
 
 // Main app backgrounds (dark/light) — onboarding uses these when in color mode so it matches the app
 const MAIN_APP_BG = {
   // Dark: original navy gradient — orbs handle most of the color; bg stays consistent
   dark: "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)",
-  light: "linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%)",
+  light: "#FFFFFF",
 };
 
 // Brand logo PNGs — default LIGHT.png (white on dark). DARK.png only when user toggles to Light Mode on Appearance.
@@ -943,7 +943,7 @@ function Onboarding({ theme, onComplete }) {
     storageSet("axis_onboarded", true);
     try { localStorage.setItem("hasCompletedOnboarding", "true"); } catch(e) {}
     onComplete({ period: periodForTheme, theme: obTheme });
-    window.location.href = "./AXIS_master_mainapp.html";
+    window.location.href = "./index.html";
   };
 
   return (
