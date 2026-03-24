@@ -3137,7 +3137,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     React.createElement("span", { style: {
         fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
         textTransform: "uppercase",
-        color: isDark ? "rgba(255,255,255,0.85)" : "#007AFF",
+        color: isDark ? "rgba(255,255,255,0.85)" : "var(--accent)",
         fontFamily: "var(--font-display)",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
       } }, (next.name || "").replace(/-/g, " "))
@@ -3813,7 +3813,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: isDark ? "var(--border)" : "#EEEEEE", strokeWidth: isDark ? "2.5" : "1.5" }),
     iPhase !== "idle" && iPhase !== "done" && /*#__PURE__*/
     React.createElement("circle", { className: "timer-interval-progress", cx: "160", cy: "160", r: "140", fill: "none",
-      stroke: isDark ? iRingColor : "#007AFF", strokeWidth: "3", strokeLinecap: "round",
+      stroke: iRingColor, strokeWidth: "3", strokeLinecap: "round",
       strokeDasharray: iCircumference,
       strokeDashoffset: iCircumference * (1 - iPct / 100) }
     )
@@ -3943,7 +3943,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
       cy: "153",
       r: "120",
       fill: "none",
-      stroke: isDark ? "var(--accent)" : "#007AFF",
+      stroke: "var(--accent)",
       strokeWidth: "3",
       strokeLinecap: "round",
       style: { transition: "stroke 0.3s ease" } }
