@@ -1620,9 +1620,8 @@ const css = `
     scrollbar-width:none; -ms-overflow-style:none;
     visibility: visible;
     opacity: 1;
-    min-height: 26px;
+    min-height: 32px;
   }
-  .fav-filter::-webkit-scrollbar { display:none; }
   .fav-filter.fav-filter--after-guided-cta { margin:14px 0 !important; }
   /* Ensure the first section after pills has no extra top margin to keep vertical spacing even */
   .fav-filter + .sg { margin-top: 0 !important; }
@@ -1632,16 +1631,19 @@ const css = `
     display:none;
   }
   .fav-toggle {
-    flex:0 0 auto; min-height:0; padding:4px 10px !important; border-radius:20px;
-    font-family:'Barlow', sans-serif !important; font-size:11px !important; font-weight:700 !important;
-    line-height:1 !important; letter-spacing:0.12em; text-transform:uppercase !important;
+    flex:0 0 auto; min-height:0; padding:6px 15px !important; border-radius:20px;
+    font-family:'Barlow', sans-serif !important; font-size:12px !important; font-weight:700 !important;
+    line-height:1 !important; letter-spacing:0.08em; text-transform:uppercase !important;
     cursor:pointer; transition:border-color 0.18s, background 0.18s, color 0.18s, transform var(--motion-fast), opacity var(--motion-fast); white-space:nowrap;
     border:1px solid var(--glass-border); background:transparent; color:var(--text-dim);
     box-sizing:border-box; display:inline-flex; flex-direction:row; align-items:center; justify-content:center; -webkit-tap-highlight-color: transparent;
-    gap: 4px;
+    gap: 6px;
   }
-  .fav-toggle span { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
-  /* Hairline borders for interaction pills */
+  .fav-toggle span { 
+    display: inline-flex; align-items: center; justify-content: center; 
+    line-height: 0; height: 14px; width: 14px; font-size: 15px; 
+    position: relative; top: -1px; /* Precision centering for icons */
+  }
   [data-theme="dark"] .fav-toggle { border-color: rgba(255, 255, 255, 0.2); }
   [data-theme="light"] .fav-toggle { border-color: rgba(0, 0, 0, 0.1); }
   /* Keep single-line pills on iPhone widths by reducing tracking instead of wrapping */

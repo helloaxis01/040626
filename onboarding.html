@@ -943,7 +943,7 @@ function Onboarding({ theme, onComplete }) {
     storageSet("axis_onboarded", true);
     try { localStorage.setItem("hasCompletedOnboarding", "true"); } catch(e) {}
     onComplete({ period: periodForTheme, theme: obTheme });
-    window.location.href = "./AXIS_master_mainapp.html";
+    window.location.href = "./index.html";
   };
 
   return (
