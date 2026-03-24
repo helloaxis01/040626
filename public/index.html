@@ -2870,12 +2870,21 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "max(12px, env(safe-area-inset-top)) 16px 10px", flexShrink: 0, position: "relative", zIndex: 2
       } }, /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", alignItems: "center" } },
-    phase !== "intro" && phase !== "closing" && listTotal > 0 && /*#__PURE__*/React.createElement("div", { style: {
-        fontSize: 10, fontWeight: 400, color: isNight ? "#FF0000" : isDark ? "rgba(232,228,223,0.60)" : "rgba(37,37,37,0.65)", fontFamily: "var(--font-display)"
-      } }, fi + 1, " / ", listTotal),
-    phase !== "intro" && phase !== "closing" && phase !== "milestone" && /*#__PURE__*/React.createElement("div", { style: {
-        marginLeft: 8, fontSize: 12, fontWeight: 700, color: !isNight ? "#252525" : "#FF0000", letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: "var(--font-display)"
+    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+    phase !== "intro" && phase !== "closing" && listTotal > 0 && /*#__PURE__*/
+    React.createElement("div", { style: {
+        width: 40, height: 40, borderRadius: "50%",
+        border: `1px solid ${isNight ? "#FF0000" : "rgba(255,255,255,0.28)"}`,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, gap: 1
+      } },
+      React.createElement("div", { style: { fontSize: 12, fontWeight: 700, lineHeight: 1, color: W, fontFamily: "var(--font-display)" } }, fi + 1),
+      React.createElement("div", { style: { width: "55%", height: 1, background: isNight ? "#FF0000" : "rgba(255,255,255,0.28)" } }),
+      React.createElement("div", { style: { fontSize: 9, fontWeight: 400, lineHeight: 1, color: S, fontFamily: "var(--font-display)" } }, listTotal)
+    ),
+    phase !== "intro" && phase !== "closing" && phase !== "milestone" && /*#__PURE__*/
+    React.createElement("div", { style: {
+        fontSize: 12, fontWeight: 700, color: W, letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: "var(--font-display)"
       } }, phase === "getready" ? "REST & GET READY" : "BEGIN")
     ), /*#__PURE__*/
     React.createElement("button", { ref: guidedCloseBtnRef, type: "button", onClick: onExit, style: {
