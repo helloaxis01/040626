@@ -897,6 +897,8 @@ const css = `
   /* Night mode: all text elements explicitly red, no grey */
   [data-night="true"] .hdr-dur { color: #FF0000 !important; }
   [data-night="true"] .sh-tag { color: #FF0000 !important; }
+  [data-night="true"] .track-group-label { color: #FF0000 !important; -webkit-text-fill-color: #FF0000 !important; }
+  [data-night="true"] .track-card-dur { color: #FF0000 !important; -webkit-text-fill-color: #FF0000 !important; }
   [data-night="true"] .track-card-sub,
   [data-night="true"] .track-card-sub * { color: #FF0000 !important; -webkit-text-fill-color: #FF0000 !important; }
   [data-night="true"] .track-card-name { color: #FF0000 !important; -webkit-text-fill-color: #FF0000 !important; }
@@ -3167,21 +3169,21 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     phase === "exercise" && next && /*#__PURE__*/
     React.createElement("div", { style: {
         margin: "0 16px 12px", padding: "11px 16px",
-        background: isDark ? "transparent" : "#F5F5F7",
-        border: isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #E5E5E7",
+        background: isNight ? "#000000" : isDark ? "transparent" : "#F5F5F7",
+        border: isNight ? "1px solid #FF0000" : isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #E5E5E7",
         borderRadius: 12, flexShrink: 0, position: "relative", zIndex: 2,
         display: "flex", alignItems: "center", gap: 6
       } }, /*#__PURE__*/
     React.createElement("span", { style: {
         fontSize: 12, fontWeight: 500, letterSpacing: "0.1em",
         textTransform: "uppercase",
-        color: isDark ? "rgba(255,255,255,0.45)" : "#1D1D1F",
+        color: isNight ? "#FF0000" : isDark ? "rgba(255,255,255,0.45)" : "#1D1D1F",
         fontFamily: "var(--font-display)", flexShrink: 0
       } }, "UP NEXT:"),
     React.createElement("span", { style: {
         fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
         textTransform: "uppercase",
-        color: isDark ? "rgba(255,255,255,0.85)" : "var(--accent)",
+        color: isNight ? "#FF0000" : isDark ? "rgba(255,255,255,0.85)" : "var(--accent)",
         fontFamily: "var(--font-display)",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
       } }, (next.name || "").replace(/-/g, " "))
