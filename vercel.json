@@ -1,17 +1,9 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/",
-      "destination": "/index.html",
-      "permanent": false
+      "destination": "/AXIS_main.html"
     },
-    {
-      "source": "/index.html",
-      "destination": "/index.html",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
     {
       "source": "/onboarding",
       "destination": "/onboarding.html"
