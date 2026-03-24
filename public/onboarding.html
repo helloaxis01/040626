@@ -393,11 +393,10 @@ body { font-family: var(--font-ui), sans-serif !important; }
   }
   /* AXIS Ultra reveal (Slide B) */
   .ob-ultra-reveal { background: #000000 !important; color: #FF3B30 !important; }
-  /* Match Appearance: headline lead = white, accent word = italic (here Wayfinder red) */
   .ob-ultra-reveal .ob-eyebrow { color: #FF3B30 !important; -webkit-text-fill-color: #FF3B30; }
   .ob-ultra-reveal .ob-heading {
-    color: #FFFFFF !important;
-    -webkit-text-fill-color: #FFFFFF;
+    color: #FF3B30 !important;
+    -webkit-text-fill-color: #FF3B30;
   }
   .ob-ultra-reveal .ob-heading em {
     font-style: italic;
@@ -1396,8 +1395,11 @@ function Onboarding({ theme, onComplete }) {
                   <div className="ob-body" style={{ marginBottom: 16, color: "#FF3B30", fontFamily: "'Barlow', sans-serif", fontWeight: 500, WebkitTextFillColor: "#FF3B30" }}>
                     Night-vision optimized. Pure OLED black and Wayfinder red for tactical performance in any light.
                   </div>
-                  <div className="ob-body" style={{ marginBottom: 0, color: "#FF3B30", fontFamily: "'Barlow', sans-serif", fontWeight: 500, WebkitTextFillColor: "#FF3B30" }}>
+                  <div className="ob-body" style={{ marginBottom: 16, color: "#FF3B30", fontFamily: "'Barlow', sans-serif", fontWeight: 500, WebkitTextFillColor: "#FF3B30" }}>
                     See in the dark. For times you don't want to bother.
+                  </div>
+                  <div className="ob-body" style={{ marginBottom: 0, color: "#FF3B30", fontFamily: "'Barlow', sans-serif", fontWeight: 500, WebkitTextFillColor: "#FF3B30" }}>
+                    This feature is selectable in the MOOD tab.
                   </div>
                   <div className="ob-ultra-eye" aria-hidden>
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round">
