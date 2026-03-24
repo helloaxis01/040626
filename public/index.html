@@ -3037,15 +3037,15 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
     React.createElement("div", { style: { flex: "1 1 58%", minHeight: 0, overflowY: "hidden", overflowX: "hidden", padding: "6px 16px 12px", WebkitOverflowScrolling: "touch", display: "flex", flexDirection: "column" } }, /*#__PURE__*/
 
-    React.createElement("div", { style: { fontSize: "var(--text-sm)", letterSpacing: "0.28em", textTransform: "uppercase", color: S, marginBottom: 8, flexShrink: 0, textAlign: "left" } },
-    phase !== "getready" && phase !== "exercise" ? phase === "milestone" ? "MILESTONE" : "" : ""
+    phase === "milestone" && /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-sm)", letterSpacing: "0.28em", textTransform: "uppercase", color: S, marginBottom: 8, flexShrink: 0, textAlign: "left" } }, "MILESTONE"
     ),
 
 
 
     (phase === "getready" || phase === "exercise") && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", minHeight: 34, marginBottom: 14, flexShrink: 0 } }, /*#__PURE__*/
-    React.createElement("div", { style: {
+    React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", minHeight: phase === "exercise" ? 36 : 28, marginBottom: 7, flexShrink: 0 } }, /*#__PURE__*/
+    React.createElement("div", { key: phase === "exercise" ? "begin" : "getready", style: {
         fontSize: phase === "exercise" ? 24 : 12,
         fontWeight: phase === "exercise" ? 700 : 500,
         letterSpacing: phase === "exercise" ? "0.12em" : "0.14em",
@@ -3056,27 +3056,29 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         borderRadius: 0,
         padding: 0,
         fontFamily: "var(--font-display)",
+        lineHeight: 1.15,
         animation: phase === "exercise" ? "guidedBeginBreath 2s ease-in-out infinite" : "none"
       } }, phase === "getready" ? "REST & GET READY" : "BEGIN")
     ), /*#__PURE__*/
 
 
 
-    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: phase === "getready" || phase === "exercise" ? "center" : "flex-start", minHeight: 84 } }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: phase === "getready" || phase === "exercise" ? "center" : "flex-start", minHeight: 56 } }, /*#__PURE__*/
     React.createElement("div", {
       ref: titleRef,
       style: {
         fontSize: phase === "getready" || phase === "exercise" ? 34 : 30,
         fontWeight: 500, letterSpacing: "0.04em", lineHeight: 1.08, textTransform: "uppercase",
         color: W,
-        height: 80,
+        minHeight: 72,
+        maxHeight: 80,
         maxWidth: Math.min(420, carouselCardW + 80),
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
         marginBottom: 0, flexShrink: 0, fontFamily: "var(--font-display)",
-        textShadow: NAME_SHAD,
+        textShadow: phase === "getready" || phase === "exercise" ? "none" : NAME_SHAD,
         textAlign: "center",
         whiteSpace: "normal",
         wordBreak: "break-word"
@@ -3087,7 +3089,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
 
     (phase === "getready" || phase === "exercise") && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", minHeight: 244, marginTop: 14, marginBottom: 24, flexShrink: 0 } },
+    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", minHeight: 228, marginTop: 6, marginBottom: 18, flexShrink: 0 } },
 
     React.createElement("div", { style: { position: "relative", width: 200, height: 200, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, /*#__PURE__*/
     React.createElement("div", { style: {
@@ -3096,9 +3098,9 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         animation: "breatheCircle 4s ease-in-out infinite"
       } }),
     phase === "getready"
-    ? React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: `0 0 6px ${ct.accentGlow}`, opacity: 0.5, position: "relative", zIndex: 1 } },
+    ? React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: "none", opacity: 0.5, position: "relative", zIndex: 1 } },
         `0:${readyLeft.toString().padStart(2, "0")}`)
-    : React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: `0 0 10px ${ct.accentGlow}`, position: "relative", zIndex: 1 } },
+    : React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: "none", position: "relative", zIndex: 1 } },
         gDisplay)
     ),
 
@@ -3144,7 +3146,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
       return (/*#__PURE__*/
         React.createElement(React.Fragment, null,
-        /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 16 } },
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 12 } },
         guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
           key: `dot-${idx}`,
           "aria-hidden": true,
@@ -3166,7 +3168,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           ariaLabel: cur && cur.name ? `Demo: ${cur.name}` : "Exercise demo" }
         )
         ), /*#__PURE__*/
-        React.createElement("div", { id: `instr-${cur.id}`, style: { marginBottom: 12 } }, /*#__PURE__*/
+        React.createElement("div", { id: `instr-${cur.id}`, style: { marginBottom: 22 } }, /*#__PURE__*/
         React.createElement("div", { ref: carouselTrackRef, onScroll: (e) => {
           const el = e.currentTarget;
           const stride = carouselCardW + carouselGap;
@@ -3206,7 +3208,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
     phase === "exercise" && next && /*#__PURE__*/
     React.createElement("div", { style: {
-        margin: "0 16px 12px", padding: "16px 16px",
+        margin: "10px 16px 14px", padding: "16px 16px",
         background: isNight ? "#000000" : isDark ? "transparent" : "#F5F5F7",
         border: isNight ? "1px solid #FF0000" : isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #E5E5E7",
         borderRadius: 12, flexShrink: 0, position: "relative", zIndex: 2,
@@ -3507,7 +3509,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     color: isDark ? "var(--text-white)" : "#1D1D1F",
     lineHeight: 1,
     fontVariantNumeric: "tabular-nums",
-    textShadow: isDark ? "none" : "0 2px 0 rgba(0,0,0,0.05)"
+    textShadow: "none"
   };
   const timerNumMedium = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-lg)", color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center", fontVariantNumeric: "tabular-nums" };
   const timerNumSmall = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--text-dimmer)", lineHeight: 1.2 };
@@ -3857,7 +3859,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   }
   [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="soft"] .timer-breathe-ring,
   [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
-    filter: drop-shadow(0 0 6px rgba(0,122,255,0.18)) drop-shadow(0 0 2px rgba(0,122,255,0.10));
+    filter: none;
     animation: none;
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -4013,7 +4015,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           `transform ${phaseDur}s cubic-bezier(0.4, 0, 0.2, 1)`
       } }, /*#__PURE__*/
 
-    React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: Math.max(orbOpacity ?? 0, 0.18), ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
+    React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: isDark ? Math.max(orbOpacity ?? 0, 0.18) : 0, ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
     React.createElement("defs", null, /*#__PURE__*/
     React.createElement("radialGradient", { id: "breatheGlow", cx: "50%", cy: "50%", r: "50%" }, /*#__PURE__*/
     React.createElement("stop", { offset: "0%", stopColor: "var(--accent)", stopOpacity: "0.32" }), /*#__PURE__*/
@@ -4050,7 +4052,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement(React.Fragment, null, /*#__PURE__*/
 
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { ...intervalDigitStyle, minWidth: 72, color: isDark ? "var(--app-white)" : "#1D1D1F", textShadow: isDark ? "none" : "0 2px 0 rgba(0,0,0,0.05)", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
+    React.createElement("div", { style: { ...intervalDigitStyle, minWidth: 72, color: isDark ? "var(--app-white)" : "#1D1D1F", textShadow: "none", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
     )
     ),
 
@@ -4063,17 +4065,17 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     ),
 
     bRunning && /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-phase", style: { flexShrink: 0, width: "100%", textAlign: "center", padding: "9px 20px 10px", marginTop: -5, boxSizing: "border-box", minHeight: TIMER_PHASE_BAND, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: {
+    React.createElement("div", { className: "timer-glass-phase", style: { flexShrink: 0, width: "100%", textAlign: "center", padding: "10px 20px 12px", marginTop: 4, boxSizing: "border-box", minHeight: TIMER_PHASE_BAND, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
+    React.createElement("div", { key: `${bPhaseIdx}-${phaseLabel}-${bCycle}`, style: {
         fontSize: "var(--text-xl)",
-        fontWeight: 700,
+        fontWeight: 500,
         letterSpacing: "0.22em",
         textTransform: "uppercase",
-        color: isDark ? "var(--app-white)" : "var(--app-black)",
-        opacity: countdownLabelOpacity,
+        color: isDark ? "var(--app-white)" : "#1D1D1F",
+        opacity: 1,
         fontFamily: "var(--font-display)",
-        transition: `opacity ${breatheOpacityTransition}`,
-        lineHeight: 1.2
+        transition: "none",
+        lineHeight: 1.25
       } }, curBreathPhase.label)
     ),
 
