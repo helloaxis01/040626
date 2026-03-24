@@ -3156,6 +3156,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       React.createElement("div", { style: { fontSize: "var(--text-base)", color: W, lineHeight: 1.2, fontWeight: 400, letterSpacing: "-0.01em" } }, card.cue)));
 
       return (/*#__PURE__*/
+        React.createElement("div", { style: { marginTop: 18 } }, /*#__PURE__*/
         React.createElement(React.Fragment, null,
         /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 12 } },
         guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
@@ -3206,7 +3207,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           scrollPaddingLeft: carouselSidePad,
           scrollPaddingRight: carouselSidePad
         } }, stepCardEls)
-        )));
+        ))));
 
     })()
 
