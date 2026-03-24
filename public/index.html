@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="screen-orientation" content="portrait" />
   
   <link rel="apple-touch-icon" type="image/png" href="./axis-icon.png" sizes="180x180" />
   <title>AXIS</title>
@@ -894,9 +895,16 @@ const css = `
   .tab-bar[data-night="true"] .tab-bar-top-line { display: none !important; }
   [data-night="true"] .tab-subbar { box-shadow: none !important; border-top: 1px solid #FF0000 !important; }
   [data-night="true"] .track-card,
-  [data-night="true"] .er,
   [data-night="true"] .panel,
   [data-night="true"] .sg { background: #000000 !important; border-color: #FF0000 !important; }
+  /* Night: exercise rows — no box border, just a red bottom hairline */
+  [data-night="true"] .er {
+    background: #000000 !important;
+    border: none !important;
+    border-bottom: 1px solid #FF0000 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
   [data-night="true"] .track-card::before,
   [data-night="true"] .glass-card::before { background: #FF0000 !important; }
   [data-night="true"] .tab-bar .tab-bar-top-line { background: #000000 !important; }
@@ -909,12 +917,13 @@ const css = `
   [data-night="true"] .fav-toggle {
     background: #000000 !important;
     border-color: #FF0000 !important;
+    color: #FF0000 !important;
     font-family: 'Barlow', sans-serif !important;
-    font-size: 10px !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
     line-height: 1 !important;
     text-transform: uppercase !important;
-    padding: 2px 8px !important;
+    padding: 6px 14px !important;
   }
   [data-night="true"] .fav-toggle.on { background: #000000 !important; border-color: #FF0000 !important; color: #FF0000 !important; }
   [data-night="true"] .chk { background: #000000 !important; border-color: #FF0000 !important; }
@@ -1091,6 +1100,21 @@ const css = `
     content:''; position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%);
   }
+  /* Clinical Light Mode: bright white wash over the tinted background */
+  [data-theme="light"] .app-orbs::after {
+    background: rgba(255,255,255,0.85) !important;
+  }
+  /* Portrait lock: hide app in landscape */
+  @media screen and (orientation: landscape) {
+    body > * { display: none !important; }
+    body::after {
+      content: 'Rotate to portrait';
+      position: fixed; inset: 0; background: #000; color: #fff;
+      display: flex !important; align-items: center; justify-content: center;
+      font-family: sans-serif; font-size: 16px; letter-spacing: 0.06em;
+      text-transform: uppercase; z-index: 99999;
+    }
+  }
   @keyframes flowFadeIn {
     from { opacity:0; transform:scale(0.92); }
     to   { opacity:1; transform:scale(1); }
@@ -1231,8 +1255,8 @@ const css = `
 
   /* ── CONTENT ── */
   .content { padding:0 20px 24px; max-width:100%; position:relative; z-index:1; }
-  .content.content--session { padding-bottom: 12px; }
-  .content.content--session.content--session-list { padding-bottom: 100px; }
+  .content.content--session { padding-bottom: 12px; overflow-x: hidden; touch-action: pan-y; }
+  .content.content--session.content--session-list { padding-bottom: 100px; overflow-x: hidden; touch-action: pan-y; }
   /* LIST + GUIDED: breathing room above tab bar for primary CTAs */
   .session-cta-pad { margin-bottom: var(--axis-safe-bottom); padding-bottom: 12px; }
   .session-cta-pad--guided { margin-bottom: 0; padding-bottom: 0; }
@@ -2958,7 +2982,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         boxShadow: `0 0 24px ${ct.accentGlow}`
       } }, "REST & GET READY"), /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: onExit, "aria-label": "Close", style: {
-        marginTop: 14, background: "none", border: nightMode ? "1px solid #FF0000" : "none", cursor: "pointer",
+        marginTop: 14, background: "none", border: "none", cursor: "pointer",
         fontSize: "var(--text-xs)", letterSpacing: "0.16em", textTransform: "uppercase", color: D, fontFamily: "var(--font-display)"
       } }, "Cancel")
     )
@@ -3922,7 +3946,9 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
         // computed scale ≈ 1.298
         transform: bRunning && (bExpand || isHoldPhase) ? "scale(1.298)" : "scale(0.45)",
         transformOrigin: "center center",
-        transition: bRunning ? "transform 3s cubic-bezier(0.4, 0, 0.2, 1)" : "transform 0.6s ease"
+        transition: !bRunning ? "transform 0.6s ease" :
+          isHoldPhase ? "transform 0.4s ease" :
+          `transform ${phaseDur}s cubic-bezier(0.4, 0, 0.2, 1)`
       } }, /*#__PURE__*/
 
     React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: Math.max(orbOpacity ?? 0, 0.18), ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
@@ -4426,7 +4452,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
               display: "flex", alignItems: "center", gap: 16, padding: "16px 18px",
               borderRadius: 16, cursor: nightMode ? "default" : "pointer", textAlign: "left", width: "100%", boxSizing: "border-box",
               border: isSelected ? `1.5px solid ${ct.accent}` : "1px solid var(--glass-border)",
-              background: isSelected ? ct.accentDim : "var(--glass-bg)",
+              background: isSelected ? (theme !== "dark" ? `color-mix(in srgb, ${ct.accentDim} 60%, rgba(255,255,255,0.88))` : ct.accentDim) : (theme !== "dark" ? "rgba(255,255,255,0.82)" : "var(--glass-bg)"),
               backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
               transition: "all 0.2s"
             } }, /*#__PURE__*/
