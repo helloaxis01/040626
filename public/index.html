@@ -666,7 +666,7 @@ const css = `
   .app .small-label { font-size: var(--global-eyebrow-size) !important; letter-spacing: 0.12em; text-transform: uppercase; }
   /* App-shell scrolling: single scroll container for native iOS feel */
   .app { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-  .app-body, .app-shell, .app-content { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .app-body, .app-shell, .app-content { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
   .app-page-header { padding: var(--safe-top) var(--page-padding) 0; width: 100%; max-width: 100%; box-sizing: border-box; }
   .app-page-bottom-pad { padding-bottom: var(--safe-bottom); }
   .app-label { letter-spacing: var(--label-spacing); }
@@ -1255,8 +1255,8 @@ const css = `
 
   /* ── CONTENT ── */
   .content { padding:0 20px 24px; max-width:100%; position:relative; z-index:1; }
-  .content.content--session { padding-bottom: 12px; overflow-x: hidden; touch-action: pan-y; }
-  .content.content--session.content--session-list { padding-bottom: 100px; overflow-x: hidden; touch-action: pan-y; }
+  .content.content--session { padding-bottom: 12px; }
+  .content.content--session.content--session-list { padding-bottom: 100px; }
   /* LIST + GUIDED: breathing room above tab bar for primary CTAs */
   .session-cta-pad { margin-bottom: var(--axis-safe-bottom); padding-bottom: 12px; }
   .session-cta-pad--guided { margin-bottom: 0; padding-bottom: 0; }
