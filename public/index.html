@@ -2580,7 +2580,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 }
 
 function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, done, totalDone, sessionSecs,
-  onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete }) {
+  onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete, exerciseDurationSeconds = 45 }) {
 
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
@@ -2693,6 +2693,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const guidedFocusReturnRef = useRef(null);
   const cur = list.length > 0 ? list[Math.min(fi, list.length - 1)] : null;
   const next = list[fi + 1] || null;
+  const guidedMoveSeconds = typeof exerciseDurationSeconds === "number" && exerciseDurationSeconds > 0 ? exerciseDurationSeconds : 45;
   const guidedStepCards = (() => {
     if (!cur) return [];
     const cards = [];
@@ -2729,22 +2730,21 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       }
     };
   }, [onExit]);
-  // Display string for large countdown area (falls back to exercise duration if no running timer)
-  const guidedExerciseSeconds = cur?.seconds || cur?.duration || 0;
-  const guidedDefaultDisplay = guidedExerciseSeconds ? `${Math.floor(guidedExerciseSeconds / 60)}:${(guidedExerciseSeconds % 60).toString().padStart(2, "0")}` : "";
+  // BEGIN countdown always matches Settings (30 / 45 / 60), not per-exercise data (often 0 / missing).
+  const guidedDefaultDisplay = `${Math.floor(guidedMoveSeconds / 60)}:${(guidedMoveSeconds % 60).toString().padStart(2, "0")}`;
   // Guided large countdown state (per-exercise running timer)
   const [gLeft, setGLeft] = useState(null);
   const gRef = useRef(null);
   const [gRunning, setGRunning] = useState(false);
 
-  // Effect 1: reset gLeft when exercise changes — never runs on pause toggle
-  useEffect(() => {
+  // Reset BEFORE the tick interval mounts (avoids 0:00 flash / instant skip when tapping START NOW).
+  useLayoutEffect(() => {
     if (phase === "exercise" && cur) {
-      setGLeft(cur.seconds || cur.duration || 0);
+      setGLeft(guidedMoveSeconds);
     } else {
       setGLeft(null);
     }
-  }, [phase, fi, cur?.id]);
+  }, [phase, fi, cur?.id, guidedMoveSeconds]);
 
   // Effect 2: manage the interval — runs on exercise change OR pause toggle, never resets gLeft
   useEffect(() => {
@@ -2754,7 +2754,8 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       setGRunning(true);
       gRef.current = setInterval(() => {
         setGLeft((l) => {
-          if (l <= 1 || l == null) {
+          if (l == null) return l;
+          if (l <= 1) {
             clearInterval(gRef.current);
             setGRunning(false);
             handleTimerDone();
@@ -2770,7 +2771,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   }, [phase, fi, cur?.id, paused]);
 
   // helper display and pct for guided large timer
-  const gTotal = cur && (cur.seconds || cur.duration) || 0;
+  const gTotal = cur && phase === "exercise" ? guidedMoveSeconds : 0;
   const gPct = gTotal > 0 && gLeft != null ? (gTotal - gLeft) / gTotal : 0;
   const gDisplay = gLeft != null ? `${Math.floor(gLeft / 60)}:${(gLeft % 60).toString().padStart(2, "0")}` : guidedDefaultDisplay;
 
@@ -3282,7 +3283,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
 
     phase === "getready" && /*#__PURE__*/
-    React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: () => {clearInterval(readyRef.current);primeAudio();beep(880, 0.2);setPhase("exercise");}, style: {
+    React.createElement("button", { className: isNight ? "guided-cta-fill" : undefined, onClick: () => {clearInterval(readyRef.current);primeAudio();beep(880, 0.2);setGLeft(guidedMoveSeconds);setPhase("exercise");}, style: {
         flex: 1, width: "100%", minWidth: 0, background: A, border: nightMode ? "1px solid #FF0000" : "none",
         color: isNight ? "#000000" : "var(--axis-white)",
         WebkitTextFillColor: isNight ? "#000000" : undefined,
@@ -4810,7 +4811,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   // SESSION — render Guided overlay via portal to document.body so position:fixed is viewport-relative (parent has transform)
   const guidedOverlayEl = guidedActive ? /*#__PURE__*/
-  React.createElement(GuidedOverlay, {
+    React.createElement(GuidedOverlay, {
     theme: theme, activePeriod: activePeriod, activeAll: filteredAll, TOTAL: filteredAll.length,
     done: done, totalDone: totalDone, sessionSecs: sessionSecs,
     onExit: () => {setGuidedActive(false);setSessionComplete(false);},
@@ -4821,7 +4822,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     trackDuration: TRACKS[track].duration,
     nightMode: nightMode,
     streak: streak,
-    onSessionComplete: () => setSessionComplete(true) }
+    onSessionComplete: () => setSessionComplete(true),
+    exerciseDurationSeconds: exerciseDuration || 45 }
   ) :
   null;
 
