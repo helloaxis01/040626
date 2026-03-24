@@ -2,19 +2,19 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/AXIS_main.html"
+      "destination": "/031726 REBUILD/index.html"
     },
     {
       "source": "/onboarding",
-      "destination": "/onboarding.html"
+      "destination": "/031726 REBUILD/onboarding.html"
     },
     {
       "source": "/onboarding-123pm",
-      "destination": "/onboarding.html"
+      "destination": "/031726 REBUILD/onboarding.html"
     },
     {
       "source": "/onboarding-911am",
-      "destination": "/onboarding.html"
+      "destination": "/031726 REBUILD/onboarding.html"
     }
   ],
   "headers": [
