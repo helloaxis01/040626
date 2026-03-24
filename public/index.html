@@ -1156,10 +1156,6 @@ const css = `
     from { opacity:0; transform:scale(0.92); }
     to   { opacity:1; transform:scale(1); }
   }
-  @keyframes breatheCircle {
-    0%, 100% { transform: scale(1);   opacity: 0.55; }
-    50%       { transform: scale(1.1); opacity: 0.9; }
-  }
   @keyframes guidedBeginBreath {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -3109,24 +3105,19 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
 
     (phase === "getready" || phase === "exercise") && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", minHeight: 228, marginTop: 6, marginBottom: 18, flexShrink: 0 } },
+    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", minHeight: 0, marginTop: 6, marginBottom: 18, flexShrink: 0 } },
 
-    React.createElement("div", { style: { position: "relative", width: 200, height: 200, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, /*#__PURE__*/
-    React.createElement("div", { style: {
-        position: "absolute", inset: 0, borderRadius: "50%",
-        border: isNight ? "1px dashed #FF0000" : isDark ? "1px dashed rgba(255,255,255,0.12)" : "1px dashed rgba(0,0,0,0.1)",
-        animation: "breatheCircle 4s ease-in-out infinite"
-      } }),
+    React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: "2px 0 0" } }, /*#__PURE__*/
     phase === "getready"
-    ? React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: "none", opacity: 0.5, position: "relative", zIndex: 1 } },
+    ? React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: "none", opacity: 0.5 } },
         `0:${readyLeft.toString().padStart(2, "0")}`)
-    : React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: "none", position: "relative", zIndex: 1 } },
+    : React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: isDark ? A : "#1D1D1F", lineHeight: 1, textShadow: "none" } },
         gDisplay)
     ),
 
-    React.createElement("div", { style: { width: carouselCardW, height: 4, borderRadius: 999, background: isNight ? "rgba(255, 0, 0, 0.18)" : isDark ? "rgba(255,255,255,0.08)" : "#EEEEEE", overflow: "hidden", marginTop: 16 } }, /*#__PURE__*/
+    React.createElement("div", { style: { width: carouselCardW, height: 8, borderRadius: 999, background: isNight ? "rgba(255, 0, 0, 0.18)" : isDark ? "rgba(255,255,255,0.08)" : "#EEEEEE", overflow: "hidden", marginTop: 6 } }, /*#__PURE__*/
     React.createElement("div", { style: {
-        height: 4, borderRadius: 999, background: A,
+        height: 8, borderRadius: 999, background: A,
         width: phase === "getready"
           ? `${(GETREADY_SECONDS - readyLeft) / GETREADY_SECONDS * 100}%`
           : `${gPct * 100}%`,
