@@ -3050,9 +3050,9 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         animation: "breatheCircle 4s ease-in-out infinite"
       } }),
     phase === "getready"
-    ? React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: "#007AFF", lineHeight: 1, textShadow: "0 0 32px rgba(0,122,255,0.65), 0 0 64px rgba(0,122,255,0.3)", position: "relative", zIndex: 1 } },
+    ? React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: A, lineHeight: 1, textShadow: `0 0 32px ${ct.accentGlow}, 0 0 64px ${ct.accentGlow}`, position: "relative", zIndex: 1 } },
         `0:${readyLeft.toString().padStart(2, "0")}`)
-    : React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: "#007AFF", lineHeight: 1, textShadow: "0 0 32px rgba(0,122,255,0.65), 0 0 64px rgba(0,122,255,0.3)", position: "relative", zIndex: 1 } },
+    : React.createElement("div", { style: { minWidth: 140, textAlign: "center", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: 88, fontWeight: 500, letterSpacing: "-0.03em", color: A, lineHeight: 1, textShadow: `0 0 32px ${ct.accentGlow}, 0 0 64px ${ct.accentGlow}`, position: "relative", zIndex: 1 } },
         gDisplay)
     ),
 
