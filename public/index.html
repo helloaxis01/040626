@@ -2887,9 +2887,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         flexShrink: 0, gap: 1
       } },
-      React.createElement("div", { style: { fontSize: 12, fontWeight: 700, lineHeight: 1, color: W, fontFamily: "var(--font-display)" } }, fi + 1),
-      React.createElement("div", { style: { width: "55%", height: 1, background: isNight ? "#FF0000" : "rgba(255,255,255,0.28)" } }),
-      React.createElement("div", { style: { fontSize: 9, fontWeight: 400, lineHeight: 1, color: S, fontFamily: "var(--font-display)" } }, listTotal)
+      React.createElement("div", { style: { fontSize: 11, fontWeight: 700, lineHeight: 1, color: W, fontFamily: "var(--font-display)", letterSpacing: "0.02em" } }, `${fi + 1}/${listTotal}`)
     )
     : React.createElement("div", { style: { width: 40, height: 40 } })
     ),
