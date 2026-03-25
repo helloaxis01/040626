@@ -2159,12 +2159,12 @@ const css = `
   .fc-sub { font-size:14px; color:var(--text-secondary); font-style:italic; margin-bottom:20px; }
   .fc-steps { display:flex; flex-direction:column; gap:0; border-top:1px solid var(--border); padding-top:18px; margin-bottom:18px; }
   .fc-step { display:flex; gap:0; position:relative; }
-  .fc-step:not(:last-child)::after { content:''; position:absolute; left:21px; top:42px; bottom:0; width:1px; background:var(--step-connector); }
+  .fc-step:not(:last-child)::after { content:''; position:absolute; left:21px; top:42px; bottom:0; width:1px; background:var(--step-connector); display:none !important; }
   .fc-badge {
     width:42px; height:42px; flex-shrink:0; border-radius:12px;
     background:var(--glass-bg); border:1px solid var(--glass-border);
     backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-    display:flex; align-items:center; justify-content:center;
+    display:none !important; align-items:center; justify-content:center;
   }
   .fc-pos { font-size:15px; font-weight:600; color:var(--accent-secondary); }
   .fc-right { padding:0 0 20px 14px; flex:1; }
@@ -2243,12 +2243,12 @@ const css = `
   .step { display:flex; gap:10px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--border); }
   .step:last-child { border-bottom:none; }
   .step-badge {
-    width:28px; flex-shrink:0; display:flex; align-items:flex-start; justify-content:flex-start; padding-top:3px;
+    width:28px; flex-shrink:0; display:none !important; align-items:flex-start; justify-content:flex-start; padding-top:3px;
   }
   .step-badge-inner {
     width:20px; height:20px; border-radius:50%;
     background:transparent; border:1px solid var(--accent-secondary);
-    display:flex; align-items:center; justify-content:center; line-height:1; flex-shrink:0;
+    display:none !important; align-items:center; justify-content:center; line-height:1; flex-shrink:0;
   }
   .step-pos { font-size:13px; font-weight:700; letter-spacing:0; color:var(--accent-secondary); }
   .step-right { flex:1; }
