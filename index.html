@@ -841,6 +841,21 @@ const css = `
     opacity: 0.35 !important;
     border-color: rgba(42,95,143,0.5) !important;
   }
+  @keyframes timerBreatheInnerPulse {
+    0%, 100% { transform: scale(0.45); opacity: 0.8; }
+    50% { transform: scale(1.298); opacity: 1; }
+  }
+  [data-theme="dark"] .timer-view-body .timer-breathe-ring circle,
+  [data-night="true"] .timer-view-body .timer-breathe-ring circle {
+    stroke: #FF3B30 !important;
+    stroke-width: 3.25 !important;
+  }
+  [data-theme="dark"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring,
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+    animation: none !important;
+    transition: none !important;
+    transform-origin: center center;
+  }
 
   /* ── NIGHT MODE — Apple Watch Ultra style: #000000 + vibrant red only ── */
   .app[data-night="true"] {
@@ -1005,17 +1020,26 @@ const css = `
   [data-night="true"] .fv-cta, [data-night="true"] .fv-cta:hover, [data-night="true"] .fv-cta:active,
   [data-night="true"] .fv-skip, [data-night="true"] .fv-prev { box-shadow: none !important; }
   [data-night="true"] .tab-live-dot { box-shadow: none !important; }
+  [data-night="true"] .timer-view-body .timer-breathe-orb,
+  [data-night="true"] .timer-view-body .timer-breathe-orb-soft { display: none !important; }
+  [data-night="true"] .timer-view-body .timer-breathe-glow {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    filter: none !important;
+    pointer-events: none !important;
+  }
   [data-night="true"] .timer-view-body .timer-glass-panel {
     background: #000000 !important;
-    border: 1px solid #FF0000 !important;
+    border: 1px solid #FF3B30 !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
-  [data-night="true"] .timer-view-body .timer-interval-row { border-bottom-color: #FF0000 !important; }
-  [data-night="true"] .timer-view-body .timer-interval-row-label { color: #FF0000 !important; }
-  [data-night="true"] .timer-view-body .timer-instrument-val { color: #FF0000 !important; text-shadow: none !important; }
-  [data-night="true"] .timer-view-body .timer-interval-row-value span:last-child { color: rgba(255, 0, 0, 0.78) !important; }
+  [data-night="true"] .timer-view-body .timer-interval-row { border-bottom-color: #FF3B30 !important; }
+  [data-night="true"] .timer-view-body .timer-interval-row-label { color: #FF3B30 !important; }
+  [data-night="true"] .timer-view-body .timer-instrument-val { color: #FF3B30 !important; text-shadow: none !important; }
+  [data-night="true"] .timer-view-body .timer-interval-row-value span:last-child { color: rgba(255, 59, 48, 0.78) !important; }
   /* Night accent-fill CTAs: black ink on #FF0000 (Safari/WebKit; beats any broad * { color: red !important }) */
   .app[data-night="true"] .content .fv-cta:not(.done),
   .app[data-night="true"] .content .fv-cta:not(.done) *,
@@ -3264,10 +3288,23 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   const bCycleRef = useRef(1);
   const bPatternRef = useRef(BREATH_PATTERNS["4-7-8"]);
   const bCyclesRef = useRef(4);
+  const bPhaseStartedMsRef = useRef(0);
+  const breatheScaleSmoothRef = useRef(null);
+  const [breatheAnimTick, setBreatheAnimTick] = useState(0);
 
   // Keep refs in sync
   useEffect(() => {bPatternRef.current = BREATH_PATTERNS[breathPattern];}, [breathPattern]);
   useEffect(() => {bCyclesRef.current = breathCycles;}, [breathCycles]);
+  useEffect(() => {
+    if (!bRunning) return;
+    let rafId = 0;
+    const tick = () => {
+      setBreatheAnimTick((n) => (n + 1) % 1000000);
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [bRunning]);
 
   const pattern = BREATH_PATTERNS[breathPattern];
   const curBreathPhase = pattern[bPhaseIdx];
@@ -3299,17 +3336,47 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   const countdownLabelOpacity = isInhalePhase ? 1 : breatheIntensity;
   const breatheOpacityTransition = isInhalePhase ? `${Math.max(2.5, phaseDur * 0.85)}s ease` : "0.6s ease";
 
-  // compute ring progress (0..1) per phase for SVG stroke
-  let breatheProgress = 1;
-  if (isInhalePhase) {
-    breatheProgress = (phaseDur - bTime) / phaseDur; // 0 -> 1 over inhale
-  } else if (isHoldPhase) {
-    breatheProgress = 1;
-  } else if (isExhalePhase) {
-    breatheProgress = bTime / phaseDur; // 1 -> 0 over exhale
+  // Inner ring scale: wall-clock linear sync (avoids CSS transition fighting 1s ticks)
+  void breatheAnimTick;
+  const pd = Math.max(1, phaseDur);
+  let breatheT = 0;
+  const INHALE_ELAPSED_SLACK_SEC = 0.12;
+  if (bRunning) {
+    if (isHoldPhase) {
+      breatheT = 1;
+    } else {
+      const elapsedSec = Math.min(pd, Math.max(0, (performance.now() - bPhaseStartedMsRef.current) / 1000));
+      if (isInhalePhase) {
+        if (pd <= INHALE_ELAPSED_SLACK_SEC + 0.002) {
+          breatheT = elapsedSec / pd;
+        } else {
+          breatheT = Math.max(0, elapsedSec - INHALE_ELAPSED_SLACK_SEC) / (pd - INHALE_ELAPSED_SLACK_SEC);
+        }
+      } else if (isExhalePhase) breatheT = 1 - elapsedSec / pd;
+      else breatheT = 0;
+    }
   }
-  const r = 120;
-  const circumference = Math.round(2 * Math.PI * r);
+  breatheT = Math.max(0, Math.min(1, breatheT));
+  const breatheMinScale = 0.45;
+  const breatheMaxScale = 1.298;
+  const breatheScale = breatheMinScale + breatheT * (breatheMaxScale - breatheMinScale);
+  const BREATHE_SMOOTH_ALPHA = 0.26;
+  const isInhaleFloorPhase = isInhalePhase && breatheT <= 0.0001;
+  let breatheScaleDisplay = breatheScale;
+  if (bRunning) {
+    const prev = breatheScaleSmoothRef.current;
+    if (prev == null) {
+      breatheScaleSmoothRef.current = breatheScale;
+    } else if (isHoldPhase || isInhaleFloorPhase) {
+      breatheScaleSmoothRef.current = breatheScale;
+    } else {
+      const n = prev + (breatheScale - prev) * BREATHE_SMOOTH_ALPHA;
+      breatheScaleSmoothRef.current = Math.abs(breatheScale - n) < 0.0008 ? breatheScale : n;
+    }
+    breatheScaleDisplay = breatheScaleSmoothRef.current;
+  } else {
+    breatheScaleSmoothRef.current = null;
+  }
   // per-phase fade duration for smooth glow opacity transitions
   const breatheFadeDuration = isInhalePhase ?
   Math.max(0.8, phaseDur * 0.85) :
@@ -3322,6 +3389,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     clearInterval(bRef.current);
     setBRunning(false);setBPhaseIdx(0);setBCycle(1);setBTime(0);setBExpand(false);
     bPhaseRef.current = 0;bCycleRef.current = 1;
+    breatheScaleSmoothRef.current = null;
   }
 
   function bStart() {
@@ -3329,6 +3397,8 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     bPhaseRef.current = 0;bCycleRef.current = 1;
     setBPhaseIdx(0);setBCycle(1);
     setBTime(bPatternRef.current[0].dur);
+    bPhaseStartedMsRef.current = performance.now();
+    breatheScaleSmoothRef.current = null;
     // ensure scale transition runs on first inhale: set running first, then expand after a brief tick
     setBExpand(false);
     setBRunning(true);
@@ -3354,10 +3424,12 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
           if (isNewCycle && bCycleRef.current >= bCyclesRef.current) {
             clearInterval(bRef.current);
             setBRunning(false);setBPhaseIdx(0);setBExpand(false);
+            breatheScaleSmoothRef.current = null;
             beep(528, 0.4);
             return 0;
           }
 
+          bPhaseStartedMsRef.current = performance.now();
           bPhaseRef.current = nextIdx;
           bCycleRef.current = nextCycle;
           setBPhaseIdx(nextIdx);
@@ -3562,6 +3634,15 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
       filter: drop-shadow(0 0 22px color-mix(in srgb, var(--accent) 72%, transparent)) drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 48%, transparent));
     }
   }
+  /* JS drives inner-ring scale; disable filter pulses that start at HOLD / fight phase boundaries */
+  .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+    animation: none !important;
+    transition: none !important;
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 32%, transparent)) drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 16%, transparent)) !important;
+  }
+  .timer-view-body .timer-breathe-hold .timer-breathe-glow {
+    animation: none !important;
+  }
   .timer-view-body .timer-glass-stepper {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3653,14 +3734,13 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 8px 14px;
-    border-radius: 12px;
+    padding: 0;
+    border-radius: 0;
     border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)), rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
     box-sizing: border-box;
   }
   .timer-view-body .timer-interval-row-controls {
@@ -3694,6 +3774,9 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
   }
   .timer-view-body .timer-breathe-guide-ring circle {
     stroke: var(--border);
+  }
+  .timer-view-body .timer-breathe-guide-ring .timer-breathe-guide-outline {
+    stroke-opacity: 0.5;
   }
   @media (prefers-reduced-motion: no-preference) {
     .timer-view-body .timer-interval-ring .timer-interval-progress {
@@ -3822,24 +3905,27 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
 
     mode === "breathe" && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", flex: 1, minHeight: 0 } }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, alignSelf: "center", flex: 1, minHeight: 0, boxSizing: "border-box" } }, /*#__PURE__*/
     React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning ? "peak" : undefined }, /*#__PURE__*/
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
-    React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: "var(--border)", strokeWidth: "1.5" })
+    React.createElement("circle", { className: "timer-breathe-guide-outline", cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : "var(--border)", strokeWidth: "1.5" })
     ),
-    bRunning && !nightMode && /*#__PURE__*/
+    bRunning && /*#__PURE__*/
     React.createElement("div", { className: isHoldPhase ? "timer-breathe-hold" : "", style: {
         position: "absolute", left: breatheInset, top: breatheInset, width: 306, height: 306, borderRadius: "50%", overflow: "visible", pointerEvents: "none",
         // precise scale computed from rendered radii and stroke widths so inner stroke edge meets outer stroke edge
         // outer rendered radius = (ringSize / 320) * 140; outer stroke half = (ringSize / 320) * (1.5/2)
         // inner rendered radius = 120; inner stroke half = 4/2
         // computed scale ≈ 1.298
-        transform: bRunning && (bExpand || isHoldPhase) ? "scale(1.298)" : "scale(0.45)",
+        transform: bRunning ? `translateZ(0) scale(${breatheScaleDisplay})` : "scale(0.45)",
         transformOrigin: "center center",
-        transition: bRunning ? "transform 3s cubic-bezier(0.4, 0, 0.2, 1)" : "transform 0.6s ease"
+        transition: !bRunning ? "transform 0.6s ease" : "none",
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden"
       } }, /*#__PURE__*/
 
-    React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: Math.max(orbOpacity ?? 0, 0.18), ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
+    !nightMode && /*#__PURE__*/ React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: Math.max(orbOpacity ?? 0, 0.18), ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
     React.createElement("defs", null, /*#__PURE__*/
     React.createElement("radialGradient", { id: "breatheGlow", cx: "50%", cy: "50%", r: "50%" }, /*#__PURE__*/
     React.createElement("stop", { offset: "0%", stopColor: "var(--accent)", stopOpacity: "0.32" }), /*#__PURE__*/
@@ -3876,7 +3962,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
     React.createElement(React.Fragment, null, /*#__PURE__*/
 
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { ...intervalDigitStyle, fontSize: 72, minWidth: 72, color: isDark ? "var(--app-white)" : "var(--app-black)", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
+    React.createElement("div", { style: { ...intervalDigitStyle, fontSize: 72, minWidth: 72, color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "var(--app-black)", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
     )
     ),
 
@@ -3895,7 +3981,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
         fontWeight: 700,
         letterSpacing: "0.22em",
         textTransform: "uppercase",
-        color: isDark ? "var(--app-white)" : "var(--app-black)",
+        color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "var(--app-black)",
         opacity: countdownLabelOpacity,
         fontFamily: "var(--font-display)",
         transition: `opacity ${breatheOpacityTransition}`,
@@ -3905,7 +3991,7 @@ function TimerView({ theme, view, setView, hasActiveSession, css, nightMode = fa
 
 
     bRunning && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", width: "100%", justifyContent: "center", marginTop: 6, marginBottom: 6 } }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", width: "100%", maxWidth: 360, marginLeft: "auto", marginRight: "auto", justifyContent: "center", marginTop: 6, marginBottom: 6, boxSizing: "border-box" } }, /*#__PURE__*/
     React.createElement("div", { className: "timer-breathe-cycle-chip", role: "group", "aria-label": `Cycle ${bCycle} of ${breathCycles}` }, /*#__PURE__*/
     React.createElement("div", { className: "timer-round-pips" }, Array.from({ length: breathCycles }, (_, i) => {
       const activeIdx = bCycle - 1;
