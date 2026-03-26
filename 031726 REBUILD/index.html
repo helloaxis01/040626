@@ -1288,14 +1288,38 @@ const css = `
     align-items: stretch !important;
   }
   .guided-overlay .guided-catcow-slide {
+    flex: 0 0 calc(100% - 48px) !important;
+    min-width: calc(100% - 48px) !important;
+    max-width: calc(100% - 48px) !important;
+    box-sizing: border-box !important;
+    height: 180px !important;
+    max-height: 180px !important;
     overflow: hidden !important;
-    flex-shrink: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .guided-overlay .guided-catcow-slide.guided-catcow-slide--left {
+    justify-content: flex-start !important;
+  }
+  .guided-overlay .guided-catcow-slide.guided-catcow-slide--right {
+    justify-content: flex-end !important;
   }
   .guided-overlay .guided-catcow-slide .exercise-figure--catcow {
     overflow: hidden !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .guided-overlay .guided-catcow-scroll .exercise-figure--catcow svg {
     display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 100% !important;
     vertical-align: top;
   }
   .app[data-night="true"] .timer-view-body .timer-glass-btn-pri {
@@ -3607,45 +3631,23 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         className: "guided-catcow-scroll"
       },
       /*#__PURE__*/React.createElement("div", {
-        className: "guided-catcow-slide",
-        style: {
-          flexShrink: 0,
-          width: "calc(100% - 48px)",
-          minWidth: "calc(100% - 48px)",
-          height: catCowDiagramMax,
-          maxHeight: catCowDiagramMax,
-          boxSizing: "border-box",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden"
-        }
+        className: "guided-catcow-slide guided-catcow-slide--left",
+        style: { position: "relative" }
       }, /*#__PURE__*/
       React.createElement(ExerciseFigure, {
         id: CATCOW_FIGURE_ASSET_ID,
-        viewBox: "0 0 1024 512",
+        viewBox: "0 0 512 1024",
         fillContainer: true,
         className: "exercise-figure--catcow",
         style: { color: catCowInstructionColor(theme, isNight), maxHeight: "100%" }
       })),
       /*#__PURE__*/React.createElement("div", {
-        className: "guided-catcow-slide",
-        style: {
-          flexShrink: 0,
-          width: "calc(100% - 48px)",
-          minWidth: "calc(100% - 48px)",
-          height: catCowDiagramMax,
-          maxHeight: catCowDiagramMax,
-          boxSizing: "border-box",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden"
-        }
+        className: "guided-catcow-slide guided-catcow-slide--right",
+        style: { position: "relative" }
       }, /*#__PURE__*/
       React.createElement(ExerciseFigure, {
         id: CATCOW_FIGURE_ASSET_ID,
-        viewBox: "0 512 1024 512",
+        viewBox: "512 0 512 1024",
         fillContainer: true,
         className: "exercise-figure--catcow",
         style: { color: catCowInstructionColor(theme, isNight), maxHeight: "100%" }
