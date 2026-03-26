@@ -3778,7 +3778,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       className: "gdc-section gdc-section--diagram",
       style: { flexShrink: 0, width: "100%", boxSizing: "border-box", marginTop: 12 }
     }, /*#__PURE__*/
-    React.createElement("div", { className: "gdc-diag-frame" }, /*#__PURE__*/React.createElement("div", {
+    React.createElement("div", { className: "gdc-diag-frame", style: {
+        background: isNight ? "#000000" : isDark ? "rgba(255,255,255,0.04)" : "#FFFFFF",
+        border: isNight ? "1px solid #D32F2F" : isDark ? "1px solid rgba(255,255,255,0.22)" : "1px solid #1D1D1F"
+      } }, /*#__PURE__*/React.createElement("div", {
       ref: diagramCarouselRef,
       className: "gdc-diag-track gdc-diag-track--catcow",
       onScroll: (e) => {
