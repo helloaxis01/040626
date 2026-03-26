@@ -666,10 +666,12 @@ const css = `
 
   /* Ensure app icons use currentColor */
   .app svg { stroke: currentColor !important; fill: none !important; }
-  /* CatCow diagram needs its internal fills/text to stay visible */
-  .exercise-figure--catcow svg .st0 { fill: currentColor !important; }
-  .exercise-figure--catcow svg .st2 { stroke: currentColor !important; }
-  .exercise-figure--catcow svg text { fill: currentColor !important; }
+  /* Cat/Cow diagrams are exported as filled paths (no .st* classes). Override global fill:none so mood color applies. */
+  .exercise-figure--catcow svg,
+  .exercise-figure--catcow svg * {
+    fill: currentColor !important;
+    stroke: none !important;
+  }
   .exercise-figure--catcow svg {
     width: 100%;
     height: auto;
@@ -1249,6 +1251,7 @@ const css = `
     width: 100% !important;
     border-radius: 14px !important;
     padding: 14px 12px !important;
+    overflow: hidden !important;
   }
   .guided-overlay[data-night="true"] .gdc-diag-frame {
     border: 1px solid #D32F2F !important;
@@ -1275,6 +1278,7 @@ const css = `
     flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
+    scroll-snap-align: center !important;
   }
   .guided-overlay .gdc-diag-slide .exercise-figure--catcow {
     width: 100% !important;
@@ -3779,6 +3783,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         gap: carouselGap,
         overflowX: "auto",
         overflowY: "hidden",
+        scrollSnapType: "x mandatory",
         width: "100%",
         maxHeight: 520,
         WebkitOverflowScrolling: "touch",
@@ -3792,12 +3797,12 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       id: CATCOW_CAT_FIGURE_ASSET_ID,
       fillContainer: true,
       className: "exercise-figure--catcow",
-      style: { color: A, width: "100%", height: "100%", minHeight: 0 }
+      style: { color: "var(--mood-accent)", width: "100%", height: "100%", minHeight: 0 }
     })), /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
       id: CATCOW_COW_FIGURE_ASSET_ID,
       fillContainer: true,
       className: "exercise-figure--catcow",
-      style: { color: A, width: "100%", height: "100%", minHeight: 0 }
+      style: { color: "var(--mood-accent)", width: "100%", height: "100%", minHeight: 0 }
     })))), /*#__PURE__*/
     React.createElement("div", {
       key: `gdc-cap-${diagramSlideIdx}`,
