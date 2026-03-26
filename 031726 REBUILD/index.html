@@ -1269,6 +1269,9 @@ const css = `
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
   }
+  .guided-overlay .guided-catcow-scroll svg text {
+    opacity: 0;
+  }
   .app[data-night="true"] .timer-view-body .timer-glass-btn-pri {
     background: #D32F2F !important;
     border: none !important;
@@ -3010,6 +3013,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const guidedFocusReturnRef = useRef(null);
   const cur = list.length > 0 ? list[Math.min(fi, list.length - 1)] : null;
   const next = list[fi + 1] || null;
+  const headerPoseCounterNum = (phase === "getready" || phase === "exercise") ? (next ? fi + 2 : listTotal) : fi + 1;
   const guidedMoveSeconds = typeof exerciseDurationSeconds === "number" && exerciseDurationSeconds > 0 ? exerciseDurationSeconds : 45;
   const guidedStepCards = (() => {
     if (!cur) return [];
@@ -3316,7 +3320,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
         minWidth: 0
-      } }, phase === "getready" ? (cur?.name || "").replace(/-/g, " ") : next ? (next.name || "").replace(/-/g, " ") : "—")
+      } }, next ? (next.name || "").replace(/-/g, " ") : "—")
     )
     : React.createElement("div", { style: { flex: 1, minWidth: 0 } }),
     phase !== "intro" && phase !== "closing" && listTotal > 0
@@ -3326,7 +3330,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         flexShrink: 0, gap: 1
       } },
-      React.createElement("div", { style: { fontSize: 11, fontWeight: 600, lineHeight: 1, color: W, fontFamily: "var(--font-display)", letterSpacing: "0.02em" } }, `${fi + 1}/${listTotal}`)
+      React.createElement("div", { style: { fontSize: 11, fontWeight: 600, lineHeight: 1, color: W, fontFamily: "var(--font-display)", letterSpacing: "0.02em" } }, `${headerPoseCounterNum}/${listTotal}`)
     )
     : React.createElement("div", { style: { width: 40, height: 40, flexShrink: 0 } })
     ),
@@ -3540,8 +3544,37 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         boxSizing: "border-box",
         padding: "0 2px"
       };
+      const guidedPagerDot = (active) => ({
+        width: 6,
+        height: 6,
+        borderRadius: "50%",
+        background: active ? (isNight ? A : "var(--mood-accent)") : isNight ? "rgba(211, 47, 47, 0.48)" : isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.2)",
+        boxShadow: active ? (isNight ? `0 0 8px ${A}` : "0 0 8px var(--mood-accent)") : "none",
+        opacity: active ? 1 : 0.7
+      });
+      const catCowCaptionAt = (slideIdx) => {
+        const catLine = guidedStepCards.find((c) => /\bcat\b/i.test(String(c.cue || "")) && !/\bcow\b/i.test(String(c.cue || "")));
+        const cowLine = guidedStepCards.find((c) => /\bcow\b/i.test(String(c.cue || "")));
+        if (slideIdx === 0) {
+          if (catLine) return `${catLine.label} - ${catLine.cue}`.replace(/\s+/g, " ").trim();
+          return "MOVE 2 - CAT (EXHALE)";
+        }
+        if (cowLine) return `${cowLine.label} - ${cowLine.cue}`.replace(/\s+/g, " ").trim();
+        return "MOVE 3 - COW (INHALE)";
+      };
 
       const catCowBlock = exerciseShowsCatCowFigure(cur.id, cur.name) ? /*#__PURE__*/
+      React.createElement("div", {
+        style: {
+          width: "calc(100% + 32px)",
+          maxWidth: "none",
+          marginLeft: -16,
+          marginRight: -16,
+          marginBottom: 0,
+          boxSizing: "border-box",
+          alignSelf: "stretch"
+        }
+      }, /*#__PURE__*/
       React.createElement(React.Fragment, null,
       /*#__PURE__*/React.createElement("div", {
         ref: catCowCarouselRef,
@@ -3558,9 +3591,9 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           flexWrap: "nowrap",
           alignItems: "stretch",
           width: "100%",
-          maxWidth: carouselCardW,
-          marginLeft: "auto",
-          marginRight: "auto",
+          maxWidth: "100%",
+          marginLeft: 0,
+          marginRight: 0,
           marginBottom: 0,
           overflowX: "auto",
           overflowY: "hidden",
@@ -3568,12 +3601,13 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           WebkitOverflowScrolling: "touch",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
-          padding: `0 ${carouselSidePad}px`,
-          scrollPaddingLeft: carouselSidePad,
-          scrollPaddingRight: carouselSidePad,
+          padding: 0,
+          scrollPaddingLeft: 0,
+          scrollPaddingRight: 0,
           boxSizing: "border-box"
         },
-        "aria-label": "Cat and Cow pose diagram"
+        "aria-label": "Cat and Cow pose diagram",
+        className: "guided-catcow-scroll"
       },
       /*#__PURE__*/React.createElement("div", { style: slideSnapStyle }, /*#__PURE__*/
       React.createElement("div", {
@@ -3589,20 +3623,31 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         "aria-hidden": true
       }, /*#__PURE__*/
       React.createElement(ExerciseFigure, { id: CATCOW_FIGURE_ASSET_ID, aspect: 1, fillContainer: true })))),
-      /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 10, marginBottom: guidedStepTotal > 0 ? 12 : 14 } },
+      /*#__PURE__*/React.createElement("div", {
+        key: `cc-cap-${catCowSlideIdx}`,
+        "aria-live": "polite",
+        "aria-atomic": "true",
+        style: {
+          marginTop: 10,
+          padding: "0 16px",
+          textAlign: "center",
+          fontSize: "var(--text-xs)",
+          fontWeight: 500,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          color: S,
+          lineHeight: 1.35,
+          fontFamily: "var(--font-display)"
+        }
+      }, catCowCaptionAt(catCowSlideIdx)),
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 8, marginBottom: guidedStepTotal > 0 ? 12 : 14 } },
       [0, 1].map((i) => /*#__PURE__*/React.createElement("span", {
         key: `cc-dot-${i}`,
         "aria-hidden": true,
-        style: {
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          background: i === catCowSlideIdx ? (isNight ? A : "var(--mood-accent)") : isNight ? "rgba(211, 47, 47, 0.48)" : isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.2)",
-          boxShadow: i === catCowSlideIdx ? (isNight ? `0 0 8px ${A}` : "0 0 8px var(--mood-accent)") : "none",
-          opacity: i === catCowSlideIdx ? 1 : 0.7
-        }
+        style: guidedPagerDot(i === catCowSlideIdx)
       }))
       ))
+      )
       : null;
 
       const stepInstrBlock = /*#__PURE__*/
@@ -3637,14 +3682,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
         key: `dot-${idx}`,
         "aria-hidden": true,
-        style: {
-          width: 3,
-          height: 3,
-          borderRadius: "50%",
-          background: idx === carouselActiveIdx ? (isNight ? A : "var(--mood-accent)") : isNight ? "rgba(211, 47, 47, 0.48)" : isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.2)",
-          boxShadow: idx === carouselActiveIdx ? (isNight ? `0 0 8px ${A}` : "0 0 8px var(--mood-accent)") : "none",
-          opacity: idx === carouselActiveIdx ? 1 : 0.7
-        }
+        style: guidedPagerDot(idx === carouselActiveIdx)
       }))
       ));
 
@@ -3656,7 +3694,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         ariaLabel: cur && cur.name ? `Demo: ${cur.name}` : "Exercise demo" }
       ));
 
-      return /*#__PURE__*/React.createElement("div", { style: { marginTop: 10 } },
+      return /*#__PURE__*/React.createElement("div", { style: { marginTop: -125 } },
       React.createElement(React.Fragment, null, catCowBlock, stepInstrBlock, videoBlock)
       );
 
