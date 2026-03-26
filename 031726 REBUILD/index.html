@@ -3690,7 +3690,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       onClick: () => {axisHapticTick();setInstructionsExpanded((v) => !v);},
       style: {
         border: isNight ? "1px solid #D32F2F" : isDark ? "1px solid rgba(255,255,255,0.22)" : `1px solid ${gA}`,
-        background: isNight ? "rgba(0,0,0,0.4)" : isDark ? "rgba(255,255,255,0.06)" : "rgba(0, 122, 255, 0.08)",
+        background: isNight ? "#000000" : isDark ? "rgba(255,255,255,0.06)" : "rgba(0, 122, 255, 0.08)",
         color: isNight ? A : gA
       }
     }, /*#__PURE__*/React.createElement("span", { style: { textAlign: "left" } }, "Full instructions"), /*#__PURE__*/React.createElement("span", { className: "gdc-instr-expand-chevron", "aria-hidden": true, style: { transform: instructionsExpanded ? "rotate(180deg)" : "rotate(0deg)" } }, "\u25BC")), /*#__PURE__*/
@@ -3700,11 +3700,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       role: "region",
       "aria-label": "Full exercise instructions",
       style: {
-        background: gA,
-        color: isNight ? "#FFFFFF" : "var(--axis-white)",
-        WebkitTextFillColor: isNight ? "#FFFFFF" : undefined,
+        background: isNight ? "#000000" : gA,
+        color: isNight ? "#D32F2F" : "var(--axis-white)",
+        WebkitTextFillColor: isNight ? "#D32F2F" : undefined,
         border: isNight ? "1px solid #D32F2F" : "none",
-        boxShadow: !isNight && !isDark ? "0 4px 20px rgba(0, 122, 255, 0.22)" : isDark ? "0 4px 24px rgba(0,0,0,0.2)" : undefined
+        boxShadow: isNight ? "none" : !isNight && !isDark ? "0 4px 20px rgba(0, 122, 255, 0.22)" : isDark ? "0 4px 24px rgba(0,0,0,0.2)" : undefined
       }
     }, guidedStepCards.map((card, idx) => /*#__PURE__*/React.createElement("div", {
       key: `gdc-exp-${idx}`,
