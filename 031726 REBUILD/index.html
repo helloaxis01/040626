@@ -1280,6 +1280,12 @@ const css = `
     justify-content: center !important;
     scroll-snap-align: center !important;
   }
+  .guided-overlay .gdc-diag-track--catcow .gdc-diag-slide--catcow {
+    flex: 0 0 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    scroll-snap-align: start !important;
+  }
   .guided-overlay .gdc-diag-slide .exercise-figure--catcow {
     width: 100% !important;
     height: 100% !important;
@@ -2833,15 +2839,12 @@ function TabBar({ view, setView, theme, nightMode = false }) {
 function ExerciseFigure({ id, size = 110, aspect = 160 / 120, className, style, fillContainer, viewBox, preserveAspectRatio }) {
   let svg = FIGURES[id];
   if (!svg) return null;
-  if (viewBox && typeof svg === "string") {
-    svg = svg.replace(/viewBox="[^"]*"/, `viewBox="${viewBox}"`);
+  if ((viewBox || preserveAspectRatio) && typeof svg === "string") {
+    if (viewBox) svg = svg.replace(/viewBox="[^"]*"/, `viewBox="${viewBox}"`);
     const par = preserveAspectRatio;
     if (par) {
-      if (/preserveAspectRatio=/.test(svg)) {
-        svg = svg.replace(/preserveAspectRatio="[^"]*"/, `preserveAspectRatio="${par}"`);
-      } else {
-        svg = svg.replace(/<svg\b/, `<svg preserveAspectRatio="${par}" `);
-      }
+      if (/preserveAspectRatio=/.test(svg)) svg = svg.replace(/preserveAspectRatio="[^"]*"/, `preserveAspectRatio="${par}"`);
+      else svg = svg.replace(/<svg\b/, `<svg preserveAspectRatio="${par}" `);
     } else if (!/preserveAspectRatio=/.test(svg)) {
       svg = svg.replace(/<svg\b/, '<svg preserveAspectRatio="xMidYMid meet" ');
     }
@@ -3764,7 +3767,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     }, /*#__PURE__*/
     React.createElement("div", { className: "gdc-diag-frame" }, /*#__PURE__*/React.createElement("div", {
       ref: diagramCarouselRef,
-      className: "gdc-diag-track",
+      className: "gdc-diag-track gdc-diag-track--catcow",
       onScroll: (e) => {
         const el = e.currentTarget;
         const slide = el.querySelector(".gdc-diag-slide");
@@ -3780,7 +3783,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         if (b !== diagramSlideIdx) setDiagramSlideIdx(b);
       },
       style: {
-        gap: carouselGap,
+        gap: 0,
         overflowX: "auto",
         overflowY: "hidden",
         scrollSnapType: "x mandatory",
@@ -3793,13 +3796,15 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         boxSizing: "border-box"
       },
       "aria-label": "Cat and Cow pose diagram"
-    }, /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
+    }, /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide gdc-diag-slide--catcow", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
       id: CATCOW_CAT_FIGURE_ASSET_ID,
+      preserveAspectRatio: "xMidYMid slice",
       fillContainer: true,
       className: "exercise-figure--catcow",
       style: { color: catCowInstructionColor(theme, isNight), width: "100%", height: "100%", minHeight: 0 }
-    })), /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
+    })), /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide gdc-diag-slide--catcow", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
       id: CATCOW_COW_FIGURE_ASSET_ID,
+      preserveAspectRatio: "xMidYMid slice",
       fillContainer: true,
       className: "exercise-figure--catcow",
       style: { color: catCowInstructionColor(theme, isNight), width: "100%", height: "100%", minHeight: 0 }
