@@ -1296,8 +1296,8 @@ const css = `
     min-width: calc(100% - 48px) !important;
     max-width: calc(100% - 48px) !important;
     box-sizing: border-box !important;
-    height: 160px !important;
-    max-height: 160px !important;
+    height: 180px !important;
+    max-height: 180px !important;
     overflow: hidden !important;
     display: flex !important;
     flex-direction: row !important;
@@ -1307,7 +1307,7 @@ const css = `
   .guided-overlay .gdc-diag-slide .exercise-figure--catcow {
     width: 100% !important;
     height: 100% !important;
-    max-height: 160px !important;
+    max-height: 180px !important;
     box-sizing: border-box !important;
     display: flex !important;
     align-items: center !important;
@@ -1316,10 +1316,10 @@ const css = `
   }
   .guided-overlay .gdc-diag-slide .exercise-figure--catcow svg {
     display: block !important;
-    width: 100% !important;
+    width: auto !important;
     max-width: 100% !important;
-    height: auto !important;
-    max-height: 160px !important;
+    height: 100% !important;
+    max-height: 180px !important;
     box-sizing: border-box !important;
   }
   .app[data-night="true"] .timer-view-body .timer-glass-btn-pri {
@@ -3381,24 +3381,16 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       } }, /*#__PURE__*/
     React.createElement("span", { style: {
         fontSize: 12,
-        fontWeight: 400,
+        fontWeight: 500,
         letterSpacing: "0.12em",
         textTransform: "uppercase",
-        color: D,
-        lineHeight: 1.2,
-        flexShrink: 0
-      } }, "UP NEXT:"), /*#__PURE__*/
-    React.createElement("span", { style: {
-        fontSize: 13,
-        fontWeight: 500,
-        letterSpacing: "0.04em",
-        textTransform: "uppercase",
         color: S,
+        lineHeight: 1.25,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
         minWidth: 0
-      } }, next ? (next.name || "").replace(/-/g, " ") : "—")
+      } }, next ? `UP NEXT: ${(next.name || "").replace(/-/g, " ")}` : "UP NEXT: —")
     )
     : React.createElement("div", { style: { flex: 1, minWidth: 0 } }),
     phase !== "intro" && phase !== "closing" && listTotal > 0
@@ -3626,7 +3618,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         scrollSnapAlign: "center",
         borderRadius: 12,
         overflow: "hidden",
-        padding: "10px 12px 14px",
+        padding: "7px 10px 9px",
         borderTop: "none",
         border: idx === carouselActiveIdx ? `2px solid ${A}` : isNight ? "1px solid #D32F2F" : isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.08)",
         background: isNight ? "#000000" : isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.45)",
@@ -3638,10 +3630,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         transition: "opacity 0.25s ease-out, transform 0.25s ease-out"
       }
     }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "calc(var(--text-xs) + 2px)", letterSpacing: "0.22em", textTransform: "uppercase", color: isNight ? "#FF3B30" : A, marginBottom: 8 } }, card.label),
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: isNight ? "#FF3B30" : A, marginBottom: 5 } }, card.label),
     /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-base)", color: W, lineHeight: 1.2, fontWeight: 400, letterSpacing: "-0.01em" } }, card.cue)))))), /*#__PURE__*/
-    React.createElement("div", { className: "gdc-instr-dots", style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 4, boxSizing: "border-box", flexShrink: 0 } },
+    React.createElement("div", { style: { fontSize: "var(--text-sm)", color: W, lineHeight: 1.18, fontWeight: 400, letterSpacing: "-0.01em" } }, card.cue)))))), /*#__PURE__*/
+    React.createElement("div", { className: "gdc-instr-dots", style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 2, boxSizing: "border-box", flexShrink: 0 } },
     guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
       key: `gdc-dot-${idx}`,
       "aria-hidden": true,
@@ -3673,7 +3665,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         overflowX: "auto",
         overflowY: "hidden",
         width: "100%",
-        maxHeight: 160,
+        maxHeight: 180,
         WebkitOverflowScrolling: "touch",
         padding: `0 ${carouselSidePad}px`,
         scrollPaddingLeft: carouselSidePad,
@@ -3721,7 +3713,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       style: { width: "100%", borderRadius: 10, display: "block" },
       ariaLabel: cur && cur.name ? `Demo: ${cur.name}` : "Exercise demo"
     })), /*#__PURE__*/
-    React.createElement("div", { className: "gdc-air", style: { flex: "1 1 0%", minHeight: 0, width: "100%" } })),
+    React.createElement("div", { className: "gdc-air", style: { flex: "1 1 0%", minHeight: 56, paddingTop: 28, width: "100%", boxSizing: "border-box" } })),
 
 
 
@@ -3733,7 +3725,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     phase !== "closing" && phase !== "milestone" && phase !== "intro" && /*#__PURE__*/
     React.createElement("div", { style: {
         marginTop: "auto",
-        marginBottom: `max(28px, env(safe-area-inset-bottom, 28px))`,
+        marginBottom: phase === "getready" ? `max(36px, env(safe-area-inset-bottom, 32px))` : `max(28px, env(safe-area-inset-bottom, 28px))`,
         marginLeft: 16,
         marginRight: 16,
         flexShrink: 0, position: "relative", zIndex: 2,
