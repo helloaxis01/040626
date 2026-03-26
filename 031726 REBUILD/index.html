@@ -1272,6 +1272,15 @@ const css = `
   .guided-overlay .guided-catcow-scroll svg text {
     opacity: 0;
   }
+  .guided-overlay .guided-instr-scroll {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+  }
+  .guided-overlay .guided-instr-scroll > * {
+    flex-shrink: 0 !important;
+  }
   .guided-overlay .guided-catcow-scroll {
     display: flex !important;
     flex-direction: row !important;
@@ -3011,8 +3020,8 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const carouselGap = 12;
   const carouselTrackRef = useRef(null);
   const [carouselActiveIdx, setCarouselActiveIdx] = useState(0);
-  const [isCow, setIsCow] = useState(false);
-  const catCowHeroH = Math.min(220, carouselCardW);
+  const catCowCarouselRef = useRef(null);
+  const [catCowSlideIdx, setCatCowSlideIdx] = useState(0);
 
   // Own fi and resting state — self-contained continuous flow
   const [fi, setFi] = useState(0);
@@ -3178,22 +3187,18 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   useEffect(() => {
     // Reset carousel position and active dot when exercise changes.
     setCarouselActiveIdx(0);
-    setIsCow(false);
+    setCatCowSlideIdx(0);
     const track = carouselTrackRef.current;
     if (track && typeof track.scrollTo === "function") {
       try {track.scrollTo({ left: 0, behavior: "auto" });} catch (e) {}
     }
+    const cc = catCowCarouselRef.current;
+    if (cc && typeof cc.scrollTo === "function") {
+      try {cc.scrollTo({ left: 0, behavior: "auto" });} catch (e) {}
+    }
   }, [fi, phase, cur && cur.id, carouselCardW]);
 
-  useEffect(() => {
-    // Auto-swap Cat/Cow hero every 3s during REST & GET READY / BEGIN.
-    if (!(phase === "getready" || phase === "exercise")) return;
-    if (!cur) return;
-    if (!exerciseShowsCatCowFigure(cur.id, cur.name)) return;
-    setIsCow(false);
-    const t = setInterval(() => setIsCow((v) => !v), 3000);
-    return () => clearInterval(t);
-  }, [phase, cur && cur.id, cur && cur.name]);
+  // Cat/Cow carousel is user-driven (no auto-swap).
 
   const completeCurrent = () => {
     beep(660, 0.4);
@@ -3558,10 +3563,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         color: catCowInstructionColor(theme, isNight)
       });
       const slideSnapStyle = {
-        flex: "0 0 calc(100% - 48px)",
-        width: "calc(100% - 48px)",
-        minWidth: "calc(100% - 48px)",
-        maxWidth: "calc(100% - 48px)",
+        flex: "0 0 calc(100% - 40px)",
+        width: "calc(100% - 40px)",
+        minWidth: "calc(100% - 40px)",
+        maxWidth: "calc(100% - 40px)",
         flexShrink: 0,
         scrollSnapAlign: "start",
         scrollSnapStop: "always",
@@ -3588,73 +3593,47 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       };
 
       const catCowBlock = exerciseShowsCatCowFigure(cur.id, cur.name) ? /*#__PURE__*/
+      React.createElement("div", { style: { width: "100%", boxSizing: "border-box" } }, /*#__PURE__*/
       React.createElement("div", {
+        ref: catCowCarouselRef,
+        onScroll: (e) => {
+          const el = e.currentTarget;
+          const slide = el.querySelector(".guided-catcow-slide");
+          const w = slide && slide.offsetWidth ? slide.offsetWidth : Math.max(1, el.clientWidth - 40);
+          const idx = Math.round((el.scrollLeft || 0) / w);
+          const b = Math.max(0, Math.min(1, idx));
+          if (b !== catCowSlideIdx) setCatCowSlideIdx(b);
+        },
         style: {
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "nowrap",
           width: "100%",
-          maxWidth: "100%",
-          marginLeft: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          boxSizing: "border-box",
-          alignSelf: "stretch"
-        }
-      }, /*#__PURE__*/
-      React.createElement(React.Fragment, null,
-      /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "relative",
-          width: "100%",
-          maxWidth: carouselCardW,
-          marginLeft: "auto",
-          marginRight: "auto",
-          marginBottom: 0,
-          boxSizing: "border-box",
-          overflow: "hidden",
-          height: catCowHeroH,
+          overflowX: "auto",
+          overflowY: "hidden",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          gap: 0,
           padding: 0,
-          pointerEvents: "none"
+          scrollPaddingLeft: 0,
+          scrollPaddingRight: 0,
+          boxSizing: "border-box"
         },
         "aria-label": "Cat and Cow pose diagram",
         className: "guided-catcow-scroll"
       },
-      !isCow ? /*#__PURE__*/React.createElement("div", { className: "guided-catcow-slide", style: {
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%"
-      } }, /*#__PURE__*/
+      /*#__PURE__*/React.createElement("div", { className: "guided-catcow-slide", style: slideSnapStyle }, /*#__PURE__*/
+      React.createElement("div", { className: "exercise-figure--catcow", style: catCowHalfStyle("inset(0 0 50% 0)"), "aria-hidden": true }, /*#__PURE__*/
+      React.createElement(ExerciseFigure, { id: CATCOW_FIGURE_ASSET_ID, aspect: 1, fillContainer: true }))),
+      /*#__PURE__*/React.createElement("div", { className: "guided-catcow-slide", style: slideSnapStyle }, /*#__PURE__*/
+      React.createElement("div", { className: "exercise-figure--catcow", style: catCowHalfStyle("inset(50% 0 0 0)"), "aria-hidden": true }, /*#__PURE__*/
+      React.createElement(ExerciseFigure, { id: CATCOW_FIGURE_ASSET_ID, aspect: 1, fillContainer: true })))), /*#__PURE__*/
+      React.createElement("div", { style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 10 } },
+      [0, 1].map((i) => /*#__PURE__*/React.createElement("span", { key: `cc-dot-${i}`, "aria-hidden": true, style: guidedPagerDot(i === catCowSlideIdx) }))), /*#__PURE__*/
       React.createElement("div", {
-        className: "exercise-figure--catcow",
-        style: catCowHalfStyle("inset(0 0 50% 0)"),
-        "aria-hidden": true
-      }, /*#__PURE__*/
-      React.createElement(ExerciseFigure, { id: CATCOW_FIGURE_ASSET_ID, aspect: 1, fillContainer: true }))) : /*#__PURE__*/React.createElement("div", { className: "guided-catcow-slide", style: {
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%"
-      } }, /*#__PURE__*/
-      React.createElement("div", {
-        className: "exercise-figure--catcow",
-        style: catCowHalfStyle("inset(50% 0 0 0)"),
-        "aria-hidden": true
-      }, /*#__PURE__*/
-      React.createElement(ExerciseFigure, { id: CATCOW_FIGURE_ASSET_ID, aspect: 1, fillContainer: true })))),
-      /*#__PURE__*/React.createElement("div", {
-        style: {
-          width: "calc(100% - 48px)",
-          maxWidth: "100%",
-          marginLeft: "auto",
-          marginRight: "auto",
-          marginTop: 10,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          boxSizing: "border-box"
-        }
-      }, /*#__PURE__*/
-      React.createElement("div", {
-        key: `cc-cap-${isCow ? 1 : 0}`,
+        key: `cc-cap-${catCowSlideIdx}`,
         "aria-live": "polite",
         "aria-atomic": "true",
         style: {
@@ -3662,7 +3641,8 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           padding: "0 8px",
           boxSizing: "border-box",
           textAlign: "center",
-          order: 2,
+          marginTop: 8,
+          marginBottom: 0,
           fontSize: "var(--text-xs)",
           fontWeight: 500,
           letterSpacing: "0.06em",
@@ -3671,20 +3651,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
           lineHeight: 1.35,
           fontFamily: "var(--font-display)"
         }
-      }, catCowCaptionAt(isCow ? 1 : 0)),
-      /*#__PURE__*/React.createElement("div", { style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 8, marginBottom: guidedStepTotal > 0 ? 12 : 14, boxSizing: "border-box", order: 1 } },
-      [0, 1].map((i) => /*#__PURE__*/React.createElement("span", {
-        key: `cc-dot-${i}`,
-        "aria-hidden": true,
-        style: guidedPagerDot(i === (isCow ? 1 : 0))
-      }))
-      ))
-      )
-      )
-      : null;
+      }, catCowCaptionAt(catCowSlideIdx))
+      ) : null;
 
       const stepInstrBlock = /*#__PURE__*/
-      React.createElement("div", { id: `instr-${cur.id}`, style: { marginBottom: 180, marginTop: 0 } }, /*#__PURE__*/
+      React.createElement("div", { id: `instr-${cur.id}`, style: { marginBottom: 0, marginTop: 0, width: "100%", boxSizing: "border-box" } }, /*#__PURE__*/
       React.createElement("div", { ref: carouselTrackRef, onScroll: (e) => {
         const el = e.currentTarget;
         const stride = carouselCardW + carouselGap;
@@ -3703,14 +3674,18 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         if (bounded !== carouselActiveIdx) setCarouselActiveIdx(bounded);
       }, style: {
         display: "flex",
+        flexDirection: "row",
+        flexWrap: "nowrap",
         gap: carouselGap,
         overflowX: "auto",
+        overflowY: "hidden",
         scrollSnapType: "x mandatory",
         WebkitOverflowScrolling: "touch",
         padding: `0 ${carouselSidePad}px`,
         scrollPaddingLeft: carouselSidePad,
-        scrollPaddingRight: carouselSidePad
-      } }, stepCardEls), /*#__PURE__*/
+        scrollPaddingRight: carouselSidePad,
+        boxSizing: "border-box"
+      }, className: "guided-instr-scroll" }, stepCardEls), /*#__PURE__*/
       React.createElement("div", { style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 10, boxSizing: "border-box" } },
       guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
         key: `dot-${idx}`,
@@ -3725,9 +3700,32 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         ariaLabel: cur && cur.name ? `Demo: ${cur.name}` : "Exercise demo" }
       )));
 
-      return /*#__PURE__*/React.createElement("div", { style: { marginTop: 0 } },
-      React.createElement(React.Fragment, null, catCowBlock, stepInstrBlock)
-      );
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "stretch",
+          width: "100%",
+          marginTop: 0,
+          boxSizing: "border-box"
+        }
+      },
+      /*#__PURE__*/React.createElement("div", {
+        className: "guided-section-instructions",
+        style: {
+          padding: "20px 0",
+          width: "100%",
+          boxSizing: "border-box"
+        }
+      }, stepInstrBlock),
+      catCowBlock ? /*#__PURE__*/React.createElement("div", {
+        className: "guided-section-visuals",
+        style: {
+          padding: "20px 0",
+          width: "100%",
+          boxSizing: "border-box"
+        }
+      }, catCowBlock) : null);
 
     })()
 
