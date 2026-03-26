@@ -1278,6 +1278,11 @@ const css = `
     border: 1px solid #1D1D1F !important;
     background: #FFFFFF !important;
   }
+  /* Ultra must win even if theme is light */
+  .guided-overlay[data-night="true"][data-theme="light"] .gdc-diag-frame {
+    border: 1px solid #D32F2F !important;
+    background: #000000 !important;
+  }
   .guided-overlay .gdc-diag-slide {
     flex: 0 0 calc(100% - 48px) !important;
     min-width: calc(100% - 48px) !important;
