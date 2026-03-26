@@ -1298,6 +1298,7 @@ const css = `
     margin-right: auto !important;
     transform-origin: center center !important;
     transform: scale(1.1) !important;
+    overflow: hidden !important;
   }
   /* Cat/Cow: inline expand for full instruction list */
   .guided-overlay .gdc-instr-expand-btn {
@@ -2548,7 +2549,9 @@ function Steps({ steps, small, start: startText, demoVideo, exerciseId, exercise
       "aria-hidden": true
     }, /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)", fontWeight: 500, lineHeight: 1.2, opacity: 0.9, textAlign: "center", marginTop: 2 } }, "Move 2 - Cat (Exhale)"), /*#__PURE__*/
     React.createElement(ExerciseFigure, { id: CATCOW_CAT_FIGURE_ASSET_ID, aspect: 512 / 1024, fillContainer: true }), /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)", fontWeight: 500, lineHeight: 1.2, opacity: 0.9, textAlign: "center", marginTop: 2 } }, "Move 3 - Cow (Inhale)"), /*#__PURE__*/
     React.createElement(ExerciseFigure, { id: CATCOW_COW_FIGURE_ASSET_ID, aspect: 512 / 1024, fillContainer: true }))
     ),
 
@@ -3789,12 +3792,12 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       id: CATCOW_CAT_FIGURE_ASSET_ID,
       fillContainer: true,
       className: "exercise-figure--catcow",
-      style: { color: catCowInstructionColor(theme, isNight), width: "100%", height: "100%", minHeight: 0 }
+      style: { color: A, width: "100%", height: "100%", minHeight: 0 }
     })), /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
       id: CATCOW_COW_FIGURE_ASSET_ID,
       fillContainer: true,
       className: "exercise-figure--catcow",
-      style: { color: catCowInstructionColor(theme, isNight), width: "100%", height: "100%", minHeight: 0 }
+      style: { color: A, width: "100%", height: "100%", minHeight: 0 }
     })))), /*#__PURE__*/
     React.createElement("div", {
       key: `gdc-cap-${diagramSlideIdx}`,
