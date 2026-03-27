@@ -2,12 +2,14 @@
   "name": "axis-app",
   "private": true,
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "build:auth": "node scripts/build-auth.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-react": "^7.23.0",
-    "@resvg/resvg-js": "^2.6.2"
+    "@resvg/resvg-js": "^2.6.2",
+    "esbuild": "^0.25.12"
   },
   "version": "1.0.0",
   "description": "",
@@ -20,6 +22,7 @@
     "debug": "^4.4.3",
     "electron-to-chromium": "^1.5.307",
     "escalade": "^3.2.0",
+    "firebase": "^12.11.0",
     "gensync": "^1.0.0-beta.2",
     "js-tokens": "^4.0.0",
     "jsesc": "^3.1.0",
