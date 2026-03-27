@@ -484,7 +484,6 @@ function exerciseUsesCatCowTemplateLayout(trackId, exerciseId, exerciseName) {
 }
 const CATCOW_CAT_FIGURE_ASSET_ID = 9001;
 const CATCOW_COW_FIGURE_ASSET_ID = 9002;
-
 function catCowInstructionColor(theme, ultraNight) {
   if (ultraNight) return "#FF3B30";
   return theme === "light" ? "#252525" : "#f6f7f8";
@@ -1399,6 +1398,18 @@ const css = `
     border-radius: 14px;
     box-sizing: border-box;
   }
+  .guided-overlay .gdc-instr-expand-panel[data-panel="guided-black"] .gdc-instr-expand-row {
+    border-top: 1px solid rgba(246, 247, 248, 0.14);
+  }
+  .guided-overlay .gdc-instr-expand-panel[data-panel="guided-black"] .gdc-instr-expand-row:first-child {
+    border-top: none;
+  }
+  .guided-overlay .gdc-instr-expand-panel[data-panel="guided-black"] .gdc-instr-expand-label,
+  .guided-overlay .gdc-instr-expand-panel[data-panel="guided-black"] .gdc-instr-expand-cue {
+    color: #f6f7f8 !important;
+    opacity: 1;
+    -webkit-text-fill-color: #f6f7f8;
+  }
   .guided-overlay .gdc-instr-expand-row {
     display: grid;
     grid-template-columns: minmax(72px, 28%) 1fr;
@@ -1406,7 +1417,6 @@ const css = `
     align-items: start;
     padding-top: 10px;
     margin-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.22);
   }
   .guided-overlay .gdc-instr-expand-row:first-child {
     border-top: none;
@@ -2707,44 +2717,7 @@ function RestTimer({ onDone }) {
 const FOCUS_SPELL = { EXT: "Extension", FLEX: "Flexion", SETUP: "Setup", SPINE: "Spine", STRETCH: "Stretch", CORE: "Core", RELEASE: "Release", GLUTES: "Glutes", STABILITY: "Stability", CONTROL: "Control", HOLD: "Hold", ECCENTRIC: "Eccentric", PUSH: "Push", ISO: "Isometric", PULL: "Pull", RAISE: "Raise", LOWER: "Lower", ROTATE: "Rotation", TWIST: "Twist", CERVICAL: "Cervical", LATERAL: "Lateral", CIRCULATE: "Circulate", FLOW: "Flow", MOBILIZE: "Mobilize", MOMENTUM: "Momentum", ISOLATE: "Isolate", DECOMPRESS: "Decompress", FORWARD: "Forward", BACKWARD: "Backward", GROUND: "Ground", "END-RANGE": "End Range", TARGET: "Target", EXHALE: "Exhale", INHALE: "Inhale", FLEX: "Flexion" };
 function spellFocus(f) {return f && FOCUS_SPELL[f.toUpperCase()] ? FOCUS_SPELL[f.toUpperCase()] : f || "";}
 
-// Small wrapper to autoplay muted demos and hide native controls where possible.
-function VideoDemo({ src, poster, style, ariaLabel }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const prefersReduce = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Prefer autoplay muted loop when user hasn't requested reduced motion.
-    if (prefersReduce) {
-      el.controls = true;
-      el.preload = "metadata";
-    } else {
-      try {
-        el.controls = false;
-        el.muted = true;
-        el.playsInline = true;
-        el.loop = true;
-        el.preload = "metadata";
-        const p = el.play();
-        if (p && p.catch) p.catch(() => {});
-      } catch (e) {}
-    }
-    const onContext = (ev) => ev.preventDefault();
-    el.addEventListener("contextmenu", onContext);
-    return () => el.removeEventListener("contextmenu", onContext);
-  }, [src]);
-  return /*#__PURE__*/React.createElement("video", {
-    ref: ref,
-    src: src,
-    poster: poster,
-    style: style,
-    "aria-label": ariaLabel,
-    onError: (e) => {try {const c = e.target.closest && e.target.closest('div');if (c) c.style.display = 'none';} catch (err) {}},
-    onLoadedMetadata: (e) => {try {e.target.style.display = 'block';} catch (err) {}} }
-  );
-}
-
-function Steps({ steps, small, start: startText, demoVideo, exerciseId, exerciseName, theme = "dark", ultraNight = false, trackId }) {
+function Steps({ steps, small, start: startText, exerciseId, exerciseName, theme = "dark", ultraNight = false, trackId }) {
   const [collapsed, setCollapsed] = useState(false);
   return (/*#__PURE__*/
     React.createElement("div", { className: small ? "steps" : "fc-steps" },
@@ -2765,22 +2738,13 @@ function Steps({ steps, small, start: startText, demoVideo, exerciseId, exercise
 
 
 
-    !collapsed && small && demoVideo && /*#__PURE__*/
-    React.createElement("div", { style: { padding: "10px 16px 8px", textAlign: "center", borderBottom: steps?.length ? "1px solid var(--border)" : "none", marginBottom: 6 } }, /*#__PURE__*/
-    React.createElement(VideoDemo, {
-      src: demoVideo,
-      style: { width: "100%", borderRadius: 8, display: "block" },
-      ariaLabel: "Exercise demo" }
-    )
-    ),
-
     !collapsed && small && exerciseUsesCatCowTemplateLayout(trackId, exerciseId, exerciseName) && (startText || steps?.length) && /*#__PURE__*/
     React.createElement("div", {
       className: "exercise-figure--catcow",
       style: {
         display: "block",
         width: "100%",
-        marginTop: demoVideo ? 4 : 0,
+        marginTop: 0,
         marginBottom: 12,
         padding: 0,
         boxSizing: "border-box",
@@ -2896,7 +2860,6 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
       steps: ex.steps,
       small: true,
       start: ex.start || undefined,
-      demoVideo: ex.demoVideo,
       exerciseId: ex.id,
       exerciseName: ex.name,
       theme: theme,
@@ -3942,13 +3905,14 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       id: `gdc-instr-expand-panel-${cur.id}`,
       className: "gdc-instr-expand-panel",
       role: "region",
+      "data-panel": "guided-black",
       "aria-label": "Full exercise instructions",
       style: {
-        background: isNight ? "#000000" : gA,
-        color: isNight ? "#FF3B30" : "var(--axis-white)",
-        WebkitTextFillColor: isNight ? "#FF3B30" : undefined,
-        border: isNight ? "1px solid #FF3B30" : "none",
-        boxShadow: isNight ? "none" : !isNight && !isDark ? "0 4px 20px rgba(0, 122, 255, 0.22)" : isDark ? "0 4px 24px rgba(0,0,0,0.2)" : undefined
+        background: "#000000",
+        color: "#f6f7f8",
+        WebkitTextFillColor: "#f6f7f8",
+        border: isNight ? "1px solid #FF3B30" : isDark ? "1px solid rgba(255,255,255,0.22)" : "1px solid rgba(255,255,255,0.18)",
+        boxShadow: isNight ? "none" : "0 4px 24px rgba(0,0,0,0.25)"
       }
     }, guidedStepCards.map((card, idx) => /*#__PURE__*/React.createElement("div", {
       key: `gdc-exp-${idx}`,
@@ -4012,12 +3976,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: isNight ? "#FF3B30" : gA, marginBottom: 5 } }, card.label),
     /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-sm)", color: W, lineHeight: 1.18, fontWeight: 400, letterSpacing: "-0.01em" } }, card.cue)))))), /*#__PURE__*/
-    !exerciseShowsCatCowFigure(cur.id, cur.name) && /*#__PURE__*/React.createElement("div", { className: "gdc-instr-dots", style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 2, boxSizing: "border-box", flexShrink: 0 } },
-    guidedStepCards.map((_, idx) => /*#__PURE__*/React.createElement("span", {
-      key: `gdc-dot-${idx}`,
-      "aria-hidden": true,
-      style: guidedPagerDot(idx === carouselActiveIdx)
-    }))), /*#__PURE__*/
     exerciseUsesCatCowTemplateLayout(activeTrackId, cur.id, cur.name) ? /*#__PURE__*/React.createElement("div", {
       className: "gdc-section gdc-section--diagram",
       style: { flexShrink: 0, width: "100%", boxSizing: "border-box", marginTop: 12 }
@@ -4091,11 +4049,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     }, catCowCaptionAt(diagramSlideIdx)), /*#__PURE__*/
     React.createElement("div", { className: "gdc-diag-dots", style: { width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 10, flexShrink: 0 } },
     [0, 1].map((i) => /*#__PURE__*/React.createElement("span", { key: `gdc-ddot-${i}`, "aria-hidden": true, style: guidedPagerDot(i === diagramSlideIdx) })))) : null, /*#__PURE__*/
-    cur.demoVideo && /*#__PURE__*/React.createElement("div", { className: "gdc-section gdc-section--video", style: { flexShrink: 0, width: "100%", padding: "2px 0 0", textAlign: "center", boxSizing: "border-box" } }, /*#__PURE__*/React.createElement(VideoDemo, {
-      src: cur.demoVideo,
-      style: { width: "100%", borderRadius: 10, display: "block" },
-      ariaLabel: cur && cur.name ? `Demo: ${cur.name}` : "Exercise demo"
-    })), /*#__PURE__*/
     React.createElement("div", { className: "gdc-air", style: { flex: "1 1 0%", minHeight: "max(64px, 20vh)", paddingTop: 32, width: "100%", boxSizing: "border-box" } })),
 
 
