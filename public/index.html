@@ -1657,6 +1657,11 @@ const css = `
     -webkit-overflow-scrolling: touch;
   }
   .content.content--session.content--summary {
+    flex: 0 0 auto;
+    min-height: auto;
+    overflow-y: visible;
+    overflow-x: visible;
+    -webkit-overflow-scrolling: auto;
     padding-bottom: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 6px);
   }
   .content.content--session.content--session-list { padding-bottom: 100px; }
