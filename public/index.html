@@ -473,6 +473,15 @@ function exerciseShowsCatCowFigure(id, name) {
   if (n.includes("seated")) return false;
   return n.includes("cat") && n.includes("cow");
 }
+/** The Baseline Protocol — reuse Cat-Cow figure template for every exercise (temporary assets). */
+const BASELINE_PROTOCOL_TRACK_ID = "daily";
+function isBaselineProtocolTrack(trackId) {
+  return trackId === BASELINE_PROTOCOL_TRACK_ID;
+}
+function exerciseUsesCatCowTemplateLayout(trackId, exerciseId, exerciseName) {
+  if (!trackId) return exerciseShowsCatCowFigure(exerciseId, exerciseName);
+  return exerciseShowsCatCowFigure(exerciseId, exerciseName) || isBaselineProtocolTrack(trackId);
+}
 const CATCOW_CAT_FIGURE_ASSET_ID = 9001;
 const CATCOW_COW_FIGURE_ASSET_ID = 9002;
 
@@ -2735,14 +2744,14 @@ function VideoDemo({ src, poster, style, ariaLabel }) {
   );
 }
 
-function Steps({ steps, small, start: startText, demoVideo, exerciseId, exerciseName, theme = "dark", ultraNight = false }) {
+function Steps({ steps, small, start: startText, demoVideo, exerciseId, exerciseName, theme = "dark", ultraNight = false, trackId }) {
   const [collapsed, setCollapsed] = useState(false);
   return (/*#__PURE__*/
     React.createElement("div", { className: small ? "steps" : "fc-steps" },
     !small && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderBottom: "1px solid var(--border)" } }, /*#__PURE__*/
     React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "inherit" } }, "INSTRUCTIONS"), /*#__PURE__*/
-    React.createElement("button", { onClick: () => setCollapsed((c) => !c), style: { fontFamily: "var(--font-display)", background: "transparent", border: nightMode ? "1px solid #FF3B30" : "none", color: "inherit", cursor: "pointer", fontWeight: 600 } },
+    React.createElement("button", { onClick: () => setCollapsed((c) => !c), style: { fontFamily: "var(--font-display)", background: "transparent", border: ultraNight ? "1px solid #FF3B30" : "none", color: "inherit", cursor: "pointer", fontWeight: 600 } },
     collapsed ? "Show" : "Hide"
     )
     ),
@@ -2765,7 +2774,7 @@ function Steps({ steps, small, start: startText, demoVideo, exerciseId, exercise
     )
     ),
 
-    !collapsed && small && exerciseShowsCatCowFigure(exerciseId, exerciseName) && (startText || steps?.length) && /*#__PURE__*/
+    !collapsed && small && exerciseUsesCatCowTemplateLayout(trackId, exerciseId, exerciseName) && (startText || steps?.length) && /*#__PURE__*/
     React.createElement("div", {
       className: "exercise-figure--catcow",
       style: {
@@ -2780,9 +2789,9 @@ function Steps({ steps, small, start: startText, demoVideo, exerciseId, exercise
       "aria-hidden": true
     }, /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)", fontWeight: 500, lineHeight: 1.2, opacity: 0.9, textAlign: "center", marginTop: 2 } }, "Move 2 - Cat (Exhale)"), /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)", fontWeight: 500, lineHeight: 1.2, opacity: 0.9, textAlign: "center", marginTop: 2 } }, exerciseShowsCatCowFigure(exerciseId, exerciseName) ? "Move 2 - Cat (Exhale)" : `${String(exerciseName || "Exercise").trim()} · 1 of 2`), /*#__PURE__*/
     React.createElement(ExerciseFigure, { id: CATCOW_CAT_FIGURE_ASSET_ID, aspect: 512 / 1024, fillContainer: true }), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)", fontWeight: 500, lineHeight: 1.2, opacity: 0.9, textAlign: "center", marginTop: 2 } }, "Move 3 - Cow (Inhale)"), /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)", fontWeight: 500, lineHeight: 1.2, opacity: 0.9, textAlign: "center", marginTop: 2 } }, exerciseShowsCatCowFigure(exerciseId, exerciseName) ? "Move 3 - Cow (Inhale)" : `${String(exerciseName || "Exercise").trim()} · 2 of 2`), /*#__PURE__*/
     React.createElement(ExerciseFigure, { id: CATCOW_COW_FIGURE_ASSET_ID, aspect: 512 / 1024, fillContainer: true }))
     ),
 
@@ -2831,7 +2840,7 @@ function Steps({ steps, small, start: startText, demoVideo, exerciseId, exercise
 
 }
 
-function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onFav, note, onNote, nextName, hideTimer = false, hideDone = false, exerciseDurationSeconds, theme = "dark", ultraNight = false }) {
+function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onFav, note, onNote, nextName, hideTimer = false, hideDone = false, exerciseDurationSeconds, theme = "dark", ultraNight = false, trackId }) {
   const rowRef = useRef(null);
   const sessionDetailPanelRef = useRef(null);
   const markDoneAndCollapse = () => {
@@ -2891,7 +2900,8 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
       exerciseId: ex.id,
       exerciseName: ex.name,
       theme: theme,
-      ultraNight: ultraNight }
+      ultraNight: ultraNight,
+      trackId: trackId }
     ),
     !skipped && /*#__PURE__*/
     React.createElement(React.Fragment, null,
@@ -3250,7 +3260,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 }
 
 function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, done, totalDone, sessionSecs,
-  onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete, exerciseDurationSeconds = 45 }) {
+  onExit, onToggle, onSkip, formatTime, trackLabel = "", trackDuration = "", nightMode = false, streak = 0, onSessionComplete, exerciseDurationSeconds = 45, activeTrackId = "" }) {
 
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
@@ -3599,6 +3609,11 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   };
 
   const catCowCaptionAt = (slideIdx) => {
+    const native = cur && exerciseShowsCatCowFigure(cur.id, cur.name);
+    if (cur && !native && isBaselineProtocolTrack(activeTrackId)) {
+      const en = String(cur.name || "Exercise").trim();
+      return slideIdx === 0 ? `${en} · 1 of 2` : `${en} · 2 of 2`;
+    }
     const catLine = guidedStepCards.find((c) => /\bcat\b/i.test(String(c.cue || "")) && !/\bcow\b/i.test(String(c.cue || "")));
     const cowLine = guidedStepCards.find((c) => /\bcow\b/i.test(String(c.cue || "")));
     if (slideIdx === 0) {
@@ -3907,7 +3922,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         boxSizing: "border-box"
       }
     }, /*#__PURE__*/
-    exerciseShowsCatCowFigure(cur.id, cur.name) ? /*#__PURE__*/React.createElement("div", {
+    exerciseUsesCatCowTemplateLayout(activeTrackId, cur.id, cur.name) ? /*#__PURE__*/React.createElement("div", {
       className: "gdc-section gdc-section--instr-expand",
       style: { flexShrink: 0, width: "100%", boxSizing: "border-box", paddingTop: 4 }
     }, /*#__PURE__*/
@@ -4003,7 +4018,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       "aria-hidden": true,
       style: guidedPagerDot(idx === carouselActiveIdx)
     }))), /*#__PURE__*/
-    exerciseShowsCatCowFigure(cur.id, cur.name) ? /*#__PURE__*/React.createElement("div", {
+    exerciseUsesCatCowTemplateLayout(activeTrackId, cur.id, cur.name) ? /*#__PURE__*/React.createElement("div", {
       className: "gdc-section gdc-section--diagram",
       style: { flexShrink: 0, width: "100%", boxSizing: "border-box", marginTop: 12 }
     }, /*#__PURE__*/
@@ -4040,7 +4055,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         scrollPaddingRight: 0,
         boxSizing: "border-box"
       },
-      "aria-label": "Cat and Cow pose diagram"
+      "aria-label": exerciseShowsCatCowFigure(cur.id, cur.name) ? "Cat and Cow pose diagram" : `${String(cur.name || "Exercise").trim()} · movement diagram, swipe between two poses`
     }, /*#__PURE__*/React.createElement("div", { className: "gdc-diag-slide gdc-diag-slide--catcow", style: { position: "relative" } }, /*#__PURE__*/React.createElement(ExerciseFigure, {
       id: CATCOW_CAT_FIGURE_ASSET_ID,
       preserveAspectRatio: "xMidYMid slice",
@@ -5901,7 +5916,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     streak: streak,
     onSessionComplete: () => setSessionComplete(true),
     onExerciseDurationChange: (seconds) => setExerciseDuration(seconds),
-    exerciseDurationSeconds: exerciseDuration || 45 }
+    exerciseDurationSeconds: exerciseDuration || 45,
+    activeTrackId: track }
   ) :
   null;
 
@@ -6040,7 +6056,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           nextName: nextEx ? nextEx.name : null,
           exerciseDurationSeconds: exerciseDuration,
           theme: theme,
-          ultraNight: nightMode }
+          ultraNight: nightMode,
+          trackId: track }
         ));
 
     })
@@ -6089,7 +6106,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           hideTimer: true,
           hideDone: true,
           theme: theme,
-          ultraNight: nightMode }
+          ultraNight: nightMode,
+          trackId: track }
         ));
 
     })
