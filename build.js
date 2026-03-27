@@ -78,6 +78,15 @@ if (fs.existsSync(appSrc)) {
     console.error('Failed to copy app.js to dist:', e);
   }
 }
+const authBundleSrc = path.join(root, 'auth-bundle.js');
+const authBundleDest = path.join(dist, 'auth-bundle.js');
+if (fs.existsSync(authBundleSrc)) {
+  try {
+    fs.copyFileSync(authBundleSrc, authBundleDest);
+  } catch (e) {
+    console.error('Failed to copy auth-bundle.js to dist:', e);
+  }
+}
 // onboarding assets are now served from /public/onboarding/ (Vercel serves public/ automatically)
 // previous copy step removed in favor of placing files in /public/onboarding/
 finish();
