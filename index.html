@@ -1864,10 +1864,11 @@ const css = `
     transition: background var(--motion-slow), border-color var(--motion-slow), box-shadow var(--motion-slow), transform var(--motion-slow), backdrop-filter var(--motion-slow);
   }
   @keyframes axis-today-shimmer {
-    0%, 88% { transform: translateX(-130%); opacity: 0; }
-    90% { opacity: 0.55; }
-    96% { transform: translateX(130%); opacity: 0.12; }
-    100% { opacity: 0; }
+    /* 8s loop: ~2s pause (0–25%), ~6s sweep (25–100%) */
+    0%, 25% { transform: translateX(-160%); opacity: 0; }
+    28% { opacity: 1; }
+    92% { transform: translateX(160%); opacity: 0.9; }
+    100% { transform: translateX(180%); opacity: 0; }
   }
   .today-card::after {
     content: "";
@@ -1875,8 +1876,20 @@ const css = `
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.14) 50%, transparent 62%);
-    animation: axis-today-shimmer 5s ease-in-out infinite;
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 22%,
+      rgba(255, 255, 255, 0.4) 38%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.4) 62%,
+      transparent 78%,
+      transparent 100%
+    );
+    animation: axis-today-shimmer 8s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .today-card::after { animation: none !important; opacity: 0 !important; }
   }
   .panel:focus { outline: none; }
   .panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -2579,7 +2592,7 @@ const css = `
     background:#3a3a3c;
     overflow:hidden;
     width:100%;
-    max-width:min(64px, 18vw); /* cap: stays within iPhone status clock region */
+    max-width:min(62px, 18vw); /* ~60–65px: iPhone status clock region */
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-track {
     background:#252525;
