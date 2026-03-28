@@ -2506,10 +2506,14 @@ const css = `
     z-index:130;
     padding-top:env(safe-area-inset-top, 0px);
     padding-bottom:8px;
-    background:#252525 !important;
     box-sizing:border-box;
     width:100%;
     -webkit-tap-highlight-color:transparent;
+    /* Glassmorphism: match bottom tab bar (see .tab-bar — var(--tab-bg) + blur) */
+    background:var(--tab-bg);
+    backdrop-filter:blur(20px) saturate(1.35);
+    -webkit-backdrop-filter:blur(20px) saturate(1.35);
+    border-bottom:1px solid var(--border);
   }
   .dashboard-header__row {
     display:grid;
