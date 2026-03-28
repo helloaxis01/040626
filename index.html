@@ -2590,7 +2590,8 @@ const css = `
     letter-spacing:0.07em;
     text-transform:uppercase;
     line-height:1.38;
-    color:#FF9F43;
+    color:var(--mood-accent);
+    -webkit-text-fill-color:var(--mood-accent);
     display:-webkit-box;
     -webkit-line-clamp:2;
     -webkit-box-orient:vertical;
@@ -2600,6 +2601,8 @@ const css = `
     margin-bottom:6px;
   }
   .app[data-night="true"] .home-recent-sub {
+    color:#FF3B30 !important;
+    -webkit-text-fill-color:#FF3B30 !important;
     text-shadow:0 0 1px rgba(0,0,0,0.4);
   }
   .home-recent-dur {
