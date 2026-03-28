@@ -2532,12 +2532,17 @@ const css = `
   }
   .home-browse-heading {
     font-size:var(--text-xs);
-    letter-spacing:0.22em;
+    letter-spacing:0.14em;
     text-transform:uppercase;
-    color:var(--accent);
+    color:color-mix(in srgb, var(--text-dim) 92%, transparent);
     margin-bottom:10px;
     font-weight:600;
     padding-inline:var(--page-gutter);
+    box-sizing:border-box;
+  }
+  /* Keeps Today/Browse layout from collapsing when a category has only one short group */
+  .home-browse-results {
+    min-height:min(52dvh, 480px);
     box-sizing:border-box;
   }
   .home-recent { margin-bottom:0; }
@@ -5271,6 +5276,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [guidedTimelineExpanded, setGuidedTimelineExpanded] = useState(false);
   const [homeTrackCategory, setHomeTrackCategory] = useState("all");
   const homeCategoryStripRef = useRef(null);
+  const homeBrowseStickyRef = useRef(null);
+  const shouldScrollBrowseToTopRef = useRef(false);
   const [categoryStripRightFade, setCategoryStripRightFade] = useState(false);
   const [recentTracks, setRecentTracks] = useState(() => {
     const raw = storageGet("axis_recent_tracks", []);
@@ -5296,6 +5303,34 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const eps = 3;
     setCategoryStripRightFade(maxScroll > eps && el.scrollLeft < maxScroll - eps);
   };
+
+  const scrollBrowseStickyToTop = () => {
+    const node = homeBrowseStickyRef.current;
+    if (!node || typeof window === "undefined") return;
+    let scrollEl = node.parentElement;
+    while (scrollEl && scrollEl !== document.documentElement) {
+      const st = window.getComputedStyle(scrollEl);
+      const oy = st.overflowY;
+      const scrollable = (oy === "auto" || oy === "scroll" || oy === "overlay") && scrollEl.scrollHeight > scrollEl.clientHeight + 1;
+      if (scrollable) break;
+      scrollEl = scrollEl.parentElement;
+    }
+    if (!scrollEl || scrollEl === document.documentElement) {
+      scrollEl = document.querySelector(".app-body") || document.querySelector(".axis-app-scroll-root");
+    }
+    if (!scrollEl) return;
+    const nodeRect = node.getBoundingClientRect();
+    const scrollRect = scrollEl.getBoundingClientRect();
+    const nextTop = scrollEl.scrollTop + (nodeRect.top - scrollRect.top);
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scrollEl.scrollTo({ top: Math.max(0, nextTop), behavior: reduceMotion ? "auto" : "smooth" });
+  };
+
+  useLayoutEffect(() => {
+    if (!shouldScrollBrowseToTopRef.current) return;
+    shouldScrollBrowseToTopRef.current = false;
+    scrollBrowseStickyToTop();
+  }, [homeTrackCategory]);
 
   const applySelectedAppIcon = async (iconHref) => {
     if (typeof document === "undefined" || !iconHref) return;
@@ -5914,7 +5949,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         )
         );
       })(), /*#__PURE__*/
-      React.createElement("div", { className: "home-browse-sticky" }, /*#__PURE__*/
+      React.createElement("div", { ref: homeBrowseStickyRef, className: "home-browse-sticky" }, /*#__PURE__*/
       React.createElement("div", { className: "home-browse-heading" }, "BROWSE"), /*#__PURE__*/
       React.createElement("div", { className: "home-category-strip-wrap" }, /*#__PURE__*/
       React.createElement("div", {
@@ -5930,7 +5965,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         role: "tab",
         className: "home-category-pill",
         "aria-selected": homeTrackCategory === cf.id ? "true" : "false",
-        onClick: () => {if (navigator.vibrate) navigator.vibrate(8);axisHapticTick();setHomeTrackCategory(cf.id);}
+        onClick: () => {
+          if (navigator.vibrate) navigator.vibrate(8);
+          axisHapticTick();
+          shouldScrollBrowseToTopRef.current = true;
+          setHomeTrackCategory(cf.id);
+        }
       }, cf.label)
       )), /*#__PURE__*/
       React.createElement("div", {
@@ -5939,6 +5979,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       })
       )
       ), /*#__PURE__*/
+      React.createElement("div", { className: "home-browse-results" }, /*#__PURE__*/
       homeBrowseGroups.map((g) => /*#__PURE__*/
       React.createElement("div", { className: "track-group", key: g.id }, /*#__PURE__*/
       React.createElement("div", { className: "track-group-label" }, g.label), /*#__PURE__*/
@@ -5956,6 +5997,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           )
           ));
       })
+      )
       )
       )
       ), /*#__PURE__*/
