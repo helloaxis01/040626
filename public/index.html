@@ -2464,7 +2464,7 @@ const css = `
     -webkit-backdrop-filter: none;
   }
 
-  /* Light: top dashboard strip — solid #f6f7f8; chrome uses #252525 / mood accent */
+  /* Light: top dashboard strip — solid #f6f7f8; inactive chrome #E0E0E0; mood accent fills */
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header {
     background: #f6f7f8 !important;
     border-bottom: 1px solid rgba(37, 37, 37, 0.1);
@@ -2582,7 +2582,7 @@ const css = `
     max-width:min(64px, 18vw); /* cap: stays within iPhone status clock region */
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-track {
-    background:#252525;
+    background:#E0E0E0;
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-fill {
     background:var(--mood-color);
@@ -2613,10 +2613,16 @@ const css = `
     pointer-events:none;
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__brand {
-    color:#252525;
+    color:#000000;
+    -webkit-text-fill-color:#000000;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__brand {
+    color:#ffffff;
+    -webkit-text-fill-color:#ffffff;
   }
   .app[data-night="true"] .dashboard-header__brand {
-    color:rgba(255,255,255,0.42);
+    color:#ffffff;
+    -webkit-text-fill-color:#ffffff;
   }
   .dashboard-header__right {
     display:flex;
@@ -2636,7 +2642,14 @@ const css = `
     transition:background-color 0.45s ease, transform 0.2s ease;
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
-    background:#252525;
+    background:#E0E0E0;
+  }
+  /* Dark (circadian): inactive track + empty streaks — mood tint reads on teal, not as “holes” */
+  .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__progress-track {
+    background:color-mix(in srgb, var(--mood-color) 23%, transparent);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
+    background:color-mix(in srgb, var(--mood-color) 23%, transparent);
   }
   .dashboard-header__streak-cell--on {
     background:var(--mood-color);
