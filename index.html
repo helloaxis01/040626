@@ -662,7 +662,8 @@ const css = `
   }
   /* Default UI readability (Inter); display/headlines use Barlow below */
   html, body, #root { font-family: var(--font-ui); }
-  .app { font-family: var(--font-ui); --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 48px); }
+  /* Sticky Browse sits flush under dashboard: safe-area + row (40px) + padding-bottom (8px) + border (1px) */
+  .app { font-family: var(--font-ui); --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 49px); }
   .home-wordmark, .track-card-name, .hdr-title, .session-title,
   .fc-name, .fv-name, .guided-exercise-name, .en, .step-label,
   .app .app-label, .page-title, .track-title, .db-title, .timer-val {
@@ -1281,6 +1282,22 @@ const css = `
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
   }
+  /* Guided shell: flat canvas — dark #000 / light #fff */
+  .guided-overlay[data-night="true"] {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .guided-overlay[data-night="false"][data-theme="dark"] {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .guided-overlay[data-night="false"][data-theme="light"] {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .guided-overlay .gdc-instr-track,
   .guided-overlay .gdc-diag-track {
     display: flex !important;
@@ -1773,6 +1790,28 @@ const css = `
     margin-bottom:8px;
     font-family: var(--font-display);
     font-weight: 500;
+  }
+
+  /* Session LIST/GUIDED (dark circadian): mood orbs stay visible; frosted dim layer ≈ dashboard + tab bar — no flat hdr strip */
+  .app[data-theme="dark"]:not([data-night="true"]) .hdr-wrap {
+    background: color-mix(in srgb, var(--tab-bg) 58%, transparent);
+    backdrop-filter: blur(32px) saturate(1.4);
+    -webkit-backdrop-filter: blur(32px) saturate(1.4);
+    border-bottom-color: color-mix(in srgb, var(--glass-border) 80%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--glass-specular) 22%, transparent);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .tab-subbar {
+    background: color-mix(in srgb, var(--tab-bg) 48%, transparent);
+    backdrop-filter: blur(28px) saturate(1.35);
+    -webkit-backdrop-filter: blur(28px) saturate(1.35);
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.22), 0 1px 0 color-mix(in srgb, var(--glass-border) 65%, transparent);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .hdr-session-head .tabs .tab.on {
+    background: transparent;
+    box-shadow: none;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .hdr-session-head .tabs .tab:not(.on) {
+    color: color-mix(in srgb, var(--text-white) 42%, transparent);
   }
 
   /* ── CONTENT ── */
@@ -2764,7 +2803,12 @@ const css = `
   .home-browse-sticky .home-category-strip-fade { display:none !important; }
   .home-category-pill {
     flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:40px;
     padding:10px 16px;
+    box-sizing:border-box;
     border-radius:999px;
     font-family:var(--font-display);
     font-size:var(--text-xs);
@@ -2797,22 +2841,29 @@ const css = `
   }
   .home-category-pill:active { transform:scale(0.97); }
   .home-browse-sticky {
-    position:static;
-    z-index:auto;
-    margin-top:0;
-    margin-left:0;
-    margin-right:0;
-    margin-bottom:0;
+    position:sticky;
+    top:var(--dashboard-browse-sticky-top);
+    z-index:120;
+    margin:0;
     padding-top:0;
     padding-bottom:6px;
     padding-left:0;
     padding-right:0;
     box-sizing:border-box;
-    background:transparent;
+    width:100%;
+    max-width:100%;
+    background:var(--tab-bg);
     border:none;
+    border-bottom:1px solid var(--border);
     box-shadow:none;
-    backdrop-filter:none !important;
-    -webkit-backdrop-filter:none !important;
+    backdrop-filter:blur(20px) saturate(1.35);
+    -webkit-backdrop-filter:blur(20px) saturate(1.35);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .home-browse-sticky {
+    background:#f6f7f8;
+    border-bottom:1px solid rgba(37, 37, 37, 0.1);
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
   }
   .home-browse-heading {
     font-size:var(--text-xs);
@@ -3607,7 +3658,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const gA = A;
   const gUpNextMuted = D;
   const gUpNextStrong = S;
-  const BG = isNight ? "#000000" : MAIN_APP_BG[isDark ? "dark" : "light"];
 
   // derive card/button colors from the theme background
   const CARD_BG = isNight ? "#000000" : isDark ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.50)";
@@ -3790,8 +3840,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   // GUIDED phase flags
   const isExercisePhase = phase === "exercise";
 
-  const GUIDED_BG = isNight ? "#000000" : isDark ? "#000000" : "#FFFFFF";
-
   // Disable body overflow so position:fixed is never trapped
   useEffect(() => {
     const prevHtml = document.documentElement.style.overflow;
@@ -3957,7 +4005,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     return (/*#__PURE__*/
       React.createElement("div", { ref: guidedDialogRef, className: "guided-overlay", "data-theme": theme, "data-night": isNight ? "true" : "false", role: "dialog", "aria-modal": "true", "aria-label": "Guided session", style: {
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
-          background: BG, display: "flex", flexDirection: "column",
+          display: "flex", flexDirection: "column",
           fontFamily: "var(--font-display)", color: W, WebkitFontSmoothing: "antialiased",
           overflow: "hidden", alignItems: "center", justifyContent: "center", padding: 48
         } }, /*#__PURE__*/
@@ -3978,7 +4026,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   return (/*#__PURE__*/
     React.createElement("div", { ref: guidedDialogRef, className: "guided-overlay", "data-theme": theme, "data-night": isNight ? "true" : "false", "data-phase": phase, role: "dialog", "aria-modal": "true", "aria-label": "Guided session", style: {
         position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
-        background: GUIDED_BG, display: "flex", flexDirection: "column",
+        display: "flex", flexDirection: "column",
         fontFamily: "var(--font-display)", color: W, WebkitFontSmoothing: "antialiased",
         overflow: "hidden"
       } }, /*#__PURE__*/
@@ -5623,8 +5671,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [guidedTimelineExpanded, setGuidedTimelineExpanded] = useState(false);
   const [homeTrackCategory, setHomeTrackCategory] = useState("all");
   const homeCategoryStripRef = useRef(null);
-  const homeBrowseStickyRef = useRef(null);
-  const shouldScrollBrowseToTopRef = useRef(false);
   /** Prevents double-counting if an exercise is toggled off/on in one session; cleared in beginTrack */
   const sessionExerciseLoggedRef = useRef(/* @__PURE__ */ new Set());
   const [categoryStripRightFade, setCategoryStripRightFade] = useState(false);
@@ -5659,34 +5705,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const eps = 3;
     setCategoryStripRightFade(maxScroll > eps && el.scrollLeft < maxScroll - eps);
   };
-
-  const scrollBrowseStickyToTop = () => {
-    const node = homeBrowseStickyRef.current;
-    if (!node || typeof window === "undefined") return;
-    let scrollEl = node.parentElement;
-    while (scrollEl && scrollEl !== document.documentElement) {
-      const st = window.getComputedStyle(scrollEl);
-      const oy = st.overflowY;
-      const scrollable = (oy === "auto" || oy === "scroll" || oy === "overlay") && scrollEl.scrollHeight > scrollEl.clientHeight + 1;
-      if (scrollable) break;
-      scrollEl = scrollEl.parentElement;
-    }
-    if (!scrollEl || scrollEl === document.documentElement) {
-      scrollEl = document.querySelector(".app-body") || document.querySelector(".axis-app-scroll-root");
-    }
-    if (!scrollEl) return;
-    const nodeRect = node.getBoundingClientRect();
-    const scrollRect = scrollEl.getBoundingClientRect();
-    const nextTop = scrollEl.scrollTop + (nodeRect.top - scrollRect.top);
-    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    scrollEl.scrollTo({ top: Math.max(0, nextTop), behavior: reduceMotion ? "auto" : "smooth" });
-  };
-
-  useLayoutEffect(() => {
-    if (!shouldScrollBrowseToTopRef.current) return;
-    shouldScrollBrowseToTopRef.current = false;
-    scrollBrowseStickyToTop();
-  }, [homeTrackCategory]);
 
   const applySelectedAppIcon = async (iconHref) => {
     if (typeof document === "undefined" || !iconHref) return;
@@ -6359,7 +6377,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         );
       })(), /*#__PURE__*/
       ), /*#__PURE__*/
-      React.createElement("div", { ref: homeBrowseStickyRef, className: "home-float-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "home-float-stack" }, /*#__PURE__*/
       React.createElement("div", { className: "home-browse-sticky" }, /*#__PURE__*/
       React.createElement("div", { className: "home-browse-heading" }, "BROWSE"), /*#__PURE__*/
       React.createElement("div", { className: "home-category-strip-wrap" }, /*#__PURE__*/
@@ -6379,7 +6397,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         onClick: () => {
           if (navigator.vibrate) navigator.vibrate(8);
           axisHapticTick();
-          shouldScrollBrowseToTopRef.current = true;
           setHomeTrackCategory(cf.id);
         }
       }, cf.label)
