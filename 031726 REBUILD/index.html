@@ -163,7 +163,7 @@ const obDarkVars = `
   --ob-orb2: radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.15) 0%, transparent 70%);
   --ob-orb3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(251,191,36,0.10) 0%, transparent 70%);
   --ob-text-head:var(--axis-white); --ob-text-body:rgba(246,247,248,0.78); --ob-text-sec:rgba(246,247,248,0.50); --ob-text-dim:rgba(246,247,248,0.32);
-  --ob-accent:#FF9F43; --ob-accent-text:#0a0e1a; --ob-accent-dim:rgba(255,159,67,0.18); --ob-accent-glow:rgba(255,159,67,0.30);
+  --ob-accent:#FF9F43; --ob-accent-text:#0a0e1a; --ob-accent-btn-text:#252525; --ob-accent-dim:rgba(255,159,67,0.18); --ob-accent-glow:rgba(255,159,67,0.30);
   --ob-nav-bg:rgba(8,13,24,0.80); --ob-dot-bg:rgba(255,255,255,0.20);
 `;
 const obLightVars = `
@@ -172,7 +172,7 @@ const obLightVars = `
   --ob-orb2: radial-gradient(ellipse 55% 65% at 90% 75%, rgba(100,160,210,0.10) 0%, transparent 65%);
   --ob-orb3: radial-gradient(ellipse 50% 45% at 55% 5%,  rgba(140,180,220,0.08) 0%, transparent 65%);
   --ob-text-head:#0f1e2e; --ob-text-body:rgba(15,30,46,0.88); --ob-text-sec:rgba(15,30,46,0.68); --ob-text-dim:rgba(15,30,46,0.50);
-  --ob-accent:#1a4f7a; --ob-accent-text:var(--axis-white); --ob-accent-btn-text:var(--axis-white); --ob-accent-dim:rgba(26,79,122,0.14); --ob-accent-glow:rgba(26,79,122,0.28);
+  --ob-accent:#1a4f7a; --ob-accent-text:var(--axis-white); --ob-accent-btn-text:#f6f7f8; --ob-accent-dim:rgba(26,79,122,0.14); --ob-accent-glow:rgba(26,79,122,0.28);
   --ob-nav-bg:rgba(220,232,244,0.92); --ob-dot-bg:rgba(15,30,46,0.22);
 `;
 
@@ -201,7 +201,7 @@ const OB_GREY = {
     orb2: "radial-gradient(ellipse 65% 55% at 110% 70%, rgba(80,160,220,0.14) 0%, transparent 72%)",
     orb3: "radial-gradient(ellipse 55% 50% at 55% 0%, rgba(180,200,255,0.10) 0%, transparent 75%)",
     accent: "#9ca3af", accentDim: "rgba(156,163,175,0.2)", accentGlow: "rgba(156,163,175,0.15)",
-    accentBtnText: "#0f0f12", textPrimary: "#f4f4f5", tabBg: "rgba(8,12,20,0.80)"
+    accentBtnText: "#252525", textPrimary: "#f4f4f5", tabBg: "rgba(8,12,20,0.80)"
   },
   light: {
     bg: "linear-gradient(145deg, #e5e7eb 0%, #d1d5db 35%, #e5e7eb 70%, #f3f4f6 100%)",
@@ -209,7 +209,7 @@ const OB_GREY = {
     orb2: "radial-gradient(ellipse 55% 65% at 90% 75%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     orb3: "radial-gradient(ellipse 50% 45% at 55% 5%, rgba(0,0,0,0.02) 0%, transparent 65%)",
     accent: "#4b5563", accentDim: "rgba(75,85,99,0.18)", accentGlow: "rgba(75,85,99,0.2)",
-    accentBtnText: "var(--axis-white)", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.82)"
+    accentBtnText: "#f6f7f8", textPrimary: "#111827", tabBg: "rgba(243,244,246,0.82)"
   }
 };
 
@@ -232,7 +232,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(255,175,75,0.50) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(205,80,20,0.60) 0%, transparent 76%)",
       accent: "#FF9F43", accentDim: "rgba(255,159,67,0.25)", accentGlow: "rgba(255,159,67,0.55)",
-      accentBtnText: "#1a0800",
+      accentBtnText: "#252525",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#FFF0E0",
       tabBg: "rgba(7,9,18,0.84)"
@@ -242,7 +242,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(255,165,70,0.20) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(220,120,30,0.18) 0%, transparent 76%)",
       accent: "#C85A00", accentDim: "rgba(200,90,0,0.18)", accentGlow: "rgba(200,90,0,0.38)",
-      accentBtnText: "var(--axis-white)",
+      accentBtnText: "#f6f7f8",
       bg: "linear-gradient(160deg, #ffe8c8 0%, #ffd4a0 35%, #ffbf78 70%, #ffd4a8 100%)",
       textPrimary: "#2a1200"
     }
@@ -254,7 +254,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(0,210,170,0.44) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(0,140,110,0.55) 0%, transparent 76%)",
       accent: "#00E8C0", accentDim: "rgba(0,232,192,0.20)", accentGlow: "rgba(0,232,192,0.52)",
-      accentBtnText: "#001f1a",
+      accentBtnText: "#252525",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#D0FFF5",
       tabBg: "rgba(0,8,4,0.78)"
@@ -264,7 +264,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(0,195,155,0.22) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 115%, rgba(0,150,125,0.22) 0%, transparent 76%)",
       accent: "#007A6A", accentDim: "rgba(0,122,106,0.16)", accentGlow: "rgba(0,122,106,0.34)",
-      accentBtnText: "var(--axis-white)",
+      accentBtnText: "#f6f7f8",
       bg: "linear-gradient(160deg, #f0fffc 0%, #e0fff8 35%, #d0fff4 70%, #e8fff9 100%)",
       textPrimary: "#00261f"
     }
@@ -276,7 +276,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(70,160,255,0.42) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 118%, rgba(20,60,170,0.52) 0%, transparent 76%)",
       accent: "#4DA8FF", accentDim: "rgba(77,168,255,0.22)", accentGlow: "rgba(77,168,255,0.55)",
-      accentBtnText: "#00102a",
+      accentBtnText: "#252525",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#D8EEFF",
       tabBg: "rgba(0,6,14,0.78)"
@@ -286,7 +286,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(70,160,230,0.22) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 118%, rgba(40,90,200,0.22) 0%, transparent 76%)",
       accent: "#1060C0", accentDim: "rgba(16,96,192,0.17)", accentGlow: "rgba(16,96,192,0.38)",
-      accentBtnText: "var(--axis-white)",
+      accentBtnText: "#f6f7f8",
       bg: "linear-gradient(160deg, #d8eeff 0%, #c0e0ff 35%, #a8d4ff 70%, #c8e8ff 100%)",
       textPrimary: "#001830"
     }
@@ -298,7 +298,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(170,80,255,0.42) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 120%, rgba(90,40,180,0.52) 0%, transparent 76%)",
       accent: "#A060FF", accentDim: "rgba(160,96,255,0.22)", accentGlow: "rgba(160,96,255,0.52)",
-      accentBtnText: "#0a0020",
+      accentBtnText: "#252525",
       bg: MAIN_APP_BG.dark,
       textPrimary: "#E8D8FF",
       tabBg: "rgba(3,0,8,0.80)"
@@ -308,7 +308,7 @@ const CIRCADIAN_THEMES = {
       orb2: "radial-gradient(ellipse 110% 110% at 5% 98%, rgba(150,70,230,0.20) 0%, transparent 72%)",
       orb3: "radial-gradient(ellipse 75% 75% at 50% 120%, rgba(90,40,180,0.20) 0%, transparent 76%)",
       accent: "#6030B0", accentDim: "rgba(96,48,176,0.18)", accentGlow: "rgba(96,48,176,0.38)",
-      accentBtnText: "var(--axis-white)",
+      accentBtnText: "#f6f7f8",
       bg: "linear-gradient(160deg, #ece0ff 0%, #ddd0ff 35%, #cec0ff 70%, #e0d4ff 100%)",
       textPrimary: "#180030"
     }
@@ -662,7 +662,8 @@ const css = `
   }
   /* Default UI readability (Inter); display/headlines use Barlow below */
   html, body, #root { font-family: var(--font-ui); }
-  .app { font-family: var(--font-ui); --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 48px); }
+  /* Sticky Browse sits flush under dashboard: safe-area + row (40px) + padding-bottom (8px) + border (1px) */
+  .app { font-family: var(--font-ui); --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 49px); }
   .home-wordmark, .track-card-name, .hdr-title, .session-title,
   .fc-name, .fv-name, .guided-exercise-name, .en, .step-label,
   .app .app-label, .page-title, .track-title, .db-title, .timer-val {
@@ -829,7 +830,7 @@ const css = `
     --dot-bg: rgba(255,255,255,0.14);
     --dot-done: rgba(255,255,255,0.32);
     --step-connector: rgba(255,255,255,0.08);
-    --accent-btn-text: #0a0e1a;
+    --accent-btn-text: #252525;
     --bg-hover: rgba(255,255,255,0.05);
     --summary-grid-bg: rgba(255,255,255,0.04);
     --eol-color: rgba(255,255,255,0.30);
@@ -848,7 +849,7 @@ const css = `
     --glass-shadow: 0 2px 12px rgba(20,50,90,0.11), 0 1px 4px rgba(20,50,90,0.06);
     --glass-shadow-lg: 0 10px 32px rgba(20,50,90,0.13), 0 2px 10px rgba(20,50,90,0.07);
     /* Tab bar: opaque strip vs lavender gradient (Safari/iOS) */
-    --tab-bg: rgba(252, 253, 255, 0.94);
+    --tab-bg: #f6f7f8;
     --hdr-bg: rgba(235,243,250,0.75);
     --text-primary: var(--axis-black);
     --text-secondary: color-mix(in srgb, var(--axis-black) 82%, transparent);
@@ -868,7 +869,7 @@ const css = `
     --text-done: rgba(15,30,46,0.30);
     --dot-bg: rgba(15,30,46,0.12);
     --dot-done: rgba(15,30,46,0.38);
-    --accent-btn-text: var(--axis-white);
+    --accent-btn-text: #f6f7f8;
     --step-connector: rgba(160,195,225,0.40);
     --bg-hover: rgba(255,255,255,0.38);
     --summary-grid-bg: rgba(255,255,255,0.32);
@@ -999,7 +1000,7 @@ const css = `
     --dot-bg: #000000;
     --dot-done: #FF3B30;
     --step-connector: #FF3B30;
-    --accent-btn-text: #000000;
+    --accent-btn-text: #252525;
     --bg-hover: rgba(211, 47, 47, 0.1);
     --summary-grid-bg: #180303;
     --text-teal: #FF3B30;
@@ -1204,8 +1205,8 @@ const css = `
   }
   /* Red accent fill + red text = invisible in WebKit — black ink on red; home uses black pill + red ink below */
   .app[data-night="true"] .begin-btn.session-browse-btn {
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
+    color: #252525 !important;
+    -webkit-text-fill-color: #252525 !important;
   }
   .app[data-night="true"] .home .track-card .begin-btn:not(.begin-btn--today-primary) {
     color: #FF3B30 !important;
@@ -1266,8 +1267,8 @@ const css = `
   .app[data-night="true"] .content .fv-cta:not(.done),
   .app[data-night="true"] .content .fv-cta:not(.done) *,
   .app[data-night="true"] .content .tb {
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
+    color: #252525 !important;
+    -webkit-text-fill-color: #252525 !important;
   }
   .app[data-night="true"] .content .fv-cta:not(.done) {
     background: #FF3B30 !important;
@@ -1278,8 +1279,24 @@ const css = `
     border: none !important;
   }
   [data-night="true"].guided-overlay .guided-cta-fill {
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
+    color: #252525 !important;
+    -webkit-text-fill-color: #252525 !important;
+  }
+  /* Guided shell: flat canvas — dark #000 / light #fff */
+  .guided-overlay[data-night="true"] {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .guided-overlay[data-night="false"][data-theme="dark"] {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .guided-overlay[data-night="false"][data-theme="light"] {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
   .guided-overlay .gdc-instr-track,
   .guided-overlay .gdc-diag-track {
@@ -1475,8 +1492,8 @@ const css = `
   .app[data-night="true"] .timer-view-body .timer-glass-btn-pri {
     background: #FF3B30 !important;
     border: none !important;
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
+    color: #252525 !important;
+    -webkit-text-fill-color: #252525 !important;
   }
   /* ── BASE ── */
   .app {
@@ -1636,10 +1653,27 @@ const css = `
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    gap:10px;
-    padding:12px var(--page-gutter) 0;
+    gap:6px;
+    padding:8px var(--page-gutter) 0;
     box-sizing:border-box;
     width:100%;
+  }
+  .hdr-session-toprow {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    min-width:0;
+  }
+  .hdr-session-head .hdr-session-toprow .hdr-dur {
+    flex-shrink:0;
+  }
+  .hdr-session-head .hdr-title {
+    margin-top:0;
+  }
+  .hdr-session-head .tabs {
+    margin-top:2px;
   }
   .hdr-session-head .back-btn {
     position:relative !important;
@@ -1661,6 +1695,9 @@ const css = `
     justify-content:flex-start;
     width:100%;
     box-sizing:border-box;
+  }
+  .app-body--settings-pad {
+    padding-bottom: max(120px, calc(env(safe-area-inset-bottom, 0px) + 96px));
   }
   .hdr { position:relative; padding:0 var(--page-gutter); box-sizing:border-box; width:100%; }
   .hdr-row { display:flex; justify-content:flex-start; align-items:flex-start; padding:8px 0 16px; }
@@ -1753,6 +1790,28 @@ const css = `
     margin-bottom:8px;
     font-family: var(--font-display);
     font-weight: 500;
+  }
+
+  /* Session LIST/GUIDED (dark circadian): mood orbs stay visible; frosted dim layer ≈ dashboard + tab bar — no flat hdr strip */
+  .app[data-theme="dark"]:not([data-night="true"]) .hdr-wrap {
+    background: color-mix(in srgb, var(--tab-bg) 58%, transparent);
+    backdrop-filter: blur(32px) saturate(1.4);
+    -webkit-backdrop-filter: blur(32px) saturate(1.4);
+    border-bottom-color: color-mix(in srgb, var(--glass-border) 80%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--glass-specular) 22%, transparent);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .tab-subbar {
+    background: color-mix(in srgb, var(--tab-bg) 48%, transparent);
+    backdrop-filter: blur(28px) saturate(1.35);
+    -webkit-backdrop-filter: blur(28px) saturate(1.35);
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.22), 0 1px 0 color-mix(in srgb, var(--glass-border) 65%, transparent);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .hdr-session-head .tabs .tab.on {
+    background: transparent;
+    box-shadow: none;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .hdr-session-head .tabs .tab:not(.on) {
+    color: color-mix(in srgb, var(--text-white) 42%, transparent);
   }
 
   /* ── CONTENT ── */
@@ -1856,6 +1915,8 @@ const css = `
     box-shadow: 0 8px 28px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
   .today-card {
+    position:relative;
+    overflow:hidden;
     transition: background var(--motion-slow), border-color var(--motion-slow), box-shadow var(--motion-slow), transform var(--motion-slow), backdrop-filter var(--motion-slow);
   }
   .panel:focus { outline: none; }
@@ -2164,6 +2225,65 @@ const css = `
     margin-left: 4px;
     opacity: 0.85;
   }
+  /* Featured weekly total — dense row: label + value share one band (less empty vertical space) */
+  .summary-hero.summary-hero--feature {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding: 14px 16px 16px;
+    margin: 0 0 16px;
+    border-radius: 22px;
+    box-sizing: border-box;
+    border: 1px solid color-mix(in srgb, var(--glass-border) 78%, transparent);
+    background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
+    box-shadow: 0 10px 36px rgba(0,0,0,0.1), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 55%, transparent);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .summary-hero.summary-hero--feature {
+    border-color: color-mix(in srgb, var(--mood-color) 38%, rgba(0,0,0,0.06));
+    background: color-mix(in srgb, #ffffff 93%, var(--mood-color) 7%);
+    box-shadow: 0 16px 48px color-mix(in srgb, var(--mood-color) 16%, rgba(0,0,0,0.06)), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .summary-hero.summary-hero--feature {
+    border-color: color-mix(in srgb, var(--mood-color) 45%, transparent);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .app[data-night="true"] .summary-hero.summary-hero--feature {
+    border: 2px solid #FF3B30 !important;
+    background: #000000 !important;
+    box-shadow: 0 0 56px rgba(255, 59, 48, 0.2) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .summary-hero.summary-hero--feature .summary-hero-label {
+    margin-bottom: 0;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 56%;
+    letter-spacing: 0.2em;
+    font-size: var(--text-xs);
+    line-height: 1.35;
+  }
+  .summary-hero.summary-hero--feature .summary-hero-value {
+    flex: 0 0 auto;
+    text-align: right;
+    font-size: clamp(34px, 9.5vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .summary-hero.summary-hero--feature .summary-hero-unit {
+    font-size: 0.4em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-left: 4px;
+    vertical-align: 0.08em;
+    opacity: 0.92;
+  }
   .summary-bento {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2353,6 +2473,27 @@ const css = `
     aspect-ratio: 1;
     border-radius: 10px;
     transition: all 0.2s;
+    position: relative;
+  }
+  .momentum-cell__dow {
+    position: absolute;
+    bottom: 3px;
+    right: 4px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    pointer-events: none;
+    color: color-mix(in srgb, var(--text-primary) 42%, transparent);
+  }
+  .momentum-cell--on .momentum-cell__dow {
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .momentum-cell--on .momentum-cell__dow {
+    color: rgba(255, 255, 255, 0.95);
+  }
+  [data-night="true"] .momentum-cell--on .momentum-cell__dow {
+    color: rgba(37, 37, 37, 0.72);
   }
   .momentum-labels { display:flex; justify-content:space-between; margin-bottom:6px; padding: 0; width: 100%; box-sizing: border-box; }
   .momentum-label { font-size: var(--text-xs); letter-spacing:0.10em; text-transform:uppercase; color:var(--text-dimmer); }
@@ -2590,11 +2731,20 @@ const css = `
 
   /* Light mode: distinct tab strip + separation from page (Safari frosted read) — not in AXIS Ultra */
   .tab-bar[data-theme="light"]:not([data-night="true"]) {
-    background: var(--tab-bg);
-    border-top: 1px solid rgba(100, 130, 175, 0.38);
-    box-shadow: 0 -6px 28px rgba(15, 35, 70, 0.1), 0 -1px 0 rgba(255, 255, 255, 0.85) inset;
-    backdrop-filter: blur(20px) saturate(1.12);
-    -webkit-backdrop-filter: blur(20px) saturate(1.12);
+    background: #f6f7f8;
+    border-top: 1px solid rgba(37, 37, 37, 0.1);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* Light: top dashboard strip — solid #f6f7f8; inactive chrome #E0E0E0; mood accent fills */
+  .app[data-theme="light"]:not([data-night="true"]) .dashboard-header {
+    background: #f6f7f8 !important;
+    border-bottom: 1px solid rgba(37, 37, 37, 0.1);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   /* MOOD: avoid stacking full tab-bar-spacer + large list padding (was ~1/4 screen gap). Spacer collapsed; padding carries clearance. */
@@ -2676,10 +2826,13 @@ const css = `
     z-index:130;
     padding-top:env(safe-area-inset-top, 0px);
     padding-bottom:8px;
-    background:#252525 !important;
     box-sizing:border-box;
     width:100%;
     -webkit-tap-highlight-color:transparent;
+    background:var(--tab-bg);
+    backdrop-filter:blur(20px) saturate(1.35);
+    -webkit-backdrop-filter:blur(20px) saturate(1.35);
+    border-bottom:1px solid var(--border);
   }
   .dashboard-header__row {
     display:grid;
@@ -2697,10 +2850,22 @@ const css = `
   .dashboard-header__progress-track {
     height:5px;
     border-radius:999px;
-    background:rgba(255,255,255,0.22);
+    background:#3a3a3c;
     overflow:hidden;
     width:100%;
-    max-width:min(72px, 22vw); /* cap: aligns with end of iPhone status clock */
+    max-width:min(62px, 18vw); /* ~60–65px: iPhone status clock region */
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-track {
+    background:#E0E0E0;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-fill {
+    background:var(--mood-color);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__streak-cell--on {
+    background:var(--mood-color);
+  }
+  .app[data-night="true"] .dashboard-header__progress-track {
+    background:rgba(255, 59, 48, 0.28) !important;
   }
   .dashboard-header__progress-fill {
     height:100%;
@@ -2715,11 +2880,23 @@ const css = `
     font-weight:300;
     letter-spacing:0.42em;
     text-transform:uppercase;
-    color:rgba(255,255,255,0.45);
+    color:color-mix(in srgb, var(--text-dim) 68%, transparent);
     text-align:center;
     justify-self:center;
     padding:0 4px;
     pointer-events:none;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__brand {
+    color:#000000;
+    -webkit-text-fill-color:#000000;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__brand {
+    color:#ffffff;
+    -webkit-text-fill-color:#ffffff;
+  }
+  .app[data-night="true"] .dashboard-header__brand {
+    color:#FF3B30 !important;
+    -webkit-text-fill-color:#FF3B30 !important;
   }
   .dashboard-header__right {
     display:flex;
@@ -2738,6 +2915,16 @@ const css = `
     flex-shrink:0;
     transition:background-color 0.45s ease, transform 0.2s ease;
   }
+  .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
+    background:#E0E0E0;
+  }
+  /* Dark (circadian): inactive track + empty streaks — mood tint reads on teal, not as “holes” */
+  .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__progress-track {
+    background:color-mix(in srgb, var(--mood-color) 23%, transparent);
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
+    background:color-mix(in srgb, var(--mood-color) 23%, transparent);
+  }
   .dashboard-header__streak-cell--on {
     background:var(--mood-color);
   }
@@ -2747,6 +2934,9 @@ const css = `
   }
   .app[data-night="true"] .dashboard-header__streak-cell--on {
     background:#FF3B30 !important;
+  }
+  .app[data-night="true"] .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
+    background:rgba(255, 59, 48, 0.3) !important;
   }
   /* Left edge aligns with TODAY card — only .track-cards-outer supplies horizontal gutter */
   .home-welcome {
@@ -2772,7 +2962,8 @@ const css = `
   .home-browse-scroll-mask {
     position:relative;
     z-index:1;
-    padding:var(--home-section-gap) var(--page-gutter) 24px;
+    margin-top:-20px;
+    padding:calc(var(--home-section-gap) + 20px) var(--page-gutter) 24px;
     margin-bottom:var(--axis-safe-bottom);
     box-sizing:border-box;
   }
@@ -2796,7 +2987,7 @@ const css = `
   .home-category-strip-wrap {
     position:relative;
     width:100%;
-    margin:0 0 2px;
+    margin:0 0 4px;
     z-index:1;
   }
   .home-category-strip {
@@ -2807,7 +2998,7 @@ const css = `
     -webkit-overflow-scrolling:touch;
     scroll-padding-inline:var(--page-gutter) 0;
     padding-top:0;
-    padding-bottom:10px;
+    padding-bottom:20px;
     padding-left:var(--page-gutter);
     padding-right:0;
     margin:0;
@@ -2821,7 +3012,7 @@ const css = `
     position:absolute;
     right:0;
     top:0;
-    bottom:18px;
+    bottom:36px;
     width:min(56px, 22vw);
     pointer-events:none;
     z-index:2;
@@ -2837,7 +3028,12 @@ const css = `
   .home-browse-sticky .home-category-strip-fade { display:none !important; }
   .home-category-pill {
     flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:40px;
     padding:10px 16px;
+    box-sizing:border-box;
     border-radius:999px;
     font-family:var(--font-display);
     font-size:var(--text-xs);
@@ -2870,36 +3066,70 @@ const css = `
   }
   .home-category-pill:active { transform:scale(0.97); }
   .home-browse-sticky {
-    position:static;
-    z-index:auto;
-    margin-top:0;
-    margin-left:0;
-    margin-right:0;
-    margin-bottom:0;
-    padding-top:0;
-    padding-bottom:6px;
+    position:sticky;
+    top:var(--dashboard-browse-sticky-top);
+    z-index:120;
+    margin:0;
+    padding-top:12px;
+    padding-bottom:12px;
     padding-left:0;
     padding-right:0;
     box-sizing:border-box;
-    background:transparent;
+    width:100%;
+    max-width:100%;
+    background:var(--tab-bg);
     border:none;
+    border-bottom:1px solid var(--border);
     box-shadow:none;
-    backdrop-filter:none !important;
-    -webkit-backdrop-filter:none !important;
+    backdrop-filter:blur(20px) saturate(1.35);
+    -webkit-backdrop-filter:blur(20px) saturate(1.35);
+  }
+  /* Browse: whisper of mood on near-white so it matches the page + list below (not a separate tan band) */
+  .app[data-theme="light"]:not([data-night="true"]) .home-browse-sticky {
+    background:color-mix(in srgb, #ffffff 91%, var(--mood-color) 9%) !important;
+    border-bottom:1px solid color-mix(in srgb, var(--mood-color) 9%, rgba(0, 0, 0, 0.055)) !important;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .home-browse-sticky {
+    background:color-mix(in srgb, #121a2c 74%, var(--mood-color) 26%) !important;
+    border-bottom:1px solid color-mix(in srgb, var(--mood-color) 26%, transparent) !important;
+  }
+  /* AXIS Ultra: Browse strip matches canvas — pure black, red rule only */
+  .app[data-night="true"] .home-browse-sticky {
+    background:#000000 !important;
+    border-bottom:1px solid #FF3B30 !important;
+  }
+  .app[data-night="true"] .home-browse-heading {
+    color:#FF3B30 !important;
+    -webkit-text-fill-color:#FF3B30 !important;
+  }
+  .app[data-night="true"] .home-category-pill {
+    background:#000000 !important;
+    border:1px solid rgba(255, 59, 48, 0.55) !important;
+    color:#FF3B30 !important;
+    -webkit-text-fill-color:#FF3B30 !important;
+    box-shadow:none !important;
+  }
+  .app[data-night="true"] .home-category-pill[aria-selected="true"] {
+    background:rgba(255, 59, 48, 0.16) !important;
+    border-color:#FF3B30 !important;
+    color:#FF3B30 !important;
+    -webkit-text-fill-color:#FF3B30 !important;
   }
   .home-browse-heading {
     font-size:var(--text-xs);
     letter-spacing:0.14em;
     text-transform:uppercase;
     color:color-mix(in srgb, var(--text-dim) 92%, transparent);
-    margin-bottom:4px;
+    margin-bottom:8px;
     font-weight:600;
     padding-inline:var(--page-gutter);
     box-sizing:border-box;
   }
-  /* Keeps Today/Browse layout from collapsing when a category has only one short group */
+  /* Browse: consistent peek below sticky bar — avoid variable min-height */
   .home-browse-results {
-    min-height:min(52dvh, 480px);
+    min-height:0;
     box-sizing:border-box;
   }
   .home-recent { margin-bottom:0; }
@@ -3296,11 +3526,11 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
 
 
 // ─────────────────────────────────────────────────────────────
-//  MOMENTUM — 7-day strip (device-only)
+//  WEEK MOMENTUM — shared 7-day window (header strip + Summary)
 // ─────────────────────────────────────────────────────────────
-function MomentumMap({ history, nightMode = false }) {
+function axisWeekMomentumFromHistory(history) {
   const today = new Date();
-  const days = Array.from({ length: 7 }, (_, i) => {
+  const dates = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
     d.setDate(d.getDate() - (6 - i));
     return d.toDateString();
@@ -3311,18 +3541,35 @@ function MomentumMap({ history, nightMode = false }) {
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
+  const active = dates.map((ds) => (sessionCounts[ds] || 0) > 0);
+  return { dates, sessionCounts, active };
+}
+
+function axisWeekdayShortLabel(dateStr) {
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return "";
+  const labels = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
+  return labels[d.getDay()];
+}
+
+// ─────────────────────────────────────────────────────────────
+//  MOMENTUM — 7-day strip (device-only)
+// ─────────────────────────────────────────────────────────────
+function MomentumMap({ history, nightMode = false }) {
+  const { dates, sessionCounts, active } = axisWeekMomentumFromHistory(history);
   return (/*#__PURE__*/
     React.createElement("div", { className: "summary-momentum" }, /*#__PURE__*/
     React.createElement("div", { className: "summary-title", style: { marginBottom: 12 } }, "7-Day Momentum"), /*#__PURE__*/
     React.createElement("div", { className: "momentum-strip", role: "img", "aria-label": "Seven days of session activity" },
-    days.map((dateStr, i) => {
+    dates.map((dateStr, i) => {
       const count = sessionCounts[dateStr] || 0;
+      const on = active[i];
       const styleNight = {
-        background: count > 0 ? "#FF3B30" : "#000000",
+        background: on ? "#FF3B30" : "#000000",
         boxShadow: "none",
         border: "1px solid #FF3B30"
       };
-      const styleDay = count > 0 ? {
+      const styleDay = on ? {
         background: "var(--mood-color)",
         border: "1px solid color-mix(in srgb, var(--mood-color) 70%, transparent)",
         boxShadow: "inset 0 1px 0 var(--glass-specular), 0 0 12px color-mix(in srgb, var(--mood-color) 35%, transparent)",
@@ -3336,7 +3583,8 @@ function MomentumMap({ history, nightMode = false }) {
         WebkitBackdropFilter: "blur(8px)"
       };
       return (/*#__PURE__*/
-        React.createElement("div", { key: i, className: "momentum-cell", style: nightMode ? styleNight : styleDay, "aria-label": `${dateStr}: ${count} session(s)` }));
+        React.createElement("div", { key: i, className: "momentum-cell" + (on ? " momentum-cell--on" : ""), style: nightMode ? styleNight : styleDay, "aria-label": `${dateStr}: ${count} session(s)` }, /*#__PURE__*/
+        React.createElement("span", { className: "momentum-cell__dow", "aria-hidden": true }, axisWeekdayShortLabel(dateStr))));
 
     })
     ), /*#__PURE__*/
@@ -3353,9 +3601,10 @@ function MomentumMap({ history, nightMode = false }) {
 // ─────────────────────────────────────────────────────────────
 //  DASHBOARD HEADER (global: progress + AXIS + streak)
 // ─────────────────────────────────────────────────────────────
-function DashboardHeader({ progressPct = 0, streak = 0 }) {
+function DashboardHeader({ progressPct = 0, history = [] }) {
   const pct = Math.max(0, Math.min(100, Number(progressPct) || 0));
-  const filled = Math.min(7, Math.max(0, Number(streak) || 0));
+  const { active } = axisWeekMomentumFromHistory(history);
+  const activeCount = active.filter(Boolean).length;
   return /*#__PURE__*/React.createElement("header", { className: "dashboard-header", role: "banner" }, /*#__PURE__*/
   React.createElement("div", { className: "dashboard-header__row" }, /*#__PURE__*/
   React.createElement("div", { className: "dashboard-header__left" }, /*#__PURE__*/
@@ -3364,11 +3613,11 @@ function DashboardHeader({ progressPct = 0, streak = 0 }) {
   )
   ), /*#__PURE__*/
   React.createElement("div", { className: "dashboard-header__brand", "aria-label": "AXIS" }, "AXIS"), /*#__PURE__*/
-  React.createElement("div", { className: "dashboard-header__right", role: "img", "aria-label": `${filled} of 7 streak days` },
+  React.createElement("div", { className: "dashboard-header__right", role: "img", "aria-label": `${activeCount} of 7 days with activity` },
   Array.from({ length: 7 }, (_, i) => /*#__PURE__*/
   React.createElement("div", {
     key: i,
-    className: "dashboard-header__streak-cell" + (i < filled ? " dashboard-header__streak-cell--on" : "")
+    className: "dashboard-header__streak-cell" + (active[i] ? " dashboard-header__streak-cell--on" : "")
   })
   )
   )
@@ -3681,7 +3930,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const gA = A;
   const gUpNextMuted = D;
   const gUpNextStrong = S;
-  const BG = isNight ? "#000000" : MAIN_APP_BG[isDark ? "dark" : "light"];
 
   // derive card/button colors from the theme background
   const CARD_BG = isNight ? "#000000" : isDark ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.50)";
@@ -3864,8 +4112,6 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   // GUIDED phase flags
   const isExercisePhase = phase === "exercise";
 
-  const GUIDED_BG = isNight ? "#000000" : isDark ? "#000000" : "#FFFFFF";
-
   // Disable body overflow so position:fixed is never trapped
   useEffect(() => {
     const prevHtml = document.documentElement.style.overflow;
@@ -4031,7 +4277,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     return (/*#__PURE__*/
       React.createElement("div", { ref: guidedDialogRef, className: "guided-overlay", "data-theme": theme, "data-night": isNight ? "true" : "false", role: "dialog", "aria-modal": "true", "aria-label": "Guided session", style: {
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
-          background: BG, display: "flex", flexDirection: "column",
+          display: "flex", flexDirection: "column",
           fontFamily: "var(--font-display)", color: W, WebkitFontSmoothing: "antialiased",
           overflow: "hidden", alignItems: "center", justifyContent: "center", padding: 48
         } }, /*#__PURE__*/
@@ -4052,7 +4298,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   return (/*#__PURE__*/
     React.createElement("div", { ref: guidedDialogRef, className: "guided-overlay", "data-theme": theme, "data-night": isNight ? "true" : "false", "data-phase": phase, role: "dialog", "aria-modal": "true", "aria-label": "Guided session", style: {
         position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999,
-        background: GUIDED_BG, display: "flex", flexDirection: "column",
+        display: "flex", flexDirection: "column",
         fontFamily: "var(--font-display)", color: W, WebkitFontSmoothing: "antialiased",
         overflow: "hidden"
       } }, /*#__PURE__*/
@@ -5215,7 +5461,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     border: 1px solid #FF3B30 !important;
   }
   [data-night="true"] .timer-view-body .timer-glass-toggle-btn { color: rgba(255, 59, 48, 0.65) !important; }
-  [data-night="true"] .timer-view-body .timer-glass-toggle-btn.active { color: #000000 !important; background: #FF3B30 !important; }
+  [data-night="true"] .timer-view-body .timer-glass-toggle-btn.active { color: #252525 !important; background: #FF3B30 !important; }
   [data-night="true"] .timer-view-body .timer-interval-row { border-bottom-color: #FF3B30 !important; }
   [data-night="true"] .timer-view-body .timer-interval-row-label { color: #FF3B30 !important; }
   [data-night="true"] .timer-view-body .timer-instrument-val {
@@ -5697,8 +5943,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [guidedTimelineExpanded, setGuidedTimelineExpanded] = useState(false);
   const [homeTrackCategory, setHomeTrackCategory] = useState("all");
   const homeCategoryStripRef = useRef(null);
-  const homeBrowseStickyRef = useRef(null);
-  const shouldScrollBrowseToTopRef = useRef(false);
   /** Prevents double-counting if an exercise is toggled off/on in one session; cleared in beginTrack */
   const sessionExerciseLoggedRef = useRef(/* @__PURE__ */ new Set());
   const [categoryStripRightFade, setCategoryStripRightFade] = useState(false);
@@ -5733,34 +5977,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const eps = 3;
     setCategoryStripRightFade(maxScroll > eps && el.scrollLeft < maxScroll - eps);
   };
-
-  const scrollBrowseStickyToTop = () => {
-    const node = homeBrowseStickyRef.current;
-    if (!node || typeof window === "undefined") return;
-    let scrollEl = node.parentElement;
-    while (scrollEl && scrollEl !== document.documentElement) {
-      const st = window.getComputedStyle(scrollEl);
-      const oy = st.overflowY;
-      const scrollable = (oy === "auto" || oy === "scroll" || oy === "overlay") && scrollEl.scrollHeight > scrollEl.clientHeight + 1;
-      if (scrollable) break;
-      scrollEl = scrollEl.parentElement;
-    }
-    if (!scrollEl || scrollEl === document.documentElement) {
-      scrollEl = document.querySelector(".app-body") || document.querySelector(".axis-app-scroll-root");
-    }
-    if (!scrollEl) return;
-    const nodeRect = node.getBoundingClientRect();
-    const scrollRect = scrollEl.getBoundingClientRect();
-    const nextTop = scrollEl.scrollTop + (nodeRect.top - scrollRect.top);
-    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    scrollEl.scrollTo({ top: Math.max(0, nextTop), behavior: reduceMotion ? "auto" : "smooth" });
-  };
-
-  useLayoutEffect(() => {
-    if (!shouldScrollBrowseToTopRef.current) return;
-    shouldScrollBrowseToTopRef.current = false;
-    scrollBrowseStickyToTop();
-  }, [homeTrackCategory]);
 
   const applySelectedAppIcon = async (iconHref) => {
     if (typeof document === "undefined" || !iconHref) return;
@@ -6020,7 +6236,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const goalMin = Math.max(0, Number(dailyGoalMinutes) || 0);
   const rawGoalProgressPct = goalMin > 0 ? todayMinutesTotal / goalMin * 100 : 0;
   const goalProgressPct = Math.min(100, Math.max(0, rawGoalProgressPct));
-  const dashboardHeaderEl = /*#__PURE__*/React.createElement(DashboardHeader, { progressPct: goalProgressPct, streak: streak });
+  const dashboardHeaderEl = /*#__PURE__*/React.createElement(DashboardHeader, { progressPct: goalProgressPct, history: history });
   const favCount = Object.values(favs).filter(Boolean).length;
   const skippedCount = Object.values(skipped).filter(Boolean).length;
   const visibleSections = SECTIONS.map((s) => ({ ...s, exercises: s.exercises.filter((e) => {if (showFavOnly) return favs[e.id];if (showSkipOnly) return skipped[e.id];return true;}) })).filter((s) => s.exercises.length > 0);
@@ -6037,7 +6253,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { key: "settings", className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
     React.createElement("style", null, css), /*#__PURE__*/
     React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
-    React.createElement("div", { className: "app-body" }, /*#__PURE__*/
+    React.createElement("div", { className: "app-body app-body--settings-pad" }, /*#__PURE__*/
     dashboardHeaderEl, /*#__PURE__*/
     React.createElement("div", { className: "app-page-header" }, /*#__PURE__*/
     React.createElement("div", { className: "app-screen-title", style: { marginBottom: 24 } }, "SETTINGS"), /*#__PURE__*/
@@ -6165,6 +6381,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       icon: /*#__PURE__*/React.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("path", { d: "M12 3l1.5 5.5 6 .5-4.5 4 1.5 5.5L12 16l-4.5 2 1.5-5.5-4.5-4 6-.5L12 3z" })) }];
 
     const nowPeriod = getCircadianPeriod();
+    const AUTO_MOOD_LABELS = { dawn: "Auto: Rise", midday: "Auto: Midday", prime: "Auto: Prime", rest: "Auto: Rest" };
     // derive highlight color from circadian theme for Today's suggestion card (home)
     const highlightCt = CIRCADIAN_THEMES[nowPeriod][theme === "dark" ? "dark" : "light"];
     const highlight = highlightCt && highlightCt.accent ? highlightCt.accent : "var(--accent)";
@@ -6200,7 +6417,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", null, /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-base)", fontWeight: 600, color: activePeriod === null ? "var(--accent)" : "var(--text-white)", marginBottom: 3 } }, "Auto"), /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)" } },
-      activePeriod === null ? /*#__PURE__*/React.createElement("span", null, "On \u2014 currently ", /*#__PURE__*/React.createElement("span", { style: { color: "var(--accent)", fontWeight: 600 } }, nowPeriod)) : "Follows time of day"
+      activePeriod === null ? /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", { style: { color: "var(--accent)", fontWeight: 600 } }, AUTO_MOOD_LABELS[nowPeriod] || "Auto")) : "Follows time of day"
       )
       ), /*#__PURE__*/
       React.createElement("button", { onClick: nightMode ? undefined : () => {const n = activePeriod === null ? nowPeriod : null;setActivePeriod(n);storageSet("axis_period", n);}, style: { flexShrink: 0, width: 44, height: 26, border: "1px solid", borderColor: activePeriod === null ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: activePeriod === null ? "var(--accent)" : "var(--glass-bg)", cursor: nightMode ? "default" : "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
@@ -6270,16 +6487,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const weeklyTargetMin = Math.max(0, goalMin * 7);
     const weekBarPct = weeklyTargetMin > 0 ? Math.min(100, weekMinutes / weeklyTargetMin * 100) : 0;
     const summaryDateStr = new Date().toLocaleDateString(undefined, { month: "numeric", day: "numeric", year: "numeric" });
-    const nm = welcomeName || "Adam";
-    const minsNowSummary = new Date().getHours() * 60 + new Date().getMinutes();
-    let timeGreetingSummary;
-    if (minsNowSummary >= 5 * 60 && minsNowSummary <= 11 * 60 + 59) {
-      timeGreetingSummary = "Good Morning, " + nm;
-    } else if (minsNowSummary >= 12 * 60 && minsNowSummary <= 16 * 60 + 59) {
-      timeGreetingSummary = "Good Afternoon, " + nm;
-    } else {
-      timeGreetingSummary = "Good Evening, " + nm;
-    }
     return (/*#__PURE__*/
       React.createElement("div", { className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
@@ -6288,14 +6495,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-welcome", id: "axis-summary-welcome" }, timeGreetingSummary + "."), /*#__PURE__*/
+      React.createElement("div", { className: "home-welcome", id: "axis-summary-welcome" }, "SUMMARY"), /*#__PURE__*/
       React.createElement("div", { className: "home-summary-lede-row" }, /*#__PURE__*/
       React.createElement("div", { className: "home-summary-lede" }, "Your progress at a glance."), /*#__PURE__*/
       React.createElement("div", { className: "home-summary-date" }, summaryDateStr)
       ), /*#__PURE__*/
       React.createElement("div", { className: "summary-main-stack" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-sunset-stack" }, /*#__PURE__*/
-      React.createElement("div", { className: "summary-hero" }, /*#__PURE__*/
+      React.createElement("div", { className: "summary-hero summary-hero--feature" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-hero-label" }, "Total weekly minutes"), /*#__PURE__*/
       React.createElement("div", { className: "summary-hero-value" }, weekMinutes, /*#__PURE__*/React.createElement("span", { className: "summary-hero-unit" }, "MIN"))
       ), /*#__PURE__*/
@@ -6480,7 +6687,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         );
       })(), /*#__PURE__*/
       ), /*#__PURE__*/
-      React.createElement("div", { ref: homeBrowseStickyRef, className: "home-float-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "home-float-stack" }, /*#__PURE__*/
       React.createElement("div", { className: "home-browse-sticky" }, /*#__PURE__*/
       React.createElement("div", { className: "home-browse-heading" }, "BROWSE"), /*#__PURE__*/
       React.createElement("div", { className: "home-category-strip-wrap" }, /*#__PURE__*/
@@ -6500,7 +6707,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         onClick: () => {
           if (navigator.vibrate) navigator.vibrate(8);
           axisHapticTick();
-          shouldScrollBrowseToTopRef.current = true;
           setHomeTrackCategory(cf.id);
         }
       }, cf.label)
@@ -6588,6 +6794,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "hdr-wrap" }, /*#__PURE__*/
     React.createElement("div", { className: "hdr" }, /*#__PURE__*/
     React.createElement("div", { className: "hdr-session-head" }, /*#__PURE__*/
+    React.createElement("div", { className: "hdr-session-toprow" }, /*#__PURE__*/
     React.createElement("button", { type: "button", className: "back-btn", onClick: goHome, "aria-label": "Back",
       style: {
         border: `1px solid ${sessionBackBorderColor}`,
@@ -6597,11 +6804,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("svg", { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/
     React.createElement("path", { d: "M19 12H5M12 5l-7 7 7 7" }))
     ), /*#__PURE__*/
+    React.createElement("div", { className: "hdr-dur", "aria-label": "Session length" }, sessionDurationLabel)
+    ), /*#__PURE__*/
     React.createElement("div", { className: "hdr-left" }, /*#__PURE__*/
-    React.createElement("div", { className: "hdr-title" }, TRACKS[track].label), /*#__PURE__*/
-    React.createElement("div", { className: "hdr-meta" }, /*#__PURE__*/
-    React.createElement("div", { className: "hdr-dur" }, sessionDurationLabel)
-    )
+    React.createElement("div", { className: "hdr-title" }, TRACKS[track].label)
     )
     ), /*#__PURE__*/
     React.createElement("div", { className: "tabs" },
