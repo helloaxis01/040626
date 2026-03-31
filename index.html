@@ -670,7 +670,12 @@ const css = `
   /* Default UI readability (Inter); display/headlines use Barlow below */
   html, body, #root { font-family: var(--font-ui); }
   /* Sticky Browse sits flush under dashboard: safe-area + row (40px) + padding-bottom (8px) + border (1px) */
-  .app { font-family: var(--font-ui); --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 49px); }
+  .app {
+    font-family: var(--font-ui);
+    --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 49px);
+    --axis-dashboard-fixed-h: calc(env(safe-area-inset-top, 0px) + 49px);
+    --axis-session-fixed-h: 108px;
+  }
   .home-wordmark, .track-card-name, .hdr-title, .session-title,
   .fc-name, .fv-name, .guided-exercise-name, .en, .step-label,
   .app .app-label, .page-title, .track-title, .db-title, .timer-val {
@@ -757,7 +762,10 @@ const css = `
   .app-page-header { padding: var(--safe-top) var(--page-padding) 0; width: 100%; max-width: 100%; box-sizing: border-box; text-align: left; }
   /* With dashboard: main title lines share the same vertical start as Home greeting */
   .app-body > .dashboard-header + .app-page-header {
-    padding: var(--app-title-after-dashboard) var(--page-padding) 0;
+    padding: calc(var(--axis-dashboard-fixed-h) + 8px) var(--page-padding) 0;
+  }
+  .app-body > .dashboard-header + .home {
+    padding-top: var(--axis-dashboard-fixed-h);
   }
   .app-screen-title {
     font-size: var(--text-lg) !important;
@@ -938,7 +946,7 @@ const css = `
   /* Light mode: breathing timer rings more visible */
   [data-theme="light"] .timer-breathe-guide-ring circle {
     stroke: rgba(15,30,46,0.28);
-    stroke-width: 2px;
+    stroke-width: 3px;
   }
   [data-theme="light"] .timer-interval-ring circle:first-of-type {
     stroke: rgba(15,30,46,0.35);
@@ -959,7 +967,7 @@ const css = `
   [data-theme="dark"] .timer-view-body .timer-breathe-ring circle,
   [data-night="false"] .timer-view-body .timer-breathe-ring circle {
     stroke: var(--mood-accent) !important;
-    stroke-width: 3.25 !important;
+    stroke-width: 3.4 !important;
   }
   [data-theme="dark"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring,
   [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
@@ -1632,7 +1640,7 @@ const css = `
 
   /* ── HEADER ── */
   .hdr-wrap {
-    position:sticky; top:0; z-index:200; width:100%;
+    position:fixed; top:var(--axis-dashboard-fixed-h); left:0; right:0; z-index:200; width:100%;
     background: var(--hdr-bg);
     backdrop-filter: blur(40px) saturate(2.0);
     -webkit-backdrop-filter: blur(40px) saturate(2.0);
@@ -1906,7 +1914,7 @@ const css = `
   }
   .home-summary-date__dow {
     font-weight: 700;
-    color: var(--text-white);
+    color: inherit;
     letter-spacing: 0.04em;
   }
   .content.content--session.content--session-list { padding-bottom: 100px; }
@@ -2449,9 +2457,13 @@ const css = `
     background: rgba(15, 30, 46, 0.22);
     box-shadow: 0 0 0 1px rgba(15, 30, 46, 0.08);
   }
+  .app[data-theme="dark"]:not([data-night="true"]) .summary-hero-metric-divider {
+    background: rgba(246, 247, 248, 0.22);
+    box-shadow: 0 0 0 1px rgba(246, 247, 248, 0.08);
+  }
   .app[data-night="true"] .summary-hero-metric-divider {
-    background: rgba(255, 59, 48, 0.55);
-    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.18);
+    background: rgba(255, 59, 48, 0.72);
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.22);
   }
   .app[data-theme="light"]:not([data-night="true"]) .summary-hero.summary-hero--feature {
     border-color: color-mix(in srgb, var(--mood-color) 38%, rgba(0,0,0,0.06));
@@ -3065,8 +3077,10 @@ const css = `
   .track-cards-outer { padding:0 var(--page-gutter) 24px; margin-bottom: var(--axis-safe-bottom); }
   /* Global dashboard (safe area + progress + AXIS + streak) */
   .dashboard-header {
-    position:sticky;
+    position:fixed;
     top:0;
+    left:0;
+    right:0;
     z-index:130;
     padding-top:env(safe-area-inset-top, 0px);
     padding-bottom:8px;
@@ -3184,6 +3198,9 @@ const css = `
   }
   .app[data-night="true"] .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
     background:rgba(255, 59, 48, 0.3) !important;
+  }
+  .app-body > .dashboard-header + .hdr-wrap + .content.content--session {
+    padding-top: calc(var(--axis-dashboard-fixed-h) + var(--axis-session-fixed-h));
   }
   /* Left edge aligns with TODAY card — only .track-cards-outer supplies horizontal gutter */
   .home-welcome {
@@ -5872,7 +5889,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
       )
     ),
     !isDark && React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "url(#timerBreatheGrad)" }),
-    React.createElement("circle", { className: "timer-breathe-guide-outline", cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : isDark ? "var(--border)" : "#EEEEEE", strokeWidth: "1.5" })
+    React.createElement("circle", { className: "timer-breathe-guide-outline", cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : isDark ? "var(--border)" : "#EEEEEE", strokeWidth: nightMode || isDark ? "2.5" : "3" })
     ),
     bRunning && /*#__PURE__*/
     React.createElement("div", { className: isHoldPhase ? "timer-breathe-hold" : "", style: {
