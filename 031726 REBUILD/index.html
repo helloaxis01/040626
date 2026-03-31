@@ -1813,19 +1813,19 @@ const css = `
     color: var(--text-dimmer);
   }
   .app[data-theme="light"]:not([data-night="true"]) .tab-subbar .tab-desc-line {
-    color: rgba(15, 30, 46, 0.82);
+    color: rgba(15, 30, 46, 0.78);
     font-weight: 400;
     font-style: italic;
   }
   .app[data-theme="light"]:not([data-night="true"]) .tab-subbar .tab-prog-row__line {
-    color: rgba(15, 30, 46, 0.88);
+    color: rgba(15, 30, 46, 0.84);
   }
   .app[data-theme="light"]:not([data-night="true"]) .tab-subbar .tab-prog-row__suffix,
   .app[data-theme="light"]:not([data-night="true"]) .tab-subbar .tab-prog-row__pct {
-    color: rgba(15, 30, 46, 0.78);
+    color: rgba(15, 30, 46, 0.74);
   }
   .app[data-theme="light"]:not([data-night="true"]) .tab-subbar .prog-bar {
-    background: rgba(15, 30, 46, 0.242);
+    background: rgba(15, 30, 46, 0.23);
     height: 5px;
     border-radius: 5px;
   }
@@ -2813,12 +2813,12 @@ const css = `
   }
   /* Session row (Favorites / Skipped / Reset) — light: stronger default vs “on” */
   .app[data-theme="light"]:not([data-night="true"]) .fav-filter.fav-filter--session-util .fav-toggle {
-    color: rgba(15,30,46,0.78) !important;
-    border-color: rgba(15,30,46,0.24) !important;
+    color: rgba(15,30,46,0.74) !important;
+    border-color: rgba(15,30,46,0.228) !important;
   }
   .app[data-theme="light"]:not([data-night="true"]) .fav-filter.fav-filter--session-util .fav-toggle:hover {
-    color: rgba(15,30,46,0.92) !important;
-    border-color: rgba(15,30,46,0.34) !important;
+    color: rgba(15,30,46,0.87) !important;
+    border-color: rgba(15,30,46,0.323) !important;
   }
   .app[data-theme="light"]:not([data-night="true"]) .fav-filter.fav-filter--session-util .fav-toggle.on {
     color: rgba(15,30,46,0.98) !important;
@@ -2827,10 +2827,10 @@ const css = `
     font-weight: 600 !important;
   }
   .app[data-theme="light"]:not([data-night="true"]) .fav-filter.fav-filter--session-util .fav-toggle.reset-pill {
-    color: rgba(15,30,46,0.78) !important;
+    color: rgba(15,30,46,0.74) !important;
   }
   .app[data-theme="light"]:not([data-night="true"]) .fav-filter.fav-filter--session-util .fav-toggle.reset-pill:hover {
-    color: rgba(15,30,46,0.92) !important;
+    color: rgba(15,30,46,0.87) !important;
   }
 
   .reset-pill { margin-left:auto; }
@@ -3100,7 +3100,7 @@ const css = `
     max-width:min(62px, 18vw); /* ~60–65px: iPhone status clock region */
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-track {
-    background:#97979D;
+    background:#9F9FA5;
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__progress-fill {
     background:var(--mood-color);
@@ -3163,7 +3163,7 @@ const css = `
     transition:background-color 0.45s ease, transform 0.2s ease;
   }
   .app[data-theme="light"]:not([data-night="true"]) .dashboard-header__streak-cell:not(.dashboard-header__streak-cell--on) {
-    background:#97979D;
+    background:#9F9FA5;
   }
   /* Dark (circadian): inactive track + empty streaks — mood tint reads on teal, not as “holes” */
   .app[data-theme="dark"]:not([data-night="true"]) .dashboard-header__progress-track {
@@ -3799,8 +3799,8 @@ function axisWeekdayShortLabel(dateStr) {
 function MomentumMap({ history, nightMode = false, theme = "dark" }) {
   const { dates, sessionCounts, active } = axisWeekMomentumFromHistory(history);
   const styleDayOff = theme === "light" ? {
-    background: "#97979D",
-    border: "1px solid rgba(15, 30, 46, 0.132)",
+    background: "#9F9FA5",
+    border: "1px solid rgba(15, 30, 46, 0.125)",
     boxShadow: "none",
     backdropFilter: "none",
     WebkitBackdropFilter: "none"
