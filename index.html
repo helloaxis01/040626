@@ -3763,7 +3763,7 @@ function Timer({ seconds, onDone, nextName }) {
   const ref = useRef(null);
   useEffect(() => {
     if (running && left > 0) ref.current = setInterval(() => setLeft((l) => l - 1), 1000);else
-    {clearInterval(ref.current);if (left === 0 && running) {setRunning(false);onDone?.();}}
+    {clearInterval(ref.current);if (left === 0 && running) {setRunning(false);triggerHaptic(HAPTIC_TRIPLE_TAP);onDone?.();}}
     return () => clearInterval(ref.current);
   }, [running, left]);
   const label = running ? "Pause" : left === seconds ? "Start" : "Resume";
@@ -3775,7 +3775,7 @@ function Timer({ seconds, onDone, nextName }) {
     ), /*#__PURE__*/
     React.createElement("div", { className: "timer-btns" }, /*#__PURE__*/
     React.createElement("button", { className: "tb", onClick: () => {
-      if (!running) axisHapticSuccess(); else axisHapticTick();
+      if (!running && left === seconds) triggerHaptic(HAPTIC_LIGHT_TAP); else axisHapticTick();
       setRunning((r) => !r);
     } }, label), /*#__PURE__*/
     React.createElement("button", { className: "tb-g", onClick: () => {axisHapticTick();setLeft(seconds);setRunning(false);clearInterval(ref.current);} }, "Reset")
@@ -3807,36 +3807,36 @@ function buildInstructionTiers(startText, steps) {
   const normalizedSteps = Array.isArray(steps) ?
   steps.map((step) => typeof step?.cue === "string" ? step.cue.trim() : "").filter(Boolean) :
   [];
-  const startHere = normalizedStart || normalizedSteps[0] || "";
-  const theMove = normalizedStart ? normalizedSteps[0] || "" : normalizedSteps[1] || "";
-  const goodToKnow = normalizedStart ?
-  normalizedSteps.slice(1).join(" ") :
-  normalizedSteps.slice(2).join(" ");
+  const position = normalizedStart || normalizedSteps[0] || "";
+  const next = normalizedStart ? normalizedSteps[0] || "" : normalizedSteps[1] || "";
+  const then = normalizedStart ? normalizedSteps[1] || "" : normalizedSteps[2] || "";
+  const tip = normalizedStart ? normalizedSteps[2] || "" : normalizedSteps[3] || "";
   return [
-  { key: "start", label: "START HERE", body: startHere, tone: "primary" },
-  { key: "move", label: "THE MOVE", body: theMove, tone: "primary" },
-  { key: "good", label: "GOOD TO KNOW", body: goodToKnow, tone: "muted" }].
+  { key: "position", label: "POSITION", body: position, tone: "primary" },
+  { key: "next", label: "NEXT", body: next, tone: "primary" },
+  { key: "then", label: "THEN", body: then, tone: "primary" },
+  { key: "tip", label: "TIP", body: tip, tone: "muted" }].
   filter((tier) => tier.body);
 }
 
 function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, compact = false, bodyColorOverride = null }) {
   const isDarkMode = ultraNight || theme === "dark";
   const primary = ultraNight ? "#FF3B30" : isDarkMode ? "#FFFFFF" : "#000000";
-  const goodLabel = ultraNight ? "#FF3B30" : isDarkMode ? "#888888" : "#999999";
-  const goodBody = ultraNight ? "#FF3B30" : isDarkMode ? "#FFFFFF" : "#111111";
+  const tipLabel = ultraNight ? "#FF3B30" : isDarkMode ? "#BEBEBE" : "#C7C7C7";
+  const tipBody = ultraNight ? "#FF3B30" : isDarkMode ? "#E2E2E2" : "#D2D2D2";
   const divider = ultraNight ? "rgba(255, 59, 48, 0.72)" : isDarkMode ? "#141414" : "#F0F0F0";
   const accent = ultraNight ? "#FF3B30" : "var(--accent)";
   const labelSize = compact ? "10px" : "11px";
   const primarySize = compact ? "var(--text-base)" : "clamp(22px, 3.9vw, 28px)";
-  const goodSize = compact ? "13px" : "15px";
+  const tipSize = compact ? "13px" : "15px";
   return /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", width: "100%" } },
   tiers.map((tier, idx) => {
-    const isGoodTier = tier.key === "good";
-    const bodyColor = bodyColorOverride || (isGoodTier ? goodBody : primary);
-    const bodyOpacity = tier.key === "move" ? moveOpacity : 1;
-    const bodyFontSize = isGoodTier ? goodSize : primarySize;
-    const bodyFontWeight = isGoodTier ? 400 : 500;
-    const labelColor = isGoodTier ? goodLabel : accent;
+    const isTipTier = tier.key === "tip";
+    const bodyColor = bodyColorOverride || (isTipTier ? tipBody : primary);
+    const bodyOpacity = tier.key === "next" ? moveOpacity : 1;
+    const bodyFontSize = isTipTier ? tipSize : primarySize;
+    const bodyFontWeight = isTipTier ? 400 : 500;
+    const labelColor = isTipTier ? tipLabel : accent;
     return /*#__PURE__*/React.createElement("div", {
       key: tier.key,
       style: {
@@ -3855,11 +3855,11 @@ function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, 
     React.createElement("div", { style: {
         fontSize: bodyFontSize,
         fontWeight: bodyFontWeight,
-        lineHeight: isGoodTier ? 1.45 : 1.32,
-        letterSpacing: isGoodTier ? "0" : "-0.01em",
+        lineHeight: isTipTier ? 1.45 : 1.32,
+        letterSpacing: isTipTier ? "0" : "-0.01em",
         color: bodyColor,
         opacity: bodyOpacity,
-        transition: tier.key === "move" ? "opacity 0.18s ease-out" : "none"
+        transition: tier.key === "next" ? "opacity 0.18s ease-out" : "none"
       } }, tier.body));
   }));
 }
@@ -3884,6 +3884,7 @@ function GuidedRestTimer({ seconds = 15, accent, trackColor, hidden = false, onC
   const [progressPct, setProgressPct] = useState(0);
   const intervalRef = useRef(null);
   const completedRef = useRef(false);
+  const threeBeatTriggeredRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
@@ -3893,15 +3894,21 @@ function GuidedRestTimer({ seconds = 15, accent, trackColor, hidden = false, onC
     setRemainingSeconds(seconds);
     setProgressPct(0);
     completedRef.current = false;
+    threeBeatTriggeredRef.current = false;
     intervalRef.current = setInterval(() => {
       setRemainingSeconds((prev) => {
         const next = prev - 1;
         const clamped = Math.max(0, next);
         const pct = seconds > 0 ? (seconds - clamped) / seconds * 100 : 100;
         setProgressPct(pct);
+        if (clamped === 3 && !threeBeatTriggeredRef.current) {
+          threeBeatTriggeredRef.current = true;
+          triggerHaptic(HAPTIC_TRIPLE_TAP);
+        }
         if (clamped <= 0 && !completedRef.current) {
           completedRef.current = true;
           clearInterval(intervalRef.current);
+          triggerHaptic(HAPTIC_TRIPLE_TAP);
           requestAnimationFrame(() => onCompleteRef.current && onCompleteRef.current());
         }
         return clamped;
@@ -3935,11 +3942,12 @@ function GuidedRestTimer({ seconds = 15, accent, trackColor, hidden = false, onC
       } }))));
 }
 
-function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, paused = false, onComplete }) {
+function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, paused = false, onComplete, hapticMidpoint = false }) {
   const [remainingSeconds, setRemainingSeconds] = useState(seconds);
   const [progressPct, setProgressPct] = useState(0);
   const intervalRef = useRef(null);
   const completedRef = useRef(false);
+  const midpointTriggeredRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
@@ -3949,7 +3957,8 @@ function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, p
     setRemainingSeconds(seconds);
     setProgressPct(0);
     completedRef.current = false;
-  }, [seconds]);
+    midpointTriggeredRef.current = false;
+  }, [seconds, hapticMidpoint]);
   useEffect(() => {
     clearInterval(intervalRef.current);
     if (paused || completedRef.current) return () => clearInterval(intervalRef.current);
@@ -3959,16 +3968,22 @@ function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, p
         const clamped = Math.max(0, next);
         const pct = seconds > 0 ? (seconds - clamped) / seconds * 100 : 100;
         setProgressPct(pct);
+        const midpointThreshold = Math.ceil(seconds / 2);
+        if (hapticMidpoint && !midpointTriggeredRef.current && clamped === midpointThreshold) {
+          midpointTriggeredRef.current = true;
+          triggerHaptic(HAPTIC_MEDIUM);
+        }
         if (clamped <= 0 && !completedRef.current) {
           completedRef.current = true;
           clearInterval(intervalRef.current);
+          triggerHaptic(HAPTIC_TRIPLE_TAP);
           requestAnimationFrame(() => onCompleteRef.current && onCompleteRef.current());
         }
         return clamped;
       });
     }, 1000);
     return () => clearInterval(intervalRef.current);
-  }, [paused, seconds]);
+  }, [paused, seconds, hapticMidpoint]);
   const display = `${Math.floor(Math.max(0, remainingSeconds) / 60)}:${(Math.max(0, remainingSeconds) % 60).toString().padStart(2, "0")}`;
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
     React.createElement("div", { style: {
@@ -3999,6 +4014,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
   const rowRef = useRef(null);
   const sessionDetailPanelRef = useRef(null);
   const markDoneAndCollapse = () => {
+    triggerHaptic(HAPTIC_SUCCESS);
     onToggle();
     if (open) onExpand();
   };
@@ -4016,8 +4032,8 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
   }, [open, ex.id]);
   return (/*#__PURE__*/
     React.createElement("div", { className: `er-card ${open ? "er-card--open" : ""}` }, /*#__PURE__*/
-    React.createElement("div", { ref: rowRef, className: `er ${open ? "open" : ""} ${skipped ? "skipped" : ""}`, onClick: onExpand, style: skipped ? { opacity: 0.32 } : {} },
-    !hideDone && /*#__PURE__*/React.createElement("div", { className: `chk ${done && !skipped ? "on" : ""}`, onClick: (e) => {e.stopPropagation();if (!skipped) onToggle();} }, /*#__PURE__*/
+    React.createElement("div", { ref: rowRef, className: `er ${open ? "open" : ""} ${skipped ? "skipped" : ""}`, onClick: () => {axisHapticTick();onExpand();}, style: skipped ? { opacity: 0.32 } : {} },
+    !hideDone && /*#__PURE__*/React.createElement("div", { className: `chk ${done && !skipped ? "on" : ""}`, onClick: (e) => {e.stopPropagation();if (!skipped) {triggerHaptic(HAPTIC_SUCCESS);onToggle();}} }, /*#__PURE__*/
     React.createElement("svg", { width: "9", height: "7", viewBox: "0 0 9 7", fill: "none" }, /*#__PURE__*/
     React.createElement("path", { d: "M1 3.5L3.2 5.5L8 1", stroke: "#13181B", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })
     )
@@ -4035,7 +4051,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     })()
     ), /*#__PURE__*/
     React.createElement("div", { className: "row-actions", onClick: (e) => e.stopPropagation() },
-    !skipped && /*#__PURE__*/React.createElement("button", { type: "button", className: `ra-btn ${faved ? "fav-on" : ""}`, onClick: (e) => {e.stopPropagation();axisHapticTick();onFav();}, "aria-label": "Favorite workout", "aria-pressed": faved ? "true" : "false" }, "\u2605"), /*#__PURE__*/
+    !skipped && /*#__PURE__*/React.createElement("button", { type: "button", className: `ra-btn ${faved ? "fav-on" : ""}`, onClick: (e) => {e.stopPropagation();triggerHaptic(HAPTIC_DOUBLE_TAP);onFav();}, "aria-label": "Favorite workout", "aria-pressed": faved ? "true" : "false" }, "\u2605"), /*#__PURE__*/
     React.createElement("button", { type: "button", className: `ra-btn ${skipped ? "skip-on" : ""}`, onClick: onSkip, "aria-label": skipped ? "Unskip exercise" : "Skip exercise" }, skipped ? /*#__PURE__*/
     React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/
     React.createElement("path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" }), /*#__PURE__*/
@@ -4206,7 +4222,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
   React.createElement("button", {
     type: "button",
     className: `tab-btn ${view === "home" ? "active" : ""}`,
-    onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("home");},
+    onClick: () => {axisHapticTick();setView("home");},
     "aria-label": "Home",
     "aria-current": view === "home" ? "page" : undefined }, /*#__PURE__*/
 
@@ -4216,7 +4232,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
   React.createElement("button", {
     type: "button",
     className: `tab-btn ${view === "summary" ? "active" : ""}`,
-    onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("summary");},
+    onClick: () => {axisHapticTick();setView("summary");},
     "aria-label": "Summary",
     "aria-current": view === "summary" ? "page" : undefined },
 
@@ -4226,7 +4242,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
   React.createElement("button", {
     type: "button",
     className: `tab-btn ${view === "timer" ? "active" : ""}`,
-    onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("timer");},
+    onClick: () => {axisHapticTick();setView("timer");},
     "aria-label": "Timer",
     "aria-current": view === "timer" ? "page" : undefined }, /*#__PURE__*/
 
@@ -4236,7 +4252,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
   React.createElement("button", {
     type: "button",
     className: `tab-btn ${view === "mood" ? "active" : ""}`,
-    onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("mood");},
+    onClick: () => {axisHapticTick();setView("mood");},
     "aria-label": "Mood Focus",
     "aria-current": view === "mood" ? "page" : undefined }, /*#__PURE__*/
 
@@ -4246,7 +4262,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
   React.createElement("button", {
     type: "button",
     className: `tab-btn ${view === "settings" ? "active" : ""}`,
-    onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("settings");},
+    onClick: () => {axisHapticTick();setView("settings");},
     "aria-label": "Settings",
     "aria-current": view === "settings" ? "page" : undefined }, /*#__PURE__*/
 
@@ -4313,6 +4329,21 @@ function primeAudio() {
   } catch (e) {}
 }
 
+const HAPTIC_LIGHT_TAP = 40;
+const HAPTIC_MEDIUM = 80;
+const HAPTIC_STRONG = 120;
+const HAPTIC_DOUBLE_TAP = [50, 150, 50];
+const HAPTIC_TRIPLE_TAP = [100, 100, 100];
+const HAPTIC_SUCCESS = [80, 100, 120];
+
+function triggerHaptic(pattern) {
+  try {
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      navigator.vibrate(pattern);
+    }
+  } catch (e) {}
+}
+
 function axisHapticTick() {
   try {
     const w = typeof window !== "undefined" ? window : null;
@@ -4324,7 +4355,7 @@ function axisHapticTick() {
       w.AXISNative.haptic("tick");
       return;
     }
-    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+    triggerHaptic(HAPTIC_LIGHT_TAP);
   } catch (e) {}
 }
 
@@ -4339,7 +4370,7 @@ function axisHapticSuccess() {
       w.AXISNative.haptic("success");
       return;
     }
-    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([10, 30, 10]);
+    triggerHaptic(HAPTIC_SUCCESS);
   } catch (e) {}
 }
 
@@ -4768,6 +4799,15 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const guidedTimerTrack = isNight ? "rgba(255, 59, 48, 0.2)" : isDark ? "rgba(255,255,255,0.08)" : "#EEEEEE";
   const guidedHeaderText = isNight ? "#FF3B30" : W;
   const guidedPhaseText = isNight ? "#FF3B30" : W;
+  const guidedExerciseName = ((cur?.name || "").replace(/-/g, " ")).trim().toLowerCase();
+  const guidedNeedsMidpointHaptic = [
+  "dead bug",
+  "bird dog",
+  "figure four",
+  "supine hamstring stretch",
+  "reclined spinal twist",
+  "neck half-circles"].
+  some((name) => guidedExerciseName === name);
   const guidedPhaseBody = phase !== "intro" && phase !== "closing" && phase !== "milestone" ? /*#__PURE__*/React.createElement("div", {
     style: { flex: 1, minHeight: 0, display: "flex", flexDirection: "column", position: "relative", zIndex: 2, overflow: "hidden" }
   }, [
@@ -4820,6 +4860,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     trackColor: guidedTimerTrack,
     hidden: guidedTransitioning,
     paused: paused,
+    hapticMidpoint: guidedNeedsMidpointHaptic,
     onComplete: handleTimerDone }) : null),
   /*#__PURE__*/React.createElement("div", { key: "middle", style: { position: "relative", flex: "1 1 0%", minHeight: 0, padding: "0 16px" } }, /*#__PURE__*/
   React.createElement("div", {
@@ -4868,7 +4909,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       marginBottom: `max(22px, env(safe-area-inset-bottom, 18px))`
     } }, [
   /*#__PURE__*/React.createElement("div", { key: "exercise-actions", style: { position: "absolute", top: 0, left: 0, right: 0, display: "flex", gap: 12, height: 56, opacity: phase === "exercise" && cur ? 1 : 0, pointerEvents: phase === "exercise" && cur ? "auto" : "none" } }, /*#__PURE__*/
-  React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setPaused((p) => !p);}, style: {
+  React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setPaused((p) => !p);}, style: {
       flex: 1,
       minWidth: 0,
       minHeight: 56,
@@ -4883,7 +4924,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       textTransform: "uppercase",
       cursor: "pointer"
     } }, paused ? "RESUME" : "PAUSE"), /*#__PURE__*/
-  React.createElement("button", { type: "button", className: isNight ? "guided-cta-fill ultra-filled-btn" : "ultra-filled-btn", onClick: handleNext, style: {
+  React.createElement("button", { type: "button", className: isNight ? "guided-cta-fill ultra-filled-btn" : "ultra-filled-btn", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);handleNext();}, style: {
       flex: 1,
       minWidth: 0,
       minHeight: 56,
@@ -4900,7 +4941,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       cursor: "pointer",
       boxShadow: !isNight && !isDark ? "0 0 16px rgba(0, 122, 255, 0.35)" : `0 0 16px ${ct.accentGlow}`
     } }, "NEXT \u2192")),
-  /*#__PURE__*/React.createElement("button", { key: "start-now", type: "button", className: isNight ? "guided-cta-fill ultra-filled-btn" : "ultra-filled-btn", onClick: () => {primeAudio();beep(880, 0.2);setPaused(false);setPhase("exercise");}, style: {
+  /*#__PURE__*/React.createElement("button", { key: "start-now", type: "button", className: isNight ? "guided-cta-fill ultra-filled-btn" : "ultra-filled-btn", onClick: () => {primeAudio();beep(880, 0.2);triggerHaptic(HAPTIC_LIGHT_TAP);setPaused(false);setPhase("exercise");}, style: {
       position: "absolute",
       top: 0,
       left: 0,
@@ -4924,7 +4965,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       pointerEvents: phase === "getready" ? "auto" : "none"
     } }, "START NOW"),
   /*#__PURE__*/React.createElement("div", { key: "skip", style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 20, display: "flex", justifyContent: "center", alignItems: "center" } }, /*#__PURE__*/
-  React.createElement("button", { type: "button", onClick: handleSkip, style: {
+  React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);handleSkip();}, style: {
       background: "none",
       border: "none",
       cursor: "pointer",
@@ -5098,6 +5139,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
         try {
           window.dispatchEvent(new CustomEvent("axis-guided-duration-change", { detail: sec }));
         } catch (e) {}
+      triggerHaptic(HAPTIC_LIGHT_TAP);
       }, className: exerciseDurationSeconds === sec ? "ultra-filled-btn" : undefined, style: {
         fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase",
         padding: "8px 14px", borderRadius: 8, border: "1px solid",
@@ -5110,7 +5152,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     sec === 60 ? "1 min" : `${sec} sec`
     ))), /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: S, opacity: 0.85, maxWidth: 320, lineHeight: 1.4, marginBottom: 14, textAlign: "center" } }, "No equipment? You can modify \u2014 use a towel instead of a strap, a book instead of a block, or skip props and focus on range of motion."), /*#__PURE__*/
-    React.createElement("button", { className: isNight ? "guided-cta-fill ultra-filled-btn" : "ultra-filled-btn", onClick: () => {primeAudio();beep(880, 0.3);setPaused(false);setPhase("getready");}, style: {
+    React.createElement("button", { className: isNight ? "guided-cta-fill ultra-filled-btn" : "ultra-filled-btn", onClick: () => {primeAudio();beep(880, 0.3);triggerHaptic(HAPTIC_LIGHT_TAP);setPaused(false);setPhase("getready");}, style: {
         padding: "14px 48px", borderRadius: 999, cursor: "pointer",
         background: A, border: nightMode ? "1px solid #FF3B30" : "none", color: isNight ? "#000000" : guidedFilledText,
         WebkitTextFillColor: isNight ? "#000000" : guidedFilledText,
@@ -5157,6 +5199,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const [iTime, setITime] = useState(0);
   const [intervalRingSnap, setIntervalRingSnap] = useState(false);
   const iRef = useRef(null);
+  const breathHapticFlagsRef = useRef({ holdMidpoint: false });
 
   useEffect(() => {
     if (!intervalRingSnap) return;
@@ -5174,7 +5217,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     setIRound(1);
     setITime(0);
   }
-  function iStart() {setIPhase("work");setIRound(1);setITime(work);setIRunning(true);}
+  function iStart() {triggerHaptic(HAPTIC_LIGHT_TAP);setIPhase("work");setIRound(1);setITime(work);setIRunning(true);}
 
   useEffect(() => {
     if (!iRunning || iPhase === "idle" || iPhase === "done") return;
@@ -5184,11 +5227,13 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         if (t <= 1) {
           if (iPhase === "work") {
             beep(660, 0.25);
+            triggerHaptic(HAPTIC_DOUBLE_TAP);
             if (rest > 0) {setIPhase("rest");return rest;}
             setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);beep(440, 0.5);return r;}setIPhase("work");return r + 1;});
             return work;
           } else {
             beep(880, 0.2);
+            triggerHaptic(HAPTIC_DOUBLE_TAP);
             setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);beep(440, 0.5);return r;}setIPhase("work");return r + 1;});
             return work;
           }
@@ -5294,6 +5339,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     setBRunning(false);setBPhaseIdx(0);setBCycle(1);setBTime(0);
     bPhaseRef.current = 0;bCycleRef.current = 1;
     bPhaseElapsedMsRef.current = 0;
+    breathHapticFlagsRef.current = { holdMidpoint: false };
   }
 
   function bStart() {
@@ -5303,8 +5349,10 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     setBTime(bPatternRef.current[0].dur);
     bPhaseStartedMsRef.current = performance.now();
     bPhaseElapsedMsRef.current = 0;
+    breathHapticFlagsRef.current = { holdMidpoint: false };
     setBRunning(true);
     beep(528, 0.2);
+    triggerHaptic(HAPTIC_LIGHT_TAP);
   }
 
   useEffect(() => {
@@ -5333,6 +5381,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
           setBTime(0);
           setBRunning(false);
           beep(528, 0.4);
+          triggerHaptic(HAPTIC_DOUBLE_TAP);
           return;
         }
 
@@ -5342,6 +5391,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         phaseDurMs = Math.max(1, pat[phaseIdx]?.dur ?? 1) * 1000;
         bPhaseStartedMsRef.current = now - elapsedMs;
         beep(pat[phaseIdx].label === "Inhale" ? 528 : 440, 0.15);
+        breathHapticFlagsRef.current = { holdMidpoint: false };
+        if (breathPattern === "4-7-8") {
+          const nextLabel = pat[phaseIdx].label;
+          if (nextLabel === "Inhale") triggerHaptic(HAPTIC_LIGHT_TAP);
+          else if (nextLabel.includes("Exhale")) triggerHaptic(HAPTIC_LIGHT_TAP);
+        }
       }
 
       bPhaseRef.current = phaseIdx;
@@ -5352,6 +5407,10 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
       const nextTime = Math.max(0, Math.ceil((phaseDurMs - elapsedMs) / 1000));
       setBTime((prev) => prev === nextTime ? prev : nextTime);
+      if (breathPattern === "4-7-8" && pat[phaseIdx]?.label === "Hold" && !breathHapticFlagsRef.current.holdMidpoint && elapsedMs >= 3500) {
+        breathHapticFlagsRef.current.holdMidpoint = true;
+        triggerHaptic(HAPTIC_MEDIUM);
+      }
       setBreatheAnimTick((n) => (n + 1) % 1000000);
       rafId = requestAnimationFrame(tick);
     };
@@ -5957,12 +6016,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     React.createElement("div", { style: iPhase === "idle" ? TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE, "aria-hidden": true }), /*#__PURE__*/
     React.createElement("div", { style: iPhase === "idle" ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW },
-    iPhase === "idle" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {axisHapticSuccess();primeAudio();iStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
+    iPhase === "idle" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();iStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
     (iPhase === "work" || iPhase === "rest") && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setIRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn", style: { ...BTN, padding: "12px 28px" } }, iRunning ? "Pause" : "Resume"), /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();iReset();}, className: "timer-glass-btn-ghost", style: BTN_GHOST }, "Reset")
     ),
-    iPhase === "done" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {axisHapticSuccess();iReset();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Again")
+    iPhase === "done" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);iReset();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Again")
     ), /*#__PURE__*/
     React.createElement("div", { style: iPhase === "idle" ? TIMER_BTN_SPACER_BELOW_IDLE : TIMER_BTN_SPACER_BELOW, "aria-hidden": true })
     ),
@@ -6107,12 +6166,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     React.createElement("div", { style: !bRunning && !bDone ? TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE, "aria-hidden": true }), /*#__PURE__*/
     React.createElement("div", { style: !bRunning && !bDone ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW },
-    !bRunning && !bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {axisHapticSuccess();primeAudio();bStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
+    !bRunning && !bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();bStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
     bRunning && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setBRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn", style: { ...BTN, padding: "12px 28px" } }, "Pause"), /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();bReset();}, className: "timer-glass-btn-ghost", style: BTN_GHOST }, "Reset")
     ),
-    bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {axisHapticSuccess();bReset();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Again")
+    bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);bReset();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Again")
     ), /*#__PURE__*/
     React.createElement("div", { style: !bRunning && !bDone ? TIMER_BTN_SPACER_BELOW_IDLE : TIMER_BTN_SPACER_BELOW, "aria-hidden": true })
     )
@@ -6653,7 +6712,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, label), /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, maxWidth: 280 } }, desc)
     ), /*#__PURE__*/
-    React.createElement("button", { onClick: () => set((s) => !s), style: { flexShrink: 0, marginTop: 2, width: 44, height: 26, border: "1px solid", borderColor: val ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: val ? "var(--accent)" : "var(--glass-bg)", cursor: "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
+    React.createElement("button", { onClick: () => {axisHapticTick();set((s) => !s);}, style: { flexShrink: 0, marginTop: 2, width: 44, height: 26, border: "1px solid", borderColor: val ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: val ? "var(--accent)" : "var(--glass-bg)", cursor: "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
     React.createElement("div", { style: { position: "absolute", top: 3, left: val ? 22 : 3, width: 18, height: 18, borderRadius: "50%", background: nightMode ? "#000000" : "rgba(255,255,255,0.95)", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" } })
     )
     )
@@ -6666,7 +6725,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 12, maxWidth: 280 } }, "Timer length for each exercise in LIST view."), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
     [30, 45, 60].map((sec) => /*#__PURE__*/
-    React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => setExerciseDuration(sec), style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#111111" : "#FFFFFF" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
+    React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#111111" : "#FFFFFF" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
     sec === 60 ? "1 min" : `${sec} sec`
     )
     )
@@ -6776,7 +6835,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { style: { ...(nightMode ? { opacity: 0.45, pointerEvents: "none", transition: "opacity 0.25s ease" } : {}) } }, /*#__PURE__*/
       React.createElement("div", { style: { display: "flex", gap: 10, marginBottom: 20 } },
       [{ val: "dark", label: "Dark" }, { val: "light", label: "Light" }].map(({ val, label }) => /*#__PURE__*/
-      React.createElement("button", { key: val, onClick: nightMode ? undefined : toggleTheme, style: {
+      React.createElement("button", { key: val, onClick: nightMode ? undefined : () => {axisHapticTick();toggleTheme();}, style: {
           flex: 1, padding: "11px 0", borderRadius: 12, cursor: nightMode ? "default" : "pointer",
           fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase",
           border: theme === val ? "1.5px solid var(--accent)" : "1px solid var(--glass-border)",
@@ -6795,7 +6854,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       activePeriod === null ? /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", { style: { color: "var(--accent)", fontWeight: 600 } }, AUTO_MOOD_LABELS[nowPeriod] || "Auto")) : "Follows time of day"
       )
       ), /*#__PURE__*/
-      React.createElement("button", { onClick: nightMode ? undefined : () => {const n = activePeriod === null ? nowPeriod : null;setActivePeriod(n);storageSet("axis_period", n);}, style: { flexShrink: 0, width: 44, height: 26, border: "1px solid", borderColor: activePeriod === null ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: activePeriod === null ? "var(--accent)" : "var(--glass-bg)", cursor: nightMode ? "default" : "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
+      React.createElement("button", { onClick: nightMode ? undefined : () => {axisHapticTick();const n = activePeriod === null ? nowPeriod : null;setActivePeriod(n);storageSet("axis_period", n);}, style: { flexShrink: 0, width: 44, height: 26, border: "1px solid", borderColor: activePeriod === null ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: activePeriod === null ? "var(--accent)" : "var(--glass-bg)", cursor: nightMode ? "default" : "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
       React.createElement("div", { style: { position: "absolute", top: 3, left: activePeriod === null ? 22 : 3, width: 18, height: 18, borderRadius: "50%", background: nightMode ? "#000000" : "rgba(255,255,255,0.95)", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" } })
       )
       ), /*#__PURE__*/
@@ -6810,7 +6869,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         const isSelected = activePeriod === p;
         const isNow = nowPeriod === p;
         return (/*#__PURE__*/
-          React.createElement("button", { key: p, onClick: nightMode ? undefined : () => {setActivePeriod(p);storageSet("axis_period", p);}, style: {
+          React.createElement("button", { key: p, onClick: nightMode ? undefined : () => {axisHapticTick();setActivePeriod(p);storageSet("axis_period", p);}, style: {
               display: "flex", alignItems: "center", gap: 16, padding: "16px 18px",
               borderRadius: 16, cursor: nightMode ? "default" : "pointer", textAlign: "left", width: "100%", boxSizing: "border-box",
               border: isSelected ? `1.5px solid ${ct.accent}` : "1px solid var(--glass-border)",
@@ -6847,7 +6906,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, "Ultra Mode"), /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, maxWidth: 280 } }, "Pure black OLED background with AXIS red accents. Optimized for low light.")
       ), /*#__PURE__*/
-      React.createElement("button", { onClick: toggleNight, style: { flexShrink: 0, marginTop: 2, width: 44, height: 26, border: "1px solid", borderColor: nightMode ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: nightMode ? "var(--accent)" : "var(--glass-bg)", cursor: "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
+      React.createElement("button", { onClick: () => {axisHapticTick();toggleNight();}, style: { flexShrink: 0, marginTop: 2, width: 44, height: 26, border: "1px solid", borderColor: nightMode ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: nightMode ? "var(--accent)" : "var(--glass-bg)", cursor: "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
       React.createElement("div", { style: { position: "absolute", top: 3, left: nightMode ? 22 : 3, width: 18, height: 18, borderRadius: "50%", background: nightMode ? "#000000" : "rgba(255,255,255,0.95)", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" } })
       )
       )
@@ -7052,7 +7111,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
       React.createElement("button", {
         className: "begin-btn begin-btn--today-primary ultra-filled-btn",
-        onClick: () => {axisHapticSuccess();beginTrack(todayTrack.id);},
+        onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(todayTrack.id);},
         style: {
           width: "100%",
           padding: "14px 24px",
@@ -7079,7 +7138,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
               key: id,
               type: "button",
               className: "home-recent-card",
-              onClick: () => {axisHapticSuccess();beginTrack(id);},
+              onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(id);},
               "aria-label": `Resume ${rt.label}, ${rdur}`
             }, /*#__PURE__*/
             React.createElement("div", { className: "home-recent-title" }, rt.label), /*#__PURE__*/
@@ -7123,7 +7182,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-group-label" }, g.label), /*#__PURE__*/
       React.createElement("div", { className: "track-cards" },
       g.ids.filter((id) => TRACKS && TRACKS[id]).map((id) => {const t = TRACKS[id];const cardDur = getTrackDisplayDuration(t.id);return (/*#__PURE__*/
-          React.createElement("div", { className: "track-card session-card", key: t.id, "data-category": TRACK_CATEGORY_BY_ID[id] || "", onClick: () => {axisHapticSuccess();beginTrack(t.id);}, role: "button", tabIndex: 0, onKeyDown: (e) => {if (e.key === "Enter" || e.key === " ") {e.preventDefault();axisHapticSuccess();beginTrack(t.id);}}, "aria-label": `${t.label}, ${cardDur}. Begin session` }, /*#__PURE__*/
+          React.createElement("div", { className: "track-card session-card", key: t.id, "data-category": TRACK_CATEGORY_BY_ID[id] || "", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(t.id);}, role: "button", tabIndex: 0, onKeyDown: (e) => {if (e.key === "Enter" || e.key === " ") {e.preventDefault();triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(t.id);}}, "aria-label": `${t.label}, ${cardDur}. Begin session` }, /*#__PURE__*/
           React.createElement("div", { className: "track-card-left" }, /*#__PURE__*/
           React.createElement("div", { className: "track-card-name" }, t.label), /*#__PURE__*/
           React.createElement("div", { className: "track-card-sub" }, /*#__PURE__*/React.createElement("span", { className: "glass-label" }, t.subtitle)), /*#__PURE__*/
@@ -7131,7 +7190,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           ), /*#__PURE__*/
           React.createElement("div", { className: "track-card-right" }, /*#__PURE__*/
           React.createElement("div", { className: "track-card-dur" }, cardDur), /*#__PURE__*/
-          React.createElement("button", { className: "begin-btn ultra-filled-btn", onClick: (e) => {e.stopPropagation();axisHapticSuccess();beginTrack(t.id);}, "aria-label": `Begin ${t.label}` }, "Begin")
+          React.createElement("button", { className: "begin-btn ultra-filled-btn", onClick: (e) => {e.stopPropagation();triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(t.id);}, "aria-label": `Begin ${t.label}` }, "Begin")
           )
           ));
       })
@@ -7213,7 +7272,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("button", {
       key: t,
       className: `tab ${tab === t ? "on" : ""}`,
-      onClick: () => setTab(t) },
+      onClick: () => {axisHapticTick();setTab(t);} },
 
     t === "guided" ? "Guided" : "List"
     )
@@ -7325,7 +7384,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "session-cta-pad", style: { marginTop: 24, paddingTop: "4px" } }, /*#__PURE__*/
     React.createElement("button", {
       type: "button",
-      onClick: () => {if (filteredAll.length > 0) {primeAudio();setTab("guided");setGuidedActive(true);}},
+      onClick: () => {if (filteredAll.length > 0) {triggerHaptic(HAPTIC_LIGHT_TAP);primeAudio();setTab("guided");setGuidedActive(true);}},
       disabled: filteredAll.length === 0,
       style: {
         width: "100%", padding: "14px 18px", borderRadius: 999, border: nightMode ? "1px solid #FF3B30" : "none",
