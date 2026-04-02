@@ -60,12 +60,24 @@ copyRecursive(path.join(root, 'Logo - Vector'), path.join(dist, 'Logo - Vector')
 
 // Onboarding + brand assets for same-origin navigation (Settings → onboarding.html, Capacitor dist/)
 const publicDir = path.join(root, 'public');
+const onboardingSnapshot = path.join(root, 'snapshots', 'onboarding-v2.1+list-guided.html');
 function copyPublicToDist(name) {
   const src = path.join(publicDir, name);
   const dest = path.join(dist, name);
   if (fs.existsSync(src)) fs.copyFileSync(src, dest);
 }
-['onboarding.html', 'onboarding.css', 'AXIS_Branding_DarkMode_Outlined.svg', 'AXIS_Branding_LightMode_Outlined.svg', 'axis_data.json'].forEach(copyPublicToDist);
+/** Gold copy: v2.1 LIST/GUIDED flow — same file as recovery snapshot (launch, Settings, native webDir). */
+function copyOnboardingHtmlToDist() {
+  const dest = path.join(dist, 'onboarding.html');
+  if (fs.existsSync(onboardingSnapshot)) {
+    fs.copyFileSync(onboardingSnapshot, dest);
+  } else {
+    const fallback = path.join(publicDir, 'onboarding.html');
+    if (fs.existsSync(fallback)) fs.copyFileSync(fallback, dest);
+  }
+}
+copyOnboardingHtmlToDist();
+['onboarding.css', 'AXIS_Branding_DarkMode_Outlined.svg', 'AXIS_Branding_LightMode_Outlined.svg', 'axis_data.json'].forEach(copyPublicToDist);
 // Single app icon only: navy PNG in Logo - Vector → axis-icon.png (no old filenames, no SVG fallback)
 const iconPngRoot = path.join(root, 'Logo - Vector', 'AXIS_Branding_Navy.png');
 const iconPngDist = path.join(dist, 'axis-icon.png');

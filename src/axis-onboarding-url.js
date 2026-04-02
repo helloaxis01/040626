@@ -1,4 +1,4 @@
-/** Resolves onboarding.html next to the current document (http, capacitor, or file). */
+/** Resolves onboarding.html next to the current document (http, capacitor, or file). Built apps load dist/onboarding.html (copied from snapshots/onboarding-v2.1+list-guided.html in build.js). */
 export function axisOnboardingUrl() {
   if (typeof window === "undefined") return "./onboarding.html";
   if (window.location.protocol === "file:") return "./onboarding.html";
