@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- AXIS onboarding source of truth: public/onboarding.html — recovery copy: snapshots/onboarding-v2.1+list-guided.html (run npm run build after edits). -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -109,12 +110,12 @@ body { font-family: var(--font-ui), sans-serif !important; }
   }
   .ob-footer-nav-cell--back { justify-self: start; }
   .ob-footer-nav-cell--next { justify-self: end; }
-  /* Exact dot-track width (7×8px + 6×8 gap) so center column never grows/shrinks between steps */
+  /* Exact dot-track width (11×8px + 10×8 gap) so center column never grows/shrinks between steps */
   .ob-footer-nav-cell--dots {
     justify-self: center;
-    width: 104px;
-    min-width: 104px;
-    max-width: 104px;
+    width: 168px;
+    min-width: 168px;
+    max-width: 168px;
     box-sizing: border-box;
     pointer-events: none;
   }
@@ -905,7 +906,7 @@ function Onboarding({ theme, onComplete }) {
     { id: "rest", label: "Rest", src: "./app-icons/icon-rest.png" }
   ];
   const [cur, setCur] = useState(0);
-  const total = 11; // Splash, Alpha, Perspective, Science+Ethics, Safety, Appearance, Ultra Mode, App Icon Selection, Choose Experience, Navigation Map, Launch
+  const total = 11; // Splash, Alpha, Perspective, Science+Ethics, Safety, Appearance, Ultra Mode, App Icon Selection, LIST & GUIDED, Navigation Map, Launch
   const [disclaimerName, setDisclaimerName] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const [disclaimerWarning, setDisclaimerWarning] = useState(false);
@@ -1085,7 +1086,7 @@ function Onboarding({ theme, onComplete }) {
       <div ref={obShellRef} className="ob-shell" onClick={e => { if (cur === 4 || cur === 5 || cur === 6) return; if (!e.target.closest("button") && !e.target.closest("input") && !e.target.closest(".ob-disclaimer-check")) go(cur + 1); }}>
         {cur === 0 && (
           <div className="ob-screen ob-s0" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-            <div style={{ position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 14px)", right: 18, fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ob-text-sec)", opacity: 0.72 }}>ALPHA</div>
+            <div style={{ position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 14px)", right: 18, fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ob-text-sec)", opacity: 0.72 }}>V2.1</div>
             <img src={obTheme === "dark" ? "./AXIS_Branding_DarkMode_Outlined.svg" : "./AXIS_Branding_LightMode_Outlined.svg"} alt="AXIS Logo" style={{ marginTop: "calc(90px + 5vh)", width: 165 }} />
             <div className="ob-screen-body">
               <div className="ob-pad" style={{ textAlign: "center" }}>
@@ -1364,13 +1365,24 @@ function Onboarding({ theme, onComplete }) {
           {cur === 6 && <div className="ob-screen ob-content-only" style={{ background:"#000000", color:"#FF3B30" }}>
             <div className="ob-screen-body" style={{ position: "relative", zIndex: 10 }}>
               <div className="ob-pad">
-                <div className="ob-eyebrow" style={{ color:"#FF3B30" }}>Technical Specification</div>
-                <div className="ob-heading" style={{ fontSize:36, color:"#FF3B30" }}>See in the <em style={{ color:"#FF3B30" }}>dark.</em></div>
-                <div className="ob-body" style={{ marginBottom:16, color:"#FF3B30", opacity:0.95 }}>
-                  <strong>AXIS Ultra mode.</strong> Night-vision optimized. Pure OLED black and Wayfinder red for tactical performance in any light.
+                <div className="ob-eyebrow" style={{ color:"#FF3B30" }}>Ultra Mode</div>
+                <div className="ob-heading" style={{ fontSize:36, color:"#FF3B30" }}>Protect your <em style={{ color:"#FF3B30" }}>night vision.</em></div>
+                <div className="ob-body" style={{ marginBottom:22, color:"#FF3B30", opacity:0.95 }}>
+                  Ultra Mode uses a pure black canvas with vibrant red accents so your eyes stay adapted in low light.
                 </div>
-                <div className="ob-body" style={{ marginBottom:16, color:"#FF3B30", opacity:0.95 }}>
-                  For times you don't want to both. This feature is selectable in the MOOD tab.
+                <div style={{
+                  border:"1px solid #FF3B30",
+                  borderRadius:14,
+                  padding:"16px",
+                  background:"#000000",
+                  color:"#FF3B30",
+                  lineHeight:1.45,
+                  fontSize:13
+                }}>
+                  Best for late-night sessions when you want to minimize glare, reduce eye fatigue, and keep your surroundings visible.
+                </div>
+                <div style={{ marginTop:12, fontSize:14, lineHeight:1.45, color:"#FF3B30" }}>
+                  Enable this option in the Mood tab.
                 </div>
                 <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1387,7 +1399,7 @@ function Onboarding({ theme, onComplete }) {
             <div className="ob-screen-body" style={{ position: "relative", zIndex: 10 }}>
               <div className="ob-pad">
                 <div className="ob-eyebrow">App Icon</div>
-                <div className="ob-heading" style={{ fontSize:36 }}>Make it <em>yours.</em></div>
+                <div className="ob-heading" style={{ fontSize:36 }}>Make it <em>yours</em></div>
                 <div className="ob-body" style={{ marginBottom: 10, fontSize: 14, maxWidth: 420 }}>
                   You can customize your app icon at any time in SETTINGS.
                 </div>
@@ -1398,28 +1410,31 @@ function Onboarding({ theme, onComplete }) {
             </div>
           </div>}
 
-          {/* 8: CHOOSE YOUR EXPERIENCE */}
+          {/* 8: LIST & GUIDED — session modes (before Navigation Map) */}
           {cur === 8 && <div className="ob-screen ob-content-only">
             <div className="ob-screen-body" style={{ position: "relative", zIndex: 10 }}>
               <div className="ob-pad">
-                <div className="ob-eyebrow">Sessions</div>
-                <div className="ob-heading" style={{ fontSize:36 }}>Ways to <em>move.</em></div>
+                <div className="ob-eyebrow">Session modes</div>
+                <div className="ob-heading" style={{ fontSize: 36 }}>LIST vs <em>GUIDED</em></div>
                 <div className="ob-body" style={{ marginBottom: 22, fontSize: 14 }}>
-                  Pick how you want to move through each session.
+                  On the Sessions tab you pick how you want to move—browse on your own, or follow a timed flow.
                 </div>
-                <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                  <div style={{ border:"1px solid var(--ob-box-border)", borderRadius:12, padding:"12px 14px", background:"var(--ob-box-bg)" }}>
-                    <div style={{ fontSize:12, letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:6, color:"var(--ob-text-sec)", fontWeight:700 }}>LIST MODE</div>
-                    <div style={{ fontSize:14, lineHeight:1.5, color:"var(--ob-text-body)" }}>
-                      <strong>For the self-paced.</strong> A high-density reference of your entire track. Best for when you want to move at your own rhythm or simply need a quick biomechanical reminder of the next move.
+                <div className="ob-benefits">
+                  <div className="ob-benefit">
+                    <div className="ob-bi" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "var(--ob-accent)", minWidth: 48, alignSelf: "flex-start", paddingTop: 2 }}>LIST</div>
+                    <div className="ob-bt">
+                      <strong>Self-paced.</strong> Scroll the exercise list, set each move (e.g. 30–60s), skip freely, and control your own pace—great when you want flexibility or a quick pick-up.
                     </div>
                   </div>
-                  <div style={{ border:"1px solid var(--ob-box-border)", borderRadius:12, padding:"12px 14px", background:"var(--ob-box-bg)" }}>
-                    <div style={{ fontSize:12, letterSpacing:"0.18em", textTransform:"uppercase", marginBottom:6, color:"var(--ob-text-sec)", fontWeight:700 }}>GUIDED FLOW</div>
-                    <div style={{ fontSize:14, lineHeight:1.5, color:"var(--ob-text-body)" }}>
-                      <strong>For the focused.</strong> A fully immersive, timed experience. Set your phone down and let AXIS lead the way with automated transitions and haptic cues. Just focus on the movement.
+                  <div className="ob-benefit">
+                    <div className="ob-bi" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "var(--ob-accent)", minWidth: 48, alignSelf: "flex-start", paddingTop: 2 }}>GUIDED</div>
+                    <div className="ob-bt">
+                      <strong>Timed flow.</strong> AXIS runs the circuit for you with automatic transitions and rest—stay in the zone without tapping between moves.
                     </div>
                   </div>
+                </div>
+                <div className="ob-body" style={{ marginTop: 18, fontSize: 13, color: "var(--ob-text-sec)", lineHeight: 1.5 }}>
+                  Switch LIST / GUIDED from the session header whenever you like.
                 </div>
               </div>
             </div>
@@ -1437,7 +1452,7 @@ function Onboarding({ theme, onComplete }) {
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   {[
                     ["HOME", "Browse the library or start the time of day recommendation.", <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22V9L12 2l9 7v13h-6v-10H9v10H3z"/></svg>],
-                    ["SESSIONS", "Choose between a self-paced LIST mode or a timed GUIDED flow.", <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>],
+                    ["SESSIONS", "Open sessions; use LIST or GUIDED (see previous screen).", <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>],
                     ["TIMER", "Standalone interval and breathe timers to destress, reduce anxiety, or focus.", <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="12" x2="12" y2="8"/><line x1="12" y1="12" x2="16.5" y2="12"/></svg>],
                     ["MOOD", "Set your circadian color or keep Auto enabled. Try Ultra for late-night sessions.", <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/></svg>],
                     ["SETTINGS", "Manage your theme, haptics, and default exercise durations (30, 45, 60 seconds).", <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>]
@@ -1475,10 +1490,9 @@ function Onboarding({ theme, onComplete }) {
             </div>
           </div>}
 
-          {/* 10: LAUNCH — duplicate splash with same mood background as content pages */}
+          {/* 10: LAUNCH — same logo + tagline as Splash */}
           {cur === 10 && (
-            <div className="ob-screen ob-content-only ob-s0 ob-launch-screen" style={{ color: "var(--ob-text-head)", transition: "color 0.6s ease", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-              <div style={{ position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 14px)", right: 18, fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ob-text-sec)", opacity: 0.72 }}>ALPHA</div>
+            <div className="ob-screen ob-cta-screen ob-launch-screen" style={{ color: "var(--ob-text-head)", transition: "color 0.6s ease", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
               <img src={obTheme === "dark" ? "./AXIS_Branding_DarkMode_Outlined.svg" : "./AXIS_Branding_LightMode_Outlined.svg"} alt="AXIS Logo" style={{ marginTop: "calc(90px + 5vh)", width: 165 }} />
               <div className="ob-screen-body">
                 <div className="ob-pad" style={{ textAlign: "center" }}>
@@ -1491,7 +1505,7 @@ function Onboarding({ theme, onComplete }) {
       </div>
 
       <div className="ob-ext-nav">
-        {["Splash","Alpha","Perspective","Science+Ethics","Safety","Appearance","Ultra Mode","App Icon Selection","Choose Experience","Navigation Map","Launch"].map((l, i) => (
+        {["Splash","Alpha","Perspective","Science+Ethics","Safety","Appearance","Ultra Mode","App Icon Selection","LIST & GUIDED","Navigation Map","Launch"].map((l, i) => (
           <button key={l} className="ob-en-btn" onClick={() => go(i)}>{l}</button>
         ))}
         <button className="ob-en-btn" style={{ borderColor: "#FFBF65", color: "#FFBF65" }} onClick={() => go(10)}>→ Launch Screen</button>
@@ -1533,20 +1547,19 @@ function Onboarding({ theme, onComplete }) {
             <button
               type="button"
               className="ob-nav-letsgo ob-footer-nav-cell--next"
-              aria-label="Launch"
+              aria-label="Continue"
               onClick={doLaunch}
               style={{
                 pointerEvents: 'auto',
                 padding: '12px 28px', borderRadius: 999, border: 'none',
-                minWidth: 124, whiteSpace: 'nowrap',
-                background: 'var(--ob-accent)',
-                color: '#252525',
+                background: obTheme === 'dark' ? 'var(--axis-white)' : 'var(--axis-black)',
+                color: obTheme === 'dark' ? 'var(--axis-black)' : 'var(--axis-white)',
                 fontFamily: "'Barlow', sans-serif", fontSize: 13, fontWeight: 700,
                 letterSpacing: '0.18em', textTransform: 'uppercase',
                 cursor: 'pointer', transition: 'all 0.25s ease',
               }}
             >
-              LAUNCH
+              LET'S GO
             </button>
           </div>
         ) : (
@@ -1567,7 +1580,7 @@ function Onboarding({ theme, onComplete }) {
               }}
             >{"<"}</button>
             <div className="ob-footer-dots ob-footer-nav-cell--dots">
-              {Array.from({ length: 11 }).map((_, i) => {
+              {Array.from({ length: total }).map((_, i) => {
                 const active = i === cur;
                 return (
                   <div key={i} className="ob-footer-dot-slot" aria-hidden>
