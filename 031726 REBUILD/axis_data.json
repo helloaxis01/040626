@@ -1107,6 +1107,9 @@
                   "label": "Hug Both Knees",
                   "focus": "DECOMPRESS",
                   "cue": "Draw both knees to chest. Wrap arms around shins. Rock gently side to side 5–8 times. Release lower back."
+                },
+                {
+                  "cue": "Keep the movement small and gentle. This is decompression, not a stretch."
                 }
               ]
             },
@@ -1285,6 +1288,9 @@
                   "label": "Hold & Breathe",
                   "focus": "RESTORE",
                   "cue": "Let gravity drain the legs. Close the eyes. Breathe naturally. This posture reverses venous pooling and calms the nervous system."
+                },
+                {
+                  "cue": "Place a folded blanket under your hips if your lower back is tight. Stay as long as feels good."
                 }
               ]
             },
@@ -1307,6 +1313,9 @@
                   "label": "Gravity Hold",
                   "focus": "RELEASE",
                   "cue": "Let the inner thighs and groin soften completely. Do not push. Hold 60–90s."
+                },
+                {
+                  "cue": "Support the outer thighs with pillows if the stretch feels too intense."
                 }
               ]
             },
@@ -1329,6 +1338,9 @@
                   "label": "Rock Side to Side",
                   "focus": "MASSAGE",
                   "cue": "Rock gently left and right. Let the lower back release against the floor. 10–15 slow rocks."
+                },
+                {
+                  "cue": "Move slowly. This is a massage for your lower back — let the floor do the work."
                 }
               ]
             },
@@ -1423,6 +1435,9 @@
                   "label": "Open & Lift",
                   "focus": "STRETCH",
                   "cue": "Straighten arms, draw shoulder blades together, lift hands slightly. Open chest toward ceiling. Hold 20–30s."
+                },
+                {
+                  "cue": "Do not push the lift aggressively. Focus on drawing the shoulder blades together, not lifting the arms high."
                 }
               ]
             },
@@ -1445,6 +1460,9 @@
                   "label": "Retract",
                   "focus": "CERVICAL",
                   "cue": "Draw chin straight back — not down. Create a slight double chin. Hold 2s. 10 reps."
+                },
+                {
+                  "cue": "You should feel a gentle stretch at the base of your skull. No tilting up or down."
                 }
               ]
             },
@@ -1495,6 +1513,9 @@
                   "label": "Shift Forward",
                   "focus": "STRETCH",
                   "cue": "Gently shift weight forward until you feel a stretch in the right hip flexor. Keep torso upright. Hold 30s each side."
+                },
+                {
+                  "cue": "Keep your hips square throughout. Do not let the front knee cave inward."
                 }
               ]
             },
@@ -1517,6 +1538,9 @@
                   "label": "Flex Stretch",
                   "focus": "FOREARM",
                   "cue": "Hold 15–20s. Feel the forearm extensors lengthen. Reverse — palm up, pull fingers down. Hold 15–20s. Switch arms."
+                },
+                {
+                  "cue": "Go gently — these muscles are often tight from keyboard and mouse use. Never force the stretch."
                 }
               ]
             },
@@ -1583,6 +1607,9 @@
                   "label": "Retract",
                   "focus": "CERVICAL",
                   "cue": "Draw chin straight back — not down. Create a slight double chin. Hold 2s. Feel a stretch at the base of the skull. Release slowly. 10 reps."
+                },
+                {
+                  "cue": "You should feel a gentle stretch at the base of the skull, not the front of the throat."
                 }
               ]
             },
@@ -1633,6 +1660,9 @@
                   "label": "Add Weight",
                   "focus": "DEEPEN",
                   "cue": "Rest the right hand gently on the back of the head — do not pull. Hold 30s. Switch sides. This targets the levator scapulae, the most screen-tension muscle."
+                },
+                {
+                  "cue": "Never pull the head with force. The weight of the hand is enough. Breathe into the stretch."
                 }
               ]
             },
@@ -1655,6 +1685,9 @@
                   "label": "Lean Left",
                   "focus": "STRETCH",
                   "cue": "With right shoulder anchored, slowly tilt the head to the left and slightly forward. Feel the right upper trap lengthen. Hold 30s. Switch."
+                },
+                {
+                  "cue": "The anchoring hand is essential — without it the shoulder shrugs up and the stretch is lost."
                 }
               ]
             },
@@ -1705,6 +1738,9 @@
                   "label": "Lift & Hold",
                   "focus": "STRETCH",
                   "cue": "Lift elbows to shoulder height. Feel the space between the shoulder blades open. Hold 30s. Switch arm cross. Targets the rhomboids."
+                },
+                {
+                  "cue": "If palms do not meet, press the backs of the hands together instead. The lift is more important than the wrap."
                 }
               ]
             },
@@ -1727,6 +1763,9 @@
                   "label": "Lift & Open",
                   "focus": "EXPAND",
                   "cue": "Lift clasped hands slightly away from the body. Open the chest. Chin slightly up. Hold 30s. This directly counters the forward curl of screen posture."
+                },
+                {
+                  "cue": "Do not compress the lower back by arching. Keep your core gently engaged throughout."
                 }
               ]
             }
@@ -3867,6 +3906,9 @@
                   "label": "Rotate",
                   "focus": "ROTATE",
                   "cue": "Rotate upper body gently to one side, keeping hips facing forward. Return and repeat other side."
+                },
+                {
+                  "cue": "Keep the movement in your upper back only. Hips stay forward-facing throughout."
                 }
               ]
             },
@@ -3889,6 +3931,9 @@
                   "label": "Slide to Y",
                   "focus": "ACTIVATE",
                   "cue": "Slide arms up overhead into a Y keeping contact with the wall. Return slowly."
+                },
+                {
+                  "cue": "Quality over range. If contact with the wall is lost, reduce your range of motion."
                 }
               ]
             },
@@ -3911,6 +3956,9 @@
                   "label": "Tuck",
                   "focus": "NECK",
                   "cue": "Draw chin straight back (not down), hold gently for 3–5 seconds then release."
+                },
+                {
+                  "cue": "You should feel a gentle stretch at the base of the skull. No tilting up or down."
                 }
               ]
             },
@@ -3933,6 +3981,9 @@
                   "label": "Hold",
                   "focus": "RELEASE",
                   "cue": "Breathe here 20–30 seconds per side and feel rotation through the upper back."
+                },
+                {
+                  "cue": "Let gravity do the work. Do not force the shoulder toward the floor."
                 }
               ]
             },
@@ -3949,6 +4000,12 @@
                   "label": "Kneel & Fold",
                   "focus": "SETUP",
                   "cue": "Sit back toward heels and fold forward with arms extended. Relax the chest toward the floor."
+                },
+                {
+                  "cue": "Breathe deeply into the lower back. Let your chest and shoulders soften toward the floor. Hold for the full duration."
+                },
+                {
+                  "cue": "Widen your knees if you need more room for your torso."
                 }
               ]
             }
@@ -3987,6 +4044,9 @@
                   "label": "Stretch",
                   "focus": "STRETCH",
                   "cue": "Use the other hand to gently pull fingers back toward you. Hold 30s per side."
+                },
+                {
+                  "cue": "Never force the stretch. A gentle pull is correct — sharp pain or tingling means reduce the range."
                 }
               ]
             },
@@ -4009,6 +4069,9 @@
                   "label": "Stretch",
                   "focus": "STRETCH",
                   "cue": "Use the other hand to press the fingers toward the forearm. Hold 30s per side."
+                },
+                {
+                  "cue": "Keep the elbow straight for maximum stretch. Reduce range if you feel tingling in the fingers."
                 }
               ]
             },
@@ -4031,6 +4094,9 @@
                   "label": "Glide",
                   "focus": "GLIDE",
                   "cue": "Make a fist, then straighten fingers and thumb across the palm. Repeat smoothly for 10 reps."
+                },
+                {
+                  "cue": "Move slowly and smoothly. These are glides, not stretches — do not force the range."
                 }
               ]
             },
@@ -4053,6 +4119,9 @@
                   "label": "Lower",
                   "focus": "STRETCH",
                   "cue": "Slowly lower hands while keeping palms together to stretch the wrists. Hold 20s."
+                },
+                {
+                  "cue": "Go only as far as is comfortable. Stop if you feel tingling or numbness."
                 }
               ]
             },
@@ -4075,6 +4144,9 @@
                   "label": "Fist Pumps",
                   "focus": "ACTIVATE",
                   "cue": "Alternate making a fist and opening the hand with punch-like pumps for 15 seconds."
+                },
+                {
+                  "cue": "End every session with this. It flushes tension from the hands and signals the nervous system to reset."
                 }
               ]
             }
