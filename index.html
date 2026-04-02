@@ -674,7 +674,8 @@ const css = `
     font-family: var(--font-ui);
     --dashboard-browse-sticky-top: calc(env(safe-area-inset-top, 0px) + 49px);
     --axis-dashboard-fixed-h: calc(env(safe-area-inset-top, 0px) + 49px);
-    --axis-session-fixed-h: 108px;
+    /* Reserve space for session hdr (back, title, LIST/GUIDED) so tab subbar isn’t covered */
+    --axis-session-fixed-h: 152px;
   }
   .home-wordmark, .track-card-name, .hdr-title, .session-title,
   .fc-name, .fv-name, .guided-exercise-name, .en, .step-label,
@@ -692,7 +693,8 @@ const css = `
   .fc-pcue, .fv-cue, .step-cue { font-size: var(--text-base); }
   .purpose-text { font-size: calc(var(--text-sm) - 1px); font-style: normal; }
   .fc-sub { font-size: var(--text-sm); }
-  .es { font-size: var(--text-xs); }
+  /* Exercise list rows: secondary / metadata (match track cards @ 13px) */
+  .es { font-size: 13px; }
 
   /* Map app text/colors to canonical axis colors */
   .app[data-theme="dark"] {
@@ -1330,14 +1332,14 @@ const css = `
     border: 1px solid color-mix(in srgb, #FF3B30 15%, transparent) !important;
     color: #FF3B30 !important;
     font-family: var(--font-display) !important;
-    font-size: 9.5pt !important;
+    font-size: 10px !important;
     font-weight: 500 !important;
     line-height: 1 !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.05em !important;
     text-transform: uppercase !important;
-    min-height: 28px !important;
-    height: 28px !important;
-    padding: 0 8px !important;
+    min-height: 26px !important;
+    height: auto !important;
+    padding: 5px !important;
     border-radius: 999px !important;
     box-sizing: border-box !important;
     box-shadow: none !important;
@@ -1951,7 +1953,9 @@ const css = `
   .tab-desc-line {
     font-size: var(--text-sm);
     letter-spacing:0.03em;
-    padding-bottom: 8px;
+    padding-top: 4px;
+    padding-bottom: 10px;
+    line-height: 1.35;
   }
   .tab-prog-row {
     display:flex; align-items:center; justify-content:space-between;
@@ -2204,13 +2208,19 @@ const css = `
   .en.skipped { color:var(--text-done); text-decoration:line-through; }
   .es { margin-top:4px; }
 
-  .ereps { font-size: var(--text-sm); font-weight:500; font-family:var(--font-display); color:var(--text-secondary); letter-spacing:0.08em; margin-top:8px; text-transform:uppercase; }
+  .ereps { font-size: 13px; font-weight:500; font-family:var(--font-display); color:var(--text-secondary); letter-spacing:0.08em; margin-top:8px; text-transform:uppercase; }
   .npill {
     font-family:var(--font-display); font-weight:500; font-size: var(--text-sm); letter-spacing:0.16em; text-transform:uppercase; padding:2px 9px; border-radius:20px;
     background:var(--glass-bg); border:1px solid var(--glass-border); color:var(--text-secondary);
     backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   }
-  .chev { color:var(--text-dim); font-size: var(--text-sm); transition:transform 0.25s; align-self:center; }
+  /* Expand chevron hit area (icon glyph unchanged); row also toggles expand */
+  .chev {
+    color:var(--text-dim); font-size: var(--text-sm); transition:transform 0.25s; align-self:center;
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:44px; min-height:44px; box-sizing:border-box; padding:0 10px; margin-left:4px;
+    -webkit-tap-highlight-color: transparent;
+  }
   .chev.op { transform:rotate(180deg); }
   .row-actions { display:flex; gap:4px; flex-shrink:0; align-self:center; }
   .ra-btn {
@@ -2944,12 +2954,12 @@ const css = `
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
     box-sizing: border-box;
     margin: 16px 0 8px;
     padding: 0;
-    gap: 0;
+    gap: 9px;
     min-height: 0;
   }
   .app[data-theme="light"]:not([data-night="true"]) .fav-filter.fav-filter--session-util {
@@ -2962,7 +2972,7 @@ const css = `
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     flex: 0 1 auto;
     min-width: 0;
   }
@@ -2972,18 +2982,18 @@ const css = `
     flex-shrink: 0;
     display: block;
   }
-  /* Same size/color as header tab subtitle (“Step-by-step walkthrough.”): var(--text-xs) + var(--text-dimmer) */
+  /* Session pills: ~15% larger, equal inset on all sides */
   .fav-filter.fav-filter--session-util .fav-toggle {
     flex: 0 0 auto;
-    min-height: 28px;
-    height: 28px;
-    padding: 0 8px !important;
+    min-height: 26px;
+    height: auto;
+    padding: 5px !important;
     border-radius: 999px !important;
     font-family: var(--font-display) !important;
-    font-size: 9.5pt !important;
+    font-size: 10px !important;
     font-weight: 500 !important;
     line-height: 1 !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.05em !important;
     text-transform: uppercase !important;
     border: 1px solid color-mix(in srgb, var(--text-primary) 15%, transparent) !important;
     background: transparent !important;
@@ -3040,7 +3050,7 @@ const css = `
   }
 
   .reset-pill { margin-left:auto; }
-  .fav-filter.fav-filter--session-util .reset-pill { margin-left: 0; }
+  .fav-filter.fav-filter--session-util .reset-pill { margin-left: auto; }
   .fav-filter::before {
     display:none;
   }
@@ -3676,8 +3686,9 @@ const css = `
   .track-card:active { transform:scale(0.98); }
   .track-card-left { flex:1; min-width:0; width:100%; }
   .track-card-name { font-size: var(--text-lg); font-weight:600; color:var(--text-white); margin-bottom:6px; letter-spacing:-0.02em; }
-  .track-card-sub { font-size: var(--text-sm); color:var(--accent-secondary); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; line-height:1.4; }
+  .track-card-sub { font-size: 13px; color:var(--accent-secondary); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; line-height:1.4; }
   .track-card-sub .glass-label {
+    font-size: 13px;
     background: none;
     border: none;
     box-shadow: none;
@@ -3695,9 +3706,9 @@ const css = `
     text-overflow: ellipsis;
   }
   .track-card-sub { margin-bottom: 8px; }
-  .track-card-purpose { font-size: var(--text-base); margin-top:10px; }
+  .track-card-purpose { font-size: 13px; margin-top:10px; }
   .track-card-right { display:flex; align-items:center; justify-content:space-between; width:100%; }
-  .track-card-dur { font-size: var(--text-sm); font-family:var(--font-display); letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); font-weight: 500; }
+  .track-card-dur { font-size: 13px; font-family:var(--font-display); letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); font-weight: 500; }
   .begin-btn {
     padding:8px 22px; font-family:var(--font-display); font-size: var(--text-sm); font-weight:600;
     letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:var(--axis-radius);
@@ -4059,7 +4070,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     ) :
     "—")
     ), /*#__PURE__*/
-    React.createElement("div", { className: `chev ${open ? "op" : ""}`, style: { marginLeft: 4 } }, "\u25BE")
+    React.createElement("div", { className: `chev ${open ? "op" : ""}` }, "\u25BE")
     ),
     open && /*#__PURE__*/
     React.createElement("div", { ref: sessionDetailPanelRef, className: "panel protocol-panel", tabIndex: -1, role: "region", "aria-label": `${ex.name} — exercise details`, style: skipped ? { opacity: 0.45 } : {} }, /*#__PURE__*/
