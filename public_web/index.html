@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  window.onerror = function(msg, url, line, col, error) {
+    console.error("AXIS_DEBUG_CRASH: ", {msg, url, line, col, error});
+    return false;
+  };
+</script>
   <script>
   (function () {
     window.axisOnboardingHref = function () {
@@ -58,6 +64,9 @@
     /* Ensure onboarding screens are centered if the onboarding CSS isn't loaded */
     .ob-screen { display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100dvh; box-sizing:border-box; }
   </style>
+  <script defer src="./react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./react.production.min.js (must sit next to index.html in the app bundle).')"></script>
+  <script defer src="./react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./react-dom.production.min.js (must sit next to index.html in the app bundle).')"></script>
+  <script defer src="./auth-bundle.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./auth-bundle.js (must sit next to index.html in the app bundle).')"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -68,13 +77,11 @@
       if (el) { el.style.display = 'block'; el.textContent = msg; }
     }
     window.onerror = function(msg, src, line, col, err) {
+      try { console.error("AXIS_DEBUG_CRASH: ", { msg: msg, url: src, line: line, col: col, error: err }); } catch (e) {}
       showLoadErr('Error: ' + msg + (err && err.stack ? '\n' + err.stack : ''));
       return true;
     };
   </script>
-  <script src="./react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./react.production.min.js (must sit next to index.html in the app bundle).')"></script>
-  <script src="./react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./react-dom.production.min.js (must sit next to index.html in the app bundle).')"></script>
-  <script src="./auth-bundle.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./auth-bundle.js (must sit next to index.html in the app bundle).')"></script>
   <!-- Babel standalone removed for production builds; app is precompiled in dist/ -->
   <script>
     // Workout content is loaded asynchronously from ./axis_data.json (see bootstrapAxisApp at end of app script).
@@ -118,7 +125,9 @@ if (window.AXIS_DEV) {
     };
   } catch (e) {}
 }
-
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 const { useState, useEffect, useLayoutEffect, useRef, useId } = React;
 
 // Ensure a global fallback 'highlight' exists for any older references or cached builds.
@@ -7629,6 +7638,7 @@ async function bootstrapAxisApp() {
   }
 }
 bootstrapAxisApp();
+});
   </script>
   <script>
   document.addEventListener("DOMContentLoaded", function () {
