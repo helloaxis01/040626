@@ -2,6 +2,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { execFile } = require("child_process");
 
 const root = path.join(__dirname, "..", "dist");
 const PORT = Number(process.env.PORT) || 3000;
@@ -79,6 +80,23 @@ server.on("error", (err) => {
   throw err;
 });
 
-server.listen(PORT, () => {
-  console.log("AXIS dev (no redirects): http://localhost:" + PORT + "/  → dist/");
+function openSystemBrowser(urls) {
+  const list = Array.isArray(urls) ? urls : [urls];
+  if (process.platform === "darwin") {
+    for (const u of list) execFile("open", [u], () => {});
+  } else if (process.platform === "win32") {
+    for (const u of list) execFile("cmd", ["/c", "start", "", u], () => {});
+  } else {
+    for (const u of list) execFile("xdg-open", [u], () => {});
+  }
+}
+
+server.listen(PORT, "127.0.0.1", () => {
+  const base = "http://127.0.0.1:" + PORT;
+  console.log("AXIS dev (no redirects): " + base + "/  → dist/");
+  console.log("  Main:        " + base + "/");
+  console.log("  Onboarding:  " + base + "/onboarding.html");
+  if (process.env.AXIS_OPEN_BROWSER === "1") {
+    openSystemBrowser([base + "/", base + "/onboarding.html"]);
+  }
 });

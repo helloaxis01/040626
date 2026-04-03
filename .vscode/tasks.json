@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "AXIS: dev server (localhost)",
+      "type": "shell",
+      "command": "test -f build.js && npm run dev || (cd .. && npm run dev)",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PORT": "3000"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "axis-static-dev",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "AXIS dev \\(no redirects\\):"
+        }
+      }
+    },
+    {
+      "label": "AXIS: dev + open in system browser (recommended)",
+      "type": "shell",
+      "command": "test -f build.js && npm run dev:open || (cd .. && npm run dev:open)",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PORT": "3000"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "axis-static-dev",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "AXIS dev \\(no redirects\\):"
+        }
+      }
+    }
+  ]
+}
