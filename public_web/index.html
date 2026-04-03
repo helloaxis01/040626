@@ -72,9 +72,9 @@
       return true;
     };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React. Check your connection and try again.')"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
-  <script src="./auth-bundle.js" crossorigin="anonymous" onerror="showLoadErr('Could not load auth-bundle.js. Check your connection and try again.')"></script>
+  <script src="./react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./react.production.min.js (must sit next to index.html in the app bundle).')"></script>
+  <script src="./react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./react-dom.production.min.js (must sit next to index.html in the app bundle).')"></script>
+  <script src="./auth-bundle.js" crossorigin="anonymous" onerror="showLoadErr('Could not load ./auth-bundle.js (must sit next to index.html in the app bundle).')"></script>
   <!-- Babel standalone removed for production builds; app is precompiled in dist/ -->
   <script>
     // Workout content is loaded asynchronously from ./axis_data.json (see bootstrapAxisApp at end of app script).
@@ -92,27 +92,30 @@
 window.AXIS_DEV = location.search.indexOf('dev=1') !== -1 || localStorage.getItem && localStorage.getItem('axis_dev') === '1';
 if (window.AXIS_DEV) {
   try {
-    // Minimal debug overlay
-    const _dbg = document.createElement('div');
+    // Minimal debug overlay (var/function for broadest WKWebView compatibility in this small block)
+    var _dbg = document.createElement('div');
     _dbg.id = 'axis-debug-overlay';
     _dbg.style = 'position:fixed;right:12px;bottom:12px;z-index:99999;background:rgba(0,0,0,0.6);color:var(--axis-white);padding:8px 10px;border-radius:8px;font-family:monospace;font-size:var(--text-xs);cursor:pointer';
     _dbg.textContent = 'AXIS DEV';
     _dbg.title = 'Click to toggle verbose logging (persists)';
-    _dbg.onclick = () => {
-      const v = localStorage.getItem('axis_verbose') === '1' ? '0' : '1';
+    _dbg.onclick = function () {
+      var v = localStorage.getItem('axis_verbose') === '1' ? '0' : '1';
       localStorage.setItem('axis_verbose', v);
       alert('axis_verbose = ' + v);
     };
-    document.addEventListener('DOMContentLoaded', () => {document.body.appendChild(_dbg);});
-    // Verbose logger if axis_verbose=1
-    const origLog = console.log.bind(console);
-    console.log = function (...args) {
+    document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(_dbg); });
+    var origLog = console.log.bind(console);
+    console.log = function () {
+      var args = Array.prototype.slice.call(arguments);
       try {
-        if (localStorage.getItem('axis_verbose') === '1') origLog('[AXIS]', ...args);
-      } catch (e) {origLog('[AXIS]', ...args);}
+        if (localStorage.getItem('axis_verbose') === '1') origLog.apply(console, ['[AXIS]'].concat(args));
+      } catch (e) { origLog.apply(console, ['[AXIS]'].concat(args)); }
     };
-    const origError = console.error.bind(console);
-    console.error = function (...args) {origError('[AXIS ERROR]', ...args);};
+    var origError = console.error.bind(console);
+    console.error = function () {
+      var args = Array.prototype.slice.call(arguments);
+      origError.apply(console, ['[AXIS ERROR]'].concat(args));
+    };
   } catch (e) {}
 }
 
