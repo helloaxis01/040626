@@ -20518,7 +20518,7 @@ This typically indicates that your device does not have a healthy Internet conne
       overflow: "hidden",
       display: "flex",
       flexDirection: "column",
-      padding: "max(20px, env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px))",
+      padding: "max(0px, env(safe-area-inset-top, 0px)) max(0px, env(safe-area-inset-right, 0px)) max(0px, env(safe-area-inset-bottom, 0px)) max(0px, env(safe-area-inset-left, 0px))",
       boxSizing: "border-box",
       background: "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)",
       color: "#f6f7f8"
@@ -20667,8 +20667,8 @@ This typically indicates that your device does not have a healthy Internet conne
                 type: "submit",
                 style: {
                   ...submitBtn,
-                  background: mode === "signin" ? "#2EC4B6" : "#FF9F43",
-                  color: mode === "signin" ? "#0D2E2A" : "#252525"
+                  background: mode === "signin" ? "#D1D5DB" : "#FF9F43",
+                  color: mode === "signin" ? "#1a1a1a" : "#252525"
                 },
                 disabled: busy
               },
