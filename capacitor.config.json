@@ -4,7 +4,7 @@
   "webDir": "public_web",
   "server": {
     "androidScheme": "https",
-    "iosScheme": "https",
+    "iosScheme": "capacitor",
     "hostname": "localhost",
     "allowNavigation": [
       "https://axis-7f474.firebaseapp.com",
