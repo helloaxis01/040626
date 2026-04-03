@@ -1,5 +1,5 @@
 {
   "appId": "com.axis.app",
   "appName": "AXIS",
-  "webDir": "dist"
+  "webDir": "public_web"
 }
