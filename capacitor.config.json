@@ -1,5 +1,19 @@
 {
   "appId": "com.axis.app",
   "appName": "AXIS",
-  "webDir": "public_web"
+  "webDir": "public_web",
+  "server": {
+    "allowNavigation": [
+      "https://axis-7f474.firebaseapp.com",
+      "https://axis-7f474.web.app",
+      "https://securetoken.google.com",
+      "https://securetoken.googleapis.com",
+      "https://identitytoolkit.googleapis.com",
+      "https://www.googleapis.com",
+      "https://accounts.google.com",
+      "https://apis.google.com",
+      "https://www.gstatic.com",
+      "https://www.google.com"
+    ]
+  }
 }
