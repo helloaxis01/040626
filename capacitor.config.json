@@ -3,6 +3,9 @@
   "appName": "AXIS",
   "webDir": "public_web",
   "server": {
+    "androidScheme": "https",
+    "iosScheme": "https",
+    "hostname": "localhost",
     "allowNavigation": [
       "https://axis-7f474.firebaseapp.com",
       "https://axis-7f474.web.app",
