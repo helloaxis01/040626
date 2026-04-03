@@ -3,8 +3,10 @@
   "appName": "AXIS",
   "webDir": "public_web",
   "server": {
+    "url": "http://localhost:8080",
+    "cleartext": true,
     "androidScheme": "https",
-    "iosScheme": "http",
+    "iosScheme": "capacitor",
     "hostname": "localhost",
     "bundledWebRuntime": false,
     "allowNavigation": [
