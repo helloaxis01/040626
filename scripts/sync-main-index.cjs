@@ -11,6 +11,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const src = path.join(root, "031726 REBUILD", "public_web", "index.html");
 const dest = path.join(root, "index.html");
+const destPublic = path.join(root, "public", "index.html");
 
 if (!fs.existsSync(src)) {
   console.warn("sync-main-index: skip (missing):", src);
@@ -18,3 +19,5 @@ if (!fs.existsSync(src)) {
 }
 fs.copyFileSync(src, dest);
 console.log("sync-main-index: copied →", path.relative(root, dest));
+fs.copyFileSync(src, destPublic);
+console.log("sync-main-index: copied →", path.relative(root, destPublic));
