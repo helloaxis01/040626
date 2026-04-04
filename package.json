@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build:cap-plugins": "esbuild src/axis-cap-plugins.js --bundle --format=iife --platform=browser --outfile=public_web/axis-cap-plugins.js",
-    "build": "node build.js",
+    "build": "node scripts/sync-main-index.cjs && node build.js",
     "build:auth": "node scripts/build-auth.mjs",
     "dev": "node scripts/static-dev.cjs",
     "dev:open": "AXIS_OPEN_BROWSER=1 node scripts/static-dev.cjs",
