@@ -1444,7 +1444,7 @@ const css = `
   .tab-bar[data-night="true"] .tab-btn:not(.active) { color: rgba(211, 47, 47, 0.25) !important; opacity: 1 !important; }
   .tab-bar[data-night="true"] .tab-btn:not(.active):hover { color: rgba(211, 47, 47, 0.25) !important; opacity: 1 !important; }
   .tab-bar[data-night="true"] .tab-btn.active:hover { color: #FF3B30 !important; opacity: 1 !important; }
-  .tab-bar[data-night="true"] .nav-tab-indicator { background: #FF3B30 !important; box-shadow: none !important; opacity: 1; }
+  .tab-bar[data-night="true"] .tab-btn.active .nav-tab-indicator { background: #FF3B30 !important; box-shadow: none !important; opacity: 1 !important; }
   [data-night="true"] .prog-fill { background: #FF3B30 !important; box-shadow: none !important; }
   [data-night="true"] .prog-bar { height: 4px !important; background: #000000 !important; border: none !important; border-radius: 4px !important; }
   /* Session utility pills — Ultra: red label, hairline border */
@@ -3316,15 +3316,16 @@ const css = `
     -webkit-tap-highlight-color: transparent;
   }
   .tab-btn-stack {
+    --tab-icon-size: 30px;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     gap:4px;
+    flex-shrink:0;
   }
   .tab-btn:not(.active) .nav-tab-indicator {
-    opacity: 0;
-    transform: scaleX(0.35);
+    pointer-events: none;
   }
   .tab-btn:active { transform: scale(0.95); opacity: 0.88; }
   .tab-bar[data-night="false"][data-theme="light"] .tab-btn { color: color-mix(in srgb, var(--axis-black) 34%, transparent); }
@@ -3340,14 +3341,14 @@ const css = `
   .tab-bar[data-night="false"][data-theme="dark"] .tab-btn.active:hover { color: var(--axis-white); }
   .tab-icon-shell {
     position:relative; display:flex; align-items:center; justify-content:center;
-    width:30px; height:30px;
+    width:var(--tab-icon-size, 30px); height:var(--tab-icon-size, 30px);
   }
   .tab-btn svg {
     stroke: currentColor;
     fill: none;
     transition: color 0.15s, opacity 0.15s, stroke-width 0.15s;
-    width: 30px;
-    height: 30px;
+    width: var(--tab-icon-size, 30px);
+    height: var(--tab-icon-size, 30px);
     stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -3372,16 +3373,20 @@ const css = `
     background: none !important;
   }
   .tab-btn .tab-icon-shell svg { position:relative; z-index:1; }
+  /* Pill above icon: 20% wider than icon, 4px gap to icon (tab-btn-stack gap), capsule ends */
   .nav-tab-indicator {
-    width: 26px;
+    box-sizing: border-box;
+    width: calc(var(--tab-icon-size, 30px) * 1.2);
     height: 3px;
-    border-radius: 999px;
+    min-height: 3px;
+    border-radius: 9999px;
     margin: 0;
     align-self: center;
+    flex-shrink: 0;
     background: transparent;
     opacity: 0;
-    transform: scaleX(1);
-    transition: opacity 0.18s ease, transform 0.18s ease, background 0.18s ease;
+    transform: none;
+    transition: opacity 0.18s ease, background 0.18s ease;
   }
   .tab-btn.active .nav-tab-indicator {
     opacity: 1;
