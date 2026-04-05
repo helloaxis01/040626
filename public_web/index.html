@@ -146,7 +146,7 @@ try {
 // ─────────────────────────────────────────────────────────────
 
 // ── ICON RENDERER ─────────────────────────────────────────────
-function AxisIcon({ size = 72, color = "#F0EEEB" }) {
+function AxisIcon({ size = 72, color = "#F0EEEB", className }) {
   const S = size;
   const pad = S * 0.05,usable = S - pad * 2,spacing = usable * 0.5;
   const xSize = spacing * 0.78,strokeW = S * 0.09,off = spacing / 2;
@@ -155,7 +155,7 @@ function AxisIcon({ size = 72, color = "#F0EEEB" }) {
   [S / 2 - off, S / 2 + off], [S / 2 + off, S / 2 + off]];
 
   return (/*#__PURE__*/
-    React.createElement("svg", { width: S, height: S, viewBox: `0 0 ${S} ${S}` },
+    React.createElement("svg", { width: S, height: S, viewBox: `0 0 ${S} ${S}`, className: className },
     positions.flatMap(([x, y]) =>
     [-45, 45].map((angle) => /*#__PURE__*/
     React.createElement("rect", { key: `${x}-${y}-${angle}`,
@@ -2304,6 +2304,134 @@ const css = `
     box-sizing: border-box;
     padding-bottom: 8px;
   }
+  .summary-main-stack.summary-main-stack--metrics {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 8px;
+  }
+  .metrics-weight-pain-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-weight-pain-group .metrics-card.metrics-card--pain {
+    margin-top: 0;
+  }
+  /* Outcomes: one surface — weight + pain as sections, no nested card chrome */
+  .metrics-section--outcomes .metrics-weight-pain-group .metrics-card {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0 0 20px;
+  }
+  .app[data-night="true"] .metrics-section--outcomes .metrics-weight-pain-group .metrics-card {
+    background: transparent;
+    border: none;
+  }
+  .metrics-section--outcomes .metrics-weight-pain-group .metrics-card--pain {
+    border-top: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+    padding-top: 20px;
+    padding-bottom: 2px;
+  }
+  .app[data-night="true"] .metrics-section--outcomes .metrics-weight-pain-group .metrics-card--pain {
+    border-top-color: rgba(255, 59, 48, 0.28);
+  }
+  .metrics-card--outcomes-primary {
+    border-color: transparent;
+  }
+  .metrics-card--outcomes-secondary {
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+  .app[data-night="true"] .metrics-card--outcomes-secondary {
+    background: transparent;
+    border-color: transparent;
+  }
+  .metrics-card__head--stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .metrics-card__value--hero {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-align: left;
+    width: 100%;
+    color: #F5F5F5;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-card__value--hero {
+    color: #121418;
+  }
+  .metrics-pain-heatmap-section {
+    width: 100%;
+    margin-top: 4px;
+  }
+  .metrics-pain-heatmap-section .metrics-pain-mode-toggle {
+    margin-bottom: 14px;
+  }
+  /* Goals + Outcomes collapsibles: same header treatment */
+  .summary-sunset-stack--metrics .metrics-section .metrics-section__btn-chev {
+    font-size: 12px;
+    opacity: 0.55;
+  }
+  .metrics-goals-foot {
+    margin-top: 14px;
+    font-size: var(--text-xs);
+    color: var(--text-dimmer);
+    line-height: 1.45;
+  }
+  .summary-panel.history.summary-panel--metrics-follow {
+    margin-top: 0;
+  }
+  .metrics-inline-expand {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+    animation: metrics-expand-in 0.2s ease-out;
+  }
+  @keyframes metrics-expand-in {
+    from { opacity: 0.6; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .metrics-inline-expand__label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .metrics-inline-expand__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .metrics-inline-input {
+    flex: 1 1 120px;
+    min-width: 0;
+    min-height: 48px;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: rgba(245,245,245,0.06);
+    color: #F5F5F5;
+    box-sizing: border-box;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-inline-input {
+    color: #121418;
+    background: rgba(0,0,0,0.04);
+  }
   .home-summary-lede-row {
     display: flex;
     flex-direction: column;
@@ -2844,6 +2972,22 @@ const css = `
     width: 100%;
     box-sizing: border-box;
     padding-top: 4px;
+  }
+  .summary-sunset-stack.summary-sunset-stack--metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .summary-sunset-stack.summary-sunset-stack--metrics .metrics-section {
+    margin-bottom: 0;
+  }
+  .metrics-quick-stats-heading {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    margin: 0 0 8px;
   }
   .summary-hero {
     padding: 0 0 20px;
@@ -3627,6 +3771,12 @@ const css = `
     stroke-linejoin: round;
     opacity: 1;
   }
+  /* AXIS mark (filled rects) — tab defaults use stroke + fill:none; restore fill for brand mark */
+  .tab-btn svg.tab-axis-mark {
+    fill: currentColor;
+    stroke: none;
+    stroke-width: 0;
+  }
   .tab-bar[data-night="false"][data-theme="light"] .tab-btn:not(.active) svg {
     stroke-width: 1.45;
     opacity: 0.79;
@@ -3685,9 +3835,548 @@ const css = `
     min-height: 0;
   }
   /* Summary: same tail as Today — long scroll so bottom CTA clears fixed tab bar + home indicator */
-  .tab-bar-spacer--summary {
+  .tab-bar-spacer--summary,
+  .tab-bar-spacer--metrics {
     height: calc(var(--axis-bottom-content-inset) + var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 140px);
     flex-shrink: 0;
+  }
+  .metrics-card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-card {
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    box-shadow: inset 0 1px 0 var(--glass-specular);
+    padding: 16px 16px 18px;
+    box-sizing: border-box;
+  }
+  .app[data-night="true"] .metrics-card {
+    background: #000000;
+    border-color: rgba(255, 59, 48, 0.35);
+  }
+  .metrics-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .metrics-card__title {
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .metrics-card__value {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #F5F5F5;
+    text-align: right;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-card__value {
+    color: #121418;
+  }
+  .metrics-weight-chart-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    touch-action: none;
+    user-select: none;
+    overflow: visible;
+  }
+  .metrics-weight-chart-row {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-weight-chart-yaxis {
+    flex: 0 0 38px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 14px 0 36px;
+    box-sizing: border-box;
+    min-height: 200px;
+  }
+  .metrics-weight-chart-yaxis__lbl {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .metrics-weight-chart-plot {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 200px;
+  }
+  .metrics-weight-chart-plot .metrics-weight-chart-svg {
+    width: 100%;
+    height: 200px;
+    display: block;
+    vertical-align: top;
+  }
+  .metrics-weight-chart-svg {
+    width: 100%;
+    height: 200px;
+    display: block;
+    overflow: visible;
+  }
+  .metrics-weight-axis {
+    fill: #F5F5F5;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-weight-axis {
+    fill: #242830;
+  }
+  .metrics-weight-touch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 44px;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .metrics-weight-tooltip {
+    position: absolute;
+    pointer-events: none;
+    z-index: 4;
+    min-width: 120px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(15, 16, 32, 0.94);
+    border: 1px solid rgba(245, 245, 245, 0.35);
+    color: #F5F5F5;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.35;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-weight-tooltip {
+    background: rgba(252, 252, 252, 0.98);
+    border-color: rgba(15, 30, 46, 0.2);
+    color: #121418;
+  }
+  .metrics-weight-tooltip small {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+  .metrics-weight-insight {
+    margin-top: 12px;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text-secondary);
+  }
+  .metrics-pain-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .metrics-pain-cell {
+    aspect-ratio: 1;
+    min-height: 36px;
+    min-width: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #F5F5F5;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-pain-cell {
+    color: #121418;
+  }
+  .metrics-pain-cell__dow {
+    font-size: 9px;
+    font-weight: 700;
+    opacity: 0.75;
+  }
+  .metrics-pain-cell--empty {
+    background: rgba(245, 245, 245, 0.06);
+    color: var(--text-dimmer);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-pain-cell {
+    color: #121418;
+  }
+  .metrics-btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .metrics-btn {
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    border: 1px solid var(--glass-border-strong);
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .metrics-btn--primary {
+    border-color: color-mix(in srgb, var(--mood-accent, var(--accent)) 55%, transparent);
+    background: color-mix(in srgb, var(--mood-accent, var(--accent)) 18%, transparent);
+    color: #F5F5F5;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-btn--primary {
+    color: #121418;
+  }
+  .metrics-card__meta {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.4;
+    max-width: 100%;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-card__meta {
+    color: rgba(18, 20, 24, 0.72);
+  }
+  .app[data-night="true"] .metrics-card__meta {
+    color: rgba(245, 245, 245, 0.72);
+  }
+  .metrics-log-toggle {
+    width: 100%;
+    margin-top: 10px;
+    min-height: 40px;
+    padding: 0 12px;
+    border: none;
+    background: transparent;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    cursor: pointer;
+    text-align: center;
+  }
+  .metrics-log {
+    margin-top: 12px;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+    background: rgba(0, 0, 0, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-log {
+    background: rgba(0, 0, 0, 0.04);
+  }
+  .metrics-log-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    font-size: var(--text-sm);
+  }
+  .metrics-log-row:last-child {
+    border-bottom: none;
+  }
+  .metrics-log-date {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .metrics-log-val {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--text-white);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-log-val {
+    color: #121418;
+  }
+  .metrics-log-src {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    flex-shrink: 0;
+  }
+  .metrics-log-empty {
+    padding: 14px;
+    font-size: var(--text-xs);
+    color: var(--text-dimmer);
+    text-align: center;
+  }
+  .metrics-weight-view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .metrics-weight-view-toggle__btn {
+    flex: 1;
+    min-height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.15);
+    color: var(--text-secondary);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .metrics-weight-view-toggle__btn--on {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--text-white);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-weight-view-toggle__btn--on {
+    color: #121418;
+  }
+  .metrics-why-matters {
+    margin-top: 20px;
+  }
+  .metrics-why-matters--callout {
+    margin-top: 22px;
+    padding: 14px 14px 16px 16px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--glass-bg) 85%, var(--accent) 8%);
+    border: 1px solid color-mix(in srgb, var(--glass-border) 75%, var(--accent) 18%);
+    box-shadow: inset 3px 0 0 0 color-mix(in srgb, var(--accent) 65%, transparent);
+  }
+  .app[data-night="true"] .metrics-why-matters--callout {
+    background: #0f0f12;
+    border-color: rgba(255, 59, 48, 0.28);
+    box-shadow: inset 3px 0 0 0 rgba(255, 59, 48, 0.55);
+  }
+  .metrics-why-matters__title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+  .metrics-why-matters__list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .metrics-why-matters__list li {
+    margin-bottom: 6px;
+  }
+  .metrics-section {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 0 var(--glass-specular);
+  }
+  .app[data-night="true"] .metrics-section {
+    background: #000000;
+    border-color: rgba(255, 59, 48, 0.35);
+  }
+  .metrics-section__btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-white);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: left;
+  }
+  .metrics-section__btn-chev {
+    font-size: 12px;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+  .metrics-section__body {
+    padding: 0 16px 16px;
+    border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  }
+  .metrics-pain-mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .metrics-pain-mode-toggle__btn {
+    flex: 1;
+    min-height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.12);
+    color: var(--text-secondary);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .metrics-pain-mode-toggle__btn--on {
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    color: var(--accent);
+  }
+  .metrics-pain-grid-28 {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .metrics-pain-week-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  .metrics-pain-cell--today {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    transform: scale(1.04);
+    z-index: 1;
+  }
+  .metrics-pain-tip {
+    margin-top: 10px;
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+  .metrics-pain-note-input {
+    width: 100%;
+    margin-top: 10px;
+    min-height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.12);
+    color: inherit;
+    padding: 10px 12px;
+    font-size: var(--text-sm);
+    box-sizing: border-box;
+  }
+  .axis-metrics-toast {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: calc(var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 12px);
+    z-index: 9999;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(15, 16, 32, 0.96);
+    border: 1px solid rgba(245, 245, 245, 0.28);
+    color: #F5F5F5;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.45;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .app[data-night="true"] .axis-metrics-toast {
+    background: #000000;
+    border-color: rgba(255, 59, 48, 0.5);
+    color: rgba(255, 245, 245, 0.95);
+  }
+  .metrics-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  .metrics-modal {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px 20px 12px 12px;
+    padding: 20px 18px 22px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+  }
+  .app[data-night="true"] .metrics-modal {
+    background: #000000;
+    border-color: rgba(255, 59, 48, 0.4);
+  }
+  .metrics-modal h3 {
+    margin: 0 0 14px;
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: #F5F5F5;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-modal h3 {
+    color: #121418;
+  }
+  .metrics-pain-level-readout {
+    font-weight: 700;
+    font-size: 32px;
+    text-align: center;
+    color: #F5F5F5;
+    margin-bottom: 8px;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-pain-level-readout {
+    color: #121418;
+  }
+  .metrics-modal input[type="range"] {
+    width: 100%;
+    min-height: 44px;
+  }
+  .metrics-modal .metrics-num-input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: rgba(245,245,245,0.06);
+    color: #F5F5F5;
+    margin: 12px 0;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-modal .metrics-num-input {
+    color: #121418;
+    background: rgba(0,0,0,0.04);
+  }
+  .metrics-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .metrics-modal-actions button {
+    flex: 1;
+    min-height: 44px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
   }
   .tab-bar-spacer--settings {
     height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
@@ -4836,7 +5525,7 @@ function DashboardHeader({ progressFillPct = 0, progressOverdrive = false, histo
 // ─────────────────────────────────────────────────────────────
 function TabBar({ view, setView, theme, nightMode = false }) {
   const HomeIcon = () => /*#__PURE__*/React.createElement("svg", { width: "30", height: "30", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("path", { d: "M3 22V9L12 2l9 7v13h-6v-10H9v10H3z" }));
-  const SessionIcon = () => /*#__PURE__*/React.createElement("svg", { width: "30", height: "30", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "10" }), /*#__PURE__*/React.createElement("polyline", { points: "8 12 11 15 16 9" }));
+  const MetricsIcon = () => /*#__PURE__*/React.createElement(AxisIcon, { size: 30, color: "currentColor", className: "tab-axis-mark" });
   const MoodIcon = () => /*#__PURE__*/React.createElement("svg", { width: "30", height: "30", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "10" }), /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "5" }));
   const TimerIcon = () => /*#__PURE__*/React.createElement("svg", { width: "30", height: "30", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "10" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "12", x2: "12", y2: "8" }), /*#__PURE__*/React.createElement("line", { x1: "12", y1: "12", x2: "16.5", y2: "12" }));
   const SettingsIcon = () => /*#__PURE__*/React.createElement("svg", { width: "30", height: "30", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/React.createElement("circle", { cx: "12", cy: "12", r: "3" }), /*#__PURE__*/React.createElement("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" }));
@@ -4859,14 +5548,14 @@ function TabBar({ view, setView, theme, nightMode = false }) {
   ), /*#__PURE__*/
   React.createElement("button", {
     type: "button",
-    className: `tab-btn ${view === "summary" ? "active" : ""}`,
-    onClick: () => {axisHapticTick();setView("summary");},
-    "aria-label": "Summary",
-    "aria-current": view === "summary" ? "page" : undefined },
+    className: `tab-btn ${view === "metrics" ? "active" : ""}`,
+    onClick: () => {axisHapticTick();setView("metrics");},
+    "aria-label": "Metrics",
+    "aria-current": view === "metrics" ? "page" : undefined },
 
   React.createElement("span", { className: "tab-btn-stack" }, /*#__PURE__*/
   React.createElement("span", { className: "nav-tab-indicator", "aria-hidden": true }), /*#__PURE__*/
-  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(SessionIcon, null))
+  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(MetricsIcon, null))
   )
 
   ), /*#__PURE__*/
@@ -6986,6 +7675,577 @@ function axisHistoryForDailyTotals(stateHistory) {
   return fs.length >= st.length ? fs : st;
 }
 
+const AXIS_METRICS_WEIGHT_KEY = "axis_metrics_weight_v1";
+const AXIS_METRICS_PAIN_KEY = "axis_metrics_pain_v1";
+
+function axisMetricsMigratePainMap(o) {
+  if (!o || typeof o !== "object" || Array.isArray(o)) return {};
+  const out = {};
+  for (const k of Object.keys(o)) {
+    const v = o[k];
+    if (typeof v === "number" && v >= 1 && v <= 10) out[k] = { level: v };
+    else if (v && typeof v === "object" && typeof v.level === "number") {
+      const note = typeof v.note === "string" && v.note.trim() ? v.note.trim().slice(0, 48) : undefined;
+      out[k] = note ? { level: Math.min(10, Math.max(1, v.level)), note } : { level: Math.min(10, Math.max(1, v.level)) };
+    }
+  }
+  return out;
+}
+
+function axisMetricsPainGetLevel(entry) {
+  if (entry == null) return null;
+  if (typeof entry === "number") return entry >= 1 && entry <= 10 ? entry : null;
+  if (typeof entry === "object" && typeof entry.level === "number") return entry.level >= 1 && entry.level <= 10 ? entry.level : null;
+  return null;
+}
+
+function axisMetricsPainGetNote(entry) {
+  if (entry && typeof entry === "object" && typeof entry.note === "string") return entry.note.trim().slice(0, 48);
+  return "";
+}
+
+function axisMetricsNormalizeWeightList(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((x) => ({
+    ts: Number(x.ts) || 0,
+    lbs: Math.max(1, Number(x.lbs)) || 0,
+    source: x.source === "health" ? "health" : "manual"
+  })).filter((x) => x.ts > 0 && x.lbs > 0).sort((a, b) => a.ts - b.ts);
+}
+
+function axisMetricsMergeWeightByTs(local, imported) {
+  const map = new Map();
+  for (const x of local) map.set(x.ts, x);
+  for (const x of imported) {
+    const prev = map.get(x.ts);
+    if (!prev || x.source === "health") map.set(x.ts, { ...x, source: x.source || "health" });
+  }
+  return Array.from(map.values()).sort((a, b) => a.ts - b.ts);
+}
+
+/** Optional native bridge: window.axisHealthRequestPermissions({ read: ['weight','steps'] }) → { granted } */
+async function axisHealthRequestReadPermissions() {
+  try {
+    if (typeof window.axisHealthRequestPermissions === "function") {
+      return await window.axisHealthRequestPermissions({ read: ["weight", "steps"] });
+    }
+  } catch (e) {}
+  return { granted: false, reason: "web_stub" };
+}
+
+/** Optional: window.axisFetchHealthWeightSamples() → [{ ts, lbs, source:'health' }] */
+async function axisHealthFetchWeightSamplesNative() {
+  try {
+    if (typeof window.axisFetchHealthWeightSamples === "function") {
+      const r = await window.axisFetchHealthWeightSamples();
+      if (Array.isArray(r)) return axisMetricsNormalizeWeightList(r);
+    }
+  } catch (e) {}
+  return [];
+}
+
+/** Optional: window.axisFetchTodayStepCount() → number */
+async function axisHealthFetchTodayStepsNative() {
+  try {
+    if (typeof window.axisFetchTodayStepCount === "function") {
+      const n = await window.axisFetchTodayStepCount();
+      if (Number.isFinite(n) && n >= 0) return Math.floor(n);
+    }
+  } catch (e) {}
+  return null;
+}
+
+function axisMetricsLast7DateKeys() {
+  const out = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    out.push(d.toDateString());
+  }
+  return out;
+}
+
+function axisMetricsFormatWeightLogLine(ts) {
+  const dk = new Date(ts).toDateString();
+  const day = axisRelativeDayLabel(dk);
+  const time = new Date(ts).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return `${day} · ${time}`;
+}
+
+function axisMetricsShortDateFromDateKey(dateKey) {
+  try {
+    const d = new Date(dateKey);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  } catch (e) {
+    return "";
+  }
+}
+
+/** Pain entries newest first. */
+function axisMetricsPainEntriesDescending(painByDay) {
+  const out = [];
+  const o = painByDay && typeof painByDay === "object" ? painByDay : {};
+  for (const dateKey of Object.keys(o)) {
+    const raw = o[dateKey];
+    const level = axisMetricsPainGetLevel(raw);
+    if (level == null) continue;
+    const t = new Date(dateKey).getTime();
+    if (Number.isNaN(t)) continue;
+    const note = axisMetricsPainGetNote(raw);
+    out.push({ dateKey, level, t, note });
+  }
+  out.sort((a, b) => b.t - a.t);
+  return out;
+}
+
+function axisMetricsPainLast28DateKeys() {
+  const out = [];
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    out.push(d.toDateString());
+  }
+  return out;
+}
+
+function axisMetricsWeightTrendPhrase(samples) {
+  const arr = axisMetricsNormalizeWeightList(samples);
+  const now = Date.now();
+  const ms14 = 14 * 86400000;
+  const recent = arr.filter((x) => now - x.ts <= ms14);
+  if (recent.length < 3) return null;
+  const first = recent[0].lbs;
+  const last = recent[recent.length - 1].lbs;
+  const d = last - first;
+  if (Math.abs(d) < 0.2) return "Trend: steady over the last 2 weeks";
+  if (d < 0) return "Trend: slight decline over 2 weeks";
+  return "Trend: up slightly over 2 weeks";
+}
+
+function axisMetricsPainMondayInsight(painByDay) {
+  const o = painByDay && typeof painByDay === "object" ? painByDay : {};
+  const mon = [];
+  const other = [];
+  for (const k of Object.keys(o)) {
+    const lv = axisMetricsPainGetLevel(o[k]);
+    if (lv == null) continue;
+    if (new Date(k).getDay() === 1) mon.push(lv);
+    else other.push(lv);
+  }
+  if (mon.length < 2 || other.length < 3) return null;
+  const ma = mon.reduce((a, b) => a + b, 0) / mon.length;
+  const oa = other.reduce((a, b) => a + b, 0) / other.length;
+  if (ma > oa + 0.75) return "You often report higher pain on Mondays.";
+  return null;
+}
+
+function axisMetricsPainImprovementInsight(painByDay) {
+  const list = axisMetricsPainEntriesDescending(painByDay);
+  if (list.length < 4) return null;
+  const oldest = list[list.length - 1];
+  const newest = list[0];
+  const imp = oldest.level - newest.level;
+  if (imp >= 1) return `Pain has improved ${imp} pt since you started logging.`;
+  return null;
+}
+
+function axisMetricsWeightInsightText(samples) {
+  const arr = axisMetricsNormalizeWeightList(samples);
+  if (arr.length < 2) return null;
+  const first = arr[0].lbs;
+  const last = arr[arr.length - 1].lbs;
+  const delta = last - first;
+  const abs = Math.abs(delta);
+  const joint = Math.round(abs * 4);
+  if (Math.abs(delta) < 0.15) {
+    return `Your weight is steady around ${last.toFixed(1)} lbs. Small changes still affect joint load — stay consistent.`;
+  }
+  if (delta < 0) {
+    return `Your weight is down ${abs.toFixed(1)} lbs. This reduces pressure on your joints by roughly ${joint} lbs.`;
+  }
+  return `Your weight is up ${abs.toFixed(1)} lbs. That can add roughly ${joint} lbs of effective load on your joints — move gently and stay hydrated.`;
+}
+
+function axisMetricsWeightOlsDeviationSeries(arr) {
+  const n = arr.length;
+  if (n < 2) return arr.map((x) => ({ ...x, lbs: 0 }));
+  let sumT = 0, sumW = 0, sumTT = 0, sumTW = 0;
+  for (let i = 0; i < n; i++) {
+    const t = arr[i].ts;
+    const w = arr[i].lbs;
+    sumT += t; sumW += w; sumTT += t * t; sumTW += t * w;
+  }
+  const denom = n * sumTT - sumT * sumT;
+  const b = denom !== 0 ? (n * sumTW - sumT * sumW) / denom : 0;
+  const a = (sumW - b * sumT) / n;
+  return arr.map((x) => ({ ...x, lbs: x.lbs - (a + b * x.ts) }));
+}
+
+function MetricsWeightLineChart({ samples, lineColor, axisLabelColor, nightMode, viewMode }) {
+  const [scrub, setScrub] = React.useState(null);
+  const plotRef = React.useRef(null);
+  const dragRef = React.useRef(false);
+  const rawArr = axisMetricsNormalizeWeightList(samples);
+  const trendMode = viewMode === "trend" && rawArr.length >= 3;
+  const arr = trendMode ? axisMetricsWeightOlsDeviationSeries(rawArr) : rawArr;
+  const pad = { r: 4, t: 14, b: 32 };
+  const W = 320;
+  const H = 140;
+  const plotW = W - pad.r;
+  if (rawArr.length === 0) {
+    return /*#__PURE__*/React.createElement("div", { style: { padding: "24px 8px", textAlign: "center", fontWeight: 600, color: "var(--text-dimmer)", fontSize: "var(--text-sm)" } }, "No weight entries yet. Log your weight or connect Apple Health / Health Connect.");
+  }
+  const ws = arr.map((x) => x.lbs);
+  let minW = Math.min(...ws);
+  let maxW = Math.max(...ws);
+  if (minW === maxW) { minW -= 1; maxW += 1; }
+  const t0 = rawArr[0].ts;
+  const t1 = rawArr[rawArr.length - 1].ts;
+  const xAt = (ts) => (t1 > t0 ? (ts - t0) / (t1 - t0) : 0) * plotW;
+  const yAt = (lbs) => pad.t + (1 - (lbs - minW) / (maxW - minW)) * (H - pad.t - pad.b);
+  const pts = rawArr.length < 2 ? "" : arr.map((x) => `${xAt(x.ts)},${yAt(x.lbs)}`).join(" ");
+  const onPointer = (clientX) => {
+    const el = plotRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    const ts = t0 + ratio * (t1 - t0);
+    let best = 0;
+    let bestD = Infinity;
+    for (let i = 0; i < rawArr.length; i++) {
+      const d = Math.abs(rawArr[i].ts - ts);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    setScrub({ idx: best, leftRatio: (xAt(rawArr[best].ts) + pad.r * 0.5) / W });
+  };
+  const fmtDate = (ts) => {
+    try { return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }); } catch (e) { return ""; }
+  };
+  const yTop = maxW.toFixed(1);
+  const yBot = minW.toFixed(1);
+  const tooltip = scrub != null ? /*#__PURE__*/React.createElement("div", {
+    className: "metrics-weight-tooltip",
+    style: {
+      left: `${Math.min(88, Math.max(4, (scrub.leftRatio || 0.5) * 100 - 14))}%`,
+      bottom: "52px",
+      transform: "translateX(-50%)"
+    }
+  }, trendMode ? `${arr[scrub.idx].lbs >= 0 ? "+" : ""}${arr[scrub.idx].lbs.toFixed(1)} lbs vs trend` : `${rawArr[scrub.idx].lbs.toFixed(1)} lbs`, /*#__PURE__*/React.createElement("small", null, fmtDate(rawArr[scrub.idx].ts))) : null;
+  return /*#__PURE__*/React.createElement("div", { className: "metrics-weight-chart-wrap" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-weight-chart-row" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-weight-chart-yaxis", "aria-hidden": true }, /*#__PURE__*/
+  React.createElement("span", { className: "metrics-weight-chart-yaxis__lbl", style: { color: axisLabelColor } }, yTop),
+  React.createElement("span", { className: "metrics-weight-chart-yaxis__lbl", style: { color: axisLabelColor } }, yBot)
+  ),
+  React.createElement("div", { ref: plotRef, className: "metrics-weight-chart-plot" }, /*#__PURE__*/
+  React.createElement("svg", { className: "metrics-weight-chart-svg", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", style: { overflow: "visible" } }, /*#__PURE__*/
+  pts ? /*#__PURE__*/React.createElement("polyline", { fill: "none", stroke: lineColor, strokeWidth: nightMode ? 3.5 : 3, strokeLinejoin: "round", strokeLinecap: "round", points: pts }) : null, /*#__PURE__*/
+  arr.map((x, i) => /*#__PURE__*/React.createElement("circle", { key: x.ts, cx: xAt(x.ts), cy: yAt(x.lbs), r: scrub && scrub.idx === i ? 7 : 5, fill: lineColor, opacity: scrub && scrub.idx === i ? 1 : 0.9 }))
+  ),
+  tooltip,
+  /*#__PURE__*/React.createElement("div", {
+    className: "metrics-weight-touch",
+    onPointerDown: (e) => {
+      dragRef.current = true;
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+      onPointer(e.clientX);
+    },
+    onPointerMove: (e) => { if (dragRef.current) onPointer(e.clientX); },
+    onPointerUp: (e) => {
+      dragRef.current = false;
+      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (err) {}
+      setScrub(null);
+    },
+    onPointerLeave: () => { dragRef.current = false; setScrub(null); },
+    onPointerCancel: () => { dragRef.current = false; setScrub(null); },
+    role: "slider",
+    "aria-label": "Scrub weight chart",
+    tabIndex: 0
+  })
+  )
+  )
+  );
+}
+
+function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight }) {
+  const [manualOpen, setManualOpen] = React.useState(false);
+  const [weightChartMode, setWeightChartMode] = React.useState("absolute");
+  const [draftLbs, setDraftLbs] = React.useState("");
+  const period = activePeriod || getCircadianPeriod();
+  const ct = CIRCADIAN_THEMES[period][theme === "dark" ? "dark" : "light"];
+  const lineColor = nightMode ? "#FF3B30" : (ct && ct.accent ? ct.accent : "#4DA8FF");
+  const axisLab = theme === "dark" && !nightMode ? "#F5F5F5" : theme === "light" ? "#242830" : "#F5F5F5";
+  const arr = axisMetricsNormalizeWeightList(samples);
+  const current = arr.length ? arr[arr.length - 1].lbs : null;
+  const lastSample = arr.length ? arr[arr.length - 1] : null;
+  const insight = axisMetricsWeightInsightText(samples);
+  const trendPhrase = axisMetricsWeightTrendPhrase(samples);
+  const hasHealth = arr.some((x) => x.source === "health");
+  const hasManual = arr.some((x) => x.source === "manual");
+  const sourceLine = arr.length === 0 ? "" : hasHealth && hasManual ? "Sources: Apple Health / Health Connect + manual entries." : hasHealth ? "Sources: Apple Health / Health Connect." : "Sources: manual entries in AXIS.";
+  const sparseFew = arr.length > 0 && arr.length < 3;
+  React.useEffect(() => {
+    if (manualOpen) {
+      const seed = current != null ? String(current) : "";
+      setDraftLbs(seed);
+    }
+  }, [manualOpen, current]);
+  const saveManual = () => {
+    const n = parseFloat(draftLbs);
+    if (Number.isFinite(n) && n > 0 && n < 2000) {
+      axisHapticTick();
+      onLogWeight(n);
+      setManualOpen(false);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", { className: "metrics-card metrics-card--outcomes-primary" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-card__head metrics-card__head--stacked" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-card__title" }, "Weight"),
+  React.createElement("div", { className: "metrics-card__value metrics-card__value--hero" }, current != null ? `${current.toFixed(1)} lbs` : "—"),
+  /*#__PURE__*/React.createElement("div", { className: "metrics-card__meta" }, lastSample ? /*#__PURE__*/React.createElement(React.Fragment, null, "Last log: ", axisMetricsFormatWeightLogLine(lastSample.ts)) : "No readings yet — tap Manual log to add one.")
+  ),
+  stepsToday != null && /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, fontWeight: 600, color: "var(--text-dimmer)", marginBottom: 8 } }, "Steps today: ", stepsToday),
+  healthHint && /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, fontWeight: 500, color: "var(--text-dimmer)", marginBottom: 8 } }, healthHint),
+  sourceLine && /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, lineHeight: 1.4 } }, sourceLine),
+  sparseFew && /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, fontWeight: 600, color: "var(--accent)", marginBottom: 8 } }, "Sparse data — direction matters more than every decimal."),
+  trendPhrase && /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "var(--text-white)", marginBottom: 10 } }, "📊 ", trendPhrase),
+  /*#__PURE__*/React.createElement("div", { className: "metrics-weight-view-toggle", role: "group", "aria-label": "Weight chart view" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metrics-weight-view-toggle__btn" + (weightChartMode === "absolute" ? " metrics-weight-view-toggle__btn--on" : ""), onClick: () => { axisHapticTick(); setWeightChartMode("absolute"); } }, "Absolute"),
+  React.createElement("button", { type: "button", className: "metrics-weight-view-toggle__btn" + (weightChartMode === "trend" ? " metrics-weight-view-toggle__btn--on" : ""), onClick: () => { axisHapticTick(); setWeightChartMode("trend"); } }, "Trend")
+  ),
+  /*#__PURE__*/React.createElement(MetricsWeightLineChart, { samples: samples, lineColor: lineColor, axisLabelColor: axisLab, nightMode: nightMode, viewMode: weightChartMode }),
+  insight && /*#__PURE__*/React.createElement("div", { className: "metrics-weight-insight" }, insight),
+  /*#__PURE__*/React.createElement("div", { className: "metrics-why-matters metrics-why-matters--callout" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-why-matters__title" }, "Why this matters"),
+  React.createElement("ul", { className: "metrics-why-matters__list" }, /*#__PURE__*/
+  React.createElement("li", null, "Less weight \u2192 easier on knees & hips."),
+  React.createElement("li", null, "Lower pain \u2192 more comfortable movement."),
+  React.createElement("li", null, "More movement \u2192 sleep, mood, flexibility.")
+  )
+  ),
+  /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "metrics-btn metrics-btn--primary",
+    style: { width: "100%", minHeight: 44, marginTop: 14 },
+    onClick: () => { axisHapticTick(); setManualOpen((o) => !o); },
+    "aria-expanded": manualOpen ? "true" : "false"
+  }, manualOpen ? "Cancel manual entry" : "Manual log"),
+  manualOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-inline-expand", role: "region", "aria-label": "Manual weight entry" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-inline-expand__label" }, "Weight (lbs)"),
+  React.createElement("div", { className: "metrics-inline-expand__row" }, /*#__PURE__*/
+  React.createElement("input", {
+    type: "number",
+    inputMode: "decimal",
+    className: "metrics-inline-input",
+    min: 1,
+    max: 800,
+    step: 0.1,
+    value: draftLbs,
+    onChange: (e) => setDraftLbs(e.target.value),
+    "aria-label": "Weight in pounds"
+  }), /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metrics-btn", style: { minHeight: 44, minWidth: 88 }, onClick: () => { axisHapticTick(); setManualOpen(false); } }, "Cancel"), /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metrics-btn metrics-btn--primary", style: { minHeight: 44, minWidth: 88 }, onClick: saveManual }, "Save")
+  )
+  )
+  );
+}
+
+function metricsPainCellStyles(level, nightMode) {
+  if (level == null) {
+    return { background: "rgba(48, 50, 56, 0.92)", borderColor: "rgba(100, 100, 110, 0.4)" };
+  }
+  if (level >= 6) {
+    const u = (level - 6) / 4;
+    return {
+      background: `color-mix(in srgb, #E07055 ${Math.round(48 + u * 48)}%, ${nightMode ? "#1a0c0c" : "#f5e4e0"})`,
+      borderColor: "rgba(255, 130, 90, 0.55)"
+    };
+  }
+  const u = (level - 1) / 4;
+  return {
+    background: `color-mix(in srgb, #3A8FA4 ${Math.round(32 + u * 42)}%, ${nightMode ? "#0a1a1e" : "#e8f4f7"})`,
+    borderColor: "rgba(70, 170, 190, 0.45)"
+  };
+}
+
+function MetricsPainGrid({ painByDay, mode, dkToday, nightMode, onCellPress }) {
+  const dowShort = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
+  const renderCell = (dk, showDow) => {
+    const raw = painByDay && painByDay[dk];
+    const level = axisMetricsPainGetLevel(raw);
+    const isToday = dk === dkToday;
+    const st = metricsPainCellStyles(level, nightMode);
+    const label = level != null ? `${axisRelativeDayLabel(dk)} · ${level}/10` : `${axisRelativeDayLabel(dk)} · no entry`;
+    return /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      key: dk,
+      className: "metrics-pain-cell" + (level == null ? " metrics-pain-cell--empty" : "") + (isToday ? " metrics-pain-cell--today" : ""),
+      style: { ...st, borderStyle: "solid", borderWidth: 1, borderRadius: 10, cursor: "pointer", padding: "4px 2px", minHeight: showDow ? 52 : 36, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, color: "#F5F5F5", fontWeight: 800, fontSize: showDow ? 13 : 11 },
+      onClick: () => onCellPress && onCellPress({ dateKey: dk, level, note: axisMetricsPainGetNote(raw) }),
+      "aria-label": label
+    }, /*#__PURE__*/
+    React.createElement("span", null, level != null ? level : "—"),
+    showDow ? /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, fontWeight: 700, opacity: 0.9 } }, dowShort[new Date(dk).getDay()]) : null);
+  };
+  if (mode === "7d") {
+    const keys = axisMetricsLast7DateKeys();
+    return /*#__PURE__*/React.createElement("div", { className: "metrics-pain-grid" }, keys.map((dk) => renderCell(dk, true)));
+  }
+  const k28 = axisMetricsPainLast28DateKeys();
+  return /*#__PURE__*/React.createElement("div", { className: "metrics-pain-grid-28" },
+  [0, 1, 2, 3].map((row) => /*#__PURE__*/React.createElement("div", { key: row, className: "metrics-pain-week-row" },
+  k28.slice(row * 7, row * 7 + 7).map((dk) => renderCell(dk, false))
+  ))
+  );
+}
+
+function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain }) {
+  const [entryOpen, setEntryOpen] = React.useState(false);
+  const [painGridMode, setPainGridMode] = React.useState("7d");
+  const [painTip, setPainTip] = React.useState(null);
+  const [v, setV] = React.useState(5);
+  const [draftNote, setDraftNote] = React.useState("");
+  const dkToday = new Date().toDateString();
+  const period = activePeriod || getCircadianPeriod();
+  const ct = CIRCADIAN_THEMES[period][theme === "dark" ? "dark" : "light"];
+  const accent = nightMode ? "#FF3B30" : (ct && ct.accent ? ct.accent : "#4DA8FF");
+  const painList = axisMetricsPainEntriesDescending(painByDay);
+  const painTodayVal = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]);
+  const latestPain = painList[0];
+  const headMain = painTodayVal != null ? `${painTodayVal}/10` : latestPain ? `${latestPain.level}/10` : "—";
+  const headMeta = painTodayVal != null ? `${axisMetricsShortDateFromDateKey(dkToday)} · today` : latestPain ? `Last log: ${axisMetricsShortDateFromDateKey(latestPain.dateKey)}` : "No entry today — log below.";
+  const insightMon = axisMetricsPainMondayInsight(painByDay);
+  const insightImp = axisMetricsPainImprovementInsight(painByDay);
+  React.useEffect(() => {
+    if (entryOpen) {
+      const ex = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]) != null ? axisMetricsPainGetLevel(painByDay[dkToday]) : 5;
+      setV(ex);
+      const n = painByDay && painByDay[dkToday] && axisMetricsPainGetNote(painByDay[dkToday]);
+      setDraftNote(n || "");
+    }
+  }, [entryOpen, dkToday, painByDay]);
+  const savePain = () => {
+    axisHapticTick();
+    const note = draftNote.trim().slice(0, 48);
+    onLogPain({ level: v, ...(note ? { note } : {}) });
+    setEntryOpen(false);
+  };
+  return /*#__PURE__*/React.createElement("div", { className: "metrics-card metrics-card--pain metrics-card--outcomes-secondary" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-card__head metrics-card__head--stacked" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-card__title" }, "Pain level"),
+  React.createElement("div", { className: "metrics-card__value metrics-card__value--hero" }, "Today: ", headMain),
+  /*#__PURE__*/React.createElement("div", { className: "metrics-card__meta" }, headMeta)
+  ),
+  /*#__PURE__*/React.createElement("div", { className: "metrics-pain-heatmap-section" }, /*#__PURE__*/
+  /*#__PURE__*/React.createElement("div", { className: "metrics-pain-mode-toggle", role: "group", "aria-label": "Pain heatmap range" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metrics-pain-mode-toggle__btn" + (painGridMode === "7d" ? " metrics-pain-mode-toggle__btn--on" : ""), style: { borderColor: painGridMode === "7d" ? accent : undefined }, onClick: () => { axisHapticTick(); setPainGridMode("7d"); setPainTip(null); } }, "7 DAYS"),
+  React.createElement("button", { type: "button", className: "metrics-pain-mode-toggle__btn" + (painGridMode === "28d" ? " metrics-pain-mode-toggle__btn--on" : ""), style: { borderColor: painGridMode === "28d" ? accent : undefined }, onClick: () => { axisHapticTick(); setPainGridMode("28d"); setPainTip(null); } }, "4 WEEKS")
+  ),
+  /*#__PURE__*/React.createElement(MetricsPainGrid, {
+    painByDay: painByDay,
+    mode: painGridMode === "7d" ? "7d" : "28d",
+    dkToday: dkToday,
+    nightMode: nightMode,
+    onCellPress: (info) => { axisHapticTick(); setPainTip(info); }
+  })
+  ),
+  painTip && /*#__PURE__*/React.createElement("div", { className: "metrics-pain-tip", role: "status" }, /*#__PURE__*/
+  React.createElement("strong", { style: { color: "var(--text-white)" } }, axisMetricsShortDateFromDateKey(painTip.dateKey)), " · ",
+  painTip.level != null ? `${painTip.level}/10` : "No entry",
+  painTip.note ? /*#__PURE__*/React.createElement("span", null, " · ", painTip.note) : null,
+  " · ", /*#__PURE__*/React.createElement("button", { type: "button", style: { background: "none", border: "none", color: "var(--accent)", fontWeight: 700, cursor: "pointer", padding: 0, marginLeft: 6 }, onClick: () => setPainTip(null) }, "Dismiss")
+  ),
+  (insightMon || insightImp) && /*#__PURE__*/React.createElement("div", { className: "metrics-pain-tip" }, insightMon && /*#__PURE__*/React.createElement("div", null, insightMon), insightImp && /*#__PURE__*/React.createElement("div", null, insightImp)),
+  /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "metrics-btn metrics-btn--primary",
+    style: { width: "100%", marginTop: 14, minHeight: 44 },
+    onClick: () => { axisHapticTick(); setEntryOpen((o) => !o); },
+    "aria-expanded": entryOpen ? "true" : "false"
+  }, entryOpen ? "Cancel" : "Log today's pain"),
+  entryOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-inline-expand", role: "region", "aria-label": "Pain level entry" }, /*#__PURE__*/
+  React.createElement("div", { className: "metrics-inline-expand__label" }, "Today (1–10)"),
+  React.createElement("div", { className: "metrics-pain-level-readout", style: { marginBottom: 10 } }, v),
+  React.createElement("input", {
+    type: "range",
+    min: 1,
+    max: 10,
+    step: 1,
+    value: v,
+    onChange: (e) => setV(Number(e.target.value)),
+    style: { width: "100%", minHeight: 44 },
+    "aria-valuemin": 1,
+    "aria-valuemax": 10,
+    "aria-valuenow": v
+  }),
+  React.createElement("div", { className: "metrics-inline-expand__label", style: { marginTop: 12 } }, "Short note (optional)"),
+  React.createElement("input", {
+    type: "text",
+    className: "metrics-pain-note-input",
+    placeholder: "e.g. lower back, stiff neck",
+    maxLength: 48,
+    value: draftNote,
+    onChange: (e) => setDraftNote(e.target.value),
+    "aria-label": "Pain note"
+  }),
+  React.createElement("div", { className: "metrics-inline-expand__row", style: { marginTop: 12 } }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metrics-btn", style: { minHeight: 44, flex: 1 }, onClick: () => { axisHapticTick(); setEntryOpen(false); } }, "Cancel"), /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metrics-btn metrics-btn--primary", style: { minHeight: 44, flex: 1 }, onClick: savePain }, "Save")
+  )
+  )
+  );
+}
+
+function AxisMetricsToast({ message, onDismiss }) {
+  React.useEffect(() => {
+    if (!message) return;
+    const t = setTimeout(() => onDismiss && onDismiss(), 6500);
+    return () => clearTimeout(t);
+  }, [message, onDismiss]);
+  if (!message) return null;
+  return /*#__PURE__*/React.createElement("div", { className: "axis-metrics-toast", role: "status" }, /*#__PURE__*/
+  React.createElement("div", { style: { fontWeight: 700, marginBottom: 6 } }, "Gentle suggestion"),
+  React.createElement("div", null, message),
+  React.createElement("button", { type: "button", onClick: () => onDismiss && onDismiss(), style: { marginTop: 10, minHeight: 44, fontWeight: 700, borderRadius: 10, border: "1px solid rgba(245,245,245,0.35)", background: "transparent", color: "inherit", width: "100%" } }, "Dismiss")
+  );
+}
+
+function axisExportAxisLocalData() {
+  const keys = [
+    "axis_history", "axis_done", "axis_skipped", "axis_favs", "axis_notes", "axis_streak",
+    "axis_metrics_weight_v1", "axis_metrics_pain_v1",
+    "axis_daily_goal_minutes", "axis_weekly_goal_minutes", "axis_weekly_follows_daily",
+    "axis_theme", "axis_night", "axis_period", "axis_exercise_duration",
+    "axis_recent_tracks", "axis_app_icon", "axis_show_streak", "axis_show_timer", "axis_show_pct",
+    "axis_metrics_goals_open", "axis_metrics_outcomes_open"
+  ];
+  const pack = { exportedAt: new Date().toISOString(), app: "AXIS", version: 1, data: {} };
+  for (const k of keys) {
+    try {
+      pack.data[k] = storageGet(k, null);
+    } catch (e) {
+      pack.data[k] = null;
+    }
+  }
+  try {
+    if (typeof localStorage !== "undefined") pack.data.axisUserName = localStorage.getItem("axisUserName");
+  } catch (e) {}
+  const blob = new Blob([JSON.stringify(pack, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = `axis-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
 function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () => {}, onGuidedOpen }) {
   const APP_ICON_OPTIONS = [
   { id: "classic", label: "Classic", src: "./app-icons/icon-classic.png" },
@@ -7004,8 +8264,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [showTimer, setShowTimer] = useState(() => storageGet("axis_show_timer", true));
   const [showPct, setShowPct] = useState(() => storageGet("axis_show_pct", true));
   const [exerciseDuration, setExerciseDuration] = useState(() => {
-    const v = storageGet("axis_exercise_duration", 45);
-    return [30, 45, 60].includes(Number(v)) ? Number(v) : 45;
+    const v = Number(storageGet("axis_exercise_duration", 45));
+    if (!Number.isFinite(v)) return 45;
+    return Math.min(600, Math.max(15, Math.round(v)));
   });
   const [track, setTrack] = useState("daily");
   const [tab, setTab] = useState(() => storageGet("axis_last_session_tab", "guided") || "guided");
@@ -7063,6 +8324,18 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   });
   const [summaryRecentExpanded, setSummaryRecentExpanded] = useState(false);
   const [summaryRecentOpen, setSummaryRecentOpen] = useState(true);
+  const [metricsWeightSamples, setMetricsWeightSamples] = useState(() => axisMetricsNormalizeWeightList(storageGet(AXIS_METRICS_WEIGHT_KEY, [])));
+  const [metricsPainByDay, setMetricsPainByDay] = useState(() => {
+    const o = storageGet(AXIS_METRICS_PAIN_KEY, {});
+    const raw = o && typeof o === "object" && !Array.isArray(o) ? o : {};
+    return axisMetricsMigratePainMap(raw);
+  });
+  const [metricsGoalsOpen, setMetricsGoalsOpen] = useState(() => storageGet("axis_metrics_goals_open", false));
+  const [metricsOutcomesOpen, setMetricsOutcomesOpen] = useState(() => storageGet("axis_metrics_outcomes_open", true));
+  const [metricsStepsToday, setMetricsStepsToday] = useState(null);
+  const [metricsHealthHint, setMetricsHealthHint] = useState("");
+  const [healthConnectSyncMsg, setHealthConnectSyncMsg] = useState("");
+  const [metricsToastMessage, setMetricsToastMessage] = useState(null);
   const [welcomeName, setWelcomeName] = useState(() => {
     try {
       return typeof localStorage !== "undefined" && localStorage.getItem("axisUserName") || "Adam";
@@ -7134,6 +8407,37 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       if (n) setWelcomeName(n);
     } catch (e) {}
   }, [view]);
+
+  useEffect(() => {
+    storageSet(AXIS_METRICS_WEIGHT_KEY, metricsWeightSamples);
+  }, [metricsWeightSamples]);
+  useEffect(() => {
+    storageSet(AXIS_METRICS_PAIN_KEY, metricsPainByDay);
+  }, [metricsPainByDay]);
+  useEffect(() => {
+    storageSet("axis_metrics_goals_open", metricsGoalsOpen);
+  }, [metricsGoalsOpen]);
+  useEffect(() => {
+    storageSet("axis_metrics_outcomes_open", metricsOutcomesOpen);
+  }, [metricsOutcomesOpen]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      await axisHealthRequestReadPermissions();
+      const imported = await axisHealthFetchWeightSamplesNative();
+      const steps = await axisHealthFetchTodayStepsNative();
+      if (cancelled) return;
+      setMetricsStepsToday(steps);
+      if (imported.length > 0) {
+        setMetricsWeightSamples((prev) => axisMetricsMergeWeightByTs(axisMetricsNormalizeWeightList(prev), imported));
+        setMetricsHealthHint("Synced from Apple Health / Health Connect");
+      } else {
+        setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Manual log on Metrics or Connect & sync in Settings.");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => () => {
     if (manifestBlobUrlRef.current) URL.revokeObjectURL(manifestBlobUrlRef.current);
@@ -7369,6 +8673,32 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     }), /*#__PURE__*/
     React.createElement("span", { style: { fontVariantNumeric: "tabular-nums", fontSize: "var(--text-base)", fontWeight: 600, color: "var(--accent)", minWidth: 48 } }, dailyGoalMinutes, " min")
     ), /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 } },
+    [{ label: "PT-style 10–15 min", m: 12 }, { label: "Beginner-friendly 5 min", m: 5 }].map(({ label, m }) => /*#__PURE__*/
+    React.createElement("button", {
+      key: label,
+      type: "button",
+      onClick: () => {
+        axisHapticTick();
+        setDailyGoalMinutes(m);
+        setWeeklyFollowsDaily(true);
+        setWeeklyGoalMinutes(axisSnapWeeklyGoalMinutes(m * 7));
+      },
+      style: {
+        fontFamily: "var(--font-display)",
+        fontSize: "var(--text-xs)",
+        letterSpacing: "0.06em",
+        padding: "8px 12px",
+        borderRadius: 10,
+        border: "1px solid var(--glass-border)",
+        background: "var(--glass-bg)",
+        color: "var(--text-secondary)",
+        cursor: "pointer",
+        fontWeight: 600
+      }
+    }, label)
+    )
+    ), /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-sm)", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-dimmer)", marginBottom: 6, marginTop: 12 } }, "Weekly Movement Goal"), /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 10, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Summary uses this as your weekly target. Adjust the weekly slider anytime to override the daily link; touch daily again to re-sync."), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginBottom: 8 } }, /*#__PURE__*/
@@ -7388,7 +8718,77 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       style: { flex: "1 1 160px", minWidth: 0, maxWidth: "100%", accentColor: "var(--accent)" }
     }), /*#__PURE__*/
     React.createElement("span", { style: { fontVariantNumeric: "tabular-nums", fontSize: "var(--text-base)", fontWeight: 600, color: "var(--accent)", minWidth: 56 } }, weeklyGoalMinutes, " min")
+    ),
+    React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 } },
+    [{ label: "PT-style ~90–105 / wk", w: 95 }, { label: "Beginner ~35 / wk", w: 35 }].map(({ label, w }) => /*#__PURE__*/
+    React.createElement("button", {
+      key: label,
+      type: "button",
+      onClick: () => {
+        axisHapticTick();
+        setWeeklyFollowsDaily(false);
+        setWeeklyGoalMinutes(axisSnapWeeklyGoalMinutes(w));
+      },
+      style: {
+        fontFamily: "var(--font-display)",
+        fontSize: "var(--text-xs)",
+        letterSpacing: "0.06em",
+        padding: "8px 12px",
+        borderRadius: 10,
+        border: "1px solid var(--glass-border)",
+        background: "var(--glass-bg)",
+        color: "var(--text-secondary)",
+        cursor: "pointer",
+        fontWeight: 600
+      }
+    }, label)
     )
+    )
+    )
+    ), /*#__PURE__*/
+    React.createElement("div", { style: { borderTop: "1px solid var(--border)", paddingTop: 14, marginBottom: 18 } }, /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-sm)", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-dimmer)", marginBottom: 6 } }, "Health & metrics"), /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 12, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "On iPhone, sync from Apple Health. On Android, use Health Connect. Pulls weight and today’s step count into Metrics when the native bridge is available."),
+    React.createElement("button", {
+      type: "button",
+      onClick: async () => {
+        axisHapticTick();
+        setHealthConnectSyncMsg("Syncing…");
+        try {
+          await axisHealthRequestReadPermissions();
+          const imported = await axisHealthFetchWeightSamplesNative();
+          const steps = await axisHealthFetchTodayStepsNative();
+          setMetricsStepsToday(steps);
+          if (imported.length > 0) {
+            setMetricsWeightSamples((prev) => axisMetricsMergeWeightByTs(axisMetricsNormalizeWeightList(prev), imported));
+            setMetricsHealthHint("Synced from Apple Health / Health Connect");
+            setHealthConnectSyncMsg("Updated weight and steps.");
+          } else {
+            setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Manual log on Metrics or open this app from the native shell.");
+            setHealthConnectSyncMsg("No new weight samples. Steps refreshed if available.");
+          }
+        } catch (e) {
+          setHealthConnectSyncMsg("Could not sync. Enable permissions in Apple Health or Health Connect.");
+        }
+      },
+      style: {
+        fontFamily: "var(--font-display)",
+        fontSize: "var(--text-sm)",
+        letterSpacing: "0.14em",
+        textTransform: "uppercase",
+        fontWeight: 600,
+        padding: "12px 18px",
+        borderRadius: 10,
+        border: "1px solid var(--accent)",
+        background: "var(--accent-dim)",
+        color: "var(--accent)",
+        cursor: "pointer",
+        width: "100%",
+        maxWidth: "100%",
+        boxSizing: "border-box"
+      }
+    }, "Connect & sync from Health"),
+    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", marginTop: 10, lineHeight: 1.45 } }, healthConnectSyncMsg)
     ), /*#__PURE__*/
     React.createElement("div", { style: { borderTop: "1px solid var(--border)", paddingTop: 14, marginBottom: 18 } }, /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-sm)", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-dimmer)", marginBottom: 8 } }, "Session Bar"),
@@ -7416,15 +8816,57 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
     sec === 60 ? "1 min" : `${sec} sec`
     )
+    ),
+    React.createElement("div", { style: { width: "100%", marginTop: 12, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 } }, /*#__PURE__*/
+    React.createElement("label", { htmlFor: "axis-exercise-custom", style: { fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--text-secondary)" } }, "Custom (sec)"),
+    React.createElement("input", {
+      id: "axis-exercise-custom",
+      type: "number",
+      min: 15,
+      max: 600,
+      step: 1,
+      value: exerciseDuration,
+      onChange: (e) => {
+        const n = Math.round(Number(e.target.value));
+        if (!Number.isFinite(n)) return;
+        triggerHaptic(HAPTIC_LIGHT_TAP);
+        setExerciseDuration(Math.min(600, Math.max(15, n)));
+      },
+      style: { width: 88, minHeight: 40, borderRadius: 10, border: "1px solid var(--glass-border)", background: "var(--glass-bg)", color: "var(--text-white)", padding: "0 10px", fontWeight: 700 }
+    })
     )
     )
     )
-    ), /*#__PURE__*/
+    , /*#__PURE__*/
     React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-block__title" }, "PRIVACY & DATA"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Your Data"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your workout history, goals, and preferences are stored on this device only. We never see them."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "When you log in, your account info is secured by Firebase Authentication."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "Export"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-line" }, "Download a JSON file with your goals, metrics, and history from this device."), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); },
+      style: {
+        marginTop: 8,
+        marginBottom: 4,
+        width: "100%",
+        maxWidth: "100%",
+        boxSizing: "border-box",
+        minHeight: 44,
+        borderRadius: 12,
+        border: "1px solid var(--accent)",
+        background: "var(--accent-dim)",
+        color: "var(--accent)",
+        fontFamily: "var(--font-display)",
+        fontSize: "var(--text-sm)",
+        fontWeight: 700,
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+        cursor: "pointer"
+      }
+    }, "Export my data"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Backups"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your data currently stays local. Eventually we will implement cloud storage."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "What We Don't Do"), /*#__PURE__*/
@@ -7618,8 +9060,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   }
 
-  // SUMMARY
-  if (view === "summary") {
+  // METRICS (activity + weight + pain)
+  if (view === "metrics") {
     const summaryHeroWeeklyEmpty = weeklyGoalBarMinutesCurrent === 0;
     const formatSummaryWeeklyMinutes = (totalMins) => {
       const n = Math.max(0, Math.floor(Number(totalMins) || 0));
@@ -7645,9 +9087,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top home-track-cards-outer--summary" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-welcome", id: "axis-summary-welcome" }, "Summary"), /*#__PURE__*/
-      React.createElement("div", { className: "summary-main-stack" }, /*#__PURE__*/
-      React.createElement("div", { className: "summary-sunset-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "home-welcome", id: "axis-metrics-welcome" }, "Metrics"), /*#__PURE__*/
+      React.createElement("div", { className: "summary-main-stack summary-main-stack--metrics" }, /*#__PURE__*/
+      React.createElement("div", { className: "summary-sunset-stack summary-sunset-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-hero summary-hero--feature" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-hero-metric summary-hero-metric--weekly-split" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-hero-metric-label" }, /*#__PURE__*/
@@ -7671,6 +9113,19 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "summary-bento-lbl" }, "Active Days")
       )
       ), /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-stats-heading" }, "Quick stats"),
+      React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme }), /*#__PURE__*/
+      React.createElement("div", { className: "metrics-section" }, /*#__PURE__*/
+      React.createElement("button", {
+        type: "button",
+        className: "metrics-section__btn",
+        onClick: () => { axisHapticTick(); setMetricsGoalsOpen((o) => !o); },
+        "aria-expanded": metricsGoalsOpen ? "true" : "false"
+      }, /*#__PURE__*/
+      React.createElement("span", null, "Goals"),
+      React.createElement("span", { className: "metrics-section__btn-chev", "aria-hidden": true }, metricsGoalsOpen ? "\u25BC" : "\u25B6")
+      ),
+      metricsGoalsOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-section__body" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-day-card" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-week-head" }, "Daily goal"), /*#__PURE__*/
       React.createElement("div", { className: "summary-week-bar-track" }, /*#__PURE__*/
@@ -7682,7 +9137,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       /*#__PURE__*/React.createElement("button", { type: "button", className: "summary-goal-link", onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("settings");} }, "Set daily goal"), " to track today.")
       )
       ), /*#__PURE__*/
-      React.createElement("div", { className: "summary-week-card" }, /*#__PURE__*/
+      React.createElement("div", { className: "summary-week-card", style: { marginTop: 12 } }, /*#__PURE__*/
       React.createElement("div", { className: "summary-week-head" }, "Weekly goal"), /*#__PURE__*/
       React.createElement("div", { className: "summary-week-bar-track" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-week-bar-fill" + (weeklyBarOverdrive ? " summary-week-bar-fill--overdrive" : ""), style: { width: weeklyBarFillPct + "%" } })
@@ -7692,10 +9147,61 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       weeklyGoalBarMinutesCurrent, " / ", /*#__PURE__*/React.createElement("button", { type: "button", className: "summary-goal-link", onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("settings");} }, weeklyTargetMin, " min"), " · ", weeklyGoalDisplayPct, "%") : /*#__PURE__*/React.createElement(React.Fragment, null,
       weeklyGoalBarMinutesCurrent, " min this week · ", /*#__PURE__*/React.createElement("button", { type: "button", className: "summary-goal-link", onClick: () => {if (navigator.vibrate) navigator.vibrate(10);axisHapticTick();setView("settings");} }, "Set weekly goal"))
       )
+      )
+      , /*#__PURE__*/React.createElement("div", { className: "metrics-goals-foot" }, "Open Settings to adjust goals and targets.")
+      )
+      )
+      , /*#__PURE__*/
+      React.createElement("div", { className: "metrics-section metrics-section--outcomes" }, /*#__PURE__*/
+      React.createElement("button", {
+        type: "button",
+        className: "metrics-section__btn",
+        onClick: () => { axisHapticTick(); setMetricsOutcomesOpen((o) => !o); },
+        "aria-expanded": metricsOutcomesOpen ? "true" : "false"
+      }, /*#__PURE__*/
+      React.createElement("span", null, "Outcomes"),
+      React.createElement("span", { className: "metrics-section__btn-chev", "aria-hidden": true }, metricsOutcomesOpen ? "\u25BC" : "\u25B6")
+      ),
+      metricsOutcomesOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-section__body" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-weight-pain-group" }, /*#__PURE__*/
+      React.createElement(MetricsWeightCard, {
+        theme: theme,
+        nightMode: nightMode,
+        activePeriod: activePeriod,
+        samples: metricsWeightSamples,
+        stepsToday: metricsStepsToday,
+        healthHint: metricsHealthHint,
+        onLogWeight: (lbs) => {
+          const ts = Date.now();
+          setMetricsWeightSamples((prev) => axisMetricsMergeWeightByTs(axisMetricsNormalizeWeightList(prev), [{ ts, lbs, source: "manual" }]));
+        }
+      }), /*#__PURE__*/
+      React.createElement(MetricsPainCard, {
+        theme: theme,
+        nightMode: nightMode,
+        activePeriod: activePeriod,
+        painByDay: metricsPainByDay,
+        onLogPain: (payload) => {
+          const dk = new Date().toDateString();
+          const level = typeof payload === "number" ? payload : payload && payload.level;
+          const note = typeof payload === "object" && payload && payload.note ? String(payload.note).slice(0, 48) : "";
+          if (typeof level !== "number" || level < 1 || level > 10) return;
+          setMetricsPainByDay((p) => {
+            const next = { ...p, [dk]: note ? { level, note } : { level } };
+            return next;
+          });
+          if (level >= 7) {
+            setMetricsToastMessage("Your pain level is high today. Consider the 'Rest' flow for a lighter session.");
+            try { triggerHaptic(HAPTIC_DOUBLE_TAP); } catch (e) {}
+          }
+        }
+      })
+      )
+      )
+      )
       ), /*#__PURE__*/
-      React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme }), /*#__PURE__*/
       history.length > 0 && /*#__PURE__*/
-      React.createElement("div", { className: "summary-panel history", style: { marginTop: 0 } }, /*#__PURE__*/
+      React.createElement("div", { className: "summary-panel history summary-panel--metrics-follow" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-history-head" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-title", style: { marginBottom: 0 } }, "Recent Sessions")
       ),
@@ -7764,9 +9270,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       )
       )
-      )
       , /*#__PURE__*/
-      React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--summary" })
+      metricsToastMessage ? /*#__PURE__*/React.createElement(AxisMetricsToast, { message: metricsToastMessage, onDismiss: () => setMetricsToastMessage(null) }) : null, /*#__PURE__*/
+      React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--metrics" })
       ), /*#__PURE__*/
       React.createElement(TabBar, { view: view, setView: setView, theme: theme, nightMode: nightMode })
       ));

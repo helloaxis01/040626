@@ -117,9 +117,21 @@ function finish() {
   const vercel = path.join(root, 'vercel.json');
   if (fs.existsSync(vercel)) fs.copyFileSync(vercel, path.join(dist, 'vercel.json'));
   // `serve` defaults to cleanUrls → 301 from /onboarding.html to /onboarding; some clients show ERR_INVALID_RESPONSE/404.
+  // Strong no-cache on HTML so `npm run preview` + local edits + `npm run refresh` show up without stale shell cache.
   fs.writeFileSync(
     path.join(dist, 'serve.json'),
-    JSON.stringify({ cleanUrls: false, trailingSlash: false }, null, 2),
+    JSON.stringify({
+      cleanUrls: false,
+      trailingSlash: false,
+      headers: [
+        {
+          source: '**/*.html',
+          headers: [
+            { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          ],
+        },
+      ],
+    }, null, 2),
     'utf8'
   );
   console.log('Build done: dist/ with index.html (inline app script) and assets');
