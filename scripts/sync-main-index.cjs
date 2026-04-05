@@ -24,3 +24,11 @@ fs.copyFileSync(src, destPublic);
 console.log("sync-main-index: copied →", path.relative(root, destPublic));
 fs.copyFileSync(src, destPublicWeb);
 console.log("sync-main-index: copied →", path.relative(root, destPublicWeb));
+
+const iconsSrc = path.join(root, "031726 REBUILD", "public_web", "app-icons");
+const iconsDest = path.join(root, "public_web", "app-icons");
+if (fs.existsSync(iconsSrc) && typeof fs.cpSync === "function") {
+  fs.mkdirSync(path.dirname(iconsDest), { recursive: true });
+  fs.cpSync(iconsSrc, iconsDest, { recursive: true, force: true });
+  console.log("sync-main-index: copied →", path.relative(root, iconsDest));
+}

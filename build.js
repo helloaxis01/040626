@@ -57,6 +57,9 @@ function copyRecursive(src, dest) {
 }
 
 copyRecursive(path.join(root, 'Logo - Vector'), path.join(dist, 'Logo - Vector'));
+if (fs.existsSync(path.join(root, 'app-icons'))) {
+  copyRecursive(path.join(root, 'app-icons'), path.join(dist, 'app-icons'));
+}
 
 // Onboarding + brand assets for same-origin navigation (Settings → onboarding.html, Capacitor dist/)
 const publicDir = path.join(root, 'public');
