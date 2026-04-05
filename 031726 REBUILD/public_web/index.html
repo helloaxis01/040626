@@ -2235,13 +2235,15 @@ const css = `
   }
   .home-summary-lede-row {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .home-summary-lede {
-    flex: 1;
+    width: 100%;
     min-width: 0;
     font-size: var(--text-sm);
     color: var(--text-secondary);
@@ -2252,7 +2254,7 @@ const css = `
     font-weight: 600;
     color: var(--text-white);
     letter-spacing: -0.02em;
-    line-height: 1.38;
+    line-height: 1.45;
   }
   .summary-story-meta {
     margin-bottom: 12px;
@@ -2262,30 +2264,16 @@ const css = `
   }
   .summary-weekly-target-echo { font-size: var(--text-xs); color: var(--text-secondary); }
   .summary-vs-prior { font-size: var(--text-xs); color: var(--text-dimmer); letter-spacing: 0.02em; line-height: 1.4; }
-  .summary-sparkline {
-    display: flex; align-items: flex-end; gap: 4px; height: 44px; margin-bottom: 16px; padding: 0 2px; box-sizing: border-box;
-  }
-  .summary-sparkline__bar {
-    flex: 1; min-width: 0; border-radius: 3px 3px 0 0;
-    background: color-mix(in srgb, var(--accent) 60%, transparent);
-    min-height: 8px; transition: height 0.2s ease;
-  }
-  .app[data-night="true"] .summary-sparkline__bar { background: rgba(255, 59, 48, 0.5); }
   .summary-history-head {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
-  }
-  .summary-history-filter { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 100%; }
-  .summary-history-filter__chip {
-    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px; min-height: 36px;
-    border-radius: 999px; border: 1px solid var(--glass-border); background: var(--glass-bg);
-    color: var(--text-secondary); cursor: pointer; font-family: var(--font-display); font-weight: 600;
+    margin-bottom: 10px;
+    width: 100%;
     box-sizing: border-box;
   }
-  .summary-history-filter__chip--active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
   .app[data-night="true"] .home-summary-lede--story {
     color: #FF3B30 !important;
     -webkit-text-fill-color: #FF3B30 !important;
   }
+  .app[data-night="true"] .home-summary-date { color: rgba(255, 59, 48, 0.72) !important; }
   .app[data-night="true"] .summary-story-meta,
   .app[data-night="true"] .summary-vs-prior { color: rgba(255, 59, 48, 0.82) !important; }
   .app[data-night="true"] .summary-weekly-target-echo__lbl { color: rgba(255, 59, 48, 0.75) !important; }
@@ -2301,11 +2289,13 @@ const css = `
   }
   .home-summary-date {
     flex-shrink: 0;
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    letter-spacing: 0.06em;
-    text-align: right;
+    font-size: 10px;
+    color: var(--text-dimmer);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: left;
     line-height: 1.35;
+    max-width: 100%;
   }
   .home-summary-date__dow {
     font-weight: 700;
@@ -2891,7 +2881,7 @@ const css = `
     transition: max-height 0.45s ease;
   }
   .summary-history-list-wrap.summary-history-list-wrap--expanded {
-    max-height: 900px;
+    max-height: none;
   }
   .summary-history-toggle {
     display: block;
@@ -3119,6 +3109,7 @@ const css = `
   .history-detail { font-size: var(--text-xs); color:var(--text-dim); }
   .summary-cta {
     margin-top:16px;
+    margin-bottom: 8px;
     border:1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
     border-radius:24px;
     padding:12px;
@@ -3554,9 +3545,10 @@ const css = `
     height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 12px);
     min-height: 0;
   }
+  /* Summary: same tail as Today — long scroll so bottom CTA clears fixed tab bar + home indicator */
   .tab-bar-spacer--summary {
-    height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 4px);
-    min-height: 0;
+    height: calc(var(--axis-bottom-content-inset) + var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 140px);
+    flex-shrink: 0;
   }
   .tab-bar-spacer--settings {
     height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
@@ -3798,6 +3790,10 @@ const css = `
     padding-top:0;
     padding-bottom:0;
     margin-bottom:0;
+  }
+  /* Summary: --top zeroes padding; restore deep bottom inset so last blocks scroll above fixed tab bar */
+  .home .track-cards-outer.home-track-cards-outer--top.home-track-cards-outer--summary {
+    padding-bottom: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 48px);
   }
   /* Browse results: horizontal gutter; top gap from Browse tabs uses margin (edge-to-edge), not padding stack */
   .home-browse-scroll-mask {
@@ -4242,7 +4238,8 @@ function spellFocus(f) {return f && FOCUS_SPELL[f.toUpperCase()] ? FOCUS_SPELL[f
 /** Insert line breaks between sentences for instruction blocks (reduces “wall of text”). */
 function formatInstructionBodyText(body) {
   if (typeof body !== "string" || !body.trim()) return body;
-  const parts = body.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  // Split on whitespace after sentence-ending punctuation (no RegExp lookbehind — unsupported on Safari < 16.4)
+  const parts = body.replace(/([.!?])\s+/g, "$1\uE000").split("\uE000").map((s) => s.trim()).filter(Boolean);
   if (parts.length <= 1) return body.trim();
   return parts.join("\n");
 }
@@ -4250,18 +4247,18 @@ function formatInstructionBodyText(body) {
 function buildInstructionTiers(startText, steps) {
   const normalizedStart = typeof startText === "string" ? startText.trim() : "";
   const normalizedSteps = Array.isArray(steps) ?
-  steps.map((step) => typeof step?.cue === "string" ? step.cue.trim() : "").filter(Boolean) :
+  steps.map((step) => typeof (step && step.cue) === "string" ? String(step.cue).trim() : "").filter(Boolean) :
   [];
   const position = normalizedStart || normalizedSteps[0] || "";
   const next = normalizedStart ? normalizedSteps[0] || "" : normalizedSteps[1] || "";
   const then = normalizedStart ? normalizedSteps[1] || "" : normalizedSteps[2] || "";
   const tip = normalizedStart ? normalizedSteps[2] || "" : normalizedSteps[3] || "";
-  return [
+  return ([
   { key: "position", label: "POSITION", body: position, tone: "primary" },
   { key: "next", label: "NEXT", body: next, tone: "primary" },
   { key: "then", label: "THEN", body: then, tone: "primary" },
   { key: "tip", label: "TIP", body: tip, tone: "muted" }].
-  filter((tier) => tier.body);
+  filter((tier) => tier.body));
 }
 
 function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, compact = false, bodyColorOverride = null }) {
@@ -5704,15 +5701,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const [intervalRingSnap, setIntervalRingSnap] = useState(false);
   const iRef = useRef(null);
   const breathHapticFlagsRef = useRef({ holdMidpoint: false });
-  const [timerSoundOn, setTimerSoundOn] = useState(() => storageGet("axis_timer_sound", "1") !== "0");
-  const [breatheHintDismissed, setBreatheHintDismissed] = useState(() => storageGet("axis_breathe_hint_dismissed", "") === "1");
-  const wakeLockRef = useRef(null);
-  const timerBeep = (f, d) => { if (timerSoundOn) beep(f, d); };
-  const INTERVAL_PRESETS = [
-  { label: "Tabata", work: 20, rest: 10, rounds: 8 },
-  { label: "5×5", work: 300, rest: 60, rounds: 5 },
-  { label: "1:1", work: 60, rest: 60, rounds: 5 },
-  { label: "Sprint", work: 45, rest: 15, rounds: 6 }];
 
   useEffect(() => {
     if (!intervalRingSnap) return;
@@ -5739,19 +5727,19 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
       setITime((t) => {
         if (t <= 1) {
           if (iPhase === "work") {
-            timerBeep(660, 0.25);
+            beep(660, 0.25);
             triggerHaptic(HAPTIC_DOUBLE_TAP);
             if (rest > 0) {setIPhase("rest");return rest;}
-            setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);timerBeep(440, 0.5);return r;}setIPhase("work");return r + 1;});
+            setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);beep(440, 0.5);return r;}setIPhase("work");return r + 1;});
             return work;
           } else {
-            timerBeep(880, 0.2);
+            beep(880, 0.2);
             triggerHaptic(HAPTIC_DOUBLE_TAP);
-            setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);timerBeep(440, 0.5);return r;}setIPhase("work");return r + 1;});
+            setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);beep(440, 0.5);return r;}setIPhase("work");return r + 1;});
             return work;
           }
         }
-        if (t === 4) timerBeep(440, 0.12);
+        if (t === 4) beep(440, 0.12);
         return t - 1;
       });
     }, 1000);
@@ -5873,7 +5861,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     bPhaseElapsedMsRef.current = 0;
     breathHapticFlagsRef.current = { holdMidpoint: false };
     setBRunning(true);
-    timerBeep(528, 0.2);
+    beep(528, 0.2);
     triggerHaptic(HAPTIC_LIGHT_TAP);
   }
 
@@ -5902,7 +5890,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
           setBCycle(bCyclesRef.current + 1);
           setBTime(0);
           setBRunning(false);
-            timerBeep(528, 0.4);
+            beep(528, 0.4);
           triggerHaptic(HAPTIC_DOUBLE_TAP);
           return;
         }
@@ -5912,7 +5900,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         elapsedMs -= phaseDurMs;
         phaseDurMs = Math.max(1, pat[phaseIdx]?.dur ?? 1) * 1000;
         bPhaseStartedMsRef.current = now - elapsedMs;
-        timerBeep(pat[phaseIdx].label === "Inhale" ? 528 : 440, 0.15);
+        beep(pat[phaseIdx].label === "Inhale" ? 528 : 440, 0.15);
         breathHapticFlagsRef.current = { holdMidpoint: false };
         if (breathPattern === "4-7-8") {
           const nextLabel = pat[phaseIdx].label;
@@ -5942,34 +5930,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
   const bDone = !bRunning && bCycle > breathCycles && bTime === 0;
 
-  useEffect(() => {
-    const active = iRunning || bRunning;
-    let cancelled = false;
-    const acquire = async () => {
-      try {
-        if (!active || typeof navigator === "undefined" || !navigator.wakeLock || cancelled) return;
-        const wl = await navigator.wakeLock.request("screen");
-        wakeLockRef.current = wl;
-      } catch (e) {}
-    };
-    const release = () => {
-      try {
-        wakeLockRef.current?.release();
-      } catch (e) {}
-      wakeLockRef.current = null;
-    };
-    if (active) acquire();else release();
-    const onVis = () => {
-      if (document.visibilityState === "visible" && active && !wakeLockRef.current) acquire();
-    };
-    document.addEventListener("visibilitychange", onVis);
-    return () => {
-      cancelled = true;
-      document.removeEventListener("visibilitychange", onVis);
-      release();
-    };
-  }, [iRunning, bRunning]);
-
   // switch mode → reset both
   function switchMode(m) {axisHapticTick();iReset();bReset();setMode(m);}
 
@@ -5989,7 +5949,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     color: nightMode ? "#FF3B30" : isDark ? "var(--text-white)" : "#1D1D1F",
     lineHeight: 1,
     fontVariantNumeric: "tabular-nums",
-    textShadow: nightMode ? "0 0 4px rgba(0,0,0,0.95), 0 2px 12px rgba(0,0,0,0.5)" : "none"
+    textShadow: "none"
   };
   const timerNumMedium = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-lg)", color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center", fontVariantNumeric: "tabular-nums" };
   const timerNumSmall = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--text-dimmer)", lineHeight: 1.2 };
@@ -6404,94 +6364,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
       transition: stroke-dashoffset 0s linear, stroke 0s !important;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .timer-view-body .timer-interval-ring .timer-interval-progress {
-      transition: none !important;
-    }
-    .timer-view-body .timer-breathe-ring circle {
-      transition: none !important;
-    }
-  }
-  .timer-interval-toolbar {
-    width: 100%;
-    max-width: 360px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    margin-bottom: 2px;
-    box-sizing: border-box;
-  }
-  .timer-interval-presets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
-  .timer-interval-preset-chip {
-    font-family: var(--font-display);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--glass-border);
-    background: var(--glass-bg);
-    color: var(--text-secondary);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .timer-sound-toggle {
-    align-self: center;
-    font-family: var(--font-display);
-    font-size: var(--text-xs);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 8px 16px;
-    min-height: 40px;
-    border-radius: 999px;
-    border: 1px solid var(--glass-border);
-    background: transparent;
-    color: var(--text-dimmer);
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .timer-sound-toggle--on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
-  .timer-view-body .timer-glass-stepper.timer-interval-stepper {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 12px;
-  }
-  .timer-breathe-hint {
-    width: 100%;
-    max-width: 360px;
-    margin-bottom: 10px;
-    padding: 12px 14px;
-    border-radius: 16px;
-    border: 1px solid var(--glass-border);
-    background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)), rgba(0,0,0,0.06);
-    box-sizing: border-box;
-  }
-  .timer-breathe-hint__text {
-    margin: 0 0 10px 0;
-    font-size: var(--text-xs);
-    line-height: 1.45;
-    color: var(--text-secondary);
-  }
-  .timer-breathe-hint__dismiss {
-    font-family: var(--font-display);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--accent);
-    background: var(--accent-dim);
-    color: var(--accent);
-    cursor: pointer;
-  }
   `;
 
   const timerNightCss = nightMode ? `
@@ -6576,31 +6448,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     stroke-width: 2.5 !important;
     stroke-opacity: 1 !important;
   }
-  [data-night="true"] .timer-view-body .timer-interval-preset-chip {
-    background: #000000 !important;
-    border-color: #FF3B30 !important;
-    color: rgba(255, 59, 48, 0.88) !important;
-  }
-  [data-night="true"] .timer-view-body .timer-sound-toggle {
-    border-color: #FF3B30 !important;
-    color: rgba(255, 59, 48, 0.75) !important;
-  }
-  [data-night="true"] .timer-view-body .timer-sound-toggle--on {
-    color: #FF3B30 !important;
-    background: rgba(255, 59, 48, 0.12) !important;
-  }
-  [data-night="true"] .timer-view-body .timer-breathe-hint {
-    background: #000000 !important;
-    border-color: #FF3B30 !important;
-  }
-  [data-night="true"] .timer-view-body .timer-breathe-hint__text {
-    color: rgba(255, 59, 48, 0.88) !important;
-  }
-  [data-night="true"] .timer-view-body .timer-breathe-hint__dismiss {
-    border-color: #FF3B30 !important;
-    color: #000000 !important;
-    background: #FF3B30 !important;
-  }
   ` : "";
 
   return (/*#__PURE__*/
@@ -6614,13 +6461,10 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, flex: 1, minHeight: 0 } }, /*#__PURE__*/
     React.createElement("div", { style: { flexShrink: 0, height: TIMER_TOGGLE_SPACER_TOP, width: "100%" }, "aria-hidden": true }), /*#__PURE__*/
-    React.createElement("div", { className: "timer-mode-outer-pill timer-glass-wrap", style: TIMER_TOGGLE_WRAP, role: "tablist", "aria-label": "Timer mode" },
+    React.createElement("div", { className: "timer-mode-outer-pill timer-glass-wrap", style: TIMER_TOGGLE_WRAP },
     ["interval", "breathe"].map((m) => /*#__PURE__*/
-    React.createElement("button", { key: m, type: "button", role: "tab", "aria-selected": mode === m ? "true" : "false", onClick: () => switchMode(m), className: "timer-glass-toggle-btn" + (mode === m ? " active" : "") }, m === "interval" ? "Interval" : "Breathe")
+    React.createElement("button", { key: m, type: "button", onClick: () => switchMode(m), className: "timer-glass-toggle-btn" + (mode === m ? " active" : "") }, m === "interval" ? "Interval" : "Breathe")
     )
-    ),
-    React.createElement("div", { className: "sr-only", "aria-live": "polite", "aria-atomic": "true" },
-    mode === "interval" && (iPhase === "work" || iPhase === "rest") ? `Interval ${iPhase}, ${iTime} seconds remaining` : mode === "interval" && iPhase === "done" ? "Interval complete" : mode === "breathe" && bRunning ? `Breathe ${phaseLabel}, ${bTime} seconds` : mode === "breathe" && bDone ? "Breathing cycles complete" : ""
     ),
 
 
@@ -6639,19 +6483,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     ), /*#__PURE__*/
 
     React.createElement("div", { style: { position: "absolute", left: 0, top: 0, width: ringSize, height: ringSize, pointerEvents: "none" } }, /*#__PURE__*/
-
-    (iPhase === "work" || iPhase === "rest") && /*#__PURE__*/
-    React.createElement("div", { className: "timer-interval-phase-banner", style: { position: "absolute", top: 20, left: 0, right: 0, textAlign: "center", pointerEvents: "none", zIndex: 2 } }, /*#__PURE__*/
-    React.createElement("span", { style: {
-        fontFamily: "var(--font-display)",
-        fontSize: "var(--text-xs)",
-        letterSpacing: "0.32em",
-        fontWeight: 700,
-        textTransform: "uppercase",
-        color: iPhase === "rest" ? nightMode ? "rgba(255,99,88,0.92)" : "var(--text-secondary)" : nightMode ? "#FF3B30" : "var(--accent)",
-        textShadow: nightMode ? "0 0 3px rgba(0,0,0,0.9)" : "none"
-      } }, iPhase === "work" ? "Work" : "Rest")
-    ),
 
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } },
     iPhase === "idle" && /*#__PURE__*/
@@ -6688,31 +6519,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     )
     ), /*#__PURE__*/
-
-    iPhase === "idle" && /*#__PURE__*/React.createElement("div", { className: "timer-interval-toolbar" }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-interval-presets", role: "group", "aria-label": "Interval presets" },
-    INTERVAL_PRESETS.map((p) => /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      key: p.label,
-      className: "timer-interval-preset-chip",
-      onClick: () => {axisHapticTick();setWork(p.work);setRest(p.rest);setRounds(p.rounds);}
-    }, p.label))
-    ), /*#__PURE__*/
-    React.createElement("button", {
-      type: "button",
-      className: "timer-sound-toggle" + (timerSoundOn ? " timer-sound-toggle--on" : ""),
-      "aria-pressed": timerSoundOn ? "true" : "false",
-      "aria-label": timerSoundOn ? "Timer sounds on" : "Timer sounds off",
-      onClick: () => {
-        axisHapticTick();
-        setTimerSoundOn((v) => {
-          const next = !v;
-          storageSet("axis_timer_sound", next ? "1" : "0");
-          return next;
-        });
-      }
-    }, timerSoundOn ? "Sound on" : "Mute")
-    ),
 
 
     React.createElement("div", { style: { flexShrink: 0, height: iPhase === "idle" ? TIMER_MID_IDLE_HEIGHT : undefined, minHeight: iPhase === "idle" ? TIMER_MID_IDLE_HEIGHT : 0, width: "100%", marginTop: iPhase === "idle" ? TIMER_IDLE_VERTICAL_GAP : 6, marginBottom: iPhase === "idle" ? 0 : 6, boxSizing: "border-box" } },
@@ -6818,7 +6624,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement(React.Fragment, null, /*#__PURE__*/
 
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { ...intervalDigitStyle, minWidth: 72, color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "#1D1D1F", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
+    React.createElement("div", { style: { ...intervalDigitStyle, minWidth: 72, color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "#1D1D1F", textShadow: "none", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
     )
     ),
 
@@ -6841,8 +6647,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         opacity: 1,
         fontFamily: "var(--font-display)",
         transition: "none",
-        lineHeight: 1.25,
-        textShadow: nightMode ? "0 0 4px rgba(0,0,0,0.95), 0 2px 10px rgba(0,0,0,0.45)" : "none"
+        lineHeight: 1.25
       } }, curBreathPhase.label)
     ),
 
@@ -6871,14 +6676,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("div", { style: { flexShrink: 0, height: !bRunning && !bDone ? TIMER_MID_IDLE_HEIGHT : undefined, minHeight: !bRunning && !bDone ? TIMER_MID_IDLE_HEIGHT : 0, width: "100%", marginTop: !bRunning && !bDone ? TIMER_IDLE_VERTICAL_GAP : 6, marginBottom: !bRunning && !bDone ? 0 : 6, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box" } },
     !bRunning && !bDone && /*#__PURE__*/
     React.createElement(React.Fragment, null, /*#__PURE__*/
-    !breatheHintDismissed && /*#__PURE__*/React.createElement("div", { className: "timer-breathe-hint" }, /*#__PURE__*/
-    React.createElement("p", { className: "timer-breathe-hint__text" }, "Inhale as the ring grows, hold steady, exhale as it shrinks. Follow the phase label under the timer."),
-    React.createElement("button", {
-      type: "button",
-      className: "timer-breathe-hint__dismiss",
-      onClick: () => {axisHapticTick();setBreatheHintDismissed(true);storageSet("axis_breathe_hint_dismissed", "1");}
-    }, "Got it")
-    ),
     React.createElement("div", { className: "timer-pattern-row", style: { width: "100%", maxWidth: 360 } },
     Object.keys(BREATH_PATTERNS).map((p) => /*#__PURE__*/
     React.createElement("button", { key: p, type: "button", onClick: () => {axisHapticTick();setBreathPattern(p);}, className: "timer-glass-pattern-btn" + (breathPattern === p ? " active" : ""), style: { fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", padding: "9px 20px", cursor: "pointer", color: nightMode ? breathPattern === p ? "#FF3B30" : "rgba(255, 59, 48, 0.72)" : breathPattern === p ? "var(--accent)" : "var(--text-secondary)" } }, p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh")
@@ -7014,25 +6811,6 @@ function axisLocalDateKey(raw) {
   }
 }
 
-/** Prior rolling 7-day window (days 8–14 ago) for “vs last week” comparisons. */
-function axisPrevWeekWindowStats(history) {
-  const today = new Date();
-  const prevWeekDates = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - (13 - i));
-    return d.toDateString();
-  });
-  const set = new Set(prevWeekDates);
-  let mins = 0;
-  let sessions = 0;
-  for (const e of history || []) {
-    if (!set.has(axisLocalDateKey(e.date))) continue;
-    mins += Number(e.duration) || 0;
-    sessions += 1;
-  }
-  return { prevWeekMinutes: mins, prevWeekSessions: sessions };
-}
-
 /** “Today” / “Yesterday” / short date for history group headers. */
 function axisRelativeDayLabel(dateKey) {
   if (!dateKey) return "";
@@ -7145,7 +6923,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return axisSnapWeeklyGoalMinutes(daily * 7);
   });
   const [summaryRecentExpanded, setSummaryRecentExpanded] = useState(false);
-  const [summaryHistoryFilter, setSummaryHistoryFilter] = useState("all");
   const [welcomeName, setWelcomeName] = useState(() => {
     try {
       return typeof localStorage !== "undefined" && localStorage.getItem("axisUserName") || "Adam";
@@ -7691,27 +7468,13 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   // SUMMARY
   if (view === "summary") {
-    const summaryDateObj = new Date();
-    const summaryDow = summaryDateObj.toLocaleDateString(undefined, { weekday: "long" });
-    const summaryMonthDay = summaryDateObj.toLocaleDateString(undefined, { month: "long", day: "numeric" });
     const summaryHeroWeeklyEmpty = weeklyGoalBarMinutesCurrent === 0;
     const formatSummaryWeeklyMinutes = (totalMins) => {
       const n = Math.max(0, Math.floor(Number(totalMins) || 0));
       return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")} m`;
     };
-    const { prevWeekMinutes, prevWeekSessions } = axisPrevWeekWindowStats(history);
-    const deltaMin = weeklyGoalBarMinutesCurrent - prevWeekMinutes;
-    const deltaSess = weekSessionCountForWindow - prevWeekSessions;
-    const hasPrev = prevWeekMinutes > 0 || prevWeekSessions > 0;
-    const summaryVsPrior = hasPrev ? `vs prior 7 days: ${deltaMin >= 0 ? "+" : ""}${deltaMin} min · ${deltaSess >= 0 ? "+" : ""}${deltaSess} sessions` : null;
-    const summaryStoryLine = weeklyTargetMin > 0 ? `You're at ${weeklyGoalDisplayPct}% of your weekly goal (${weekSessionCountForWindow} session${weekSessionCountForWindow !== 1 ? "s" : ""} this week).` : weekSessionCountForWindow === 0 && weeklyGoalBarMinutesCurrent === 0 ? "Your week is open — start a session on Home when you're ready." : `${weekSessionCountForWindow} session${weekSessionCountForWindow !== 1 ? "s" : ""} this week · ${formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent)} total.`;
-    const wmSpark = axisWeekMomentumFromHistory(history);
-    const mins7 = wmSpark.dates.map((dk) => axisSumMinutesOnLocalDay(history, dk));
-    const sparkMax = Math.max(1, ...mins7);
-    const summaryTrackFilters = ["all", ...new Set((history || []).map((e) => e.track).filter(Boolean))];
-    const filteredHistoryRows = (history || []).filter((e) => summaryHistoryFilter === "all" || e.track === summaryHistoryFilter);
     const summaryRecentLimit = summaryRecentExpanded ? 15 : 3;
-    const summaryRecentRows = filteredHistoryRows.slice(0, Math.min(filteredHistoryRows.length, summaryRecentLimit));
+    const summaryRecentRows = (history || []).slice(0, Math.min((history || []).length, summaryRecentLimit));
     const summaryHistoryGroups = [];
     for (const e of summaryRecentRows) {
       const dk = axisLocalDateKey(e.date);
@@ -7729,23 +7492,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "app-body" }, /*#__PURE__*/
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
-      React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
+      React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top home-track-cards-outer--summary" }, /*#__PURE__*/
       React.createElement("div", { className: "home-welcome", id: "axis-summary-welcome" }, "Summary"), /*#__PURE__*/
-      React.createElement("div", { className: "home-summary-lede-row" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-summary-lede home-summary-lede--story" }, summaryStoryLine), /*#__PURE__*/
-      React.createElement("div", { className: "home-summary-date" }, /*#__PURE__*/
-      React.createElement("span", { className: "home-summary-date__dow" }, summaryDow), " ", summaryMonthDay)
-      ), /*#__PURE__*/
-      React.createElement("div", { className: "summary-story-meta" }, /*#__PURE__*/
-      weeklyTargetMin > 0 && /*#__PURE__*/React.createElement("div", { className: "summary-weekly-target-echo" }, /*#__PURE__*/
-      React.createElement("span", { className: "summary-weekly-target-echo__lbl" }, "Weekly target "),
-      React.createElement("button", { type: "button", className: "summary-goal-link summary-weekly-target-echo__num", onClick: () => {axisHapticTick();setView("settings");} }, weeklyTargetMin, " min")
-      ),
-      summaryVsPrior && /*#__PURE__*/React.createElement("div", { className: "summary-vs-prior" }, summaryVsPrior)
-      ), /*#__PURE__*/
-      React.createElement("div", { className: "summary-sparkline", role: "img", "aria-label": "This week minutes by day" },
-      mins7.map((m, si) => /*#__PURE__*/React.createElement("div", { key: si, className: "summary-sparkline__bar", style: { height: `${Math.max(8, Math.round(m / sparkMax * 100))}%` }, title: `${m} min` }))
-      ),
       React.createElement("div", { className: "summary-main-stack" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-sunset-stack" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-hero summary-hero--feature" }, /*#__PURE__*/
@@ -7797,18 +7545,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       history.length > 0 && /*#__PURE__*/
       React.createElement("div", { className: "summary-panel history", style: { marginTop: 0 } }, /*#__PURE__*/
       React.createElement("div", { className: "summary-history-head" }, /*#__PURE__*/
-      React.createElement("div", { className: "summary-title", style: { marginBottom: 0 } }, "Recent Sessions"),
-      summaryTrackFilters.length > 1 && /*#__PURE__*/React.createElement("div", { className: "summary-history-filter" },
-      summaryTrackFilters.map((fid) => /*#__PURE__*/React.createElement("button", {
-        type: "button",
-        key: fid,
-        className: "summary-history-filter__chip" + (summaryHistoryFilter === fid ? " summary-history-filter__chip--active" : ""),
-        onClick: () => {axisHapticTick();setSummaryHistoryFilter(fid);}
-      }, fid === "all" ? "All" : fid))
-      )
+      React.createElement("div", { className: "summary-title", style: { marginBottom: 0 } }, "Recent Sessions")
       ),
       React.createElement("div", { className: "summary-history-list-wrap" + (summaryRecentExpanded ? " summary-history-list-wrap--expanded" : "") },
-      summaryHistoryGroups.length === 0 && filteredHistoryRows.length === 0 && summaryHistoryFilter !== "all" && /*#__PURE__*/React.createElement("div", { className: "summary-history-empty" }, "No sessions for this filter."),
       summaryHistoryGroups.map((g) => /*#__PURE__*/React.createElement(React.Fragment, { key: g.dateKey }, /*#__PURE__*/
       React.createElement("div", { className: "history-day-group-label" }, axisRelativeDayLabel(g.dateKey)),
       g.rows.map((e, ri) => /*#__PURE__*/React.createElement("div", { className: "history-row", key: `${g.dateKey}-${e.track}-${ri}` }, /*#__PURE__*/
@@ -7816,14 +7555,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "history-detail" }, e.duration, "m")
       ))
       ))
-      )
       ),
-      filteredHistoryRows.length > 3 && /*#__PURE__*/
-      React.createElement("button", {
+      (history || []).length > 3 && /*#__PURE__*/React.createElement("button", {
         type: "button",
         className: "summary-history-toggle",
-        onClick: () => setSummaryRecentExpanded((x) => !x)
-      }, summaryRecentExpanded ? "Show less" : "View all")
+        "aria-expanded": summaryRecentExpanded ? "true" : "false",
+        onClick: () => {axisHapticTick();setSummaryRecentExpanded((x) => !x);}
+      }, summaryRecentExpanded ? "Show less" : `Show more (${(history || []).length - 3} more)`)
+      )
       ),
       history.length === 0 && /*#__PURE__*/
       React.createElement("div", { className: "summary-panel summary-empty-cta", style: { textAlign: "center", padding: "36px 16px 40px", marginTop: 0 } }, /*#__PURE__*/
@@ -7861,9 +7600,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       , /*#__PURE__*/
       React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--summary" })
-      )
-      )
-      , /*#__PURE__*/
+      ), /*#__PURE__*/
       React.createElement(TabBar, { view: view, setView: setView, theme: theme, nightMode: nightMode })
       ));
   }
