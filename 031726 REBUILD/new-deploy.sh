@@ -18,6 +18,10 @@ fi
 echo "→ Adding remote 'deploy' → $REMOTE_URL"
 git remote add deploy "$REMOTE_URL" 2>/dev/null || git remote set-url deploy "$REMOTE_URL"
 
+echo "→ Committing any changes..."
+git add .
+git commit -m "Deploy $(date)" || echo "No changes to commit"
+
 echo "→ Pushing main to new repo..."
 if [ -n "$GITHUB_TOKEN" ]; then
   git push "https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/${REPO_NAME}.git" main
@@ -32,3 +36,6 @@ echo "  2. Import ${GITHUB_USER}/${REPO_NAME}"
 echo "  3. Deploy"
 echo ""
 echo "  Your new URL: https://${REPO_NAME}.vercel.app (or similar)"
+echo ""
+echo "→ Opening preview in browser..."
+open "https://${REPO_NAME}.vercel.app"

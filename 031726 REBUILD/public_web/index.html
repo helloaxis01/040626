@@ -9736,6 +9736,88 @@ function axisHistoryForDailyTotals(stateHistory) {
 
 const AXIS_METRICS_WEIGHT_KEY = "axis_metrics_weight_v1";
 const AXIS_METRICS_PAIN_KEY = "axis_metrics_pain_v1";
+const AXIS_PAIN_LOG_KEY = "axis_pain_log";
+const AXIS_WEIGHT_ARCHIVE_KEY = "axis_history_archive";
+const AXIS_PAIN_ARCHIVE_KEY = "axis_pain_log_archive";
+const AXIS_RETENTION_DAYS = 90;
+
+function axisRetentionCutoffTs() {
+  return Date.now() - AXIS_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+}
+
+function axisMetricsMergeWeightArchive(existing, older) {
+  const base = Array.isArray(existing) ? axisMetricsNormalizeWeightList(existing) : [];
+  const add = Array.isArray(older) ? axisMetricsNormalizeWeightList(older) : [];
+  const byTs = new Map();
+  for (const e of base) byTs.set(e.ts, e);
+  for (const e of add) byTs.set(e.ts, e);
+  return Array.from(byTs.values()).sort((a, b) => a.ts - b.ts);
+}
+
+function axisMetricsNormalizePainArchive(raw) {
+  if (!Array.isArray(raw)) return [];
+  const out = [];
+  for (const x of raw) {
+    const dateKey = x && typeof x.dateKey === "string" ? x.dateKey : "";
+    if (!dateKey) continue;
+    const t = new Date(dateKey).getTime();
+    if (Number.isNaN(t)) continue;
+    const level = axisMetricsPainGetLevel(x);
+    if (level == null) continue;
+    const note = axisMetricsPainGetNote(x);
+    out.push({ dateKey, level, note });
+  }
+  out.sort((a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime());
+  return out;
+}
+
+function axisMetricsMergePainArchive(existing, older) {
+  const base = axisMetricsNormalizePainArchive(existing);
+  const add = axisMetricsNormalizePainArchive(older);
+  const byKey = new Map();
+  for (const e of base) byKey.set(e.dateKey, e);
+  for (const e of add) byKey.set(e.dateKey, e);
+  return Array.from(byKey.values()).sort((a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime());
+}
+
+function axisMetricsApplyRetention(weightSamples, painByDay) {
+  const cutoffTs = axisRetentionCutoffTs();
+  const weights = axisMetricsNormalizeWeightList(weightSamples);
+  const keepWeight = [];
+  const olderWeight = [];
+  for (const e of weights) {
+    if (e.ts >= cutoffTs) keepWeight.push(e);else olderWeight.push(e);
+  }
+  const painMap = axisMetricsMigratePainMap(painByDay);
+  const keepPain = {};
+  const olderPain = [];
+  for (const dateKey of Object.keys(painMap)) {
+    const t = new Date(dateKey).getTime();
+    if (Number.isNaN(t)) continue;
+    const level = axisMetricsPainGetLevel(painMap[dateKey]);
+    if (level == null) continue;
+    const note = axisMetricsPainGetNote(painMap[dateKey]);
+    if (t >= cutoffTs) keepPain[dateKey] = note ? { level, note } : { level };else olderPain.push({ dateKey, level, note });
+  }
+  const mergedWeightArchive = axisMetricsMergeWeightArchive(storageGet(AXIS_WEIGHT_ARCHIVE_KEY, []), olderWeight);
+  const mergedPainArchive = axisMetricsMergePainArchive(storageGet(AXIS_PAIN_ARCHIVE_KEY, []), olderPain);
+  return { keepWeight, keepPain, mergedWeightArchive, mergedPainArchive, hadPurge: olderWeight.length > 0 || olderPain.length > 0 };
+}
+
+function axisMetricsHistoryBucketLabelForTs(ts) {
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "OLDER";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const diff = Math.round((today.getTime() - dayStart) / 86400000);
+  if (diff <= 0) return "TODAY";
+  if (diff === 1) return "YESTERDAY";
+  if (diff === 2) return "2 DAYS AGO";
+  if (diff <= 7) return "LAST WEEK";
+  if (diff <= 30) return "LAST MONTH";
+  return "OLDER";
+}
 
 function axisMetricsMigratePainMap(o) {
   if (!o || typeof o !== "object" || Array.isArray(o)) return {};
@@ -10195,7 +10277,7 @@ function WeightSectionSparkline({ entries }) {
   ));
 }
 
-function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry }) {
+function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry, onOpenHistory }) {
   const [manualOpen, setManualOpen] = React.useState(false);
   const [draftLbs, setDraftLbs] = React.useState("");
   const [editingTs, setEditingTs] = React.useState(null);
@@ -10212,34 +10294,15 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   const trend2w = axisMetricsWeightTwoWeekTrend(samples);
   const insight = axisMetricsWeightSectionInsight();
   const contextParts = [];
-  if (delta2w) contextParts.push(delta2w);
-  if (lastSample) contextParts.push("Last log: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
+  if (lastSample) contextParts.push("Latest: " + current.toFixed(1) + " lbs — " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
   const contextLine = contextParts.join(" \u2022 ");
   const heroWarm = trend2w === "up";
-  const logRowsNewestFirst = arr.slice().reverse();
-  const [weightLogPage, setWeightLogPage] = React.useState(1);
-  const [weightLogExpanded, setWeightLogExpanded] = React.useState(false);
-  const wPager = axisMetricLogPagerSlice(logRowsNewestFirst, weightLogPage, weightLogExpanded, {});
-  const weightVisibleRows = wPager.visible;
-  const weightPageCount = wPager.pageCount;
-  const weightShowMore = wPager.showMoreToggle;
-  const weightTotal = wPager.total;
   React.useEffect(() => {
     if (!manualOpen) return;
     setDraftLbs(current != null ? String(current.toFixed(1)) : "");
     setEditingTs(null);
     setEditDraftLbs("");
   }, [manualOpen]);
-  React.useEffect(() => {
-    if (!manualOpen) {
-      setWeightLogPage(1);
-      setWeightLogExpanded(false);
-    }
-  }, [manualOpen]);
-  React.useEffect(() => {
-    const pc = logRowsNewestFirst.length === 0 ? 1 : Math.max(1, Math.ceil(logRowsNewestFirst.length / 15));
-    if (weightLogPage > pc) setWeightLogPage(pc);
-  }, [logRowsNewestFirst.length, weightLogPage]);
   React.useEffect(() => {
     const onKey = (e) => {
       if (e.key !== "Escape" || !manualOpen) return;
@@ -10284,6 +10347,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   !emptyWeight && contextLine && /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine),
   /*#__PURE__*/React.createElement("div", { className: "weight-section__weight-insight" }, insight.text),
   graphBlock,
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", style: { marginBottom: 10 }, onClick: () => { axisHapticTick(); onOpenHistory && onOpenHistory(); } }, "VIEW WEIGHT LOG"),
   /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "weight-section__btn weight-section__btn--expand",
@@ -10312,48 +10376,6 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: () => { axisHapticTick(); closeModal(); } }, "Cancel"),
   /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: saveManual }, "Save")
   )
-  ),
-  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, weightTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Tap Manual log to add weight.") : weightVisibleRows.flatMap((e, wi) => {
-    const b = axisMetricsHistoryBucketFromTs(e.ts);
-    const prevB = wi > 0 ? axisMetricsHistoryBucketFromTs(weightVisibleRows[wi - 1].ts) : null;
-    const bucketEl = b !== prevB ? [/*#__PURE__*/React.createElement("div", { key: "w-bucket-" + e.ts + "-" + b, className: "metric-inline-log__bucket-label", role: "presentation" }, b)] : [];
-    const isEdit = editingTs === e.ts;
-    const row = /*#__PURE__*/React.createElement("div", { key: e.ts, className: "metric-inline-log__list-item", role: "listitem" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__field-stack" }, /*#__PURE__*/
-    React.createElement("label", { className: "weight-log-modal__label weight-log-modal__label--muted", htmlFor: "weight-log-lbs-edit-" + String(e.ts) }, "Weight"),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
-    React.createElement("input", {
-      id: "weight-log-lbs-edit-" + String(e.ts),
-      type: "text",
-      inputMode: "decimal",
-      autoComplete: "off",
-      className: "weight-log-modal__input metric-inline-log__input-grow",
-      placeholder: "Enter weight (lbs)",
-      "aria-label": "Edit weight in pounds",
-      value: editDraftLbs,
-      onChange: (ev) => setEditDraftLbs(axisMetricsSanitizeDecimalInput(ev.target.value))
-    }),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: () => { axisHapticTick(); setEditingTs(null); setEditDraftLbs(""); } }, "Cancel"),
-    /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: saveRowEdit }, "Save")
-    )
-    )
-    ) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
-    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs \u00b7 ${axisMetricsFormatTimeLocal(e.ts)}${e.source === "health" ? " \u00b7 Health" : ""}`),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", onClick: () => { axisHapticTick(); setEditingTs(e.ts); setEditDraftLbs(axisMetricsSanitizeDecimalInput(String(e.lbs))); } }, "Edit"),
-    /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link metric-inline-log__btn-link--danger", onClick: () => { axisHapticTick(); onDeleteWeightEntry(e.ts); } }, "Delete")
-    )
-    ));
-    return bucketEl.concat([row]);
-  })),
-  weightShowMore ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__expand-toggle" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metric-inline-log__link-btn metric-inline-log__link-btn--secondary", onClick: () => { axisHapticTick(); setWeightLogExpanded((x) => !x); } }, weightLogExpanded ? "Collapse" : "Show more")
-  ) : null,
-  weightTotal > 15 ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pager", role: "navigation", "aria-label": "Weight log pages" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: wPager.page <= 1, onClick: () => { axisHapticTick(); setWeightLogExpanded(false); setWeightLogPage((p) => Math.max(1, p - 1)); } }, "Previous"),
-  /*#__PURE__*/React.createElement("span", null, "Page ", wPager.page, " of ", weightPageCount),
-  /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: wPager.page >= weightPageCount, onClick: () => { axisHapticTick(); setWeightLogExpanded(false); setWeightLogPage((p) => Math.min(weightPageCount, p + 1)); } }, "Next")
-  ) : null
   )
   );
 }
@@ -10379,6 +10401,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
   const cell = (dk, showDow) => {
     const raw = painByDay && painByDay[dk];
     const level = axisMetricsPainGetLevel(raw);
+    const note = axisMetricsPainGetNote(raw);
     const isToday = dk === dkToday;
     const tone = painHeatmapCellTone(level);
     const cls = "pain-heat__cell pain-heat__cell--" + tone + (isToday ? " pain-heat__cell--today" : "");
@@ -10390,8 +10413,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
       "aria-label": label
     }, level != null ? level : "\u2014");
     const tooltip = activeDateKey === dk ? /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip", style: { left: "50%", top: "0px" } }, /*#__PURE__*/
-    React.createElement("div", { className: "metric-chart-tooltip__value" }, level != null ? `${level}/10 pain` : "No pain entry"),
-    /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip__date" }, axisMetricsShortDateFromDateKey(dk))) : null;
+    React.createElement("div", { className: "metric-chart-tooltip__value" }, `${axisMetricsShortDateFromDateKey(dk)} • ${level != null ? `${level}/10` : "No entry"}${note ? ` • ${note}` : ""}`)) : null;
     if (!showDow) return /*#__PURE__*/React.createElement("div", { className: "pain-heat__cell-wrap" }, tooltip, btn);
     return /*#__PURE__*/React.createElement("div", { key: dk, className: "pain-heat__col" }, /*#__PURE__*/
     React.createElement("div", { className: "pain-heat__cell-wrap" }, tooltip, btn),
@@ -10411,7 +10433,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
   }));
 }
 
-function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry }) {
+function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry, onOpenHistory }) {
   const [entryOpen, setEntryOpen] = React.useState(false);
   const [painGridMode, setPainGridMode] = React.useState("7d");
   const [v, setV] = React.useState(5);
@@ -10427,14 +10449,9 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   const dkToday = new Date().toDateString();
   const painTodayVal = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]);
   const hasAnyEntry = axisMetricsPainHasAnyEntry(painByDay);
-  const contextLine = axisPainFormatTodayContextLine(dkToday);
+  const contextLine = painTodayVal != null ? "Latest: " + painTodayVal + "/10 — " + axisMetricsShortDateFromDateKey(dkToday) : null;
   const painCallout = axisMetricsPainSundayInsight(painByDay) || axisMetricsPainWeekendInsight(painByDay) || axisMetricsPainImprovementInsight(painByDay) || axisMetricsPainConsistentInsight(painByDay) || axisMetricsPainMondayInsight(painByDay);
   const painRowsNewestFirst = axisMetricsPainEntriesDescending(painByDay);
-  const pPager = axisMetricLogPagerSlice(painRowsNewestFirst, painLogPage, painLogExpanded, {});
-  const painVisibleRows = pPager.visible;
-  const painPageCount = pPager.pageCount;
-  const painShowMore = pPager.showMoreToggle;
-  const painTotal = pPager.total;
   React.useEffect(() => {
     if (!entryOpen) return;
     const ex = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]) != null ? axisMetricsPainGetLevel(painByDay[dkToday]) : 5;
@@ -10444,16 +10461,10 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   }, [entryOpen, dkToday, painByDay]);
   React.useEffect(() => {
     if (!entryOpen) {
-      setPainLogPage(1);
-      setPainLogExpanded(false);
       setEditingDateKey(null);
       setEditNote("");
     }
   }, [entryOpen]);
-  React.useEffect(() => {
-    const pc = painRowsNewestFirst.length === 0 ? 1 : Math.max(1, Math.ceil(painRowsNewestFirst.length / 15));
-    if (painLogPage > pc) setPainLogPage(pc);
-  }, [painRowsNewestFirst.length, painLogPage]);
   React.useEffect(() => {
     const onKey = (e) => {
       if (e.key !== "Escape") return;
@@ -10500,6 +10511,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   ),
   heatmapBlock,
   painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, "\uD83D\uDCA1 ", painCallout) : null,
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", style: { marginBottom: 10 }, onClick: () => { axisHapticTick(); onOpenHistory && onOpenHistory(); } }, "VIEW PAIN LOG"),
   /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-section__btn weight-section__btn--expand", "aria-expanded": entryOpen, title: entryOpen ? "Collapse pain log" : "Expand to log pain", onClick: () => { axisHapticTick(); setEntryOpen((o) => !o); } }, /*#__PURE__*/React.createElement("span", null, "Log pain")),
   entryOpen && /*#__PURE__*/React.createElement("div", { className: "metric-inline-log", role: "region", "aria-labelledby": "pain-inline-log-h" }, /*#__PURE__*/
   React.createElement("h2", { id: "pain-inline-log-h", className: "weight-log-modal__title sr-only" }, "Pain log"),
@@ -10516,72 +10528,118 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: savePain }, "Save")
   )
   )
-  ),
-  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, painTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Tap Log pain above to add an entry.") : painVisibleRows.flatMap((e, pi) => {
-    const b = axisMetricsHistoryBucketFromDateKey(e.dateKey);
-    const prevB = pi > 0 ? axisMetricsHistoryBucketFromDateKey(painVisibleRows[pi - 1].dateKey) : null;
-    const bucketEl = b !== prevB ? [/*#__PURE__*/React.createElement("div", { key: "p-bucket-" + e.dateKey + "-" + b, className: "metric-inline-log__bucket-label", role: "presentation" }, b)] : [];
-    const isEdit = editingDateKey === e.dateKey;
-    const metaLine = `${e.level}/10 \u00b7 ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? " \u00b7 " + e.note : ""}`;
-    const row = /*#__PURE__*/React.createElement("div", { key: e.dateKey, className: "metric-inline-log__list-item", role: "listitem" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
-    React.createElement("div", { className: "metric-inline-log__pain-slider-row" }, /*#__PURE__*/
-    React.createElement("label", { className: "weight-log-modal__label weight-log-modal__label--muted", htmlFor: "pain-edit-level-" + e.dateKey, style: { marginBottom: 0, alignSelf: "center" } }, "Level"),
-    /*#__PURE__*/React.createElement("input", { id: "pain-edit-level-" + e.dateKey, className: "metric-inline-log__pain-range", type: "range", min: 1, max: 10, step: 1, value: editV, onChange: (ev) => setEditV(Number(ev.target.value)) }),
-    /*#__PURE__*/React.createElement("span", { className: "metric-inline-log__pain-val metric-inline-log__pain-val--accent", "aria-hidden": true }, editV, "/10")
-    ),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row metric-inline-log__new-row--note-only" }, /*#__PURE__*/
-    React.createElement("input", { type: "text", className: "weight-log-modal__input metric-inline-log__input-grow", placeholder: "E.g., lower back, neck...", maxLength: 48, value: editNote, onChange: (ev) => setEditNote(ev.target.value), "aria-label": "Edit pain note" }),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline metric-inline-log__btns-inline--full" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: () => { axisHapticTick(); setEditingDateKey(null); setEditNote(""); } }, "Cancel"),
-    /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: savePainRowEdit }, "Save")
-    )
-    )
-    ) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
-    React.createElement("div", { className: "metric-inline-log__row-meta" }, metaLine),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", onClick: () => { axisHapticTick(); setEditingDateKey(e.dateKey); setEditV(e.level); setEditNote(e.note || ""); } }, "Edit"),
-    /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link metric-inline-log__btn-link--danger", onClick: () => { axisHapticTick(); onDeletePainEntry && onDeletePainEntry(e.dateKey); } }, "Delete")
-    )
-    ));
-    return bucketEl.concat([row]);
-  })),
-  painShowMore ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__expand-toggle" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metric-inline-log__link-btn metric-inline-log__link-btn--secondary", onClick: () => { axisHapticTick(); setPainLogExpanded((x) => !x); } }, painLogExpanded ? "Collapse" : "Show more")
-  ) : null,
-  painTotal > 15 ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pager", role: "navigation", "aria-label": "Pain log pages" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: pPager.page <= 1, onClick: () => { axisHapticTick(); setPainLogExpanded(false); setPainLogPage((p) => Math.max(1, p - 1)); } }, "Previous"),
-  /*#__PURE__*/React.createElement("span", null, "Page ", pPager.page, " of ", painPageCount),
-  /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: pPager.page >= painPageCount, onClick: () => { axisHapticTick(); setPainLogExpanded(false); setPainLogPage((p) => Math.min(painPageCount, p + 1)); } }, "Next")
-  ) : null
+  )
   )
   );
 }
 
-function axisExportAxisLocalData() {
-  const keys = [
-    "axis_history", "axis_done", "axis_skipped", "axis_favs", "axis_notes", "axis_streak",
-    "axis_metrics_weight_v1", "axis_metrics_pain_v1",
-    "axis_daily_goal_minutes", "axis_weekly_goal_minutes", "axis_weekly_follows_daily",
-    "axis_theme", "axis_night", "axis_period", "axis_exercise_duration",
-    "axis_recent_tracks", "axis_app_icon", "axis_show_streak", "axis_show_timer", "axis_show_pct",
-    "axis_metrics_outcomes_open", "axis_metrics_weight_open", "axis_metrics_pain_open"
-  ];
-  const pack = { exportedAt: new Date().toISOString(), app: "AXIS", version: 1, data: {} };
-  for (const k of keys) {
-    try {
-      pack.data[k] = storageGet(k, null);
-    } catch (e) {
-      pack.data[k] = null;
-    }
+function axisMetricsGroupByAge(items, tsGetter) {
+  const order = ["TODAY", "YESTERDAY", "2 DAYS AGO", "LAST WEEK", "LAST MONTH", "OLDER"];
+  const map = {};
+  for (const k of order) map[k] = [];
+  for (const item of items || []) {
+    const t = Number(tsGetter(item)) || 0;
+    const bucket = axisMetricsHistoryBucketLabelForTs(t);
+    if (!map[bucket]) map[bucket] = [];
+    map[bucket].push(item);
   }
+  return order.map((k) => ({ label: k, rows: map[k] || [] }));
+}
+
+function MetricsWeightHistoryModal({ open, onClose, entries, onEditWeightEntry, onDeleteWeightEntry }) {
+  const [editingTs, setEditingTs] = React.useState(null);
+  const [draft, setDraft] = React.useState("");
+  if (!open) return null;
+  const rows = (entries || []).slice().sort((a, b) => b.ts - a.ts);
+  const groups = axisMetricsGroupByAge(rows, (x) => x.ts);
+  const content = rows.length === 0 ? [/*#__PURE__*/React.createElement("p", { key: "empty", className: "metric-inline-log__empty" }, "No weight entries yet. Tap \"Manual log\" from Metrics to add one.")] : groups.map((g) => /*#__PURE__*/React.createElement("div", { key: g.label, style: { marginBottom: 12 } }, /*#__PURE__*/
+  React.createElement("div", { className: "metric-inline-log__bucket-label" }, g.label),
+  g.rows.length === 0 ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__empty", style: { paddingTop: 8 } }, "No entries") : g.rows.map((e) => {
+    const isEdit = editingTs === e.ts;
+    return /*#__PURE__*/React.createElement("div", { key: e.ts, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
+    React.createElement("input", { type: "text", className: "weight-log-modal__input metric-inline-log__input-grow", value: draft, onChange: (ev) => setDraft(axisMetricsSanitizeDecimalInput(ev.target.value)) }),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: () => { setEditingTs(null); setDraft(""); } }, "Cancel"),
+    /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: () => { const n = parseFloat(draft);if (Number.isFinite(n) && n > 0) onEditWeightEntry(e.ts, n);setEditingTs(null);setDraft(""); } }, "Save")
+    )) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
+    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs • ${axisMetricsFormatTimeLocal(e.ts)}`),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", onClick: () => { setEditingTs(e.ts); setDraft(String(e.lbs.toFixed(1))); } }, "Edit"),
+    /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link metric-inline-log__btn-link--danger", onClick: () => { if (window.confirm("Delete this weight entry?")) onDeleteWeightEntry(e.ts); } }, "Delete"))));
+  })));
+  return /*#__PURE__*/React.createElement("div", { className: "weight-log-modal-backdrop", onClick: (e) => { if (e.target === e.currentTarget) onClose(); } }, /*#__PURE__*/React.createElement("div", { className: "weight-log-modal", style: { maxWidth: 520, maxHeight: "85vh", overflowY: "auto" } }, /*#__PURE__*/React.createElement("div", { className: "weight-log-modal__title", style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, "Weight Log", /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: onClose }, "X")), content));
+}
+
+function MetricsPainHistoryModal({ open, onClose, entries, onEditPainEntry, onDeletePainEntry }) {
+  const [editingDateKey, setEditingDateKey] = React.useState(null);
+  const [editV, setEditV] = React.useState(5);
+  const [editNote, setEditNote] = React.useState("");
+  if (!open) return null;
+  const rows = (entries || []).slice().sort((a, b) => new Date(b.dateKey).getTime() - new Date(a.dateKey).getTime());
+  const groups = axisMetricsGroupByAge(rows, (x) => new Date(x.dateKey).getTime());
+  const content = rows.length === 0 ? [/*#__PURE__*/React.createElement("p", { key: "empty", className: "metric-inline-log__empty" }, "No pain entries yet. Tap \"Log pain\" from Metrics to add one.")] : groups.map((g) => /*#__PURE__*/React.createElement("div", { key: g.label, style: { marginBottom: 12 } }, /*#__PURE__*/
+  React.createElement("div", { className: "metric-inline-log__bucket-label" }, g.label),
+  g.rows.length === 0 ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__empty", style: { paddingTop: 8 } }, "No entries") : g.rows.map((e) => {
+    const isEdit = editingDateKey === e.dateKey;
+    return /*#__PURE__*/React.createElement("div", { key: e.dateKey, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
+    React.createElement("div", { className: "metric-inline-log__pain-slider-row" }, /*#__PURE__*/React.createElement("input", { className: "metric-inline-log__pain-range", type: "range", min: 1, max: 10, step: 1, value: editV, onChange: (ev) => setEditV(Number(ev.target.value)) }), /*#__PURE__*/React.createElement("span", { className: "metric-inline-log__pain-val metric-inline-log__pain-val--accent" }, editV, "/10")),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row metric-inline-log__new-row--note-only" }, /*#__PURE__*/React.createElement("input", { type: "text", className: "weight-log-modal__input metric-inline-log__input-grow", value: editNote, onChange: (ev) => setEditNote(ev.target.value), maxLength: 48 }),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline metric-inline-log__btns-inline--full" }, /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: () => { setEditingDateKey(null); setEditNote(""); } }, "Cancel"), /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: () => { onEditPainEntry(e.dateKey, { level: editV, note: editNote.trim().slice(0, 48) });setEditingDateKey(null); } }, "Save")))) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
+    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.level}/10 • ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? ` • ${e.note}` : ""}`),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", onClick: () => { setEditingDateKey(e.dateKey); setEditV(e.level); setEditNote(e.note || ""); } }, "Edit"), /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link metric-inline-log__btn-link--danger", onClick: () => { if (window.confirm("Delete this pain entry?")) onDeletePainEntry(e.dateKey); } }, "Delete"))));
+  })));
+  return /*#__PURE__*/React.createElement("div", { className: "weight-log-modal-backdrop", onClick: (e) => { if (e.target === e.currentTarget) onClose(); } }, /*#__PURE__*/React.createElement("div", { className: "weight-log-modal", style: { maxWidth: 520, maxHeight: "85vh", overflowY: "auto" } }, /*#__PURE__*/React.createElement("div", { className: "weight-log-modal__title", style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, "Pain Log", /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: onClose }, "X")), content));
+}
+
+function MetricsArchivedDataModal({ open, onClose, weightArchive, painArchive }) {
+  if (!open) return null;
+  const w = axisMetricsNormalizeWeightList(weightArchive || []).slice().sort((a, b) => b.ts - a.ts);
+  const p = axisMetricsMergePainArchive([], painArchive || []).slice().sort((a, b) => new Date(b.dateKey).getTime() - new Date(a.dateKey).getTime());
+  const content = w.length === 0 && p.length === 0 ? [/*#__PURE__*/React.createElement("div", { key: "empty", className: "metric-inline-log__empty" }, "No archived entries. All your data is current.")] : [/*#__PURE__*/
+  React.createElement("div", { key: "w-head", className: "metric-inline-log__bucket-label" }, "WEIGHT ARCHIVE"),
+  ...w.map((e) => /*#__PURE__*/React.createElement("div", { key: "wa-" + e.ts, className: "metric-inline-log__list-item" }, `${e.lbs.toFixed(1)} lbs • ${axisMetricsFormatWeightLastLogFriendly(e.ts)}`)),
+  /*#__PURE__*/React.createElement("div", { key: "p-head", className: "metric-inline-log__bucket-label", style: { marginTop: 10 } }, "PAIN ARCHIVE"),
+  ...p.map((e) => /*#__PURE__*/React.createElement("div", { key: "pa-" + e.dateKey, className: "metric-inline-log__list-item" }, `${e.level}/10 • ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? " • " + e.note : ""}`))];
+  return /*#__PURE__*/React.createElement("div", { className: "weight-log-modal-backdrop", onClick: (e) => { if (e.target === e.currentTarget) onClose(); } }, /*#__PURE__*/React.createElement("div", { className: "weight-log-modal", style: { maxWidth: 560, maxHeight: "85vh", overflowY: "auto" } }, /*#__PURE__*/React.createElement("div", { className: "weight-log-modal__title", style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, "Archived Data", /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: onClose }, "X")), content));
+}
+
+function axisExportAxisLocalData() {
+  const nowIso = new Date().toISOString();
+  const weightLog = axisMetricsNormalizeWeightList(storageGet(AXIS_METRICS_WEIGHT_KEY, []));
+  const weightArchive = axisMetricsMergeWeightArchive([], storageGet(AXIS_WEIGHT_ARCHIVE_KEY, []));
+  const painLogMap = axisMetricsMigratePainMap(storageGet(AXIS_METRICS_PAIN_KEY, storageGet(AXIS_PAIN_LOG_KEY, {})));
+  const painLog = axisMetricsPainEntriesDescending(painLogMap).map((e) => ({ dateKey: e.dateKey, level: e.level, note: e.note || "" })).reverse();
+  const painArchive = axisMetricsMergePainArchive([], storageGet(AXIS_PAIN_ARCHIVE_KEY, []));
+  const pack = {
+    exportedAt: nowIso,
+    user: storageGet("axis_user_email", null),
+    weightLog,
+    weightArchive,
+    painLog,
+    painArchive,
+    goals: {
+      dailyMinutes: storageGet("axis_daily_goal_minutes", 30),
+      weeklyMinutes: storageGet("axis_weekly_goal_minutes", null),
+      weeklyFollowsDaily: storageGet("axis_weekly_follows_daily", true)
+    },
+    preferences: {
+      theme: storageGet("axis_theme", "dark"),
+      nightMode: storageGet("axis_night", false),
+      moodPeriod: storageGet("axis_period", null),
+      exerciseDuration: storageGet("axis_exercise_duration", 45),
+      showStreak: storageGet("axis_show_streak", true),
+      showTimer: storageGet("axis_show_timer", true),
+      showPct: storageGet("axis_show_pct", true)
+    }
+  };
   try {
-    if (typeof localStorage !== "undefined") pack.data.axisUserName = localStorage.getItem("axisUserName");
+    if (typeof localStorage !== "undefined" && !pack.user) pack.user = localStorage.getItem("axisUserEmail") || localStorage.getItem("axisUserName");
   } catch (e) {}
   const blob = new Blob([JSON.stringify(pack, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   const url = URL.createObjectURL(blob);
   a.href = url;
-  a.download = `axis-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `axis-backup-${new Date().toISOString().slice(0, 10)}.json`;
   a.rel = "noopener";
   document.body.appendChild(a);
   a.click();
@@ -10669,10 +10727,15 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [summaryRecentOpen, setSummaryRecentOpen] = useState(false);
   const [metricsWeightSamples, setMetricsWeightSamples] = useState(() => axisMetricsNormalizeWeightList(storageGet(AXIS_METRICS_WEIGHT_KEY, [])));
   const [metricsPainByDay, setMetricsPainByDay] = useState(() => {
-    const o = storageGet(AXIS_METRICS_PAIN_KEY, {});
+    const o = storageGet(AXIS_METRICS_PAIN_KEY, storageGet(AXIS_PAIN_LOG_KEY, {}));
     const raw = o && typeof o === "object" && !Array.isArray(o) ? o : {};
     return axisMetricsMigratePainMap(raw);
   });
+  const [metricsWeightArchive, setMetricsWeightArchive] = useState(() => axisMetricsMergeWeightArchive([], storageGet(AXIS_WEIGHT_ARCHIVE_KEY, [])));
+  const [metricsPainArchive, setMetricsPainArchive] = useState(() => axisMetricsMergePainArchive([], storageGet(AXIS_PAIN_ARCHIVE_KEY, [])));
+  const [weightHistoryOpen, setWeightHistoryOpen] = useState(false);
+  const [painHistoryOpen, setPainHistoryOpen] = useState(false);
+  const [archivedDataOpen, setArchivedDataOpen] = useState(false);
   const [metricsStepsToday, setMetricsStepsToday] = useState(null);
   const [metricsHealthHint, setMetricsHealthHint] = useState("");
   const [healthConnectSyncMsg, setHealthConnectSyncMsg] = useState("");
@@ -10753,7 +10816,23 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   }, [metricsWeightSamples]);
   useEffect(() => {
     storageSet(AXIS_METRICS_PAIN_KEY, metricsPainByDay);
+    storageSet(AXIS_PAIN_LOG_KEY, metricsPainByDay);
   }, [metricsPainByDay]);
+  useEffect(() => {
+    storageSet(AXIS_WEIGHT_ARCHIVE_KEY, metricsWeightArchive);
+  }, [metricsWeightArchive]);
+  useEffect(() => {
+    storageSet(AXIS_PAIN_ARCHIVE_KEY, metricsPainArchive);
+  }, [metricsPainArchive]);
+  useEffect(() => {
+    const retained = axisMetricsApplyRetention(metricsWeightSamples, metricsPainByDay);
+    if (retained.hadPurge) {
+      setMetricsWeightSamples(retained.keepWeight);
+      setMetricsPainByDay(retained.keepPain);
+      setMetricsWeightArchive(retained.mergedWeightArchive);
+      setMetricsPainArchive(retained.mergedPainArchive);
+    }
+  }, []);
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -11135,6 +11214,19 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       className: "settings-outline-btn",
       onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
     }, "Export my data"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "DATA RETENTION"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-line" }, "Data is kept locally for 90 days."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-line" }, "Older entries are automatically archived."), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-outline-btn",
+      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
+    }, "EXPORT MY DATA"), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-outline-btn",
+      onClick: () => { axisHapticTick(); setArchivedDataOpen(true); }
+    }, "VIEW ARCHIVED DATA"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Backups"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your data currently stays local. Eventually we will implement cloud storage."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "What We Don't Do"), /*#__PURE__*/
@@ -11196,6 +11288,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     ), /*#__PURE__*/
     React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--settings" })
     ), /*#__PURE__*/
+    React.createElement(MetricsArchivedDataModal, {
+      open: archivedDataOpen,
+      onClose: () => setArchivedDataOpen(false),
+      weightArchive: metricsWeightArchive,
+      painArchive: metricsPainArchive
+    }), /*#__PURE__*/
     React.createElement(TabBar, { view: view, setView: setView, theme: theme, nightMode: nightMode })
     ));
 
@@ -11441,7 +11539,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         },
         onDeleteWeightEntry: (ts) => {
           setMetricsWeightSamples((prev) => axisMetricsNormalizeWeightList((prev || []).filter((x) => x.ts !== ts)));
-        }
+        },
+        onOpenHistory: () => setWeightHistoryOpen(true)
       })
       )
       , /*#__PURE__*/
@@ -11479,7 +11578,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             delete next[dateKey];
             return next;
           });
-        }
+        },
+        onOpenHistory: () => setPainHistoryOpen(true)
       })
       )
       , /*#__PURE__*/
@@ -11569,6 +11669,33 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       , /*#__PURE__*/
       React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--metrics" })
       ), /*#__PURE__*/
+      React.createElement(MetricsWeightHistoryModal, {
+        open: weightHistoryOpen,
+        onClose: () => setWeightHistoryOpen(false),
+        entries: metricsWeightSamples,
+        onEditWeightEntry: (ts, lbs) => {
+          const n = Math.max(1, Math.min(800, Number(lbs)));
+          if (!Number.isFinite(n)) return;
+          setMetricsWeightSamples((prev) => axisMetricsNormalizeWeightList((prev || []).map((x) => x.ts === ts ? { ...x, lbs: n } : x)));
+        },
+        onDeleteWeightEntry: (ts) => setMetricsWeightSamples((prev) => axisMetricsNormalizeWeightList((prev || []).filter((x) => x.ts !== ts)))
+      }), /*#__PURE__*/
+      React.createElement(MetricsPainHistoryModal, {
+        open: painHistoryOpen,
+        onClose: () => setPainHistoryOpen(false),
+        entries: axisMetricsPainEntriesDescending(metricsPainByDay),
+        onEditPainEntry: (dateKey, payload) => {
+          const level = payload && typeof payload.level === "number" ? payload.level : NaN;
+          const note = payload && payload.note ? String(payload.note).slice(0, 48) : "";
+          if (typeof dateKey !== "string" || !Number.isFinite(level) || level < 1 || level > 10) return;
+          setMetricsPainByDay((p) => {
+            const next = { ...(p || {}) };
+            next[dateKey] = note ? { level, note } : { level };
+            return next;
+          });
+        },
+        onDeletePainEntry: (dateKey) => setMetricsPainByDay((p) => { const next = { ...(p || {}) };delete next[dateKey];return next; })
+      }), /*#__PURE__*/
       React.createElement(TabBar, { view: view, setView: setView, theme: theme, nightMode: nightMode })
       ));
   }
