@@ -171,6 +171,28 @@ function AxisIcon({ size = 72, color = "#F0EEEB", className }) {
 
 }
 
+/** Minimal down chevron; add .axis-chevron-svg--collapsed to point right (rotate -90deg). */
+function AxisChevronCaret({ expanded, className = "" }) {
+  return /*#__PURE__*/React.createElement("svg", {
+    className: "axis-chevron-svg" + (expanded ? "" : " axis-chevron-svg--collapsed") + (className ? " " + className : ""),
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true
+  }, /*#__PURE__*/React.createElement("polyline", { points: "6 9 12 15 18 9" }));
+}
+
+/** Thin right arrow (stroke) for inline CTAs — matches tab-icon stroke weight. */
+function AxisThinArrowRight({ size = 14 }) {
+  const S = size;
+  return /*#__PURE__*/React.createElement("svg", { width: S, height: S, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/React.createElement("line", { x1: "5", y1: "12", x2: "19", y2: "12" }), /*#__PURE__*/React.createElement("polyline", { points: "12 5 19 12 12 19" }));
+}
+
 // ── ONBOARDING
 /* onboarding CSS moved to onboarding.css */
 const obDarkVars = `
@@ -962,6 +984,7 @@ const css = `
     --color-background-secondary: color-mix(in srgb, var(--glass-bg) 120%, transparent);
     --color-border-tertiary: color-mix(in srgb, var(--border) 85%, transparent);
     --color-border-secondary: color-mix(in srgb, var(--border-card) 90%, transparent);
+    --color-border-primary: color-mix(in srgb, var(--accent) 72%, var(--border-card) 28%);
   }
   [data-theme="light"] {
     --bg-gradient: linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%);
@@ -1007,6 +1030,7 @@ const css = `
     --color-background-secondary: rgba(15, 24, 38, 0.06);
     --color-border-tertiary: rgba(15, 24, 38, 0.12);
     --color-border-secondary: rgba(15, 24, 38, 0.18);
+    --color-border-primary: color-mix(in srgb, var(--accent) 55%, rgba(15, 24, 38, 0.35));
   }
 
   /* Settings sliders: larger thumb (default; Ultra night overrides below) */
@@ -1443,7 +1467,7 @@ const css = `
   }
   .ultra-icon-grid {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
   .ultra-icon-slot {
     overflow: hidden;
@@ -2076,6 +2100,174 @@ const css = `
     width: 100%;
     box-sizing: border-box;
   }
+  .settings-page-rail .settings-section-title.settings-block__title {
+    margin-top: 1.5rem;
+  }
+  .settings-goals-panel > .settings-section-title.settings-block__title:first-of-type {
+    margin-top: 0;
+  }
+  .settings-page-rail .settings-block {
+    margin-top: 1.5rem;
+  }
+  .settings-page-rail .settings-block .settings-block__title {
+    margin-top: 0;
+  }
+  .settings-goals-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .settings-help-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .settings-slider-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .settings-slider-label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+  }
+  .settings-slider-label {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-align: left;
+  }
+  .settings-slider-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .settings-slider-group .settings-range {
+    margin-top: 8px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .settings-outline-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: 1rem;
+    padding: 12px 16px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .settings-outline-btn:hover {
+    background: var(--color-background-secondary);
+  }
+  .settings-outline-btn:active {
+    transform: scale(0.98);
+  }
+  a.settings-outline-btn {
+    box-sizing: border-box;
+  }
+  .settings-outline-btn--icon {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .settings-outline-btn--icon svg {
+    flex-shrink: 0;
+  }
+  .settings-custom-duration-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .settings-custom-duration-input {
+    width: 100px;
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    background: var(--glass-bg);
+    color: var(--text-white);
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+  }
+  .settings-custom-duration-input:focus {
+    outline: none;
+    border-color: var(--color-border-primary);
+  }
+  .settings-custom-duration-hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .settings-app-icon-slot {
+    position: relative;
+  }
+  .settings-app-icon-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+  }
+  .settings-app-icon-badge svg {
+    width: 12px;
+    height: 12px;
+    stroke: #ffffff;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .settings-account-title.settings-block__title {
+    margin-top: 1.5rem;
+  }
+  .app[data-night="true"] .settings-outline-btn {
+    border-color: color-mix(in srgb, #FF3B30 35%, rgba(255, 255, 255, 0.2));
+    color: var(--text-white);
+  }
+  .app[data-night="true"] .settings-outline-btn:hover {
+    background: rgba(255, 59, 48, 0.08);
+  }
+  .app[data-night="true"] .settings-custom-duration-input {
+    border-color: color-mix(in srgb, #FF3B30 35%, rgba(255, 255, 255, 0.2));
+    background: #000000;
+  }
+  .app[data-night="true"] .settings-custom-duration-input:focus {
+    border-color: #FF3B30;
+  }
   .settings-block--flush {
     margin-bottom: 0 !important;
   }
@@ -2539,9 +2731,11 @@ const css = `
   }
   .summary-history-bottom-toggle:active { opacity: 0.92; }
   .summary-history-bottom-toggle__chev {
-    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
     color: var(--text-dimmer);
-    line-height: 1;
   }
   .app[data-night="true"] .home-summary-lede--story {
     color: #FF3B30 !important;
@@ -3209,9 +3403,12 @@ const css = `
     -webkit-tap-highlight-color: transparent;
   }
   .metrics-recent-header-btn__chev {
-    font-size: 11px;
-    opacity: 0.65;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    line-height: 0;
+    color: inherit;
   }
   .metrics-recent-header-btn__label {
     letter-spacing: 0.12em;
@@ -3348,14 +3545,11 @@ const css = `
     padding: 0 0 10px;
     box-sizing: border-box;
   }
-  .metrics-goals-toolbar__toggle {
+  .metrics-goals-toolbar__heading {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    margin: 0;
     padding: 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
     font-family: var(--font-display);
     font-size: 13px;
     font-weight: 500;
@@ -3363,11 +3557,27 @@ const css = `
     line-height: 1.2;
     text-transform: uppercase;
     color: var(--color-text-secondary);
-    -webkit-tap-highlight-color: transparent;
-    transition: color 0.2s ease;
   }
-  .metrics-goals-toolbar__toggle:hover {
-    color: color-mix(in srgb, var(--color-text-secondary) 85%, var(--accent) 15%);
+  .axis-chevron-svg {
+    display: block;
+    flex-shrink: 0;
+    transition: transform 0.22s ease;
+    color: currentColor;
+  }
+  .axis-chevron-svg.axis-chevron-svg--collapsed {
+    transform: rotate(-90deg);
+  }
+  .metrics-recent-header-btn__chev .axis-chevron-svg,
+  .metrics-recent-header-btn__chev-svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.72;
+  }
+  .summary-history-bottom-toggle__chev .axis-chevron-svg,
+  .summary-history-bottom-toggle__chev-svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.75;
   }
   .metrics-goals-toolbar__settings {
     flex-shrink: 0;
@@ -4302,6 +4512,10 @@ const css = `
     align-items: flex-start;
     gap: 8px;
     width: 100%;
+  }
+  .pain-heat__week-label--spacer {
+    visibility: hidden;
+    pointer-events: none;
   }
   .pain-heat__week-label {
     flex: 0 0 44px;
@@ -9372,60 +9586,27 @@ function SettingsAuthSection({ isFooter = false } = {}) {
   }, []);
   const email = user && user.email ? user.email : null;
   const hasAuth = typeof window !== "undefined" && !!window.AXIS_auth;
-  const btnStyle = {
-    background: "none",
-    border: "1px solid var(--glass-border)",
-    fontFamily: "var(--font-display)",
-    fontSize: "var(--text-sm)",
-    letterSpacing: "0.16em",
-    textTransform: "uppercase",
-    color: "var(--text-dim)",
-    cursor: "pointer",
-    padding: "10px 18px",
-    borderRadius: 10
-  };
-  return /*#__PURE__*/React.createElement("div", { style: { borderTop: isFooter ? "none" : "1px solid var(--border)", paddingTop: isFooter ? 0 : 24, marginBottom: isFooter ? 0 : 32 } }, /*#__PURE__*/
-  React.createElement("div", { className: "settings-block__title", style: { marginBottom: 16 } }, "Account"), /*#__PURE__*/
+  return /*#__PURE__*/React.createElement("div", { style: { borderTop: isFooter ? "none" : "1px solid var(--border)", paddingTop: isFooter ? 0 : 24, marginBottom: isFooter ? 0 : 32, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, /*#__PURE__*/
+  React.createElement("div", { className: "settings-block__title settings-account-title" }, "Account"), /*#__PURE__*/
   !ready ? null : !hasAuth ? /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Account sign-in is unavailable because the auth script did not load.") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
   React.createElement("div", { style: { fontSize: "var(--text-sm)", color: "var(--text-white)", marginBottom: 16, wordBreak: "break-all" } }, email || "Not signed in"), /*#__PURE__*/
-  React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } }, email ? /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {
+  React.createElement("div", { style: { display: "flex", flexDirection: "column", width: "100%", maxWidth: "100%", gap: 0 } }, email ? /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
         if (window.AXIS_signOut) window.AXIS_signOut().catch(() => {});
-      }, style: btnStyle }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {
+      } }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
         window.location.href = "./login.html";
-      }, style: btnStyle }, "Log in"))
+      } }, "Log in"))
   ));
 }
 
 function FeedbackButton() {
   const [revealed, setRevealed] = React.useState ? React.useState(false) : useState(false);
+  const envelope = /*#__PURE__*/React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" }), /*#__PURE__*/React.createElement("polyline", { points: "22,6 12,13 2,6" }));
   return (/*#__PURE__*/
-    React.createElement("div", null,
+    React.createElement("div", { style: { width: "100%", maxWidth: "100%" } },
     !revealed ? /*#__PURE__*/
-    React.createElement("button", { onClick: () => setRevealed(true), style: {
-        display: "inline-flex", alignItems: "center", gap: 8, background: "none", border: "1px solid var(--glass-border)",
-        fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", letterSpacing: "0.04em",
-        color: "var(--text-secondary)", cursor: "pointer", padding: "10px 14px", borderRadius: 10,
-        transition: "all 0.18s"
-      } }, /*#__PURE__*/
-    React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/
-    React.createElement("path", { d: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" }), /*#__PURE__*/
-    React.createElement("polyline", { points: "22,6 12,13 2,6" })
-    ), "Send Feedback"
+    React.createElement("button", { type: "button", className: "settings-outline-btn settings-outline-btn--icon", onClick: () => setRevealed(true) }, envelope, "Send feedback") : /*#__PURE__*/
 
-    ) : /*#__PURE__*/
-
-    React.createElement("a", { href: "mailto:hello@adamlorber.com", style: {
-        display: "inline-flex", alignItems: "center", gap: 8,
-        fontSize: "var(--text-sm)", color: "var(--accent)", textDecoration: "none",
-        letterSpacing: "0.04em", padding: "10px 14px", border: "1px solid var(--accent)",
-        borderRadius: 10, fontFamily: "var(--font-display)"
-      } }, /*#__PURE__*/
-    React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }, /*#__PURE__*/
-    React.createElement("path", { d: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" }), /*#__PURE__*/
-    React.createElement("polyline", { points: "22,6 12,13 2,6" })
-    ), "hello@adamlorber.com"
-
-    )
+    React.createElement("a", { href: "mailto:hello@adamlorber.com", className: "settings-outline-btn settings-outline-btn--icon", style: { textDecoration: "none" } }, envelope, "hello@adamlorber.com")
 
     ));
 
@@ -9648,7 +9829,7 @@ function axisMetricsWeightTwoWeekTrend(samples) {
 }
 
 function axisMetricsWeightSectionInsight() {
-  return { text: "Alongside mood and pain, even small weight shifts can ease load on knees and hips." };
+  return { text: "Small weight shifts ease load on knees & hips." };
 }
 
 function axisMetricsShortDateFromDateKey(dateKey) {
@@ -9992,7 +10173,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
     setEditDraftLbs("");
     setManualOpen(false);
   };
-  const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No entries yet. Tap \"Manual log\" to get started.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
+  const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No entries yet. Tap Manual log to start.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
   return /*#__PURE__*/React.createElement("div", { className: "weight-section", style: { "--weight-mood-accent": moodColor } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Weight"),
   !emptyWeight && /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, /*#__PURE__*/
@@ -10008,7 +10189,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
     "aria-expanded": manualOpen,
     title: manualOpen ? "Collapse manual log" : "Expand to log weight",
     onClick: () => { axisHapticTick(); setManualOpen((o) => !o); }
-  }, /*#__PURE__*/React.createElement("span", null, "Manual log"), /*#__PURE__*/React.createElement("span", { className: "weight-section__btn-chev", "aria-hidden": true }, manualOpen ? "\u25BC" : "\u25B6")),
+  }, /*#__PURE__*/React.createElement("span", null, "Manual log")),
   manualOpen && /*#__PURE__*/React.createElement("div", { className: "metric-inline-log", role: "region", "aria-labelledby": "weight-inline-log-h" }, /*#__PURE__*/
   React.createElement("h2", { id: "weight-inline-log-h", className: "weight-log-modal__title sr-only" }, "Weight log"),
   /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__field-col" }, /*#__PURE__*/
@@ -10031,7 +10212,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: saveManual }, "Save")
   )
   ),
-  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, weightTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Tap \"Manual log\" to add weight.") : weightVisibleRows.flatMap((e, wi) => {
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, weightTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Tap Manual log to add weight.") : weightVisibleRows.flatMap((e, wi) => {
     const b = axisMetricsHistoryBucketFromTs(e.ts);
     const prevB = wi > 0 ? axisMetricsHistoryBucketFromTs(weightVisibleRows[wi - 1].ts) : null;
     const bucketEl = b !== prevB ? [/*#__PURE__*/React.createElement("div", { key: "w-bucket-" + e.ts + "-" + b, className: "metric-inline-log__bucket-label", role: "presentation" }, b)] : [];
@@ -10076,6 +10257,21 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   );
 }
 
+function axisMetricsPainWeekRangeLabel(dkFirst, dkLast) {
+  if (!dkFirst || !dkLast) return "";
+  try {
+    const a = new Date(dkFirst);
+    const b = new Date(dkLast);
+    if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return "";
+    const mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const same = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+    if (same) return `${mo[a.getMonth()]} ${a.getDate()}\u2013${b.getDate()}`;
+    return `${mo[a.getMonth()]} ${a.getDate()}\u2013${mo[b.getMonth()]} ${b.getDate()}`;
+  } catch {
+    return "";
+  }
+}
+
 function MetricsPainGrid({ painByDay, mode, dkToday, onCellPress }) {
   const dowShort = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
   const cell = (dk, showDow) => {
@@ -10099,10 +10295,13 @@ function MetricsPainGrid({ painByDay, mode, dkToday, onCellPress }) {
     return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid" }, keys.map((dk) => cell(dk, true)));
   }
   const k28 = axisMetricsPainLast28DateKeys();
-  return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid-28" }, [0, 1, 2, 3].map((row) => /*#__PURE__*/React.createElement("div", { key: row, className: "pain-heat__week-row" }, /*#__PURE__*/
-  React.createElement("div", { className: "pain-heat__week-label" }, "Week " + String(row + 1)), /*#__PURE__*/
-  React.createElement("div", { className: "pain-heat__week-cells" }, k28.slice(row * 7, row * 7 + 7).map((dk) => /*#__PURE__*/React.createElement("div", { key: dk, className: "pain-heat__col" }, cell(dk, false))))
-  )));
+  return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid-28" }, [0, 1, 2, 3].map((row) => {
+    const slice = k28.slice(row * 7, row * 7 + 7);
+    const rangeLbl = axisMetricsPainWeekRangeLabel(slice[0], slice[6]);
+    return /*#__PURE__*/React.createElement("div", { key: row, className: "pain-heat__week-row" }, /*#__PURE__*/
+    rangeLbl ? /*#__PURE__*/React.createElement("div", { className: "pain-heat__week-label" }, rangeLbl) : /*#__PURE__*/React.createElement("div", { className: "pain-heat__week-label pain-heat__week-label--spacer", "aria-hidden": true }),
+    /*#__PURE__*/React.createElement("div", { className: "pain-heat__week-cells" }, slice.map((dk) => /*#__PURE__*/React.createElement("div", { key: dk, className: "pain-heat__col" }, cell(dk, false)))));
+  }));
 }
 
 function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry }) {
@@ -10176,7 +10375,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
     setEditNote("");
   };
   const gridMode = painGridMode === "7d" ? "7d" : "28d";
-  const heatmapBlock = !hasAnyEntry ? /*#__PURE__*/React.createElement("p", { className: "pain-heat__placeholder" }, "No entries yet. Tap \"Log pain\" to get started.") : /*#__PURE__*/React.createElement(MetricsPainGrid, {
+  const heatmapBlock = !hasAnyEntry ? /*#__PURE__*/React.createElement("p", { className: "pain-heat__placeholder" }, "No entries yet. Tap Log pain to start.") : /*#__PURE__*/React.createElement(MetricsPainGrid, {
     painByDay: painByDay,
     mode: gridMode,
     dkToday: dkToday,
@@ -10195,7 +10394,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   ),
   heatmapBlock,
   painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, "\uD83D\uDCA1 ", painCallout) : null,
-  /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-section__btn weight-section__btn--expand weight-section__btn--primary", "aria-expanded": entryOpen, title: entryOpen ? "Collapse pain log" : "Expand to log pain", onClick: () => { axisHapticTick(); setEntryOpen((o) => !o); } }, /*#__PURE__*/React.createElement("span", null, "Log pain"), /*#__PURE__*/React.createElement("span", { className: "weight-section__btn-chev", "aria-hidden": true }, entryOpen ? "\u25BC" : "\u25B6")),
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-section__btn weight-section__btn--expand weight-section__btn--primary", "aria-expanded": entryOpen, title: entryOpen ? "Collapse pain log" : "Expand to log pain", onClick: () => { axisHapticTick(); setEntryOpen((o) => !o); } }, /*#__PURE__*/React.createElement("span", null, "Log pain")),
   entryOpen && /*#__PURE__*/React.createElement("div", { className: "metric-inline-log", role: "region", "aria-labelledby": "pain-inline-log-h" }, /*#__PURE__*/
   React.createElement("h2", { id: "pain-inline-log-h", className: "weight-log-modal__title sr-only" }, "Pain log"),
   /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
@@ -10212,7 +10411,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   )
   )
   ),
-  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, painTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Expand \"Log pain\" above to add an entry.") : painVisibleRows.flatMap((e, pi) => {
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, painTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Tap Log pain above to add an entry.") : painVisibleRows.flatMap((e, pi) => {
     const b = axisMetricsHistoryBucketFromDateKey(e.dateKey);
     const prevB = pi > 0 ? axisMetricsHistoryBucketFromDateKey(painVisibleRows[pi - 1].dateKey) : null;
     const bucketEl = b !== prevB ? [/*#__PURE__*/React.createElement("div", { key: "p-bucket-" + e.dateKey + "-" + b, className: "metric-inline-log__bucket-label", role: "presentation" }, b)] : [];
@@ -10304,7 +10503,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [exerciseDuration, setExerciseDuration] = useState(() => {
     const v = Number(storageGet("axis_exercise_duration", 45));
     if (!Number.isFinite(v)) return 45;
-    return Math.min(600, Math.max(15, Math.round(v)));
+    return Math.min(300, Math.max(1, Math.round(v)));
   });
   const [track, setTrack] = useState("daily");
   const [tab, setTab] = useState(() => storageGet("axis_last_session_tab", "guided") || "guided");
@@ -10362,7 +10561,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   });
   const [summaryRecentExpanded, setSummaryRecentExpanded] = useState(false);
   const [summaryRecentOpen, setSummaryRecentOpen] = useState(false);
-  const [metricsGoalsOpen, setMetricsGoalsOpen] = useState(false);
   const [metricsWeightSamples, setMetricsWeightSamples] = useState(() => axisMetricsNormalizeWeightList(storageGet(AXIS_METRICS_WEIGHT_KEY, [])));
   const [metricsPainByDay, setMetricsPainByDay] = useState(() => {
     const o = storageGet(AXIS_METRICS_PAIN_KEY, {});
@@ -10680,11 +10878,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "settings-page-rail" }, /*#__PURE__*/
     React.createElement("div", { className: "app-page-header" }, /*#__PURE__*/
     React.createElement("div", { className: "app-screen-title" }, "Settings"), /*#__PURE__*/
-    React.createElement("div", { style: { marginBottom: 14 } }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title", style: { marginBottom: 6 } }, "Daily Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 10, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "How much can you commit to moving daily? 5 minutes is a great start. 10-20 is even better."), /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginBottom: 8 } }, /*#__PURE__*/
-    React.createElement("label", { htmlFor: "axis-daily-goal", style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)" } }, "Minutes per day"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-goals-panel", style: { marginBottom: 14 } }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Daily Movement Goal"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "How much can you commit to moving daily? 5 minutes is a great start. 10-20 is even better."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-daily-goal" }, "Minutes per day"), /*#__PURE__*/
+    React.createElement("span", { className: "settings-slider-value", "aria-live": "polite" }, dailyGoalMinutes, " min")
+    ), /*#__PURE__*/
     React.createElement("input", {
       className: "settings-range",
       id: "axis-daily-goal",
@@ -10699,14 +10900,16 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         setWeeklyFollowsDaily(true);
         setWeeklyGoalMinutes(axisSnapWeeklyGoalMinutes(n * 7));
       },
-      style: { flex: "1 1 160px", minWidth: 0, maxWidth: "100%", accentColor: "var(--accent)" }
-    }), /*#__PURE__*/
-    React.createElement("span", { style: { fontVariantNumeric: "tabular-nums", fontSize: "var(--text-base)", fontWeight: 600, color: "var(--accent)", minWidth: 48 } }, dailyGoalMinutes, " min")
+      style: { accentColor: "var(--accent)" }
+    })
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title", style: { marginBottom: 6, marginTop: 12 } }, "Weekly Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 10, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "This is your weekly goal. Multiply your daily goal by 7 or adjust the slider as needed or recommended. You can adjust these sliders at any time."), /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginBottom: 8 } }, /*#__PURE__*/
-    React.createElement("label", { htmlFor: "axis-weekly-goal", style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)" } }, "Minutes per week"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Weekly Movement Goal"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "This is your weekly goal. Multiply your daily goal by 7 or adjust the slider as needed or recommended. You can adjust these sliders at any time."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-weekly-goal" }, "Minutes per week"), /*#__PURE__*/
+    React.createElement("span", { className: "settings-slider-value", "aria-live": "polite" }, weeklyGoalMinutes, " min")
+    ), /*#__PURE__*/
     React.createElement("input", {
       className: "settings-range",
       id: "axis-weekly-goal",
@@ -10719,17 +10922,17 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         setWeeklyFollowsDaily(false);
         setWeeklyGoalMinutes(Number(e.target.value));
       },
-      style: { flex: "1 1 160px", minWidth: 0, maxWidth: "100%", accentColor: "var(--accent)" }
-    }), /*#__PURE__*/
-    React.createElement("span", { style: { fontVariantNumeric: "tabular-nums", fontSize: "var(--text-base)", fontWeight: 600, color: "var(--accent)", minWidth: 56 } }, weeklyGoalMinutes, " min")
+      style: { accentColor: "var(--accent)" }
+    })
     )
     )
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title", style: { marginBottom: 6 } }, "Health & metrics"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 12, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "On iPhone, sync from Apple Health. On Android, use Health Connect. Pulls weight and today’s step count into Metrics when the native bridge is available."),
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Health & metrics"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 12 } }, "On iPhone, sync from Apple Health. On Android, use Health Connect. Pulls weight and today’s step count into Metrics when the native bridge is available."),
     React.createElement("button", {
       type: "button",
+      className: "settings-outline-btn",
       onClick: async () => {
         axisHapticTick();
         setHealthConnectSyncMsg("Syncing…");
@@ -10749,28 +10952,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         } catch (e) {
           setHealthConnectSyncMsg("Could not sync. Enable permissions in Apple Health or Health Connect.");
         }
-      },
-      style: {
-        fontFamily: "var(--font-display)",
-        fontSize: "var(--text-sm)",
-        letterSpacing: "0.14em",
-        textTransform: "uppercase",
-        fontWeight: 600,
-        padding: "12px 18px",
-        borderRadius: 10,
-        border: "1px solid var(--accent)",
-        background: "var(--accent-dim)",
-        color: "var(--accent)",
-        cursor: "pointer",
-        width: "100%",
-        maxWidth: "100%",
-        boxSizing: "border-box"
       }
     }, "Connect & sync from Health"),
-    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", marginTop: 10, lineHeight: 1.45 } }, healthConnectSyncMsg)
+    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", marginTop: 12, lineHeight: 1.45 } }, healthConnectSyncMsg)
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title" }, "Session Bar"),
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session Bar"),
     [
     { label: "Show % done", desc: "Percentage of exercises completed in the current track.", val: showPct, set: setShowPct }].
     map(({ label, desc, val, set }) => /*#__PURE__*/
@@ -10786,39 +10973,52 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title" }, "Session"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-session-stack", style: { display: "flex", flexDirection: "column", gap: 12 } }, /*#__PURE__*/
     React.createElement("div", null, /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, "Timer length per exercise"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Timer length for each exercise in LIST view."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "Timer length for each exercise in LIST view."), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
     [30, 45, 60].map((sec) => /*#__PURE__*/
     React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
     sec === 60 ? "1 min" : `${sec} sec`
     )
-    ),
-    React.createElement("div", { style: { width: "100%", marginTop: 12, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 } }, /*#__PURE__*/
-    React.createElement("label", { htmlFor: "axis-exercise-custom", style: { fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--text-secondary)" } }, "Custom (sec)"),
+    )
+    ), /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    React.createElement("label", { className: "settings-custom-duration-label", htmlFor: "axis-exercise-custom" }, "Custom duration (seconds)"),
     React.createElement("input", {
       id: "axis-exercise-custom",
+      className: "settings-custom-duration-input",
       type: "number",
-      min: 15,
-      max: 600,
+      min: 1,
+      max: 300,
       step: 1,
+      inputMode: "numeric",
+      placeholder: "e.g., 45",
       value: exerciseDuration,
       onChange: (e) => {
-        const n = Math.round(Number(e.target.value));
+        const raw = e.target.value.replace(/\D/g, "").slice(0, 3);
+        if (raw === "") return;
+        const n = parseInt(raw, 10);
         if (!Number.isFinite(n)) return;
         triggerHaptic(HAPTIC_LIGHT_TAP);
-        setExerciseDuration(Math.min(600, Math.max(15, n)));
+        setExerciseDuration(Math.min(300, Math.max(1, n)));
       },
-      style: { width: 88, minHeight: 40, borderRadius: 10, border: "1px solid var(--glass-border)", background: "var(--glass-bg)", color: "var(--text-white)", padding: "0 10px", fontWeight: 700 }
-    })
+      onBlur: (e) => {
+        const raw = e.target.value.replace(/\D/g, "");
+        const n = parseInt(raw, 10);
+        if (!Number.isFinite(n) || n < 1) setExerciseDuration(45);
+        else setExerciseDuration(Math.min(300, Math.max(1, n)));
+      }
+    }), /*#__PURE__*/
+    React.createElement("div", { className: "settings-custom-duration-hint" }, "Range: 1–300 seconds")
     )
     )
     )
     , /*#__PURE__*/
     React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title" }, "PRIVACY & DATA"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "PRIVACY & DATA"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Your Data"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your workout history, goals, and preferences are stored on this device only. We never see them."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "When you log in, your account info is secured by Firebase Authentication."), /*#__PURE__*/
@@ -10826,25 +11026,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "settings-privacy-line" }, "Download a JSON file with your goals, metrics, and history from this device."), /*#__PURE__*/
     React.createElement("button", {
       type: "button",
-      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); },
-      style: {
-        marginTop: 8,
-        marginBottom: 4,
-        width: "100%",
-        maxWidth: "100%",
-        boxSizing: "border-box",
-        minHeight: 44,
-        borderRadius: 12,
-        border: "1px solid var(--accent)",
-        background: "var(--accent-dim)",
-        color: "var(--accent)",
-        fontFamily: "var(--font-display)",
-        fontSize: "var(--text-sm)",
-        fontWeight: 700,
-        letterSpacing: "0.1em",
-        textTransform: "uppercase",
-        cursor: "pointer"
-      }
+      className: "settings-outline-btn",
+      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
     }, "Export my data"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Backups"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your data currently stays local. Eventually we will implement cloud storage."), /*#__PURE__*/
@@ -10855,7 +11038,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "settings-privacy-line" }, "No cloud storage of your workouts (device-only)")
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title" }, "Custom App Icon"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Custom App Icon"), /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Pick a home screen icon style."), /*#__PURE__*/
     React.createElement("div", { className: "ultra-icon-grid", style: { display: "grid", width: "100%", maxWidth: "100%", boxSizing: "border-box", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 } },
     APP_ICON_OPTIONS.map((opt) => {
@@ -10863,20 +11046,20 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       return /*#__PURE__*/React.createElement("button", {
         key: opt.id,
         type: "button",
-        className: nightMode ? "ultra-icon-slot" : undefined,
+        className: (nightMode ? "ultra-icon-slot " : "") + "settings-app-icon-slot",
         onClick: nightMode ? undefined : () => setSelectedAppIcon(opt.src),
         disabled: nightMode,
         style: {
           position: "relative",
-          borderRadius: 12,
-          border: nightMode ? "1px solid rgba(255, 59, 48, 0.4)" : isSelected ? "2px solid #FF3B30" : "1px solid var(--glass-border)",
+          borderRadius: "var(--border-radius-md)",
+          border: nightMode ? "1px solid rgba(255, 59, 48, 0.4)" : "1px solid var(--glass-border)",
           background: nightMode ? "#000000" : "var(--glass-bg)",
           padding: 6,
           cursor: nightMode ? "default" : "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden"
+          overflow: "visible"
         },
         "aria-label": `Select ${opt.label} app icon`,
         "aria-pressed": isSelected ? "true" : "false"
@@ -10885,29 +11068,16 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         alt: `${opt.label} app icon`,
         style: { width: "100%", aspectRatio: "1 / 1", borderRadius: 10, display: "block", objectFit: "cover" }
       }), nightMode && /*#__PURE__*/React.createElement("span", { className: "ultra-icon-slot-dim", "aria-hidden": true }, " "), isSelected && !nightMode && /*#__PURE__*/React.createElement("span", {
-        "aria-hidden": true,
-        style: {
-          position: "absolute",
-          top: 6,
-          right: 6,
-          width: 18,
-          height: 18,
-          borderRadius: "50%",
-          background: "#FF3B30",
-          color: "#000000",
-          fontSize: 12,
-          fontWeight: 700,
-          lineHeight: "18px",
-          textAlign: "center"
-        }
-      }, "\u2713"));
+        className: "settings-app-icon-badge",
+        "aria-hidden": true
+      }, /*#__PURE__*/React.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M20 6L9 17l-5-5" }))));
     })), /*#__PURE__*/
     nightMode && /*#__PURE__*/React.createElement("div", { style: { fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#FF3B30", marginTop: 10, fontWeight: 600 } }, "NOT AVAILABLE IN ULTRA MODE"), /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginTop: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Note: To apply a new icon to your Home Screen, please re-save the app using the Share menu after selecting.")
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block settings-block--flush" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-block__title" }, "About"), /*#__PURE__*/
-    React.createElement("button", { onClick: () => { try { storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); }, style: { background: "none", border: "1px solid var(--glass-border)", fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-dim)", cursor: "pointer", padding: "10px 18px", marginBottom: 10, borderRadius: 10 } }, "View Onboarding Again"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-section-title settings-block__title" }, "About"), /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => { try { storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, "View Onboarding Again"), /*#__PURE__*/
     React.createElement("div", null, /*#__PURE__*/
     React.createElement(FeedbackButton, null)
     )
@@ -11105,19 +11275,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "metrics-goals-wrap metrics-section--goals" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-block" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-toolbar" }, /*#__PURE__*/
-      React.createElement("button", {
-        type: "button",
-        className: "metrics-goals-toolbar__toggle",
-        onClick: () => { axisHapticTick(); setMetricsGoalsOpen((o) => !o); },
-        "aria-expanded": metricsGoalsOpen ? "true" : "false"
-      }, "GOALS ", metricsGoalsOpen ? "\u25BC" : "\u25B6"),
+      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS"),
       React.createElement("button", {
         type: "button",
         className: "metrics-goals-toolbar__settings",
         onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
       }, "Adjust in Settings")
       ),
-      metricsGoalsOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-goals-compact" }, /*#__PURE__*/
+      /*#__PURE__*/React.createElement("div", { className: "metrics-goals-compact" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-row" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-head" }, /*#__PURE__*/
       React.createElement("span", null, "Daily"),
@@ -11222,8 +11387,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         onClick: () => { axisHapticTick(); setSummaryRecentOpen((o) => !o); },
         "aria-expanded": summaryRecentOpen ? "true" : "false"
       }, /*#__PURE__*/
-      React.createElement("span", { className: "metrics-recent-header-btn__label" }, summaryRecentOpen ? "RECENT SESSIONS" : "[\u25B6 RECENT SESSIONS]"),
-      React.createElement("span", { className: "metrics-recent-header-btn__chev", "aria-hidden": true }, summaryRecentOpen ? "\u25BC" : "\u25B6")
+      React.createElement("span", { className: "metrics-recent-header-btn__label" }, "Recent sessions"),
+      /*#__PURE__*/React.createElement("span", { className: "metrics-recent-header-btn__chev", "aria-hidden": true }, /*#__PURE__*/React.createElement(AxisChevronCaret, { expanded: summaryRecentOpen, className: "metrics-recent-header-btn__chev-svg" }))
       ),
       summaryRecentOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
       React.createElement("div", { className: "summary-history-list-wrap" + (summaryRecentExpanded ? " summary-history-list-wrap--expanded" : "") },
@@ -11253,19 +11418,19 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         "aria-expanded": summaryRecentOpen ? "true" : "false",
         onClick: () => {axisHapticTick();setSummaryRecentOpen((o) => !o);}
       }, /*#__PURE__*/
-      React.createElement("span", { className: "summary-history-bottom-toggle__chev", "aria-hidden": true }, summaryRecentOpen ? "\u25BC" : "\u25B6"),
+      /*#__PURE__*/React.createElement("span", { className: "summary-history-bottom-toggle__chev", "aria-hidden": true }, /*#__PURE__*/React.createElement(AxisChevronCaret, { expanded: summaryRecentOpen, className: "summary-history-bottom-toggle__chev-svg" })),
       summaryRecentOpen ? "Collapse" : "Expand"
       )
       ))
       ),
       history.length === 0 && /*#__PURE__*/
       React.createElement("div", { className: "metrics-recent-section metrics-empty-cta--flat" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-empty-history-copy" }, "No sessions yet. Complete a routine on Home to build your history."),
+      React.createElement("div", { className: "metrics-empty-history-copy" }, "Complete a session to see history here."),
       React.createElement("button", {
         type: "button",
         className: "metrics-empty-home-link",
         onClick: () => {axisHapticTick();setView("home");}
-      }, "Go to home to complete your first session.")
+      }, "Go to Home")
       ),
       (track === "anxiety" || track === "stress") && totalDone > 0 && /*#__PURE__*/
       React.createElement("div", { style: { marginTop: 20, padding: "18px", borderRadius: 24, border: "1px solid var(--glass-border)", background: "var(--glass-bg)" } }, /*#__PURE__*/
@@ -11274,12 +11439,15 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       track === "anxiety" ? "Finish with 2 minutes of Box Breathing to ground the nervous system." : "Calm the heart with a Physiological Sigh."
       ), /*#__PURE__*/
       React.createElement("button", { onClick: () => {setView("timer");}, style: {
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
           background: "var(--accent-dim)", border: "1px solid var(--accent)",
           fontFamily: "'Barlow',sans-serif", fontSize: "12px", letterSpacing: "0.14em",
           textTransform: "uppercase", color: "var(--accent)", cursor: "pointer",
           padding: "10px 18px", borderRadius: 10, transition: "all 0.18s"
         } },
-      track === "anxiety" ? "→ Box Breathing" : "→ Physiological Sigh"
+      /*#__PURE__*/React.createElement(AxisThinArrowRight, { size: 14 }), track === "anxiety" ? "Box Breathing" : "Physiological Sigh"
       )
       ), /*#__PURE__*/
       React.createElement("div", { className: "summary-cta summary-cta--metrics-flat", style: { "--metrics-session-accent": metricsSessionAccent } }, /*#__PURE__*/
