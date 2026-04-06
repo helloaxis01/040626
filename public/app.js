@@ -4214,8 +4214,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       ), /*#__PURE__*/
       React.createElement("div", { className: "home-tagline" }, "Listen to your body. Select your focus.")
       ), /*#__PURE__*/
-      React.createElement("div", { style: { padding: "12px 16px", margin: "16px 0", background: "linear-gradient(135deg, #4CAF50, #45a049)", color: "white", borderRadius: "8px", textAlign: "center", fontSize: "14px", fontWeight: "500", boxShadow: "0 2px 8px rgba(76, 175, 80, 0.3)" } }, "✅ Deployment Verified - April 6, 2026 6:00 PM PST")
-      ), /*#__PURE__*/
+      React.createElement("div", { className: "home-banner", style: { padding: "12px 16px", margin: "16px 0", background: "linear-gradient(135deg, #4CAF50, #45a049)", color: "white", borderRadius: "8px", textAlign: "center", fontSize: "14px", fontWeight: "500", boxShadow: "0 2px 8px rgba(76, 175, 80, 0.3)" } }, "✅ Deployment Verified - April 6, 2026 6:00 PM PST"), /*#__PURE__*/
       React.createElement("div", { className: "track-cards-outer" }, /*#__PURE__*/
 
       React.createElement("div", { className: "track-group start-here-group", style: { marginBottom: 28 }, role: "region", "aria-label": "Today's suggestion" }, /*#__PURE__*/
