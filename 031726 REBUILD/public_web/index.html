@@ -75,7 +75,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React. Check your connection and try again.')"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="showLoadErr('Could not load React DOM. Check your connection and try again.')"></script>
-  <script src="./auth-bundle.js" crossorigin="anonymous" onerror="showLoadErr('Could not load auth-bundle.js. Check your connection and try again.')"></script>
+  <script src="auth-bundle.js"></script>
   <!-- Babel standalone removed for production builds; app is precompiled in dist/ -->
   <script>
     // Workout content is loaded asynchronously from ./axis_data.json (see bootstrapAxisApp at end of app script).
@@ -10375,6 +10375,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   React.createElement("div", { className: "metric-inline-log__btns-inline metric-inline-log__btns-inline--full" }, /*#__PURE__*/
   React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--secondary", onClick: () => { axisHapticTick(); closeModal(); } }, "Cancel"),
   /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: saveManual }, "Save")
+  )
   )
   )
   );
