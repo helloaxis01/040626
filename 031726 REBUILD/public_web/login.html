@@ -50,8 +50,11 @@
         var onAuth = window.AXIS_onAuthStateChanged;
         if (!auth || !onAuth) return undefined;
         var unsub = onAuth(auth, function (u) {
-          if (u && axisOnboarded()) {
+          if (!u) return;
+          if (axisOnboarded()) {
             window.location.replace("./index.html");
+          } else {
+            window.location.replace(window.axisOnboardingHref ? window.axisOnboardingHref() : "./onboarding.html");
           }
         });
         return function () {

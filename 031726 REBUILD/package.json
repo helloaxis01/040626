@@ -1,13 +1,16 @@
 {
   "name": "axis-031726-rebuild-workspace",
   "private": true,
-  "description": "Proxies npm scripts to the parent AXIS repo (run dev from this folder).",
+  "description": "Proxies npm scripts to the parent AXIS repo (run dev/preview from this folder).",
   "scripts": {
     "dev": "npm --prefix .. run dev",
     "dev:open": "npm --prefix .. run dev:open",
     "dev:serve": "npm --prefix .. run dev:serve",
     "dev:with-build": "npm --prefix .. run dev:with-build",
     "build": "npm --prefix .. run build",
+    "refresh": "npm --prefix .. run refresh",
+    "preview": "npm --prefix .. run preview",
+    "preview:web": "npm --prefix .. run preview:web",
     "cap:sync": "npm --prefix .. run cap:sync"
   }
 }

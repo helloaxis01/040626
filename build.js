@@ -116,13 +116,16 @@ finish();
 function finish() {
   const vercel = path.join(root, 'vercel.json');
   if (fs.existsSync(vercel)) fs.copyFileSync(vercel, path.join(dist, 'vercel.json'));
-  // `serve` defaults to cleanUrls → 301 from /onboarding.html to /onboarding; some clients show ERR_INVALID_RESPONSE/404.
+  // Preview (`npx serve dist`): cleanUrls:true strips .html (301) — bad for onboarding in some webviews.
+  // cleanUrls:false breaks "/" → index.html in serve-handler (you get a directory listing for /).
+  // Array: enable clean URLs for all paths except literal /onboarding.html (no 301 for that file).
   // Strong no-cache on HTML so `npm run preview` + local edits + `npm run refresh` show up without stale shell cache.
   fs.writeFileSync(
     path.join(dist, 'serve.json'),
     JSON.stringify({
-      cleanUrls: false,
+      cleanUrls: ['!/onboarding.html'],
       trailingSlash: false,
+      directoryListing: false,
       headers: [
         {
           source: '**/*.html',

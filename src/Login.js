@@ -8,6 +8,16 @@ import { auth, syncUserProfile } from "./firebase.js";
 
 window.AXIS_DEBUG_KEY = 'NEW_KEY_ACTIVE';
 
+function isOnboarded() {
+  try {
+    const raw = localStorage.getItem("axis_onboarded");
+    if (raw === null) return false;
+    return JSON.parse(raw) === true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export default function Login() {
   const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
@@ -38,7 +48,17 @@ export default function Login() {
           return;
         }
         const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
-        await syncUserProfile(cred.user);
+        syncUserProfile(cred.user).catch((err) => {
+          try {
+            console.error("AXIS: sync after sign-in", err);
+          } catch (e) {}
+        });
+        if (isOnboarded()) {
+          window.location.replace(new URL("./index.html", window.location.href).href);
+        } else {
+          window.location.replace(axisOnboardingUrl());
+        }
+        return;
       } catch (err) {
         setError(err && err.message ? err.message : String(err));
       } finally {
