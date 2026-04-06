@@ -956,6 +956,11 @@ const css = `
     --summary-grid-bg: rgba(255,255,255,0.04);
     --eol-color: rgba(255,255,255,0.30);
     --bg-app: var(--bg-gradient);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-background-secondary: color-mix(in srgb, var(--glass-bg) 120%, transparent);
+    --color-border-tertiary: color-mix(in srgb, var(--border) 85%, transparent);
+    --color-border-secondary: color-mix(in srgb, var(--border-card) 90%, transparent);
   }
   [data-theme="light"] {
     --bg-gradient: linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%);
@@ -996,6 +1001,11 @@ const css = `
     --summary-grid-bg: rgba(255,255,255,0.32);
     --eol-color: rgba(15,30,46,0.48);
     --bg-app: var(--bg-gradient);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-background-secondary: rgba(15, 24, 38, 0.06);
+    --color-border-tertiary: rgba(15, 24, 38, 0.12);
+    --color-border-secondary: rgba(15, 24, 38, 0.18);
   }
 
   /* Settings sliders: larger thumb (default; Ultra night overrides below) */
@@ -3019,6 +3029,114 @@ const css = `
     margin: 28px 0 20px;
     background: color-mix(in srgb, var(--border) 50%, transparent);
   }
+  .metrics-rail__rule {
+    display: block;
+    width: 100%;
+    height: 0;
+    border: none;
+    margin: 0;
+    padding: 0;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    box-sizing: border-box;
+  }
+  .metrics-rail__rule--gap-sm {
+    margin: 1.25rem 0;
+  }
+  .metrics-rail__rule--gap-md {
+    margin: 1.25rem 0;
+  }
+  .metrics-page-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0 0 1rem;
+    font-family: var(--font-display);
+  }
+  .metrics-quick-glance {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-quick-glance__boxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-quick-glance__minutes .metrics-stat-feature__value {
+    width: 100%;
+    text-align: center;
+    font-size: clamp(1.85rem, 6vw, 2.35rem);
+  }
+  .metrics-quick-glance__duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-quick-glance__stat-sm .metrics-stat-feature__value {
+    font-size: clamp(1.1rem, 3.8vw, 1.4rem);
+    text-align: center;
+    line-height: 1.2;
+  }
+  .metrics-quick-glance__sub {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+  }
+  .metrics-quick-glance__hint {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--color-text-secondary) 92%, transparent);
+    margin: 0 0 12px;
+    font-family: var(--font-body, system-ui, sans-serif);
+  }
+  .metrics-section--goals {
+    margin-top: 0;
+  }
+  .metrics-goals-wrap + .metrics-rail__rule {
+    margin-top: 0;
+  }
+  .metrics-recent-section {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-recent-section .summary-history-bottom-toggle {
+    display: none;
+  }
+  .metrics-recent-header-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 0 10px;
+    margin: 0 0 8px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: left;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .metrics-recent-header-btn__chev {
+    font-size: 11px;
+    opacity: 0.65;
+    flex-shrink: 0;
+  }
   .metrics-rail__hr--tight {
     margin: 20px 0 16px;
   }
@@ -3042,44 +3160,40 @@ const css = `
     box-sizing: border-box;
     margin: 0;
   }
-  .metrics-goals-header-btn {
+  .metrics-goals-header {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
     padding: 0 0 10px;
-    border: none;
-    background: transparent;
-    color: color-mix(in srgb, var(--text-secondary) 96%, transparent);
+    color: var(--color-text-secondary);
     font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
     text-transform: uppercase;
-    cursor: pointer;
     text-align: left;
-    -webkit-tap-highlight-color: transparent;
   }
-  .metrics-goals-header-btn__chev {
-    font-size: 11px;
-    opacity: 0.65;
-    flex-shrink: 0;
+  /* Separate frames for Weight and Pain on Metrics */
+  .metrics-metric-panel {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 22px 20px 26px;
+    border-radius: 24px;
+    border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
+    background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 58%, transparent);
   }
-  .metrics-goals-animate {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.32s ease;
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-metric-panel {
+    box-shadow: 0 8px 26px rgba(15, 30, 46, 0.1), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 58%, transparent);
   }
-  .metrics-goals-animate--open {
-    grid-template-rows: 1fr;
-  }
-  .metrics-goals-animate-inner {
-    overflow: hidden;
-    min-height: 0;
-  }
-  .metrics-goals-animate:not(.metrics-goals-animate--open) .metrics-goals-animate-inner {
-    pointer-events: none;
+  .app[data-night="true"] .metrics-metric-panel {
+    border-color: rgba(255, 59, 48, 0.38) !important;
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 14px 36px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
   .metrics-quick-stats-heading {
     font-size: 11px;
@@ -3300,6 +3414,641 @@ const css = `
     color: color-mix(in srgb, var(--text-secondary) 96%, transparent);
     text-align: left;
   }
+  /* Weight section (minimal dashboard metric) */
+  .weight-section {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .weight-section__header {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+  }
+  .weight-section__hero-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 0.75rem;
+  }
+  .weight-section__hero-num {
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--weight-mood-accent, #f6f7f8);
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    transition: color 0.15s ease;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-section__hero-num:not(.weight-section__hero-num--warm) {
+    color: var(--weight-mood-accent, #121418);
+  }
+  .weight-section__hero-num--warm {
+    color: #ea580c;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-section__hero-num--warm {
+    color: #c2410c;
+  }
+  .weight-section__hero-unit {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+  }
+  .weight-section__context {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+    margin: 0 0 1rem;
+  }
+  .weight-section__insight {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-primary);
+    background: var(--color-background-secondary);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 0 0 1.5rem;
+    box-sizing: border-box;
+  }
+  .weight-section__weight-insight {
+    font-size: 11px;
+    line-height: 1.45;
+    font-style: italic;
+    color: color-mix(in srgb, var(--color-text-secondary) 92%, transparent);
+    text-align: left;
+    margin: 0 0 1rem;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .weight-section__chart-wrap {
+    width: 100%;
+    margin: 0 0 1.5rem;
+    box-sizing: border-box;
+  }
+  .weight-section__chart-svg {
+    width: 100%;
+    height: auto;
+    max-height: 120px;
+    aspect-ratio: 120 / 48;
+    display: block;
+    vertical-align: top;
+    overflow: visible;
+  }
+  .weight-section__chart-baseline {
+    stroke: var(--color-border-tertiary);
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+  .weight-section__chart-line {
+    fill: none;
+    stroke: color-mix(in srgb, var(--weight-mood-accent, #f6f7f8) 88%, transparent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-section__chart-line {
+    stroke: color-mix(in srgb, var(--weight-mood-accent, #121418) 85%, transparent);
+  }
+  .weight-section__chart-dot {
+    fill: var(--weight-mood-accent, #f6f7f8);
+    stroke: color-mix(in srgb, var(--color-background-secondary) 70%, var(--color-text-primary) 30%);
+    stroke-width: 1.35;
+    vector-effect: non-scaling-stroke;
+  }
+  .weight-section__chart-axis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 6px;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-ui);
+  }
+  .weight-section__chart-axis span:first-child {
+    justify-self: start;
+    text-align: left;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .weight-section__chart-axis span:last-child {
+    justify-self: end;
+    text-align: right;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .weight-section__graph-placeholder {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin: 0;
+    padding: 20px 8px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .weight-section__btn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    margin: 0;
+    border: 0.5px solid color-mix(in srgb, var(--weight-mood-accent, var(--color-border-secondary)) 45%, var(--color-border-secondary));
+    border-radius: 12px;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, transform 0.12s ease;
+  }
+  .weight-section__btn:hover {
+    background: var(--color-background-secondary);
+  }
+  .weight-section__btn:active {
+    transform: scale(0.98);
+  }
+  .weight-section__btn[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 14%, var(--color-background-secondary));
+  }
+  .weight-section__btn--expand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left;
+  }
+  .weight-section__btn-chev {
+    font-size: 11px;
+    opacity: 0.55;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .weight-section__btn-arrow {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.45;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .metric-inline-log {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.75rem;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--color-background-secondary);
+  }
+  .metric-inline-log .weight-log-modal__title {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: var(--text-base);
+  }
+  .metric-inline-log .weight-log-modal__field:last-of-type {
+    margin-bottom: 0;
+  }
+  .metric-inline-log .weight-log-modal__actions {
+    margin-top: 14px;
+  }
+  .metric-inline-log__new-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metric-inline-log__input-grow {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .metric-inline-log__btns-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .metric-inline-log__btns-inline .weight-log-modal__btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-height: 40px;
+    white-space: nowrap;
+  }
+  .metric-inline-log__list {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .metric-inline-log__list-item {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metric-inline-log__row-read {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    line-height: 1.35;
+  }
+  .metric-inline-log__row-meta {
+    flex: 1 1 0;
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-inline-log__row-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .metric-inline-log__btn-link {
+    border: none;
+    background: transparent;
+    color: var(--weight-mood-accent, var(--accent));
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .metric-inline-log__btn-link:active {
+    opacity: 0.85;
+  }
+  .metric-inline-log__btn-link--danger {
+    color: var(--color-text-secondary);
+  }
+  .app[data-night="true"] .metric-inline-log__btn-link--danger {
+    color: color-mix(in srgb, #ff6b6b 85%, var(--color-text-secondary));
+  }
+  .metric-inline-log__empty {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+  .metric-inline-log__expand-toggle {
+    margin-top: 10px;
+    text-align: center;
+  }
+  .metric-inline-log__link-btn {
+    border: none;
+    background: transparent;
+    color: var(--weight-mood-accent, var(--accent));
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .metric-inline-log__link-btn:active {
+    opacity: 0.85;
+  }
+  .metric-inline-log__pager {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-top: 12px;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+  .metric-inline-log__pager-btn {
+    padding: 8px 14px;
+    min-height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+  }
+  .metric-inline-log__pager-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .metric-inline-log__pain-add-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .metric-inline-log__pain-slider-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  .metric-inline-log__pain-slider-row input[type="range"] {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+  }
+  .metric-inline-log__pain-val {
+    font-weight: 600;
+    font-size: var(--text-lg);
+    min-width: 2ch;
+    text-align: center;
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Pain section (matches Weight minimal metric layout) */
+  .pain-section .weight-section__hero-row {
+    gap: 6px;
+  }
+  .pain-section__denom {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    align-self: baseline;
+  }
+  .pain-section__toggles {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 1rem;
+  }
+  .pain-section__toggle {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pain-section__toggle--active {
+    color: var(--weight-mood-accent, var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .pain-heat__grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    margin: 0 0 1.5rem;
+    box-sizing: border-box;
+  }
+  .pain-heat__col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .pain-heat__cell {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: var(--font-display);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease;
+  }
+  .pain-heat__cell:active {
+    transform: scale(0.98);
+  }
+  .pain-heat__cell--empty {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .pain-heat__cell--low {
+    background: color-mix(in srgb, #38bdf8 26%, var(--color-background-secondary));
+    color: #0c1e2e;
+    border-color: color-mix(in srgb, #38bdf8 35%, var(--color-border-tertiary));
+  }
+  .app[data-theme="dark"] .pain-heat__cell--low {
+    color: #e0f2fe;
+  }
+  .pain-heat__cell--mid {
+    background: color-mix(in srgb, #5eead4 22%, var(--color-background-secondary));
+    color: #0f172a;
+    border-color: color-mix(in srgb, #5eead4 32%, var(--color-border-tertiary));
+  }
+  .app[data-theme="dark"] .pain-heat__cell--mid {
+    color: #ccfbf1;
+  }
+  .pain-heat__cell--high {
+    background: color-mix(in srgb, #fb923c 30%, var(--color-background-secondary));
+    color: #431407;
+    border-color: color-mix(in srgb, #fb923c 40%, var(--color-border-tertiary));
+  }
+  .app[data-theme="dark"] .pain-heat__cell--high {
+    color: #ffedd5;
+  }
+  .pain-heat__cell--today {
+    box-shadow: 0 0 0 2px var(--weight-mood-accent, var(--accent));
+    transform: scale(1.05);
+    z-index: 1;
+  }
+  .pain-heat__dow {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pain-heat__grid-28 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin: 0 0 1.5rem;
+    box-sizing: border-box;
+  }
+  .pain-heat__week-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+  .pain-heat__week-label {
+    flex: 0 0 44px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-text-secondary);
+    padding-top: 12px;
+    font-family: var(--font-display);
+  }
+  .pain-heat__week-cells {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    min-width: 0;
+    justify-content: space-between;
+  }
+  .pain-heat__placeholder {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin: 0 0 1.5rem;
+    padding: 16px 8px;
+  }
+  .pain-section .weight-section__insight {
+    margin-bottom: 1.5rem;
+  }
+  .pain-section__hero-empty {
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+  }
+  .weight-log-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
+  }
+  .weight-log-modal {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--color-border-secondary);
+    box-shadow: var(--glass-shadow-lg);
+    padding: 20px 18px 18px;
+    box-sizing: border-box;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-log-modal {
+    background: rgba(255, 255, 255, 0.96);
+  }
+  .weight-log-modal__title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+  }
+  .weight-log-modal__field {
+    margin-bottom: 12px;
+  }
+  .weight-log-modal__label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    font-family: var(--font-display);
+  }
+  .weight-log-modal__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border-secondary);
+    background: color-mix(in srgb, var(--glass-bg) 80%, transparent);
+    color: var(--color-text-primary);
+    font-size: var(--text-base);
+    font-family: var(--font-ui);
+  }
+  .weight-log-modal__row {
+    display: flex;
+    gap: 10px;
+  }
+  .weight-log-modal__row .weight-log-modal__field {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .weight-log-modal__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    justify-content: flex-end;
+  }
+  .weight-log-modal__btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    border: 1px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-primary);
+  }
+  .weight-log-modal__btn--primary {
+    background: color-mix(in srgb, var(--accent) 22%, var(--glass-bg));
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    color: var(--color-text-primary);
+  }
   .metrics-weight-diary {
     margin-top: 16px;
     width: 100%;
@@ -3429,8 +4178,57 @@ const css = `
   .metrics-flat__btn {
     display: block;
     width: 100%;
-    margin-top: 16px;
+    margin-top: 6px;
     box-sizing: border-box;
+  }
+  .summary-cta-btn.metrics-flat__btn--outline {
+    background: transparent !important;
+    color: var(--accent);
+    box-shadow: none !important;
+    border-width: 1.5px;
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--accent) 62%, var(--glass-border));
+  }
+  .summary-cta-btn.metrics-flat__btn--outline:hover {
+    opacity: 1;
+    background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+    box-shadow: none !important;
+  }
+  .app[data-night="true"] .summary-cta-btn.metrics-flat__btn--outline {
+    color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.52);
+  }
+  .app[data-night="true"] .summary-cta-btn.metrics-flat__btn--outline:hover {
+    background: rgba(255, 59, 48, 0.1) !important;
+  }
+  .metrics-flat .metrics-weight-chart-wrap--minimal {
+    margin-bottom: 0;
+  }
+  .metrics-flat .metrics-v2-seg--weight-toggle {
+    margin-bottom: 8px;
+  }
+  .metrics-empty-history-copy {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .metrics-empty-home-link {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: inherit;
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app[data-night="true"] .metrics-empty-home-link {
+    color: #FF3B30;
   }
   .metrics-pain-status {
     font-size: var(--text-sm);
@@ -3506,6 +4304,13 @@ const css = `
   .summary-momentum.summary-momentum--compact .momentum-strip {
     gap: 4px;
     margin-bottom: 6px;
+  }
+  .summary-momentum.summary-momentum--metrics-quick {
+    margin: 0;
+  }
+  .summary-momentum.summary-momentum--metrics-quick .momentum-strip {
+    gap: 8px;
+    margin-bottom: 0;
   }
   .summary-momentum.summary-momentum--compact .momentum-cell {
     border-radius: 8px;
@@ -3982,7 +4787,8 @@ const css = `
     box-sizing: border-box;
   }
   .summary-main-stack--metrics .summary-cta--metrics-flat .summary-cta-copy {
-    text-align: left;
+    text-align: center;
+    width: 100%;
   }
 
   /* 7-day momentum — square strip (device-only) */
@@ -4457,12 +5263,71 @@ const css = `
     user-select: none;
     overflow: visible;
   }
+  .metrics-weight-chart-wrap--minimal {
+    min-height: 0;
+  }
+  .metrics-weight-chart-wrap--bleed {
+    width: calc(100% + 2 * var(--page-gutter, 16px));
+    max-width: none;
+    margin-left: calc(-1 * var(--page-gutter, 16px));
+    margin-right: calc(-1 * var(--page-gutter, 16px));
+    box-sizing: border-box;
+  }
+  .metrics-weight-chart-stack--plain,
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-weight-chart-stack--plain,
+  .app[data-night="true"] .metrics-weight-chart-stack--plain {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .metrics-weight-chart-stack--plain .metrics-weight-chart-xaxis {
+    border-top: none;
+    padding-top: 4px;
+  }
   .metrics-weight-chart-row {
     display: flex;
     align-items: stretch;
     gap: 6px;
     width: 100%;
     box-sizing: border-box;
+  }
+  .metrics-weight-chart-stack {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+    background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-weight-chart-stack {
+    background: rgba(255, 255, 255, 0.97);
+    border-color: rgba(18, 20, 24, 0.08);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+  }
+  .app[data-night="true"] .metrics-weight-chart-stack {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  }
+  .metrics-weight-chart-xaxis {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px 10px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    opacity: 0.78;
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 45%, transparent);
+  }
+  .metrics-weight-chart-yaxis__lbl--mid {
+    font-size: 10px;
+    opacity: 0.72;
   }
   .metrics-weight-chart-yaxis {
     flex: 0 0 38px;
@@ -4496,15 +5361,15 @@ const css = `
     gap: 4px;
   }
   .metrics-weight-chart-wrap--minimal .metrics-weight-chart-yaxis {
-    flex-basis: 32px;
-    padding: 10px 0 28px;
-    min-height: 140px;
+    flex-basis: 44px;
+    padding: 10px 0 24px;
+    min-height: 120px;
   }
   .metrics-weight-chart-wrap--minimal .metrics-weight-chart-plot {
-    min-height: 140px;
+    min-height: 120px;
   }
   .metrics-weight-chart-wrap--minimal .metrics-weight-chart-plot .metrics-weight-chart-svg {
-    height: 140px;
+    height: 120px;
   }
   .metrics-weight-chart-wrap--minimal .metrics-weight-chart-yaxis__lbl {
     font-size: 10px;
@@ -5969,7 +6834,7 @@ function axisWeekdayShortLabel(dateStr) {
 // ─────────────────────────────────────────────────────────────
 //  MOMENTUM — 7-day strip (device-only)
 // ─────────────────────────────────────────────────────────────
-function MomentumMap({ history, nightMode = false, theme = "dark", compact = false }) {
+function MomentumMap({ history, nightMode = false, theme = "dark", compact = false, metricsQuickGlance = false }) {
   const [detailDate, setDetailDate] = React.useState(null);
   const { dates, sessionCounts, active } = axisWeekMomentumFromHistory(history);
   const minutesByDate = React.useMemo(() => {
@@ -5999,8 +6864,8 @@ function MomentumMap({ history, nightMode = false, theme = "dark", compact = fal
         WebkitBackdropFilter: "blur(8px)"
       };
       return (/*#__PURE__*/
-    React.createElement("div", { className: "summary-momentum" + (compact ? " summary-momentum--compact" : "") }, /*#__PURE__*/
-    React.createElement("div", { className: "summary-momentum-head" }, /*#__PURE__*/
+    React.createElement("div", { className: "summary-momentum" + (compact ? " summary-momentum--compact" : "") + (metricsQuickGlance ? " summary-momentum--metrics-quick" : "") }, /*#__PURE__*/
+    !metricsQuickGlance && /*#__PURE__*/React.createElement("div", { className: "summary-momentum-head" }, /*#__PURE__*/
     React.createElement("div", { className: "summary-title", style: { marginBottom: compact ? 0 : 6 } }, compact ? "Last 7 days" : "7-Day Momentum"), /*#__PURE__*/
     compact && /*#__PURE__*/React.createElement("div", { className: "momentum-compact-hint" }, "Click a box for detailed info."), /*#__PURE__*/
     !compact && /*#__PURE__*/React.createElement("div", { className: "momentum-explainer" }, "Each square is one day. Filled = at least one logged session that day (tap a day for minutes and sessions).")
@@ -8341,6 +9206,80 @@ function axisMetricsFormatWeightLogLine(ts) {
   return `${day} · ${time}`;
 }
 
+/** e.g. "Today, 6:23 PM" or "Yesterday, 10:15 AM" */
+function axisMetricsFormatWeightLastLogFriendly(ts) {
+  try {
+    const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return "";
+    const today = new Date();
+    const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const d0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const diff = Math.round((t0 - d0) / 86400000);
+    let dayPart;
+    if (diff === 0) dayPart = "Today";
+    else if (diff === 1) dayPart = "Yesterday";
+    else {
+      dayPart = d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: d.getFullYear() !== today.getFullYear() ? "numeric" : undefined });
+    }
+    const timePart = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    return `${dayPart}, ${timePart}`;
+  } catch (e) {
+    return "";
+  }
+}
+
+/** Paginated + collapsed history lists (Weight / Pain). */
+function axisMetricLogPagerSlice(list, pageIndex, expanded, options) {
+  const pageSize = options && Number(options.pageSize) > 0 ? Number(options.pageSize) : 15;
+  const collapsedCount = options && Number(options.collapsedCount) > 0 ? Number(options.collapsedCount) : 5;
+  const total = list.length;
+  const pageCount = total === 0 ? 1 : Math.max(1, Math.ceil(total / pageSize));
+  const safePage = Math.min(Math.max(1, pageIndex), pageCount);
+  const pageStart = (safePage - 1) * pageSize;
+  const pageSlice = list.slice(pageStart, pageStart + pageSize);
+  const visible = expanded ? pageSlice : pageSlice.slice(0, Math.min(collapsedCount, pageSlice.length));
+  const showMoreToggle = pageSlice.length > collapsedCount;
+  return { visible, pageSlice, pageCount, page: safePage, showMoreToggle, total, pageSize, collapsedCount };
+}
+
+function axisMetricsCombineLocalDateTime(dateStr, timeStr) {
+  if (!dateStr || typeof dateStr !== "string") return Date.now();
+  const dateParts = dateStr.split("-").map((x) => parseInt(x, 10));
+  if (dateParts.length < 3 || dateParts.some((n) => !Number.isFinite(n))) return Date.now();
+  const y = dateParts[0];
+  const mo = dateParts[1];
+  const da = dateParts[2];
+  let hh = 0;
+  let mm = 0;
+  if (timeStr && typeof timeStr === "string") {
+    const tp = timeStr.split(":");
+    hh = parseInt(tp[0], 10) || 0;
+    mm = parseInt(tp[1], 10) || 0;
+  }
+  return new Date(y, mo - 1, da, hh, mm, 0, 0).getTime();
+}
+
+function axisMetricsWeightSparklineEntries(samples) {
+  const arr = axisMetricsNormalizeWeightList(samples);
+  if (arr.length === 0) return [];
+  return arr.slice(-4);
+}
+
+function axisMetricsWeightTwoWeekTrend(samples) {
+  const arr = axisMetricsNormalizeWeightList(samples);
+  const now = Date.now();
+  const ms14 = 14 * 86400000;
+  const recent = arr.filter((x) => now - x.ts <= ms14);
+  if (recent.length < 2) return null;
+  const d = recent[recent.length - 1].lbs - recent[0].lbs;
+  if (Math.abs(d) < 0.08) return "flat";
+  return d < 0 ? "down" : "up";
+}
+
+function axisMetricsWeightSectionInsight() {
+  return { text: "Alongside mood and pain, even small weight shifts can ease load on knees and hips." };
+}
+
 function axisMetricsShortDateFromDateKey(dateKey) {
   try {
     const d = new Date(dateKey);
@@ -8435,404 +9374,453 @@ function axisMetricsPainImprovementInsight(painByDay) {
   return null;
 }
 
-function axisMetricsWeightOlsDeviationSeries(arr) {
-  const n = arr.length;
-  if (n < 2) return arr.map((x) => ({ ...x, lbs: 0 }));
-  let sumT = 0, sumW = 0, sumTT = 0, sumTW = 0;
-  for (let i = 0; i < n; i++) {
-    const t = arr[i].ts;
-    const w = arr[i].lbs;
-    sumT += t; sumW += w; sumTT += t * t; sumTW += t * w;
+function axisPainFormatTodayContextLine(dateKey) {
+  try {
+    const d = new Date(dateKey);
+    if (Number.isNaN(d.getTime())) return "";
+    return "Today, " + d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  } catch (e) {
+    return "";
   }
-  const denom = n * sumTT - sumT * sumT;
-  const b = denom !== 0 ? (n * sumTW - sumT * sumW) / denom : 0;
-  const a = (sumW - b * sumT) / n;
-  return arr.map((x) => ({ ...x, lbs: x.lbs - (a + b * x.ts) }));
 }
 
-function MetricsWeightLineChart({ samples, lineColor, axisLabelColor, nightMode, viewMode, minimal }) {
-  const [scrub, setScrub] = React.useState(null);
-  const plotRef = React.useRef(null);
-  const dragRef = React.useRef(false);
-  const rawArr = axisMetricsNormalizeWeightList(samples);
-  const trendMode = viewMode === "trend" && rawArr.length >= 3;
-  const arr = trendMode ? axisMetricsWeightOlsDeviationSeries(rawArr) : rawArr;
-  const pad = { r: 4, t: minimal ? 10 : 14, b: minimal ? 26 : 32 };
-  const W = 320;
-  const H = minimal ? 120 : 140;
-  const plotW = W - pad.r;
-  if (rawArr.length === 0) {
-    return /*#__PURE__*/React.createElement("div", { style: { padding: "24px 8px", textAlign: "center", fontWeight: 600, color: "var(--text-dimmer)", fontSize: "var(--text-sm)" } }, "No weight entries yet. Log your weight or connect Apple Health / Health Connect.");
+function axisPainFormatDetailDate(dateKey) {
+  try {
+    return new Date(dateKey).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric", year: "numeric" });
+  } catch (e) {
+    return dateKey;
   }
-  const ws = arr.map((x) => x.lbs);
-  let minW = Math.min(...ws);
-  let maxW = Math.max(...ws);
-  if (minW === maxW) { minW -= 1; maxW += 1; }
-  const t0 = rawArr[0].ts;
-  const t1 = rawArr[rawArr.length - 1].ts;
-  const xAt = (ts) => (t1 > t0 ? (ts - t0) / (t1 - t0) : 0) * plotW;
-  const yAt = (lbs) => pad.t + (1 - (lbs - minW) / (maxW - minW)) * (H - pad.t - pad.b);
-  const pts = rawArr.length < 2 ? "" : arr.map((x) => `${xAt(x.ts)},${yAt(x.lbs)}`).join(" ");
-  const onPointer = (clientX) => {
-    const el = plotRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-    const ts = t0 + ratio * (t1 - t0);
-    let best = 0;
-    let bestD = Infinity;
-    for (let i = 0; i < rawArr.length; i++) {
-      const d = Math.abs(rawArr[i].ts - ts);
-      if (d < bestD) { bestD = d; best = i; }
-    }
-    setScrub({ idx: best, leftRatio: (xAt(rawArr[best].ts) + pad.r * 0.5) / W });
-  };
-  const fmtDate = (ts) => {
-    try { return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }); } catch (e) { return ""; }
-  };
-  const yTop = maxW.toFixed(1);
-  const yBot = minW.toFixed(1);
-  const strokeW = minimal ? (nightMode ? 2.25 : 1.65) : nightMode ? 3.5 : 3;
-  const strokeUse = lineColor;
-  const ptR = minimal ? 4 : 5;
-  const ptRHi = minimal ? 5.5 : 7;
-  const tooltip = scrub != null ? /*#__PURE__*/React.createElement("div", {
-    className: "metrics-weight-tooltip",
-    style: {
-      left: `${Math.min(88, Math.max(4, (scrub.leftRatio || 0.5) * 100 - 14))}%`,
-      bottom: minimal ? "40px" : "52px",
-      transform: "translateX(-50%)"
-    }
-  }, trendMode ? `${arr[scrub.idx].lbs >= 0 ? "+" : ""}${arr[scrub.idx].lbs.toFixed(1)} lbs vs trend` : `${rawArr[scrub.idx].lbs.toFixed(1)} lbs`, /*#__PURE__*/React.createElement("small", null, fmtDate(rawArr[scrub.idx].ts))) : null;
-  return /*#__PURE__*/React.createElement("div", { className: "metrics-weight-chart-wrap" + (minimal ? " metrics-weight-chart-wrap--minimal" : "") }, /*#__PURE__*/
-  React.createElement("div", { className: "metrics-weight-chart-row" }, /*#__PURE__*/
-  React.createElement("div", { className: "metrics-weight-chart-yaxis", "aria-hidden": true }, /*#__PURE__*/
-  React.createElement("span", { className: "metrics-weight-chart-yaxis__lbl", style: { color: axisLabelColor } }, yTop),
-  React.createElement("span", { className: "metrics-weight-chart-yaxis__lbl", style: { color: axisLabelColor } }, yBot)
+}
+
+function axisMetricsPainWeekendInsight(painByDay) {
+  const o = painByDay && typeof painByDay === "object" ? painByDay : {};
+  const wd = [];
+  const we = [];
+  for (const k of Object.keys(o)) {
+    const lv = axisMetricsPainGetLevel(o[k]);
+    if (lv == null) continue;
+    const day = new Date(k).getDay();
+    if (day === 0 || day === 6) we.push(lv);
+    else wd.push(lv);
+  }
+  if (wd.length < 2 || we.length < 1) return null;
+  const awd = wd.reduce((a, b) => a + b, 0) / wd.length;
+  const awe = we.reduce((a, b) => a + b, 0) / we.length;
+  if (awe > awd + 0.65) return "Often higher on weekends.";
+  return null;
+}
+
+function axisMetricsPainSundayInsight(painByDay) {
+  const o = painByDay && typeof painByDay === "object" ? painByDay : {};
+  const sun = [];
+  const other = [];
+  for (const k of Object.keys(o)) {
+    const lv = axisMetricsPainGetLevel(o[k]);
+    if (lv == null) continue;
+    if (new Date(k).getDay() === 0) sun.push(lv);
+    else other.push(lv);
+  }
+  if (sun.length < 1 || other.length < 3) return null;
+  const ms = sun.reduce((a, b) => a + b, 0) / sun.length;
+  const mo = other.reduce((a, b) => a + b, 0) / other.length;
+  if (ms > mo + 0.75) return "Often higher on Sundays.";
+  return null;
+}
+
+function axisMetricsPainConsistentInsight(painByDay) {
+  const keys = axisMetricsLast7DateKeys();
+  const vals = [];
+  for (const k of keys) {
+    const lv = axisMetricsPainGetLevel(painByDay && painByDay[k]);
+    if (lv != null) vals.push(lv);
+  }
+  if (vals.length < 4) return null;
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  if (max - min <= 1.5) return "Consistent throughout the week.";
+  return null;
+}
+
+function painHeatmapCellTone(level) {
+  if (level == null) return "empty";
+  if (level <= 3) return "low";
+  if (level <= 6) return "mid";
+  return "high";
+}
+
+function axisMetricsPainHasAnyEntry(painByDay) {
+  const o = painByDay && typeof painByDay === "object" ? painByDay : {};
+  return Object.keys(o).some((k) => axisMetricsPainGetLevel(o[k]) != null);
+}
+
+function WeightSectionSparkline({ entries }) {
+  const W = 120;
+  const H = 48;
+  const padL = 0;
+  const padR = 0;
+  const padT = 8;
+  const padB = 14;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const baselineY = H - padB;
+  const topRuleY = padT;
+  const n = entries.length;
+  if (n === 0) return null;
+  const lbsArr = entries.map((e) => e.lbs);
+  let minW = Math.min(...lbsArr);
+  let maxW = Math.max(...lbsArr);
+  let range = maxW - minW;
+  if (range === 0) { minW -= 1; maxW += 1; range = maxW - minW; }
+  minW -= range * 0.1;
+  maxW += range * 0.1;
+  const span = maxW - minW || 1;
+  const dotR = 3.5;
+  const innerW = Math.max(0, W - 2 * dotR);
+  const xAt = (i) => dotR + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+  const yAt = (lbs) => padT + (1 - (lbs - minW) / span) * plotH;
+  const pts = entries.map((e, i) => `${xAt(i)},${yAt(e.lbs)}`).join(" ");
+  return /*#__PURE__*/React.createElement("div", { className: "weight-section__chart-wrap" }, /*#__PURE__*/
+  React.createElement("svg", {
+    className: "weight-section__chart-svg",
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: "xMidYMid meet",
+    "aria-hidden": true
+  }, /*#__PURE__*/
+  React.createElement("line", { className: "weight-section__chart-baseline", x1: 0, x2: W, y1: topRuleY, y2: topRuleY }),
+  React.createElement("line", { className: "weight-section__chart-baseline", x1: 0, x2: W, y1: baselineY, y2: baselineY }),
+  n >= 2 ? /*#__PURE__*/React.createElement("polyline", { className: "weight-section__chart-line", points: pts }) : null,
+  entries.map((e, i) => /*#__PURE__*/React.createElement("circle", { key: e.ts, className: "weight-section__chart-dot", cx: xAt(i), cy: yAt(e.lbs), r: 3.5 }))
   ),
-  React.createElement("div", { ref: plotRef, className: "metrics-weight-chart-plot" }, /*#__PURE__*/
-  React.createElement("svg", { className: "metrics-weight-chart-svg", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", style: { overflow: "visible" } }, /*#__PURE__*/
-  pts ? /*#__PURE__*/React.createElement("polyline", { fill: "none", stroke: strokeUse, strokeWidth: strokeW, strokeLinejoin: "round", strokeLinecap: "round", points: pts }) : null, /*#__PURE__*/
-  arr.map((x, i) => /*#__PURE__*/React.createElement("circle", { key: x.ts, cx: xAt(x.ts), cy: yAt(x.lbs), r: scrub && scrub.idx === i ? ptRHi : ptR, fill: strokeUse, opacity: scrub && scrub.idx === i ? 1 : minimal ? 0.75 : 0.9 }))
-  ),
-  tooltip,
-  /*#__PURE__*/React.createElement("div", {
-    className: "metrics-weight-touch",
-    onPointerDown: (e) => {
-      dragRef.current = true;
-      try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
-      onPointer(e.clientX);
-    },
-    onPointerMove: (e) => { if (dragRef.current) onPointer(e.clientX); },
-    onPointerUp: (e) => {
-      dragRef.current = false;
-      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (err) {}
-      setScrub(null);
-    },
-    onPointerLeave: () => { dragRef.current = false; setScrub(null); },
-    onPointerCancel: () => { dragRef.current = false; setScrub(null); },
-    role: "slider",
-    "aria-label": "Scrub weight chart",
-    tabIndex: 0
-  })
-  )
-  )
-  );
+  /*#__PURE__*/React.createElement("div", { className: "weight-section__chart-axis" }, /*#__PURE__*/
+  React.createElement("span", null, "Oldest"),
+  React.createElement("span", null, "Latest")
+  ));
 }
 
 function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry }) {
-  const METRICS_WEIGHT_CALLOUT = "No health data yet — use Manual log on Metrics or Connect & sync in Settings. · Sources: manual entries in AXIS.";
   const [manualOpen, setManualOpen] = React.useState(false);
-  const [weightChartMode, setWeightChartMode] = React.useState("absolute");
   const [draftLbs, setDraftLbs] = React.useState("");
-  const [diaryOpen, setDiaryOpen] = React.useState(() => storageGet("axis_metrics_weight_diary_open", false));
   const [editingTs, setEditingTs] = React.useState(null);
-  const [draftEditLbs, setDraftEditLbs] = React.useState("");
-  const period = activePeriod || getCircadianPeriod();
-  const ct = CIRCADIAN_THEMES[period][theme === "dark" ? "dark" : "light"];
-  const lineColor = nightMode ? "#FF3B30" : (ct && ct.accent ? ct.accent : "#4DA8FF");
-  const axisLab = theme === "dark" && !nightMode ? "#F5F5F5" : theme === "light" ? "#242830" : "#F5F5F5";
+  const [editDraftLbs, setEditDraftLbs] = React.useState("");
+  const periodW = activePeriod || getCircadianPeriod();
+  const ctW = CIRCADIAN_THEMES[periodW][theme === "dark" ? "dark" : "light"];
+  const moodColor = nightMode ? "#FF3B30" : (ctW && ctW.accent ? ctW.accent : "#4DA8FF");
   const arr = axisMetricsNormalizeWeightList(samples);
   const current = arr.length ? arr[arr.length - 1].lbs : null;
   const lastSample = arr.length ? arr[arr.length - 1] : null;
-  const hasHealth = arr.some((x) => x.source === "health");
-  const hasManual = arr.some((x) => x.source === "manual");
-  const sourceLine = arr.length === 0 ? "" : hasHealth && hasManual ? "Sources: Apple Health / Health Connect + manual entries." : hasHealth ? "Sources: Apple Health / Health Connect." : "Sources: manual entries in AXIS.";
-  const diaryRows = React.useMemo(() => [...arr].sort((a, b) => b.ts - a.ts), [arr]);
+  const emptyWeight = arr.length === 0;
+  const sparkEntries = axisMetricsWeightSparklineEntries(samples);
+  const delta2w = axisMetricsWeightDelta2WeeksLine(samples);
+  const trend2w = axisMetricsWeightTwoWeekTrend(samples);
+  const insight = axisMetricsWeightSectionInsight();
+  const contextParts = [];
+  if (delta2w) contextParts.push(delta2w);
+  if (lastSample) contextParts.push("Last log: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
+  const contextLine = contextParts.join(" \u2022 ");
+  const heroWarm = trend2w === "up";
+  const logRowsNewestFirst = arr.slice().reverse();
+  const [weightLogPage, setWeightLogPage] = React.useState(1);
+  const [weightLogExpanded, setWeightLogExpanded] = React.useState(false);
+  const wPager = axisMetricLogPagerSlice(logRowsNewestFirst, weightLogPage, weightLogExpanded, {});
+  const weightVisibleRows = wPager.visible;
+  const weightPageCount = wPager.pageCount;
+  const weightShowMore = wPager.showMoreToggle;
+  const weightTotal = wPager.total;
   React.useEffect(() => {
-    if (manualOpen) {
-      const seed = current != null ? String(current) : "";
-      setDraftLbs(seed);
+    if (!manualOpen) return;
+    setDraftLbs(current != null ? String(current.toFixed(1)) : "");
+    setEditingTs(null);
+    setEditDraftLbs("");
+  }, [manualOpen]);
+  React.useEffect(() => {
+    if (!manualOpen) {
+      setWeightLogPage(1);
+      setWeightLogExpanded(false);
     }
-  }, [manualOpen, current]);
+  }, [manualOpen]);
   React.useEffect(() => {
-    try {
-      storageSet("axis_metrics_weight_diary_open", diaryOpen);
-    } catch (e) {}
-  }, [diaryOpen]);
+    const pc = logRowsNewestFirst.length === 0 ? 1 : Math.max(1, Math.ceil(logRowsNewestFirst.length / 15));
+    if (weightLogPage > pc) setWeightLogPage(pc);
+  }, [logRowsNewestFirst.length, weightLogPage]);
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "Escape" || !manualOpen) return;
+      if (editingTs != null) {
+        setEditingTs(null);
+        setEditDraftLbs("");
+        return;
+      }
+      setManualOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [manualOpen, editingTs]);
   const saveManual = () => {
     const n = parseFloat(draftLbs);
-    if (Number.isFinite(n) && n > 0 && n < 2000) {
-      axisHapticTick();
-      onLogWeight(n);
-      setManualOpen(false);
-    }
+    if (!Number.isFinite(n) || n <= 0 || n >= 2000) return;
+    axisHapticTick();
+    onLogWeight({ lbs: n, ts: Date.now() });
+    setDraftLbs("");
   };
-  const saveEdit = () => {
-    const n = parseFloat(draftEditLbs);
-    if (editingTs == null || typeof onEditWeightEntry !== "function") return;
+  const saveRowEdit = () => {
+    if (editingTs == null) return;
+    const n = parseFloat(editDraftLbs);
     if (!Number.isFinite(n) || n <= 0 || n >= 2000) return;
     axisHapticTick();
     onEditWeightEntry(editingTs, n);
     setEditingTs(null);
-    setDraftEditLbs("");
+    setEditDraftLbs("");
   };
-  const startEdit = (entry) => {
-    axisHapticTick();
-    setEditingTs(entry.ts);
-    setDraftEditLbs(String(entry.lbs));
-  };
-  const cancelEdit = () => {
-    axisHapticTick();
+  const closeModal = () => {
     setEditingTs(null);
-    setDraftEditLbs("");
+    setEditDraftLbs("");
+    setManualOpen(false);
   };
-  const deleteEntry = (ts) => {
-    if (typeof onDeleteWeightEntry !== "function") return;
-    axisHapticTick();
-    onDeleteWeightEntry(ts);
-    if (editingTs === ts) {
-      setEditingTs(null);
-      setDraftEditLbs("");
-    }
-  };
-  const delta2w = axisMetricsWeightDelta2WeeksLine(samples);
-  const emptyWeight = arr.length === 0;
-  const manualBtnClass = "summary-cta-btn ultra-filled-btn metrics-flat__btn";
-  const canDiary = typeof onEditWeightEntry === "function" && typeof onDeleteWeightEntry === "function";
-  return /*#__PURE__*/React.createElement("div", { className: "metrics-flat" }, /*#__PURE__*/
-  emptyWeight ? /*#__PURE__*/React.createElement("div", { className: "metrics-v2-context", style: { marginBottom: 14 } }, METRICS_WEIGHT_CALLOUT) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-  React.createElement("div", { className: "metrics-v2-hero-line" }, /*#__PURE__*/
-  React.createElement("div", { className: "metrics-v2-hero-row", style: { marginBottom: 0 } }, /*#__PURE__*/
-  React.createElement("span", { className: "metrics-v2-hero-num" + (nightMode ? "" : " metrics-v2-hero-num--accent") }, current.toFixed(1)),
-  React.createElement("span", { className: "metrics-v2-hero-unit" }, "lbs")
+  const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No weight entries yet — add one below.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
+  return /*#__PURE__*/React.createElement("div", { className: "weight-section", style: { "--weight-mood-accent": moodColor } }, /*#__PURE__*/
+  React.createElement("div", { className: "weight-section__header" }, "Weight"),
+  !emptyWeight && /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, /*#__PURE__*/
+  React.createElement("span", { className: "weight-section__hero-num" + (heroWarm ? " weight-section__hero-num--warm" : "") }, current.toFixed(1)),
+  React.createElement("span", { className: "weight-section__hero-unit" }, "lbs")
   ),
-  delta2w ? /*#__PURE__*/React.createElement("div", { className: "metrics-v2-delta" }, delta2w) : null
-  ),
-  /*#__PURE__*/React.createElement("div", { className: "metrics-v2-context metrics-v2-context--fine" }, lastSample ? `Last log: ${axisMetricsFormatWeightLogLine(lastSample.ts)}` : "No readings yet \u2014 log below."),
-  (sourceLine || stepsToday != null || healthHint) && /*#__PURE__*/React.createElement("div", { className: "metrics-v2-context metrics-v2-context--fine" }, [stepsToday != null ? `Steps today: ${stepsToday}` : null, healthHint || null, sourceLine || null].filter(Boolean).join(" \u00B7 ")),
-  /*#__PURE__*/React.createElement("div", { className: "metrics-v2-seg metrics-v2-seg--weight-toggle", role: "group", "aria-label": "Weight chart view" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metrics-v2-seg__btn" + (weightChartMode === "absolute" ? " metrics-v2-seg__btn--on" : ""), onClick: () => { axisHapticTick(); setWeightChartMode("absolute"); } }, "Absolute"),
-  React.createElement("button", { type: "button", className: "metrics-v2-seg__btn" + (weightChartMode === "trend" ? " metrics-v2-seg__btn--on" : ""), onClick: () => { axisHapticTick(); setWeightChartMode("trend"); } }, "Trend")
-  ),
-  /*#__PURE__*/React.createElement(MetricsWeightLineChart, { samples: samples, lineColor: lineColor, axisLabelColor: axisLab, nightMode: nightMode, viewMode: weightChartMode, minimal: true }),
-  /*#__PURE__*/React.createElement("div", { className: "metrics-insight-inline", role: "note" }, METRICS_WEIGHT_CALLOUT)
-  ),
+  !emptyWeight && contextLine && /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine),
+  /*#__PURE__*/React.createElement("div", { className: "weight-section__weight-insight" }, insight.text),
+  graphBlock,
   /*#__PURE__*/React.createElement("button", {
     type: "button",
-    className: manualBtnClass,
-    onClick: () => { axisHapticTick(); setManualOpen((o) => !o); },
-    "aria-expanded": manualOpen ? "true" : "false"
-  }, manualOpen ? "Cancel" : "Manual log"),
-  manualOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-inline-expand", role: "region", "aria-label": "Manual weight entry" }, /*#__PURE__*/
-  React.createElement("div", { className: "metrics-inline-expand__label" }, "Weight (lbs)"),
-  React.createElement("div", { className: "metrics-inline-expand__row" }, /*#__PURE__*/
+    className: "weight-section__btn weight-section__btn--expand",
+    "aria-expanded": manualOpen,
+    title: manualOpen ? "Collapse manual log" : "Expand to log weight",
+    onClick: () => { axisHapticTick(); setManualOpen((o) => !o); }
+  }, /*#__PURE__*/React.createElement("span", null, "Manual log"), /*#__PURE__*/React.createElement("span", { className: "weight-section__btn-chev", "aria-hidden": true }, manualOpen ? "\u25BC" : "\u25B6")),
+  manualOpen && /*#__PURE__*/React.createElement("div", { className: "metric-inline-log", role: "region", "aria-labelledby": "weight-inline-log-h" }, /*#__PURE__*/
+  React.createElement("h2", { id: "weight-inline-log-h", className: "weight-log-modal__title" }, "Weight log"),
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
   React.createElement("input", {
+    id: "weight-log-lbs-new",
     type: "number",
     inputMode: "decimal",
-    className: "metrics-inline-input",
+    className: "weight-log-modal__input metric-inline-log__input-grow",
     min: 1,
-    max: 800,
+    max: 1999,
     step: 0.1,
+    placeholder: "Weight (lbs)",
+    "aria-label": "Weight in pounds",
     value: draftLbs,
-    onChange: (e) => setDraftLbs(e.target.value),
-    "aria-label": "Weight in pounds"
-  }), /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metrics-btn", style: { minHeight: 44, minWidth: 88 }, onClick: () => { axisHapticTick(); setManualOpen(false); } }, "Cancel"), /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metrics-btn metrics-btn--primary", style: { minHeight: 44, minWidth: 88 }, onClick: saveManual }, "Save")
+    onChange: (e) => setDraftLbs(e.target.value)
+  }),
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "weight-log-modal__btn", onClick: () => { axisHapticTick(); closeModal(); } }, "Cancel"),
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: saveManual }, "Save")
   )
   ),
-  canDiary && diaryRows.length > 0 && /*#__PURE__*/React.createElement("div", { className: "metrics-weight-diary" }, /*#__PURE__*/
-  React.createElement("button", {
-    type: "button",
-    className: "metrics-weight-diary__toggle",
-    onClick: () => { axisHapticTick(); setDiaryOpen((o) => !o); },
-    "aria-expanded": diaryOpen ? "true" : "false"
-  }, /*#__PURE__*/
-  React.createElement("span", null, "Weight log"),
-  React.createElement("span", { className: "metrics-weight-diary__chev", "aria-hidden": true }, diaryOpen ? "\u25BC" : "\u25B6")
-  ),
-  diaryOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-weight-diary__list" }, diaryRows.map((entry) => {
-    const editing = editingTs === entry.ts;
-    return (/*#__PURE__*/React.createElement("div", { key: entry.ts, className: "metrics-weight-diary__row" }, /*#__PURE__*/
-    React.createElement("div", { className: "metrics-weight-diary__meta" }, /*#__PURE__*/
-    React.createElement("div", null, axisMetricsFormatWeightLogLine(entry.ts)),
-    React.createElement("div", { className: "metrics-weight-diary__lbs" }, entry.lbs.toFixed(1), " lbs \u00B7 ", entry.source === "health" ? "Health" : "Manual")
-    ),
-    editing ? /*#__PURE__*/React.createElement("div", { className: "metrics-weight-diary__edit" }, /*#__PURE__*/
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, weightTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Add your weight above.") : weightVisibleRows.map((e) => {
+    const isEdit = editingTs === e.ts;
+    return /*#__PURE__*/React.createElement("div", { key: e.ts, className: "metric-inline-log__list-item", role: "listitem" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
     React.createElement("input", {
+      id: "weight-log-lbs-edit-" + String(e.ts),
       type: "number",
       inputMode: "decimal",
+      className: "weight-log-modal__input metric-inline-log__input-grow",
       min: 1,
-      max: 800,
+      max: 1999,
       step: 0.1,
-      value: draftEditLbs,
-      onChange: (e) => setDraftEditLbs(e.target.value),
-      "aria-label": "Edit weight in pounds"
-    }), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "metrics-weight-diary__btn", onClick: saveEdit }, "Save"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "metrics-weight-diary__btn", onClick: cancelEdit }, "Cancel")
-    ) : /*#__PURE__*/React.createElement("div", { className: "metrics-weight-diary__actions" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "metrics-weight-diary__btn", onClick: () => startEdit(entry) }, "Edit"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "metrics-weight-diary__btn metrics-weight-diary__btn--danger", onClick: () => deleteEntry(entry.ts) }, "Delete")
+      "aria-label": "Edit weight in pounds",
+      value: editDraftLbs,
+      onChange: (ev) => setEditDraftLbs(ev.target.value)
+    }),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "weight-log-modal__btn", onClick: () => { axisHapticTick(); setEditingTs(null); setEditDraftLbs(""); } }, "Cancel"),
+    /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: saveRowEdit }, "Save")
+    )
+    ) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
+    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs \u00b7 ${axisMetricsFormatWeightLastLogFriendly(e.ts)}${e.source === "health" ? " \u00b7 Health" : ""}`),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", onClick: () => { axisHapticTick(); setEditingTs(e.ts); setEditDraftLbs(String(e.lbs)); } }, "Edit"),
+    /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link metric-inline-log__btn-link--danger", onClick: () => { axisHapticTick(); onDeleteWeightEntry(e.ts); } }, "Delete")
     )
     ));
-  })
-  )
+  })),
+  weightShowMore ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__expand-toggle" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metric-inline-log__link-btn", onClick: () => { axisHapticTick(); setWeightLogExpanded((x) => !x); } }, weightLogExpanded ? "Show less" : "Show more")
+  ) : null,
+  weightTotal > 15 ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pager", role: "navigation", "aria-label": "Weight log pages" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: wPager.page <= 1, onClick: () => { axisHapticTick(); setWeightLogExpanded(false); setWeightLogPage((p) => Math.max(1, p - 1)); } }, "Previous"),
+  /*#__PURE__*/React.createElement("span", null, "Page ", wPager.page, " of ", weightPageCount),
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: wPager.page >= weightPageCount, onClick: () => { axisHapticTick(); setWeightLogExpanded(false); setWeightLogPage((p) => Math.min(weightPageCount, p + 1)); } }, "Next")
+  ) : null
   )
   );
 }
 
-/** Pain heatmap: low = accent-dim wash, high = accent wash; empty uses .metrics-pain-cell--empty (no inline fill). */
-function metricsPainCellStyles(level) {
-  if (level == null) return {};
-  if (level >= 6) {
-    const u = (level - 6) / 4;
-    return {
-      background: `color-mix(in srgb, var(--accent) ${Math.round(22 + u * 42)}%, var(--glass-bg))`,
-      borderColor: `color-mix(in srgb, var(--accent) 55%, var(--glass-border))`
-    };
-  }
-  const u = (level - 1) / 4;
-  return {
-    background: `color-mix(in srgb, var(--accent-dim) ${Math.round(38 + u * 34)}%, var(--glass-bg))`,
-    borderColor: `color-mix(in srgb, var(--accent) 32%, var(--glass-border))`
-  };
-}
-
-function MetricsPainGrid({ painByDay, mode, dkToday, nightMode, theme, onCellPress }) {
+function MetricsPainGrid({ painByDay, mode, dkToday, onCellPress }) {
   const dowShort = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
-  const renderCell = (dk, showDow) => {
+  const cell = (dk, showDow) => {
     const raw = painByDay && painByDay[dk];
     const level = axisMetricsPainGetLevel(raw);
     const isToday = dk === dkToday;
-    const st = metricsPainCellStyles(level);
+    const tone = painHeatmapCellTone(level);
+    const cls = "pain-heat__cell pain-heat__cell--" + tone + (isToday ? " pain-heat__cell--today" : "");
     const label = level != null ? `${axisRelativeDayLabel(dk)} · ${level}/10` : `${axisRelativeDayLabel(dk)} · no entry`;
-    return /*#__PURE__*/React.createElement("button", {
+    const btn = /*#__PURE__*/React.createElement("button", {
       type: "button",
-      key: dk,
-      className: "metrics-pain-cell" + (level == null ? " metrics-pain-cell--empty" : "") + (isToday ? " metrics-pain-cell--today" : ""),
-      style: { ...st, borderStyle: "solid", borderWidth: 1, borderRadius: 10, cursor: "pointer", padding: showDow ? "6px 4px 5px" : "4px 2px", minHeight: showDow ? 52 : 36, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", gap: 2, fontWeight: 800, fontSize: showDow ? 14 : 11 },
+      className: cls,
       onClick: () => onCellPress && onCellPress({ dateKey: dk, level, note: axisMetricsPainGetNote(raw) }),
       "aria-label": label
-    }, /*#__PURE__*/
-    React.createElement("span", { style: { lineHeight: 1 } }, level != null ? level : "\u2014"),
-    showDow ? /*#__PURE__*/React.createElement("span", { className: "metrics-pain-cell__dow" }, dowShort[new Date(dk).getDay()]) : null);
+    }, level != null ? level : "\u2014");
+    if (!showDow) return btn;
+    return /*#__PURE__*/React.createElement("div", { key: dk, className: "pain-heat__col" }, btn, /*#__PURE__*/React.createElement("div", { className: "pain-heat__dow" }, dowShort[new Date(dk).getDay()]));
   };
   if (mode === "7d") {
     const keys = axisMetricsLast7DateKeys();
-    return /*#__PURE__*/React.createElement("div", { className: "metrics-pain-grid" }, keys.map((dk) => renderCell(dk, true)));
+    return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid" }, keys.map((dk) => cell(dk, true)));
   }
   const k28 = axisMetricsPainLast28DateKeys();
-  return /*#__PURE__*/React.createElement("div", { className: "metrics-pain-grid-28" },
-  [0, 1, 2, 3].map((row) => /*#__PURE__*/React.createElement("div", { key: row, className: "metrics-pain-week-row" },
-  k28.slice(row * 7, row * 7 + 7).map((dk) => renderCell(dk, false))
-  ))
-  );
+  return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid-28" }, [0, 1, 2, 3].map((row) => /*#__PURE__*/React.createElement("div", { key: row, className: "pain-heat__week-row" }, /*#__PURE__*/
+  React.createElement("div", { className: "pain-heat__week-label" }, "Week " + String(row + 1)), /*#__PURE__*/
+  React.createElement("div", { className: "pain-heat__week-cells" }, k28.slice(row * 7, row * 7 + 7).map((dk) => /*#__PURE__*/React.createElement("div", { key: dk, className: "pain-heat__col" }, cell(dk, false))))
+  )));
 }
 
-function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain }) {
+function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry }) {
   const [entryOpen, setEntryOpen] = React.useState(false);
   const [painGridMode, setPainGridMode] = React.useState("7d");
-  const [painTip, setPainTip] = React.useState(null);
   const [v, setV] = React.useState(5);
   const [draftNote, setDraftNote] = React.useState("");
+  const [editingDateKey, setEditingDateKey] = React.useState(null);
+  const [editV, setEditV] = React.useState(5);
+  const [editNote, setEditNote] = React.useState("");
+  const [painLogPage, setPainLogPage] = React.useState(1);
+  const [painLogExpanded, setPainLogExpanded] = React.useState(false);
+  const periodPain = activePeriod || getCircadianPeriod();
+  const ctPain = CIRCADIAN_THEMES[periodPain][theme === "dark" ? "dark" : "light"];
+  const moodAccent = nightMode ? "#FF3B30" : (ctPain && ctPain.accent ? ctPain.accent : "#4DA8FF");
   const dkToday = new Date().toDateString();
-  const painList = axisMetricsPainEntriesDescending(painByDay);
   const painTodayVal = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]);
-  const latestPain = painList[0];
-  const heroNum = painTodayVal != null ? painTodayVal : null;
-  const heroAccent = painTodayVal != null;
-  const contextLine = painTodayVal != null ? `Today, ${axisMetricsShortDateFromDateKey(dkToday)}` : latestPain ? `Last log: ${axisMetricsShortDateFromDateKey(latestPain.dateKey)}` : null;
-  const insightMon = axisMetricsPainMondayInsight(painByDay);
-  const insightImp = axisMetricsPainImprovementInsight(painByDay);
-  const painCallout = insightMon || insightImp;
+  const hasAnyEntry = axisMetricsPainHasAnyEntry(painByDay);
+  const contextLine = axisPainFormatTodayContextLine(dkToday);
+  const painCallout = axisMetricsPainSundayInsight(painByDay) || axisMetricsPainWeekendInsight(painByDay) || axisMetricsPainImprovementInsight(painByDay) || axisMetricsPainConsistentInsight(painByDay) || axisMetricsPainMondayInsight(painByDay);
+  const painRowsNewestFirst = axisMetricsPainEntriesDescending(painByDay);
+  const pPager = axisMetricLogPagerSlice(painRowsNewestFirst, painLogPage, painLogExpanded, {});
+  const painVisibleRows = pPager.visible;
+  const painPageCount = pPager.pageCount;
+  const painShowMore = pPager.showMoreToggle;
+  const painTotal = pPager.total;
   React.useEffect(() => {
-    if (entryOpen) {
-      const ex = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]) != null ? axisMetricsPainGetLevel(painByDay[dkToday]) : 5;
-      setV(ex);
-      const n = painByDay && painByDay[dkToday] && axisMetricsPainGetNote(painByDay[dkToday]);
-      setDraftNote(n || "");
-    }
+    if (!entryOpen) return;
+    const ex = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]) != null ? axisMetricsPainGetLevel(painByDay[dkToday]) : 5;
+    setV(ex);
+    const n = painByDay && painByDay[dkToday] && axisMetricsPainGetNote(painByDay[dkToday]);
+    setDraftNote(n || "");
   }, [entryOpen, dkToday, painByDay]);
+  React.useEffect(() => {
+    if (!entryOpen) {
+      setPainLogPage(1);
+      setPainLogExpanded(false);
+      setEditingDateKey(null);
+      setEditNote("");
+    }
+  }, [entryOpen]);
+  React.useEffect(() => {
+    const pc = painRowsNewestFirst.length === 0 ? 1 : Math.max(1, Math.ceil(painRowsNewestFirst.length / 15));
+    if (painLogPage > pc) setPainLogPage(pc);
+  }, [painRowsNewestFirst.length, painLogPage]);
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      if (editingDateKey != null) {
+        setEditingDateKey(null);
+        setEditNote("");
+        return;
+      }
+      if (entryOpen) setEntryOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [entryOpen, editingDateKey]);
   const savePain = () => {
     axisHapticTick();
     const note = draftNote.trim().slice(0, 48);
     onLogPain({ level: v, ...(note ? { note } : {}) });
-    setEntryOpen(false);
+    setDraftNote("");
   };
-  const logPainBtnClass = "summary-cta-btn ultra-filled-btn metrics-flat__btn";
-  return /*#__PURE__*/React.createElement("div", { className: "metrics-flat" }, /*#__PURE__*/
-  painTodayVal == null && /*#__PURE__*/React.createElement("div", { className: "metrics-pain-status" }, "No entry today yet."),
-  heroNum != null && /*#__PURE__*/React.createElement("div", { className: "metrics-v2-hero-row" }, /*#__PURE__*/
-  React.createElement("span", { className: "metrics-v2-hero-num" + (heroAccent && !nightMode ? " metrics-v2-hero-num--accent" : "") }, heroNum),
-  React.createElement("span", { className: "metrics-v2-hero-unit" }, "/10")
-  ),
-  contextLine && /*#__PURE__*/React.createElement("div", { className: "metrics-v2-context metrics-v2-context--fine" }, contextLine),
-  /*#__PURE__*/React.createElement("div", { className: "metrics-v2-seg metrics-v2-seg--pain-range", role: "group", "aria-label": "Pain heatmap range" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metrics-v2-seg__btn" + (painGridMode === "7d" ? " metrics-v2-seg__btn--on" : ""), onClick: () => { axisHapticTick(); setPainGridMode("7d"); setPainTip(null); } }, "7D"),
-  React.createElement("button", { type: "button", className: "metrics-v2-seg__btn" + (painGridMode === "28d" ? " metrics-v2-seg__btn--on" : ""), onClick: () => { axisHapticTick(); setPainGridMode("28d"); setPainTip(null); } }, "4W")
-  ),
-  /*#__PURE__*/React.createElement(MetricsPainGrid, {
+  const savePainRowEdit = () => {
+    if (editingDateKey == null || !onEditPainEntry) return;
+    axisHapticTick();
+    const note = editNote.trim().slice(0, 48);
+    onEditPainEntry(editingDateKey, { level: editV, ...(note ? { note } : {}) });
+    setEditingDateKey(null);
+    setEditNote("");
+  };
+  const gridMode = painGridMode === "7d" ? "7d" : "28d";
+  const heatmapBlock = !hasAnyEntry ? /*#__PURE__*/React.createElement("p", { className: "pain-heat__placeholder" }, "No entries yet.") : /*#__PURE__*/React.createElement(MetricsPainGrid, {
     painByDay: painByDay,
-    mode: painGridMode === "7d" ? "7d" : "28d",
+    mode: gridMode,
     dkToday: dkToday,
-    nightMode: nightMode,
-    theme: theme,
-    onCellPress: (info) => { axisHapticTick(); setPainTip(info); }
-  }),
-  painTip && /*#__PURE__*/React.createElement("div", { className: "metrics-pain-tip", role: "status" }, /*#__PURE__*/
-  React.createElement("strong", { style: { color: "var(--text-white)" } }, axisMetricsShortDateFromDateKey(painTip.dateKey)), " · ",
-  painTip.level != null ? `${painTip.level}/10` : "No entry",
-  painTip.note ? /*#__PURE__*/React.createElement("span", null, " · ", painTip.note) : null,
-  " · ", /*#__PURE__*/React.createElement("button", { type: "button", style: { background: "none", border: "none", color: "var(--accent)", fontWeight: 700, cursor: "pointer", padding: 0, marginLeft: 6 }, onClick: () => setPainTip(null) }, "Dismiss")
+    onCellPress: undefined
+  });
+  return /*#__PURE__*/React.createElement("div", { className: "weight-section pain-section", style: { "--weight-mood-accent": moodAccent } }, /*#__PURE__*/
+  React.createElement("div", { className: "weight-section__header" }, "Pain"),
+  /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, painTodayVal != null ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
+  React.createElement("span", { className: "weight-section__hero-num" }, String(painTodayVal)),
+  React.createElement("span", { className: "pain-section__denom" }, "/10")
+  ) : /*#__PURE__*/React.createElement("span", { className: "pain-section__hero-empty" }, "No entry")),
+  contextLine ? /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine) : null,
+  /*#__PURE__*/React.createElement("div", { className: "pain-section__toggles", role: "tablist", "aria-label": "Pain heatmap range" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "7d", className: "pain-section__toggle" + (painGridMode === "7d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("7d"); } }, "[7D]"),
+  React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "28d", className: "pain-section__toggle" + (painGridMode === "28d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("28d"); } }, "[4W]")
   ),
-  painCallout && /*#__PURE__*/React.createElement("div", { className: "metrics-insight-inline", role: "note" }, "\uD83D\uDCA1 ", painCallout),
-  /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    className: logPainBtnClass,
-    onClick: () => { axisHapticTick(); setEntryOpen((o) => !o); },
-    "aria-expanded": entryOpen ? "true" : "false"
-  }, entryOpen ? "Cancel" : "Log pain"),
-  entryOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-inline-expand", role: "region", "aria-label": "Pain level entry" }, /*#__PURE__*/
-  React.createElement("div", { className: "metrics-inline-expand__label" }, "Today (1–10)"),
-  React.createElement("div", { className: "metrics-pain-level-readout", style: { marginBottom: 10 } }, v),
-  React.createElement("input", {
-    type: "range",
-    min: 1,
-    max: 10,
-    step: 1,
-    value: v,
-    onChange: (e) => setV(Number(e.target.value)),
-    style: { width: "100%", minHeight: 44 },
-    "aria-valuemin": 1,
-    "aria-valuemax": 10,
-    "aria-valuenow": v
-  }),
-  React.createElement("div", { className: "metrics-inline-expand__label", style: { marginTop: 12 } }, "Short note (optional)"),
-  React.createElement("input", {
-    type: "text",
-    className: "metrics-pain-note-input",
-    placeholder: "e.g. lower back, stiff neck",
-    maxLength: 48,
-    value: draftNote,
-    onChange: (e) => setDraftNote(e.target.value),
-    "aria-label": "Pain note"
-  }),
-  React.createElement("div", { className: "metrics-inline-expand__row", style: { marginTop: 12 } }, /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metrics-btn", style: { minHeight: 44, flex: 1 }, onClick: () => { axisHapticTick(); setEntryOpen(false); } }, "Cancel"), /*#__PURE__*/
-  React.createElement("button", { type: "button", className: "metrics-btn metrics-btn--primary", style: { minHeight: 44, flex: 1 }, onClick: savePain }, "Save")
+  heatmapBlock,
+  painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, "\uD83D\uDCA1 ", painCallout) : null,
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-section__btn weight-section__btn--expand", "aria-expanded": entryOpen, title: entryOpen ? "Collapse pain log" : "Expand to log pain", onClick: () => { axisHapticTick(); setEntryOpen((o) => !o); } }, /*#__PURE__*/React.createElement("span", null, "Log pain"), /*#__PURE__*/React.createElement("span", { className: "weight-section__btn-chev", "aria-hidden": true }, entryOpen ? "\u25BC" : "\u25B6")),
+  entryOpen && /*#__PURE__*/React.createElement("div", { className: "metric-inline-log", role: "region", "aria-labelledby": "pain-inline-log-h" }, /*#__PURE__*/
+  React.createElement("h2", { id: "pain-inline-log-h", className: "weight-log-modal__title" }, "Pain log"),
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
+  React.createElement("div", { className: "metric-inline-log__pain-slider-row" }, /*#__PURE__*/
+  React.createElement("label", { className: "weight-log-modal__label", htmlFor: "pain-log-level", style: { marginBottom: 0, alignSelf: "center" } }, "Level"),
+  /*#__PURE__*/React.createElement("input", { id: "pain-log-level", type: "range", min: 1, max: 10, step: 1, value: v, onChange: (e) => setV(Number(e.target.value)) }),
+  /*#__PURE__*/React.createElement("span", { className: "metric-inline-log__pain-val", "aria-hidden": true }, v)
+  ),
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
+  React.createElement("input", { id: "pain-log-note", type: "text", className: "weight-log-modal__input metric-inline-log__input-grow", placeholder: "Note (optional)", maxLength: 48, value: draftNote, onChange: (e) => setDraftNote(e.target.value), "aria-label": "Pain note (optional)" }),
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "weight-log-modal__btn", onClick: () => { axisHapticTick(); setEntryOpen(false); } }, "Cancel"),
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: savePain }, "Save")
   )
+  )
+  ),
+  /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__list", role: "list" }, painTotal === 0 ? /*#__PURE__*/React.createElement("p", { className: "metric-inline-log__empty" }, "No entries yet. Log pain above.") : painVisibleRows.map((e) => {
+    const isEdit = editingDateKey === e.dateKey;
+    const metaLine = `${e.level}/10 \u00b7 ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? " \u00b7 " + e.note : ""}`;
+    return /*#__PURE__*/React.createElement("div", { key: e.dateKey, className: "metric-inline-log__list-item", role: "listitem" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
+    React.createElement("div", { className: "metric-inline-log__pain-slider-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "weight-log-modal__label", htmlFor: "pain-edit-level-" + e.dateKey, style: { marginBottom: 0, alignSelf: "center" } }, "Level"),
+    /*#__PURE__*/React.createElement("input", { id: "pain-edit-level-" + e.dateKey, type: "range", min: 1, max: 10, step: 1, value: editV, onChange: (ev) => setEditV(Number(ev.target.value)) }),
+    /*#__PURE__*/React.createElement("span", { className: "metric-inline-log__pain-val", "aria-hidden": true }, editV)
+    ),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
+    React.createElement("input", { type: "text", className: "weight-log-modal__input metric-inline-log__input-grow", placeholder: "Note (optional)", maxLength: 48, value: editNote, onChange: (ev) => setEditNote(ev.target.value), "aria-label": "Edit pain note" }),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__btns-inline" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "weight-log-modal__btn", onClick: () => { axisHapticTick(); setEditingDateKey(null); setEditNote(""); } }, "Cancel"),
+    /*#__PURE__*/React.createElement("button", { type: "button", className: "weight-log-modal__btn weight-log-modal__btn--primary", onClick: savePainRowEdit }, "Save")
+    )
+    )
+    ) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
+    React.createElement("div", { className: "metric-inline-log__row-meta" }, metaLine),
+    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "metric-inline-log__btn-link", onClick: () => { axisHapticTick(); setEditingDateKey(e.dateKey); setEditV(e.level); setEditNote(e.note || ""); } }, "Edit"),
+    /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__btn-link metric-inline-log__btn-link--danger", onClick: () => { axisHapticTick(); onDeletePainEntry && onDeletePainEntry(e.dateKey); } }, "Delete")
+    )
+    ));
+  })),
+  painShowMore ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__expand-toggle" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metric-inline-log__link-btn", onClick: () => { axisHapticTick(); setPainLogExpanded((x) => !x); } }, painLogExpanded ? "Show less" : "Show more")
+  ) : null,
+  painTotal > 15 ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pager", role: "navigation", "aria-label": "Pain log pages" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: pPager.page <= 1, onClick: () => { axisHapticTick(); setPainLogExpanded(false); setPainLogPage((p) => Math.max(1, p - 1)); } }, "Previous"),
+  /*#__PURE__*/React.createElement("span", null, "Page ", pPager.page, " of ", painPageCount),
+  /*#__PURE__*/React.createElement("button", { type: "button", className: "metric-inline-log__pager-btn", disabled: pPager.page >= painPageCount, onClick: () => { axisHapticTick(); setPainLogExpanded(false); setPainLogPage((p) => Math.min(painPageCount, p + 1)); } }, "Next")
+  ) : null
   )
   );
 }
@@ -8844,7 +9832,7 @@ function axisExportAxisLocalData() {
     "axis_daily_goal_minutes", "axis_weekly_goal_minutes", "axis_weekly_follows_daily",
     "axis_theme", "axis_night", "axis_period", "axis_exercise_duration",
     "axis_recent_tracks", "axis_app_icon", "axis_show_streak", "axis_show_timer", "axis_show_pct",
-    "axis_metrics_goals_open", "axis_metrics_outcomes_open", "axis_metrics_weight_open", "axis_metrics_pain_open"
+    "axis_metrics_outcomes_open", "axis_metrics_weight_open", "axis_metrics_pain_open"
   ];
   const pack = { exportedAt: new Date().toISOString(), app: "AXIS", version: 1, data: {} };
   for (const k of keys) {
@@ -8953,7 +9941,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const raw = o && typeof o === "object" && !Array.isArray(o) ? o : {};
     return axisMetricsMigratePainMap(raw);
   });
-  const [metricsGoalsOpen, setMetricsGoalsOpen] = useState(() => storageGet("axis_metrics_goals_open", false));
   const [metricsStepsToday, setMetricsStepsToday] = useState(null);
   const [metricsHealthHint, setMetricsHealthHint] = useState("");
   const [healthConnectSyncMsg, setHealthConnectSyncMsg] = useState("");
@@ -9035,10 +10022,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   useEffect(() => {
     storageSet(AXIS_METRICS_PAIN_KEY, metricsPainByDay);
   }, [metricsPainByDay]);
-  useEffect(() => {
-    storageSet("axis_metrics_goals_open", metricsGoalsOpen);
-  }, [metricsGoalsOpen]);
-
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -9655,36 +10638,34 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top home-track-cards-outer--summary" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-welcome", id: "axis-metrics-welcome" }, "Metrics"), /*#__PURE__*/
+      React.createElement("div", { className: "home-welcome metrics-page-title", id: "axis-metrics-welcome" }, "METRICS"), /*#__PURE__*/
       React.createElement("div", { className: "summary-main-stack summary-main-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-sunset-stack summary-sunset-stack--metrics" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature-stack", role: "status" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature__label" }, "Weekly movement"),
+      React.createElement("div", { className: "metrics-quick-glance" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__boxes" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__minutes", role: "status" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-stat-feature__value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent))
       ),
-      React.createElement("div", { className: "metrics-stat-feature" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature__label" }, "Sessions"),
+      React.createElement("div", { className: "metrics-quick-glance__duo" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__stat-sm" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-stat-feature__value" }, weekSessionCountForWindow, "\u00a0", "sessions")
       ),
-      React.createElement("div", { className: "metrics-stat-feature" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature__label" }, "Active days"),
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__stat-sm" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-stat-feature__value metrics-stat-feature__value--days" }, activeDays7Count, "/7", "\u00a0", "days")
       )
+      )
+      ,
+      /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__sub" }, "Last 7 days"),
+      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__hint" }, "(Tap the day to reveal more details.)"),
+      /*#__PURE__*/React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme, compact: true, metricsQuickGlance: true })
       ),
-      React.createElement("hr", { className: "metrics-divider", "aria-hidden": true }),
+      /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      React.createElement("div", { className: "metrics-goals-wrap metrics-section--goals" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-block" }, /*#__PURE__*/
-      React.createElement("button", {
-        type: "button",
-        className: "metrics-goals-header-btn",
-        onClick: () => { axisHapticTick(); setMetricsGoalsOpen((o) => !o); },
-        "aria-expanded": metricsGoalsOpen ? "true" : "false"
-      }, /*#__PURE__*/
-      React.createElement("span", null, "Goals"),
-      React.createElement("span", { className: "metrics-goals-header-btn__chev", "aria-hidden": true }, metricsGoalsOpen ? "\u25BC" : "\u25B6")
+      React.createElement("div", { className: "metrics-goals-header" }, /*#__PURE__*/
+      React.createElement("span", null, "GOALS")
       ),
-      /*#__PURE__*/React.createElement("div", { className: "metrics-goals-animate" + (metricsGoalsOpen ? " metrics-goals-animate--open" : "") }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-goals-animate-inner" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-compact" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-row" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-head" }, /*#__PURE__*/
@@ -9720,11 +10701,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       )
       )
-      ), /*#__PURE__*/
-      React.createElement("hr", { className: "metrics-rail__hr metrics-rail__hr--tight", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme, compact: true }), /*#__PURE__*/
-      React.createElement("hr", { className: "metrics-rail__hr", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-v2-kicker metrics-section-anchor" }, "Weight"), /*#__PURE__*/
+      )
+      , /*#__PURE__*/
+      React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
       React.createElement(MetricsWeightCard, {
         theme: theme,
         nightMode: nightMode,
@@ -9732,8 +10712,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         samples: metricsWeightSamples,
         stepsToday: metricsStepsToday,
         healthHint: metricsHealthHint,
-        onLogWeight: (lbs) => {
-          const ts = Date.now();
+        onLogWeight: (payload) => {
+          const lbs = typeof payload === "number" ? payload : payload && Number(payload.lbs);
+          const ts = typeof payload === "object" && payload && Number.isFinite(Number(payload.ts)) ? Number(payload.ts) : Date.now();
+          if (!Number.isFinite(lbs) || lbs <= 0) return;
           setMetricsWeightSamples((prev) => axisMetricsMergeWeightByTs(axisMetricsNormalizeWeightList(prev), [{ ts, lbs, source: "manual" }]));
         },
         onEditWeightEntry: (ts, lbs) => {
@@ -9745,9 +10727,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           setMetricsWeightSamples((prev) => axisMetricsNormalizeWeightList((prev || []).filter((x) => x.ts !== ts)));
         }
       })
+      )
       , /*#__PURE__*/
-      React.createElement("hr", { className: "metrics-rail__hr", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-v2-kicker metrics-section-anchor" }, "Pain"), /*#__PURE__*/
+      React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
       React.createElement(MetricsPainCard, {
         theme: theme,
         nightMode: nightMode,
@@ -9762,14 +10745,39 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             const next = { ...p, [dk]: note ? { level, note } : { level } };
             return next;
           });
+        },
+        onEditPainEntry: (dateKey, payload) => {
+          const level = payload && typeof payload.level === "number" ? payload.level : NaN;
+          const note = payload && payload.note ? String(payload.note).slice(0, 48) : "";
+          if (typeof dateKey !== "string" || !Number.isFinite(level) || level < 1 || level > 10) return;
+          setMetricsPainByDay((p) => {
+            const next = { ...(p || {}) };
+            next[dateKey] = note ? { level, note } : { level };
+            return next;
+          });
+        },
+        onDeletePainEntry: (dateKey) => {
+          if (typeof dateKey !== "string") return;
+          setMetricsPainByDay((p) => {
+            const next = { ...(p || {}) };
+            delete next[dateKey];
+            return next;
+          });
         }
       })
+      )
       , /*#__PURE__*/
-      history.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-      React.createElement("hr", { className: "metrics-rail__hr metrics-rail__hr--after-pain", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "summary-panel history summary-panel--metrics-follow" }, /*#__PURE__*/
-      React.createElement("div", { className: "summary-history-head" }, /*#__PURE__*/
-      React.createElement("div", { className: "summary-title", style: { marginBottom: 0 } }, "Recent Sessions")
+      /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
+      React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      history.length > 0 && /*#__PURE__*/React.createElement("div", { className: "metrics-recent-section summary-panel history summary-panel--metrics-follow" }, /*#__PURE__*/
+      React.createElement("button", {
+        type: "button",
+        className: "metrics-recent-header-btn",
+        onClick: () => { axisHapticTick(); setSummaryRecentOpen((o) => !o); },
+        "aria-expanded": summaryRecentOpen ? "true" : "false"
+      }, /*#__PURE__*/
+      React.createElement("span", null, "RECENT SESSIONS"),
+      React.createElement("span", { className: "metrics-recent-header-btn__chev", "aria-hidden": true }, summaryRecentOpen ? "\u25BC" : "\u25B6")
       ),
       summaryRecentOpen && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
       React.createElement("div", { className: "summary-history-list-wrap" + (summaryRecentExpanded ? " summary-history-list-wrap--expanded" : "") },
@@ -9804,13 +10812,13 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       ))
       ),
       history.length === 0 && /*#__PURE__*/
-      React.createElement("div", { className: "metrics-empty-cta--flat" }, /*#__PURE__*/
-      React.createElement("div", { style: { color: "var(--text-secondary)", fontSize: "var(--text-sm)", lineHeight: 1.5, marginBottom: 16 } }, "Complete a session on Home to see your history here."),
+      React.createElement("div", { className: "metrics-recent-section metrics-empty-cta--flat" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-empty-history-copy" }, "Complete a session on Home to see your history here."),
       React.createElement("button", {
         type: "button",
-        className: "summary-empty-cta__btn summary-cta-btn ultra-filled-btn",
+        className: "metrics-empty-home-link",
         onClick: () => {axisHapticTick();setView("home");}
-      }, "Go to Home")
+      }, "Go to home to complete your first session.")
       ),
       (track === "anxiety" || track === "stress") && totalDone > 0 && /*#__PURE__*/
       React.createElement("div", { style: { marginTop: 20, padding: "18px", borderRadius: 24, border: "1px solid var(--glass-border)", background: "var(--glass-bg)" } }, /*#__PURE__*/
