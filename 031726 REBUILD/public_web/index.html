@@ -2036,7 +2036,7 @@ const css = `
     margin-top:0;
   }
   .hdr-session-head .tabs {
-    margin-top:2px;
+    margin-top:10px;
   }
   .hdr-session-head .back-btn {
     position:relative !important;
@@ -2109,6 +2109,16 @@ const css = `
   .settings-page-rail .settings-block {
     margin-top: 1.5rem;
   }
+  .settings-page-rail .settings-block--session,
+  .settings-page-rail .settings-block--privacy {
+    margin-top: 2rem;
+    padding-top: 1.15rem;
+    border-top: 0.5px solid var(--color-border-tertiary);
+  }
+  .settings-page-rail .settings-block--session + .settings-block--session {
+    margin-top: 1.35rem;
+    padding-top: 0.95rem;
+  }
   .settings-page-rail .settings-block .settings-block__title {
     margin-top: 0;
   }
@@ -2120,7 +2130,8 @@ const css = `
   .settings-help-text {
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
-    line-height: 1.45;
+    line-height: 1.5;
+    font-weight: 400;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -2196,9 +2207,10 @@ const css = `
     flex-shrink: 0;
   }
   .settings-custom-duration-label {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--color-text-secondary);
-    margin-bottom: 6px;
+    margin: 14px 0 8px;
+    font-weight: 400;
     display: block;
   }
   .settings-custom-duration-input {
@@ -2222,7 +2234,7 @@ const css = `
   .settings-custom-duration-hint {
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
-    margin-top: 6px;
+    margin-top: 10px;
     line-height: 1.4;
   }
   .settings-app-icon-slot {
@@ -2280,16 +2292,16 @@ const css = `
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-secondary);
-    margin: 10px 0 6px;
+    margin: 20px 0 9px;
     font-weight: 600;
     font-family: var(--font-display);
   }
-  .settings-privacy-sub:first-of-type { margin-top: 2px; }
+  .settings-privacy-sub:first-of-type { margin-top: 6px; }
   .settings-privacy-line {
     font-size: var(--text-xs);
     color: var(--text-secondary);
     line-height: 1.45;
-    margin-bottom: 6px;
+    margin-bottom: 9px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -2312,6 +2324,14 @@ const css = `
     position: relative;
     left: auto;
     top: auto;
+  }
+  .settings-session-preset-row {
+    margin-top: 10px;
+    margin-bottom: 16px;
+  }
+  .settings-privacy-actions {
+    margin-top: 16px;
+    margin-bottom: 22px;
   }
   .hdr { position:relative; padding:0 var(--page-gutter); box-sizing:border-box; width:100%; }
   .hdr-row { display:flex; justify-content:flex-start; align-items:flex-start; padding:8px 0 16px; }
@@ -2391,7 +2411,7 @@ const css = `
     backdrop-filter: blur(10px) saturate(1.8);
     -webkit-backdrop-filter: blur(10px) saturate(1.8);
     box-shadow: 0 4px 20px rgba(0,0,0,0.18), 0 1px 0 var(--glass-border);
-    margin: 0 calc(-1 * var(--page-gutter));
+    margin: 8px calc(-1 * var(--page-gutter)) 0;
     padding: 10px var(--page-gutter) 16px;
   }
   .hdr-tabs-wrap { width: 100%; box-sizing: border-box; }
@@ -2420,7 +2440,8 @@ const css = `
     flex: 1;
     min-width: 0;
     text-align: center;
-    line-height: 1.45;
+    line-height: 1.35;
+    font-size: var(--text-xs);
     padding: 0 4px;
     box-sizing: border-box;
     transition: opacity 0.2s ease, color 0.2s ease;
@@ -4001,9 +4022,9 @@ const css = `
     margin: 0 0 1rem;
     box-sizing: border-box;
     width: 100%;
-    padding: 12px 0;
-    border-radius: var(--border-radius-md);
-    background: var(--color-background-secondary);
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
   }
   .weight-section__chart-wrap {
     width: 100%;
@@ -4680,6 +4701,9 @@ const css = `
     color: #fff1f2;
   }
   .pain-heat__cell--today {
+    background: var(--weight-mood-accent, var(--accent)) !important;
+    color: #252525 !important;
+    border-color: color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 62%, var(--color-border-tertiary)) !important;
     box-shadow: 0 0 0 2px var(--weight-mood-accent, var(--accent)), 0 4px 14px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 22%, transparent);
     transform: scale(1.06);
     z-index: 1;
@@ -5075,7 +5099,7 @@ const css = `
   }
   .settings-privacy-export-accent {
     width: 100%;
-    margin-top: 12px;
+    margin-top: 0;
     padding: 12px 16px;
     border-radius: 12px;
     border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
@@ -5884,6 +5908,10 @@ const css = `
   .summary-momentum .momentum-cell--on .momentum-cell__dow {
     color: #252525;
     -webkit-text-fill-color: #252525;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .summary-momentum .momentum-cell .momentum-cell__dow {
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
   }
   /* Ultra: filled momentum square — weekday letter on red uses true black (beats .content * red) */
   .app[data-night="true"] .summary-momentum .momentum-cell--on .momentum-cell__dow {
@@ -7179,7 +7207,7 @@ const css = `
     overflow-x:auto; overflow-y:hidden;
     -webkit-overflow-scrolling:touch;
     scroll-padding-inline:var(--page-gutter);
-    margin:0 calc(-1 * var(--page-gutter)) 0;
+    margin:10px calc(-1 * var(--page-gutter)) 0;
     padding-inline:var(--page-gutter);
     padding-bottom:4px;
     scrollbar-width:none;
@@ -11527,7 +11555,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "app-screen-title" }, "Settings"), /*#__PURE__*/
     React.createElement("div", { className: "settings-goals-panel", style: { marginBottom: 14 } }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "Daily Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "How much can you commit to moving daily? 5 minutes is a great start. 10-20 is even better."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "5 minutes is a good start. Aim for 10-20."), /*#__PURE__*/
     React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
     React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-daily-goal" }, "Minutes per day"), /*#__PURE__*/
@@ -11551,7 +11579,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     })
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "Weekly Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "This is your weekly goal. Multiply your daily goal by 7 or adjust the slider as needed or recommended. You can adjust these sliders at any time."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "Your weekly target. Adjust anytime."), /*#__PURE__*/
     React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
     React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-weekly-goal" }, "Minutes per week"), /*#__PURE__*/
@@ -11574,9 +11602,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "Health & metrics"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 12 } }, "On iPhone, sync from Apple Health. On Android, use Health Connect. Pulls weight and today’s step count into Metrics when the native bridge is available."),
+    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 12 } }, "Sync from Apple Health (iPhone) or Health Connect (Android). Pulls weight and steps into Metrics."),
     React.createElement("button", {
       type: "button",
       className: "settings-outline-btn",
@@ -11603,7 +11631,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     }, "Connect & sync from Health"),
     healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", marginTop: 12, lineHeight: 1.45 } }, healthConnectSyncMsg)
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session Bar"),
     [
     { label: "Show % done", desc: "Percentage of exercises completed in the current track.", val: showPct, set: setShowPct }].
@@ -11619,13 +11647,13 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session"), /*#__PURE__*/
     React.createElement("div", { className: "settings-session-stack", style: { display: "flex", flexDirection: "column", gap: 12 } }, /*#__PURE__*/
-    React.createElement("div", null, /*#__PURE__*/
+    React.createElement("div", { style: { marginTop: 10 } }, /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, "Timer length per exercise"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "Timer length for each exercise in LIST view."), /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+    React.createElement("div", { className: "settings-help-text" }, "Set timer length for each LIST exercise."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-session-preset-row", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
     [30, 45, 60].map((sec) => /*#__PURE__*/
     React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
     sec === 60 ? "1 min" : `${sec} sec`
@@ -11664,7 +11692,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     )
     , /*#__PURE__*/
-    React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-block settings-block--privacy" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "PRIVACY & DATA"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "YOUR DATA"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your workout history, goals, and preferences are stored on this device only. We never see them."), /*#__PURE__*/
@@ -11672,6 +11700,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "settings-privacy-sub" }, "DATA RETENTION"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "\u2022 Data is kept locally for 90 days."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "\u2022 Older entries are automatically archived."), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-actions" }, /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       className: "settings-privacy-export-accent",
@@ -11681,7 +11710,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       type: "button",
       className: "settings-outline-btn settings-privacy-archived-outline",
       onClick: () => { axisHapticTick(); setArchivedDataOpen(true); }
-    }, "VIEW ARCHIVED DATA"), /*#__PURE__*/
+    }, "VIEW ARCHIVED DATA")
+    ), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Backups"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your data currently stays local. Eventually we will implement cloud storage."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "What We Don't Do"), /*#__PURE__*/
@@ -11726,7 +11756,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       }, /*#__PURE__*/React.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M20 6L9 17l-5-5" }))));
     })), /*#__PURE__*/
     nightMode && /*#__PURE__*/React.createElement("div", { style: { fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#FF3B30", marginTop: 10, fontWeight: 600 } }, "NOT AVAILABLE IN ULTRA MODE"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginTop: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Note: To apply a new icon to your Home Screen, please re-save the app using the Share menu after selecting.")
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginTop: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box", fontWeight: 400 } }, "To apply a new icon, re-save the app using Share.")
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block settings-block--flush" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "About"), /*#__PURE__*/
@@ -12059,9 +12089,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "history-day-group-label metrics-recent-day-head" }, axisRelativeDayLabel(g.dateKey)),
       g.rows.map((e, ri) => {
         const exLabel = axisExerciseNameForHistoryEntry(e);
+        const exLabelResolved = exLabel || (e && e.trackId && TRACKS[e.trackId] && TRACKS[e.trackId].label ? TRACKS[e.trackId].label : "Session");
         const trackUp = String(e.track || "").toUpperCase();
         return (/*#__PURE__*/React.createElement("div", { className: "metrics-recent-row history-row", key: `${g.dateKey}-${e.track}-${e.exerciseId != null ? e.exerciseId : ri}-${ri}` }, /*#__PURE__*/
-        React.createElement("div", { className: "metrics-recent-row__main" }, exLabel ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", { className: "metrics-recent-row__exercise" }, exLabel), /*#__PURE__*/React.createElement("div", { className: "metrics-recent-row__track" }, trackUp)) : /*#__PURE__*/React.createElement("div", { className: "metrics-recent-row__track" }, trackUp)),
+        React.createElement("div", { className: "metrics-recent-row__main" }, /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", { className: "metrics-recent-row__exercise" }, exLabelResolved), /*#__PURE__*/React.createElement("div", { className: "metrics-recent-row__track" }, trackUp))),
         /*#__PURE__*/React.createElement("div", { className: "metrics-recent-row__dur" }, axisMetricsFormatSessionDurationShort(e.duration))
         ));
       })
@@ -12156,7 +12187,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       rest: { trackId: "prime", suggestion: "Relax your body with a quick wind down." }
     };
     const periodLabels = { dawn: "Rise", midday: "Midday", prime: "Prime", rest: "Rest" };
-    const todayBoxTitleByPeriod = { dawn: "Morning Activation", midday: "Afternoon Reset", prime: "Evening Stretch", rest: "Nighttime Ready" };
+    const todayBoxTitleByPeriod = { dawn: "AM Activation", midday: "Postural Reset", prime: "Sundown Stretch", rest: "Sleep-Ready Recovery" };
     const periodKey = TODAY_SUGGESTIONS[nowPeriod] ? nowPeriod : "dawn";
     const todaySug = TODAY_SUGGESTIONS[periodKey];
     const todayTrack = TRACKS[todaySug.trackId];
@@ -12242,7 +12273,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
       React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting + "."), /*#__PURE__*/
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "none", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "1px", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 600, color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySug.suggestion), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
