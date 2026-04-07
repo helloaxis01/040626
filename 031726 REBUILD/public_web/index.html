@@ -6963,7 +6963,7 @@ const css = `
   }
   /* Left edge aligns with TODAY card — only .track-cards-outer supplies horizontal gutter */
   .home-welcome {
-    padding:max(4px, calc(var(--app-title-after-dashboard) - 32px)) 0 12px;
+    padding:max(10px, calc(var(--app-title-after-dashboard) - 20px)) 0 18px;
     font-size:var(--text-lg);
     font-weight:600;
     letter-spacing:-0.02em;
@@ -7192,7 +7192,7 @@ const css = `
     flex:0 0 auto; width:min(44vw, 188px); min-width:0;
     display:flex; flex-direction:column; align-items:stretch;
     text-align:left; cursor:pointer;
-    padding:11px 12px 11px;
+    padding:1rem 1.25rem;
     border-radius:14px;
     border:1px solid color-mix(in srgb, var(--glass-border) 80%, transparent);
     background:color-mix(in srgb, var(--glass-bg) 88%, transparent);
@@ -7403,9 +7403,9 @@ const css = `
 // ─────────────────────────────────────────────────────────────
 //  TIMER
 // ─────────────────────────────────────────────────────────────
-function Timer({ seconds, onDone, nextName }) {
+function Timer({ seconds, onDone, nextName, autoStart = false }) {
   const [left, setLeft] = useState(seconds);
-  const [running, setRunning] = useState(false);
+  const [running, setRunning] = useState(Boolean(autoStart));
   const ref = useRef(null);
   useEffect(() => {
     if (running && left > 0) ref.current = setInterval(() => setLeft((l) => l - 1), 1000);else
@@ -7471,6 +7471,110 @@ function buildInstructionTiers(startText, steps) {
   { key: "then", label: "THEN", body: then, tone: "primary" },
   { key: "tip", label: "TIP", body: tip, tone: "muted" }].
   filter((tier) => tier.body));
+}
+
+function axisCleanInstructionLine(s) {
+  if (typeof s !== "string") return "";
+  return String(s).replace(/\s+/g, " ").trim();
+}
+
+function axisHasBilateralLanguage(text) {
+  const t = String(text || "").toLowerCase();
+  return /\bswitch sides?\b|\beach side\b|\bboth sides\b|\brepeat on the (left|right)\b|\bthen switch\b|\balternate\b/.test(t);
+}
+
+function axisGuessBodyPartFromExerciseName(name) {
+  const n = String(name || "").toLowerCase();
+  if (/\bhip\b|\bpigeon\b|\bglute\b|\bfigure four\b/.test(n)) return "Hip";
+  if (/\bquad\b|\bhamstring\b|\bcalf\b|\bankle\b|\bfoot\b|\bleg\b/.test(n)) return "Leg";
+  if (/\bshoulder\b|\barm\b|\bwrist\b|\belbow\b|\bpec\b|\bchest\b/.test(n)) return "Arm";
+  if (/\bneck\b|\btrap\b/.test(n)) return "Neck";
+  return "Side";
+}
+
+function axisMakeInstructionFields(ex, side) {
+  const start = axisCleanInstructionLine(ex && ex.start);
+  const cues = Array.isArray(ex && ex.steps) ? ex.steps.map((s) => axisCleanInstructionLine(s && s.cue)).filter(Boolean) : [];
+
+  const cuesNoSwitch = cues.filter((c) => !axisHasBilateralLanguage(c));
+
+  // Prefer cues that already mention the target side; otherwise use generic cues and inject side where safe.
+  const want = side ? side.toLowerCase() : "";
+  const cuesSide = want ? cuesNoSwitch.filter((c) => c.toLowerCase().includes(want)) : cuesNoSwitch;
+  const pool = cuesSide.length ? cuesSide : cuesNoSwitch.length ? cuesNoSwitch : cues;
+
+  const pick = (i) => pool[i] || "";
+
+  let position = start || pick(0);
+  let next = start ? pick(0) : pick(1);
+  let then = start ? pick(1) : pick(2);
+  let tip = start ? pick(2) : pick(3);
+
+  // Ensure all four exist; fall back to remaining cues before any generic filler.
+  if (!next) next = pick(0) || "";
+  if (!then) then = pick(1) || pick(0) || "";
+  if (!tip) tip = pick(2) || pick(1) || pick(0) || "";
+
+  const sideWord = want ? want.toUpperCase() : "";
+  const injectSide = (line) => {
+    if (!want) return line;
+    const lower = line.toLowerCase();
+    if (lower.includes("left") || lower.includes("right")) return line;
+    // If the move is clearly unilateral but not named, make it explicit.
+    return line.replace(/\bone\b/gi, want).replace(/\byour leg\b/gi, `your ${want} leg`).replace(/\byour arm\b/gi, `your ${want} arm`).replace(/\byour hip\b/gi, `your ${want} hip`);
+  };
+
+  position = injectSide(position);
+  next = injectSide(next);
+  then = injectSide(then);
+  tip = injectSide(tip);
+
+  return {
+    position: axisCleanInstructionLine(position),
+    next: axisCleanInstructionLine(next),
+    then: axisCleanInstructionLine(then),
+    tip: axisCleanInstructionLine(tip),
+    sideLabel: sideWord ? `Perform on ${sideWord} side` : ""
+  };
+}
+
+function axisIsBilateralExercise(ex) {
+  if (!ex) return false;
+  const blob = [ex.sub, ex.start].filter(Boolean).join(" ") + " " + (Array.isArray(ex.steps) ? ex.steps.map((s) => s && s.cue).join(" ") : "");
+  if (!axisHasBilateralLanguage(blob)) return false;
+  // Only duplicate when it's truly one-side-at-a-time, not alternating (e.g., Dead Bug contralateral).
+  const t = blob.toLowerCase();
+  if (/\balternate\b|\bopposite arm and leg\b|\bcontralateral\b/.test(t)) return false;
+  return true;
+}
+
+function axisNormalizeTracks(rawTracks) {
+  const src = rawTracks && typeof rawTracks === "object" ? rawTracks : {};
+  const out = {};
+  for (const [trackId, track] of Object.entries(src)) {
+    const sections = Array.isArray(track && track.sections) ? track.sections : [];
+    const nextSections = sections.map((sec) => {
+      const exercises = Array.isArray(sec && sec.exercises) ? sec.exercises : [];
+      const nextExercises = [];
+      for (const ex of exercises) {
+        const base = { ...(ex || {}) };
+        base.__axisBodyPart = axisGuessBodyPartFromExerciseName(base.name);
+        base.__axisInstructions = axisMakeInstructionFields(base, null);
+        if (axisIsBilateralExercise(base)) {
+          const part = base.__axisBodyPart || "Side";
+          const idBase = base.id != null ? String(base.id) : String(Math.random()).slice(2);
+          const right = { ...base, id: `${idBase}-R`, name: `${base.name} - Right ${part}`, __axisSide: "right", __axisInstructions: axisMakeInstructionFields(base, "right") };
+          const left = { ...base, id: `${idBase}-L`, name: `${base.name} - Left ${part}`, __axisSide: "left", __axisInstructions: axisMakeInstructionFields(base, "left") };
+          nextExercises.push(right, left);
+        } else {
+          nextExercises.push(base);
+        }
+      }
+      return { ...(sec || {}), exercises: nextExercises };
+    });
+    out[trackId] = { ...(track || {}), sections: nextSections };
+  }
+  return out;
 }
 
 function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, compact = false, bodyColorOverride = null }) {
@@ -7671,6 +7775,7 @@ function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, p
 function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onFav, note, onNote, nextName, hideTimer = false, hideDone = false, exerciseDurationSeconds, theme = "dark", ultraNight = false, trackId }) {
   const rowRef = useRef(null);
   const sessionDetailPanelRef = useRef(null);
+  const [armed, setArmed] = React.useState(false);
   const markDoneAndCollapse = () => {
     triggerHaptic(HAPTIC_SUCCESS);
     onToggle();
@@ -7688,6 +7793,10 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     }, 120);
     return () => clearTimeout(t);
   }, [open, ex.id]);
+  useEffect(() => {
+    // Re-arm instructions when opening a different exercise.
+    setArmed(false);
+  }, [ex && ex.id, open]);
   return (/*#__PURE__*/
     React.createElement("div", { className: `er-card ${open ? "er-card--open" : ""}` }, /*#__PURE__*/
     React.createElement("div", { ref: rowRef, className: `er ${open ? "open" : ""} ${skipped ? "skipped" : ""}`, onClick: () => {axisHapticTick();onExpand();}, style: skipped ? { opacity: 0.32 } : {} },
@@ -7733,8 +7842,27 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     ),
     !skipped && /*#__PURE__*/
     React.createElement(React.Fragment, null,
-    (ex.type === "time" || ex.type === "flow") && !hideTimer ? /*#__PURE__*/
-    React.createElement(Timer, { key: ex.id, seconds: exerciseDurationSeconds != null ? exerciseDurationSeconds : ex.seconds, onDone: markDoneAndCollapse, nextName: nextName }) :
+    (ex.type === "time" || ex.type === "flow") && !hideTimer ? !armed ? /*#__PURE__*/React.createElement("div", { style: { marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border)" } }, /*#__PURE__*/
+    React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "10px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-dimmer)", marginBottom: 10 } }, "INSTRUCTIONS"),
+    React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-base)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--text-white)", lineHeight: 1.25, marginBottom: 6 } }, ex.name),
+    ex && ex.__axisInstructions && ex.__axisInstructions.sideLabel ? React.createElement("div", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: 12 } }, ex.__axisInstructions.sideLabel) : null,
+    React.createElement(CueTiers, {
+      tiers: [
+      { key: "position", label: "POSITION", body: ex && ex.__axisInstructions ? ex.__axisInstructions.position : axisCleanInstructionLine(ex && ex.start), tone: "primary" },
+      { key: "next", label: "NEXT", body: ex && ex.__axisInstructions ? ex.__axisInstructions.next : "", tone: "primary" },
+      { key: "then", label: "THEN", body: ex && ex.__axisInstructions ? ex.__axisInstructions.then : "", tone: "primary" },
+      { key: "tip", label: "TIP", body: ex && ex.__axisInstructions ? ex.__axisInstructions.tip : "", tone: "muted" }],
+      theme: theme,
+      ultraNight: ultraNight,
+      compact: true
+    }),
+    React.createElement("button", { className: "mark-btn ultra-filled-btn", onClick: (e) => {e.stopPropagation();axisHapticTick();setArmed(true);} }, "START TIMER")
+    ) :
+    React.createElement("div", { style: { marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border)" } }, /*#__PURE__*/
+    React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-base)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--text-white)", lineHeight: 1.25, marginBottom: 6 } }, ex.name),
+    ex && ex.__axisInstructions && ex.__axisInstructions.sideLabel ? React.createElement("div", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: 12 } }, ex.__axisInstructions.sideLabel) : null,
+    React.createElement(Timer, { key: `t-${ex.id}`, seconds: exerciseDurationSeconds != null ? exerciseDurationSeconds : ex.seconds, onDone: markDoneAndCollapse, nextName: nextName, autoStart: true })
+    ) :
     ex.reps && !hideDone && ex.id !== 5 && ex.id !== 702 ? /*#__PURE__*/
     React.createElement("div", { style: { marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border)" } }, /*#__PURE__*/
     React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--accent-secondary)", fontWeight: 500, marginBottom: 8 } }, "Target"), /*#__PURE__*/
@@ -8335,8 +8463,13 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const next = list[fi + 1] || null;
   const headerPoseCounterNum = (phase === "getready" || phase === "exercise") ? (next ? fi + 2 : listTotal) : fi + 1;
   const guidedMoveSeconds = typeof exerciseDurationSeconds === "number" && exerciseDurationSeconds > 0 ? exerciseDurationSeconds : 45;
-  const guidedInstructionTiers = buildInstructionTiers(cur?.start, cur?.steps || []);
-  const guidedStepTotal = guidedInstructionTiers.length;
+  const guidedFields = cur && cur.__axisInstructions ? cur.__axisInstructions : axisMakeInstructionFields(cur || {}, cur && cur.__axisSide ? cur.__axisSide : null);
+  const guidedInstructionTiers = [
+  { key: "position", label: "POSITION", body: guidedFields.position, tone: "primary" },
+  { key: "next", label: "NEXT", body: guidedFields.next, tone: "primary" },
+  { key: "then", label: "THEN", body: guidedFields.then, tone: "primary" },
+  { key: "tip", label: "TIP", body: guidedFields.tip, tone: "muted" }];
+  const guidedStepTotal = guidedInstructionTiers.filter((t) => t && t.body).length;
 
   useEffect(() => {
     guidedFocusReturnRef.current = document.activeElement;
@@ -8548,7 +8681,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       fontFamily: "var(--font-display)",
       lineHeight: 1,
       animation: phase === "exercise" && !isNight ? "guidedBeginBreath 2s ease-in-out infinite" : "none"
-    } }, phase === "getready" ? "REST & GET READY" : "BEGIN")), /*#__PURE__*/
+    } }, phase === "getready" ? "START TIMER" : "BEGIN")), /*#__PURE__*/
   React.createElement("div", {
     ref: titleRef,
     style: {
@@ -8562,13 +8695,9 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       fontFamily: "var(--font-display)",
       minHeight: 52
     }
-  }, (cur?.name || "").replace(/-/g, " ")), phase === "getready" ? /*#__PURE__*/React.createElement(GuidedRestTimer, {
-    key: `rest-${cur?.id}-${fi}`,
-    seconds: GETREADY_SECONDS,
-    accent: guidedTimerAccent,
-    trackColor: guidedTimerTrack,
-    hidden: guidedTransitioning,
-    onComplete: () => {primeAudio();beep(880, 0.2);setPaused(false);setPhase("exercise");} }) : phase === "exercise" ? /*#__PURE__*/React.createElement(GuidedActiveTimer, {
+  }, (cur?.name || "").replace(/-/g, " ")),
+  cur && cur.__axisInstructions && cur.__axisInstructions.sideLabel ? /*#__PURE__*/React.createElement("div", { style: { marginTop: 6, fontSize: 12, color: isNight ? "rgba(255,59,48,0.72)" : isDark ? "rgba(232,228,223,0.40)" : "rgba(15,30,46,0.50)" } }, cur.__axisInstructions.sideLabel) : null,
+  phase === "exercise" ? /*#__PURE__*/React.createElement(GuidedActiveTimer, {
     key: `active-${cur?.id}-${fi}`,
     seconds: guidedMoveSeconds,
     accent: guidedTimerAccent,
@@ -12027,6 +12156,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       rest: { trackId: "prime", suggestion: "Relax your body with a quick wind down." }
     };
     const periodLabels = { dawn: "Rise", midday: "Midday", prime: "Prime", rest: "Rest" };
+    const todayBoxTitleByPeriod = { dawn: "Morning Activation", midday: "Afternoon Reset", prime: "Evening Stretch", rest: "Nighttime Ready" };
     const periodKey = TODAY_SUGGESTIONS[nowPeriod] ? nowPeriod : "dawn";
     const todaySug = TODAY_SUGGESTIONS[periodKey];
     const todayTrack = TRACKS[todaySug.trackId];
@@ -12044,7 +12174,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     `linear-gradient(145deg, color-mix(in srgb, ${homeHighlight} 16%, #151b26) 0%, #151b26 52%, #121822 100%)`;
 
     const todayCardStyle = {
-      marginBottom: 16,
+      marginBottom: 32,
       padding: "20px var(--page-gutter) 22px",
       borderRadius: 24,
       background: todayCardBg,
@@ -12112,7 +12242,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
       React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting + "."), /*#__PURE__*/
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "none", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, "Today"), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "none", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 600, color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySug.suggestion), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
@@ -12605,7 +12735,7 @@ async function bootstrapAxisApp() {
     const data = await res.json();
     window.AXIS_JSON = data;
     if (data && data.TRACKS && Object.keys(data.TRACKS).length) {
-      TRACKS = data.TRACKS;
+      TRACKS = axisNormalizeTracks(data.TRACKS);
     } else {
       throw new Error("axis_data.json: missing TRACKS");
     }
