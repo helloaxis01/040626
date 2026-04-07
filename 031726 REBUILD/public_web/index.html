@@ -3244,7 +3244,7 @@ const css = `
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.06em;
-    text-transform: uppercase;
+    text-transform: none;
     color: var(--color-text-secondary);
     margin: 0 0 1rem;
     font-family: var(--font-display);
@@ -3353,13 +3353,11 @@ const css = `
     box-sizing: border-box;
   }
   .metrics-quick-glance__sub {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
     margin: 0 0 6px;
-    font-family: var(--font-display);
+  }
+  .metrics-quick-glance__sub.metrics-goals-toolbar__heading {
+    display: block;
+    margin: 0 0 6px;
   }
   .metrics-quick-glance__hint {
     font-size: 11px;
@@ -3625,6 +3623,10 @@ const css = `
   .metrics-goals-toolbar__settings:active {
     transform: scale(0.98);
   }
+  .metrics-goals-settings--after-bars {
+    align-self: flex-start;
+    margin-top: 12px;
+  }
   .metrics-goals-animate {
     overflow: hidden;
     transition: max-height 0.32s ease, opacity 0.24s ease;
@@ -3640,37 +3642,22 @@ const css = `
   }
   /* Separate frames for Weight and Pain on Metrics — solid dashboard tiles + mood accent rail */
   .metrics-metric-panel {
-    --metrics-panel-accent: var(--accent);
     position: relative;
     width: 100%;
     box-sizing: border-box;
     padding: 22px 20px 26px;
     border-radius: 22px;
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: #151b26;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
-  .metrics-metric-panel::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--metrics-panel-accent, var(--accent)) 0%, color-mix(in srgb, var(--metrics-panel-accent, var(--accent)) 35%, transparent) 72%, transparent 100%);
-    pointer-events: none;
-    z-index: 1;
-  }
   .app[data-theme="light"]:not([data-night="true"]) .metrics-metric-panel {
     background: #eef2f7;
     border-color: rgba(15, 30, 46, 0.12);
     box-shadow: 0 12px 36px rgba(15, 30, 46, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  }
-  .app[data-theme="light"]:not([data-night="true"]) .metrics-metric-panel::before {
-    background: linear-gradient(90deg, var(--metrics-panel-accent, var(--accent)) 0%, color-mix(in srgb, var(--metrics-panel-accent, var(--accent)) 40%, #ffffff) 65%, rgba(255, 255, 255, 0.4) 100%);
   }
   .app[data-night="true"] .metrics-metric-panel {
     background: #1c0505 !important;
@@ -3678,9 +3665,6 @@ const css = `
     box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.18), 0 16px 44px rgba(0, 0, 0, 0.65) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-  }
-  .app[data-night="true"] .metrics-metric-panel::before {
-    background: linear-gradient(90deg, #ff3b30 0%, rgba(255, 59, 48, 0.35) 55%, transparent 100%);
   }
   .metrics-body-metrics-toolbar {
     width: 100%;
@@ -4016,10 +4000,9 @@ const css = `
     margin: 0 0 1rem;
     box-sizing: border-box;
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 0;
     border-radius: var(--border-radius-md);
-    border-left: 3px solid var(--weight-mood-accent, var(--accent));
-    background: color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 9%, var(--color-background-secondary));
+    background: var(--color-background-secondary);
   }
   .weight-section__chart-wrap {
     width: 100%;
@@ -4028,7 +4011,12 @@ const css = `
     position: relative;
     overflow: visible;
   }
-  .weight-section__chart-svg {
+  .weight-section__chart-stack {
+    position: relative;
+    width: 100%;
+    z-index: 0;
+  }
+  .weight-section__chart-stack .weight-section__chart-svg {
     width: 100%;
     height: auto;
     max-height: 120px;
@@ -4036,6 +4024,44 @@ const css = `
     display: block;
     vertical-align: top;
     overflow: visible;
+  }
+  .weight-section__chart-dots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .weight-section__chart-dot-hit {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, var(--color-background-secondary) 55%, var(--color-text-primary) 45%);
+    background: var(--weight-mood-accent, var(--accent));
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 22%, transparent);
+  }
+  .weight-section__chart-dot-hit:hover {
+    box-shadow: 0 0 10px color-mix(in srgb, var(--weight-mood-accent, #fff) 45%, transparent);
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  .weight-section__chart-dot-hit:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-text-primary), 0 0 12px color-mix(in srgb, var(--weight-mood-accent, #fff) 40%, transparent);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-section__chart-dot-hit {
+    border-color: color-mix(in srgb, rgba(15, 30, 46, 0.35) 70%, var(--weight-mood-accent, var(--accent)));
+  }
+  .app[data-night="true"] .weight-section__chart-dot-hit {
+    border-color: rgba(0, 0, 0, 0.65);
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.35);
   }
   .weight-section__chart-baseline {
     stroke: var(--color-border-tertiary);
@@ -4068,23 +4094,6 @@ const css = `
   }
   .app[data-night="true"] .weight-section__chart-line {
     filter: drop-shadow(0 0 6px rgba(255, 59, 48, 0.35));
-  }
-  .weight-section__chart-dot {
-    fill: var(--weight-mood-accent, #f6f7f8);
-    stroke: color-mix(in srgb, var(--color-background-secondary) 70%, var(--color-text-primary) 30%);
-    stroke-width: 1.5;
-    vector-effect: non-scaling-stroke;
-    cursor: pointer;
-    transition: r 0.12s ease, filter 0.12s ease;
-  }
-  .weight-section__chart-dot:hover,
-  .weight-section__chart-dot:focus-visible {
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--weight-mood-accent, #fff) 55%, transparent));
-  }
-  .weight-section__chart-dot:focus-visible {
-    outline: none;
-    stroke: var(--color-text-primary);
-    stroke-width: 2.25;
   }
   .metric-chart-tooltip {
     position: absolute;
@@ -4252,7 +4261,7 @@ const css = `
   .metric-inline-log__new-row {
     display: flex;
     flex-direction: row;
-    align-items: stretch;
+    align-items: center;
     gap: 10px;
     width: 100%;
     box-sizing: border-box;
@@ -4930,6 +4939,30 @@ const css = `
     color: var(--color-text-primary);
     font-size: var(--text-base);
     font-family: var(--font-ui);
+  }
+  .metrics-inline-form__input-actions-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-inline-form__input-actions-row .metrics-inline-form__input {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .metrics-inline-form__input-actions-row .metrics-inline-form__actions {
+    margin-top: 0;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .metric-inline-log__new-row .metrics-inline-form__input {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
   }
   .metrics-inline-form__actions {
     display: flex;
@@ -10444,6 +10477,7 @@ function axisMetricsPainHasAnyEntry(painByDay) {
 
 function WeightSectionSparkline({ entries }) {
   const [activeTs, setActiveTs] = React.useState(null);
+  const sparkGradId = React.useId().replace(/:/g, "");
   const W = 120;
   const H = 48;
   const padL = 0;
@@ -10464,8 +10498,10 @@ function WeightSectionSparkline({ entries }) {
   minW -= range * 0.1;
   maxW += range * 0.1;
   const span = maxW - minW || 1;
-  const dotR = 3.5;
-  const xAt = (i) => n <= 1 ? W / 2 : (i / (n - 1)) * W;
+  const plotPadX = 6;
+  const xPlot0 = plotPadX;
+  const xPlot1 = W - plotPadX;
+  const xAt = (i) => n <= 1 ? xPlot1 : xPlot0 + (i / (n - 1)) * (xPlot1 - xPlot0);
   const yAt = (lbs) => padT + (1 - (lbs - minW) / span) * plotH;
   const pts = entries.map((e, i) => `${xAt(i)},${yAt(e.lbs)}`).join(" ");
   const yMid = padT + plotH * 0.5;
@@ -10480,38 +10516,37 @@ function WeightSectionSparkline({ entries }) {
   const activeEntry = entries.find((e) => e.ts === activeTs) || null;
   const activeIndex = activeEntry ? entries.findIndex((e) => e.ts === activeEntry.ts) : -1;
   const tipX = activeIndex >= 0 ? (xAt(activeIndex) / W) * 100 : 50;
-  const tipY = activeEntry ? yAt(activeEntry.lbs) : 0;
+  const tipYPct = activeEntry ? (yAt(activeEntry.lbs) / H) * 100 : 0;
   return /*#__PURE__*/React.createElement("div", { className: "weight-section__chart-wrap" }, /*#__PURE__*/
-  activeEntry && /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip", style: { left: `${tipX}%`, top: `${tipY}px` } }, /*#__PURE__*/
-  React.createElement("div", { className: "metric-chart-tooltip__value" }, `${activeEntry.lbs.toFixed(1)} lbs`),
-  /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip__date" }, axisMetricsFormatWeightLastLogFriendly(activeEntry.ts))
-  ),
-  /*#__PURE__*/
+  React.createElement("div", {
+    className: "weight-section__chart-stack",
+    role: "group",
+    "aria-label": "Weight trend from oldest to latest entry"
+  }, /*#__PURE__*/
   React.createElement("svg", {
     className: "weight-section__chart-svg",
     viewBox: `0 0 ${W} ${H}`,
-    preserveAspectRatio: "xMidYMid meet",
+    preserveAspectRatio: "none",
     "aria-hidden": true
   }, /*#__PURE__*/
   React.createElement("defs", null, /*#__PURE__*/
-  React.createElement("linearGradient", { id: "axisWeightSparkArea", x1: "0", y1: "0", x2: "0", y2: "1" }, /*#__PURE__*/
+  React.createElement("linearGradient", { id: sparkGradId, x1: "0", y1: "0", x2: "0", y2: "1" }, /*#__PURE__*/
   React.createElement("stop", { offset: "0%", stopColor: "var(--weight-mood-accent)", stopOpacity: "0.4" }),
   React.createElement("stop", { offset: "100%", stopColor: "var(--weight-mood-accent)", stopOpacity: "0.03" })
   )),
-  areaPath ? /*#__PURE__*/React.createElement("path", { className: "weight-section__chart-area", d: areaPath, fill: "url(#axisWeightSparkArea)" }) : null,
-  React.createElement("line", { className: "weight-section__chart-baseline", x1: 0, x2: W, y1: topRuleY, y2: topRuleY }),
-  React.createElement("line", { className: "weight-section__chart-baseline", x1: 0, x2: W, y1: baselineY, y2: baselineY }),
-  n >= 2 ? /*#__PURE__*/React.createElement("line", { className: "weight-section__chart-grid-mid", x1: 0, x2: W, y1: yMid, y2: yMid }) : null,
-  n >= 2 ? /*#__PURE__*/React.createElement("polyline", { className: "weight-section__chart-line", points: pts }) : null,
-  entries.map((e, i) => /*#__PURE__*/React.createElement("circle", {
+  areaPath ? /*#__PURE__*/React.createElement("path", { className: "weight-section__chart-area", d: areaPath, fill: `url(#${sparkGradId})` }) : null,
+  React.createElement("line", { className: "weight-section__chart-baseline", x1: xPlot0, x2: xPlot1, y1: topRuleY, y2: topRuleY }),
+  React.createElement("line", { className: "weight-section__chart-baseline", x1: xPlot0, x2: xPlot1, y1: baselineY, y2: baselineY }),
+  n >= 2 ? /*#__PURE__*/React.createElement("line", { className: "weight-section__chart-grid-mid", x1: xPlot0, x2: xPlot1, y1: yMid, y2: yMid }) : null,
+  n >= 2 ? /*#__PURE__*/React.createElement("polyline", { className: "weight-section__chart-line", points: pts }) : null
+  ),
+  /*#__PURE__*/React.createElement("div", { className: "weight-section__chart-dots" }, entries.map((e, i) => /*#__PURE__*/React.createElement("button", {
     key: e.ts,
-    className: "weight-section__chart-dot",
-    cx: xAt(i),
-    cy: yAt(e.lbs),
-    r: 3.5,
-    role: "button",
-    tabIndex: 0,
+    type: "button",
+    className: "weight-section__chart-dot-hit",
+    style: { left: `${(xAt(i) / W) * 100}%`, top: `${(yAt(e.lbs) / H) * 100}%` },
     onMouseEnter: () => setActiveTs(e.ts),
+    onFocus: () => setActiveTs(e.ts),
     onClick: () => setActiveTs((cur) => cur === e.ts ? null : e.ts),
     onKeyDown: (ev) => {
       if (ev.key === "Enter" || ev.key === " ") {
@@ -10520,7 +10555,11 @@ function WeightSectionSparkline({ entries }) {
       }
     },
     "aria-label": `${e.lbs.toFixed(1)} pounds, ${axisMetricsFormatWeightLastLogFriendly(e.ts)}`
-  }))
+  }))),
+  activeEntry && /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip", style: { left: `${tipX}%`, top: `${tipYPct}%` } }, /*#__PURE__*/
+  React.createElement("div", { className: "metric-chart-tooltip__value" }, `${activeEntry.lbs.toFixed(1)} lbs`),
+  /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip__date" }, axisMetricsFormatWeightLastLogFriendly(activeEntry.ts))
+  )
   ),
   /*#__PURE__*/React.createElement("div", { className: "weight-section__chart-axis" }, /*#__PURE__*/
   React.createElement("span", null, "Oldest"),
@@ -10546,10 +10585,10 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   const trend2w = axisMetricsWeightTwoWeekTrend(samples);
   const insight = axisMetricsWeightSectionInsight();
   const contextParts = [];
-  if (lastSample) contextParts.push("Latest: " + current.toFixed(1) + " lbs — " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
+  if (lastSample) contextParts.push("Last logged: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
   const contextLine = contextParts.join(" \u2022 ");
   const heroWarm = trend2w === "up";
-  const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No entries yet. Tap MANUAL LOG to start.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
+  const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No entries yet. Tap LOG WEIGHT to start.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
   React.useEffect(() => {
     if (!manualOpen) return;
     const last = arr.length ? arr[arr.length - 1].lbs : null;
@@ -10565,10 +10604,9 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   };
   const rowsSorted = arr.slice().sort((a, b) => b.ts - a.ts);
   const hasAnyWeight = rowsSorted.length > 0;
-  const weightGroups = hasAnyWeight ? axisMetricsGroupByAge(rowsSorted, (x) => x.ts).map((g) => ({ ...g, rows: g.rows.slice().sort((a, b) => b.ts - a.ts) })) : [];
-  const weightLogBody = !hasAnyWeight ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, "No weight entries yet. Tap Manual log to add one.") : weightGroups.map((g) => /*#__PURE__*/React.createElement("div", { key: g.label, className: "metrics-inline-bucket" }, /*#__PURE__*/
-  React.createElement("div", { className: "metric-inline-log__bucket-label" }, g.label),
-  g.rows.length === 0 ? /*#__PURE__*/React.createElement("div", { className: "metrics-inline-bucket-empty" }, g.label === "TODAY" ? "No entries today" : "No entries") : g.rows.map((e) => {
+  const dkTodayWeight = new Date().toDateString();
+  const todayWeightRows = rowsSorted.filter((x) => new Date(x.ts).toDateString() === dkTodayWeight);
+  const renderWeightLogRow = (e) => {
     const isEdit = editingTs === e.ts;
     return /*#__PURE__*/React.createElement("div", { key: e.ts, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
     React.createElement("input", { type: "text", className: "metrics-inline-form__input metric-inline-log__input-grow", value: editDraft, onChange: (ev) => setEditDraft(axisMetricsSanitizeDecimalInput(ev.target.value)) }),
@@ -10580,7 +10618,8 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
     /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
     React.createElement("button", { type: "button", className: "metrics-inline-row-action", onClick: () => { setEditingTs(e.ts); setEditDraft(String(e.lbs.toFixed(1))); } }, "Edit"),
     /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action metrics-inline-row-action--danger", onClick: () => { if (window.confirm("Delete this weight entry?")) onDeleteWeightEntry(e.ts); } }, "Delete"))));
-  })));
+  };
+  const weightLogBody = todayWeightRows.length === 0 ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, hasAnyWeight ? "No entries today. Tap Log Weight to add one." : "No weight entries yet. Tap Log Weight to add one.") : todayWeightRows.map(renderWeightLogRow);
   return /*#__PURE__*/React.createElement("div", { className: "weight-section", style: { "--weight-mood-accent": moodColor } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Weight"),
   !emptyWeight && /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, /*#__PURE__*/
@@ -10593,12 +10632,13 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "weight-section__btn weight-section__btn--expand",
-    title: manualOpen ? "Close manual log" : "Enter weight manually",
+    title: manualOpen ? "Close log weight" : "Log weight",
     onClick: () => { axisHapticTick(); setManualOpen((o) => !o); }
-  }, /*#__PURE__*/React.createElement("span", null, "MANUAL LOG")),
+  }, /*#__PURE__*/React.createElement("span", null, "LOG WEIGHT")),
   manualOpen && /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form" }, /*#__PURE__*/
   React.createElement("label", { className: "metrics-inline-form__label", htmlFor: "metrics-weight-manual-lbs" }, "WEIGHT"),
-  /*#__PURE__*/React.createElement("input", {
+  /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__input-actions-row" }, /*#__PURE__*/
+  React.createElement("input", {
     id: "metrics-weight-manual-lbs",
     type: "text",
     inputMode: "decimal",
@@ -10611,7 +10651,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__actions" }, /*#__PURE__*/
   React.createElement("button", { type: "button", className: "metrics-inline-form__btn", onClick: () => { axisHapticTick(); setManualOpen(false); } }, "Cancel"),
   /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn metrics-inline-form__btn--primary", onClick: saveManual }, "Save")
-  )),
+  ))),
   /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "metrics-inline-log-toggle-link",
@@ -10695,7 +10735,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   const dkToday = new Date().toDateString();
   const painTodayVal = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]);
   const hasAnyEntry = axisMetricsPainHasAnyEntry(painByDay);
-  const contextLine = painTodayVal != null ? "Latest: " + painTodayVal + "/10 — " + axisMetricsShortDateFromDateKey(dkToday) : null;
+  const contextLine = painTodayVal != null ? "Last logged: " + axisMetricsShortDateFromDateKey(dkToday) : null;
   const painCallout = axisMetricsPainSundayInsight(painByDay) || axisMetricsPainWeekendInsight(painByDay) || axisMetricsPainImprovementInsight(painByDay) || axisMetricsPainConsistentInsight(painByDay) || axisMetricsPainMondayInsight(painByDay);
   const gridMode = painGridMode === "7d" ? "7d" : "28d";
   const heatmapBlock = !hasAnyEntry ? /*#__PURE__*/React.createElement("p", { className: "pain-heat__placeholder" }, "No entries yet. Tap LOG PAIN to start.") : /*#__PURE__*/React.createElement(MetricsPainGrid, {
@@ -10719,18 +10759,17 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   };
   const painRows = axisMetricsPainEntriesDescending(painByDay);
   const hasAnyPain = painRows.length > 0;
-  const painGroups = hasAnyPain ? axisMetricsGroupByAge(painRows, (x) => new Date(x.dateKey).getTime()).map((g) => ({ ...g, rows: g.rows.slice().sort((a, b) => new Date(b.dateKey).getTime() - new Date(a.dateKey).getTime()) })) : [];
-  const painLogBody = !hasAnyPain ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, "No pain entries yet. Tap Log pain to add one.") : painGroups.map((g) => /*#__PURE__*/React.createElement("div", { key: g.label, className: "metrics-inline-bucket" }, /*#__PURE__*/
-  React.createElement("div", { className: "metric-inline-log__bucket-label" }, g.label),
-  g.rows.length === 0 ? /*#__PURE__*/React.createElement("div", { className: "metrics-inline-bucket-empty" }, g.label === "TODAY" ? "No entries today" : "No entries") : g.rows.map((e) => {
+  const todayPainRow = painRows.find((e) => e.dateKey === dkToday) || null;
+  const renderPainLogRow = (e) => {
     const isEdit = editingDateKey === e.dateKey;
     return /*#__PURE__*/React.createElement("div", { key: e.dateKey, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
     React.createElement("div", { className: "metric-inline-log__pain-slider-row" }, /*#__PURE__*/React.createElement("input", { className: "metric-inline-log__pain-range", type: "range", min: 1, max: 10, step: 1, value: editV, onChange: (ev) => setEditV(Number(ev.target.value)) }), /*#__PURE__*/React.createElement("span", { className: "metric-inline-log__pain-val metric-inline-log__pain-val--accent" }, editV, "/10")),
-    /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row metric-inline-log__new-row--note-only" }, /*#__PURE__*/React.createElement("input", { type: "text", className: "metrics-inline-form__input metric-inline-log__input-grow", value: editNote, onChange: (ev) => setEditNote(ev.target.value), maxLength: 48, placeholder: "E.g., lower back, neck..." }),
-    /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__actions", style: { marginTop: 10, width: "100%", justifyContent: "flex-end" } }, /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn", onClick: () => { setEditingDateKey(null); setEditNote(""); } }, "Cancel"), /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn metrics-inline-form__btn--primary", onClick: () => { onEditPainEntry(e.dateKey, { level: editV, note: editNote.trim().slice(0, 48) });setEditingDateKey(null); } }, "Save")))) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
+    /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__input-actions-row", style: { marginTop: 10 } }, /*#__PURE__*/React.createElement("input", { type: "text", className: "metrics-inline-form__input metric-inline-log__input-grow", value: editNote, onChange: (ev) => setEditNote(ev.target.value), maxLength: 48, placeholder: "E.g., lower back, neck..." }),
+    /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__actions" }, /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn", onClick: () => { setEditingDateKey(null); setEditNote(""); } }, "Cancel"), /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn metrics-inline-form__btn--primary", onClick: () => { onEditPainEntry(e.dateKey, { level: editV, note: editNote.trim().slice(0, 48) });setEditingDateKey(null); } }, "Save")))) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
     React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.level}/10 • ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? ` • ${e.note}` : ""}`),
     /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action", onClick: () => { setEditingDateKey(e.dateKey); setEditV(e.level); setEditNote(e.note || ""); } }, "Edit"), /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action metrics-inline-row-action--danger", onClick: () => { if (window.confirm("Delete this pain entry?")) onDeletePainEntry(e.dateKey); } }, "Delete"))));
-  })));
+  };
+  const painLogBody = !todayPainRow ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, hasAnyPain ? "No entry today. Tap Log pain to add one." : "No pain entries yet. Tap Log pain to add one.") : renderPainLogRow(todayPainRow);
   return /*#__PURE__*/React.createElement("div", { className: "weight-section pain-section", style: { "--weight-mood-accent": moodAccent } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Pain"),
   /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, painTodayVal != null ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
@@ -10739,8 +10778,8 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   ) : /*#__PURE__*/React.createElement("span", { className: "pain-section__hero-empty" }, "No entry")),
   contextLine ? /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine) : null,
   /*#__PURE__*/React.createElement("div", { className: "pain-section__toggles", role: "tablist", "aria-label": "Pain heatmap range" }, /*#__PURE__*/
-  React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "7d", className: "pain-section__toggle" + (painGridMode === "7d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("7d"); } }, "7D"),
-  React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "28d", className: "pain-section__toggle" + (painGridMode === "28d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("28d"); } }, "4W")
+  React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "7d", className: "pain-section__toggle" + (painGridMode === "7d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("7d"); } }, "7 Days"),
+  React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "28d", className: "pain-section__toggle" + (painGridMode === "28d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("28d"); } }, "4 Weeks")
   ),
   heatmapBlock,
   painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, "\uD83D\uDCA1 ", painCallout) : null,
@@ -10757,7 +10796,8 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   /*#__PURE__*/React.createElement("span", { className: "metric-inline-log__pain-val metric-inline-log__pain-val--accent", "aria-live": "polite" }, v, "/10")
   ),
   /*#__PURE__*/React.createElement("label", { className: "metrics-inline-form__label", htmlFor: "metrics-pain-inline-note" }, "NOTES (optional)"),
-  /*#__PURE__*/React.createElement("input", {
+  /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__input-actions-row" }, /*#__PURE__*/
+  React.createElement("input", {
     id: "metrics-pain-inline-note",
     type: "text",
     className: "metrics-inline-form__input",
@@ -10769,7 +10809,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   /*#__PURE__*/React.createElement("div", { className: "metrics-inline-form__actions" }, /*#__PURE__*/
   React.createElement("button", { type: "button", className: "metrics-inline-form__btn", onClick: () => { axisHapticTick(); setFormOpen(false); } }, "Cancel"),
   /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn metrics-inline-form__btn--primary", onClick: savePainForm }, "Save")
-  )),
+  ))),
   /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "metrics-inline-log-toggle-link",
@@ -11113,7 +11153,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         setMetricsWeightSamples((prev) => axisMetricsMergeWeightByTs(axisMetricsNormalizeWeightList(prev), imported));
         setMetricsHealthHint("Synced from Apple Health / Health Connect");
       } else {
-        setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Manual log on Metrics or Connect & sync in Settings.");
+        setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Log Weight on Metrics or Connect & sync in Settings.");
       }
     })();
     return () => { cancelled = true; };
@@ -11399,7 +11439,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             setMetricsHealthHint("Synced from Apple Health / Health Connect");
             setHealthConnectSyncMsg("Updated weight and steps.");
           } else {
-            setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Manual log on Metrics or open this app from the native shell.");
+            setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Log Weight on Metrics or open this app from the native shell.");
             setHealthConnectSyncMsg("No new weight samples. Steps refreshed if available.");
           }
         } catch (e) {
@@ -11737,12 +11777,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "metrics-goals-wrap metrics-section--goals" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-block" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-toolbar" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS"),
-      React.createElement("button", {
-        type: "button",
-        className: "metrics-goals-toolbar__settings",
-        onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
-      }, "Adjust in Settings")
+      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS")
       ),
       /*#__PURE__*/React.createElement("div", { className: "metrics-goals-compact" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-row" }, /*#__PURE__*/
@@ -11772,19 +11807,24 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         "aria-valuenow": Math.round(weeklyBarFillPct),
         "aria-label": "Weekly goal progress"
       }, /*#__PURE__*/React.createElement("div", { className: "prog-fill" + (weeklyBarOverdrive ? " metrics-goals-bar-fill--over" : ""), style: { width: `${weeklyBarFillPct}%` } }))
-      )
+      ),
+      /*#__PURE__*/React.createElement("button", {
+        type: "button",
+        className: "metrics-goals-toolbar__settings metrics-goals-settings--after-bars",
+        onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
+      }, "Adjust in Settings")
       )
       )
       , /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
-      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__sub" }, "Last 7 days"),
+      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__sub metrics-goals-toolbar__heading" }, "Last 7 days"),
       /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__hint" }, "(Tap the day to reveal more details.)"),
       /*#__PURE__*/React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme, compact: true, metricsQuickGlance: true }), /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
       React.createElement("div", { className: "metrics-body-metrics-toolbar" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "Body metrics")
       ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-metric-panel", style: { "--metrics-panel-accent": metricsSessionAccent } }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
       React.createElement(MetricsWeightCard, {
         theme: theme,
         nightMode: nightMode,
@@ -11810,7 +11850,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       , /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-metric-panel", style: { "--metrics-panel-accent": metricsSessionAccent } }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
       React.createElement(MetricsPainCard, {
         theme: theme,
         nightMode: nightMode,
@@ -11920,8 +11960,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         } },
       /*#__PURE__*/React.createElement(AxisThinArrowRight, { size: 14 }), track === "anxiety" ? "Box Breathing" : "Physiological Sigh"
       )
-      ), /*#__PURE__*/
-      React.createElement("div", { className: "summary-cta summary-cta--metrics-flat", style: { "--metrics-session-accent": metricsSessionAccent } }, /*#__PURE__*/
+      ),
+      /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      /*#__PURE__*/React.createElement("div", { className: "summary-cta summary-cta--metrics-flat", style: { "--metrics-session-accent": metricsSessionAccent } }, /*#__PURE__*/
       React.createElement("div", { className: "summary-cta-copy" }, "Ready for another reset?"), /*#__PURE__*/
       React.createElement("button", {
         className: "summary-cta-btn summary-cta-btn--metrics-mood ultra-filled-btn",
