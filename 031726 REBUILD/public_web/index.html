@@ -2250,6 +2250,16 @@ const css = `
   .settings-outline-btn:active {
     transform: scale(0.98);
   }
+  button.settings-outline-btn.axis-surface-tmt:hover {
+    filter: brightness(1.05);
+  }
+  button.settings-outline-btn.axis-surface-tmt:active {
+    filter: brightness(0.96);
+    transform: scale(0.98);
+  }
+  .app[data-night="true"] button.settings-outline-btn.axis-surface-tmt:hover {
+    filter: brightness(1.08);
+  }
   a.settings-outline-btn {
     box-sizing: border-box;
   }
@@ -3728,7 +3738,7 @@ const css = `
     max-height: 480px;
     opacity: 1;
   }
-  /* Separate frames for Weight and Pain on Metrics — solid dashboard tiles + mood accent rail */
+  /* Separate frames for Weight and Pain on Metrics — layout only; surface via .axis-surface-tmt */
   .metrics-metric-panel {
     position: relative;
     width: 100%;
@@ -3736,23 +3746,6 @@ const css = `
     padding: 22px 20px 26px;
     border-radius: 22px;
     overflow: visible;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: #151b26;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-  .app[data-theme="light"]:not([data-night="true"]) .metrics-metric-panel {
-    background: #eef2f7;
-    border-color: rgba(15, 30, 46, 0.12);
-    box-shadow: 0 12px 36px rgba(15, 30, 46, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  }
-  .app[data-night="true"] .metrics-metric-panel {
-    background: #1c0505 !important;
-    border-color: rgba(255, 59, 48, 0.42) !important;
-    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.18), 0 16px 44px rgba(0, 0, 0, 0.65) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
   }
   /* Home TODAY uses previous layout; only surface is adjusted via inline styles. */
   .metrics-body-metrics-toolbar {
@@ -3769,21 +3762,6 @@ const css = `
   .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
     padding: 18px 20px 22px;
     border-radius: 22px;
-    border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--glass-border));
-    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 16%, #151b26) 0%, #151b26 52%, #121822 100%);
-    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .app[data-theme="light"]:not([data-night="true"]) .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
-    border-color: color-mix(in srgb, var(--accent) 32%, rgba(15, 30, 46, 0.14));
-    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 14%, #ffffff) 0%, #f4f7fb 45%, #eef2f7 100%);
-    box-shadow: 0 14px 38px rgba(15, 30, 46, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  }
-  .app[data-night="true"] .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
-    border-color: rgba(255, 59, 48, 0.48) !important;
-    background: linear-gradient(180deg, rgba(255, 59, 48, 0.2) 0%, #1c0505 55%, #140303 100%) !important;
-    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 16px 40px rgba(0, 0, 0, 0.55) !important;
   }
   .metrics-quick-stats-heading {
     font-size: 11px;
@@ -3823,6 +3801,26 @@ const css = `
   .app[data-night="true"] .metrics-stat-feature {
     border-color: rgba(255, 59, 48, 0.38) !important;
     box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 14px 36px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Shared surface: matches TOTAL MOVEMENT TIME hero card (after .metrics-stat-feature so it wins when combined) */
+  .axis-surface-tmt {
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--glass-border));
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 16%, #151b26) 0%, #151b26 52%, #121822 100%);
+    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .axis-surface-tmt {
+    border-color: color-mix(in srgb, var(--accent) 32%, rgba(15, 30, 46, 0.14));
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 14%, #ffffff) 0%, #f4f7fb 45%, #eef2f7 100%);
+    box-shadow: 0 14px 38px rgba(15, 30, 46, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .app[data-night="true"] .axis-surface-tmt {
+    border-color: rgba(255, 59, 48, 0.48) !important;
+    background: linear-gradient(180deg, rgba(255, 59, 48, 0.2) 0%, #1c0505 55%, #140303 100%) !important;
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 16px 40px rgba(0, 0, 0, 0.55) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
@@ -9813,6 +9811,18 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+  /* Interval / Breathe ring: Total Movement Time surface (circular disc behind SVG) */
+  .timer-view-body .timer-interval-ring-wrap.axis-surface-tmt,
+  .timer-view-body .timer-breathe-ring-wrap.axis-surface-tmt {
+    border-radius: 50%;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 16%, #151b26) 0%, #151b26 52%, #121822 100%);
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--glass-border));
+    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .timer-view-body .timer-interval-rows {
     display: flex;
     flex-direction: column;
@@ -9959,6 +9969,14 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     backdrop-filter: blur(20px) saturate(1.2);
     -webkit-backdrop-filter: blur(20px) saturate(1.2);
   }
+  [data-theme="light"] .timer-view-body .timer-interval-ring-wrap.axis-surface-tmt,
+  [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap.axis-surface-tmt {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 14%, #ffffff) 0%, #f4f7fb 45%, #eef2f7 100%);
+    border: 1px solid color-mix(in srgb, var(--accent) 32%, rgba(15, 30, 46, 0.14));
+    box-shadow: 0 14px 38px rgba(15, 30, 46, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   [data-theme="light"] .timer-view-body .timer-interval-row-label {
     color: rgba(15,30,46,0.55);
   }
@@ -10045,6 +10063,14 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     border: 1px solid #FF3B30 !important;
     color: #FF3B30 !important;
   }
+  [data-night="true"] .timer-view-body .timer-interval-ring-wrap.axis-surface-tmt,
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap.axis-surface-tmt {
+    background: linear-gradient(180deg, rgba(255, 59, 48, 0.2) 0%, #1c0505 55%, #140303 100%) !important;
+    border: 1px solid rgba(255, 59, 48, 0.48) !important;
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 16px 40px rgba(0, 0, 0, 0.55) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
   [data-night="true"] .timer-view-body .timer-round-pip {
     background: rgba(255, 59, 48, 0.35) !important;
     border: 1px solid rgba(255, 59, 48, 0.65) !important;
@@ -10111,7 +10137,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     mode === "interval" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", flex: 1, minHeight: 0 } }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-orb timer-ring-slot", style: TIMER_RING_WRAP }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-glass-orb timer-ring-slot timer-interval-ring-wrap axis-surface-tmt", style: TIMER_RING_WRAP }, /*#__PURE__*/
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", className: "timer-interval-ring" + (intervalRingSnap ? " timer-ring--snap" : ""), style: { transform: "rotate(-90deg)", display: "block", margin: "0 auto" } }, /*#__PURE__*/
     React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : isDark ? "var(--border)" : "#EEEEEE", strokeWidth: isDark ? "2.5" : "1.5" }),
     iPhase !== "idle" && iPhase !== "done" && /*#__PURE__*/
@@ -10205,7 +10231,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     mode === "breathe" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, alignSelf: "center", flex: 1, minHeight: 0, boxSizing: "border-box" } }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning ? "peak" : undefined }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot axis-surface-tmt", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning ? "peak" : undefined }, /*#__PURE__*/
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
     !isDark && React.createElement("defs", null,
       React.createElement("radialGradient", { id: "timerBreatheGrad", cx: "50%", cy: "50%", r: "50%" },
@@ -11877,7 +11903,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     React.createElement("div", { className: "settings-help-text", style: { marginBottom: 12 } }, "Sync from Apple Health (iPhone) or Health Connect (Android). Pulls weight and steps into Metrics."),
     React.createElement("button", {
       type: "button",
-      className: "settings-outline-btn",
+      className: "settings-outline-btn axis-surface-tmt settings-health-sync-btn",
       onClick: async () => {
         axisHapticTick();
         setHealthConnectSyncMsg("Syncing…");
@@ -12098,7 +12124,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       ), /*#__PURE__*/
 
 
-      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderRadius: 16, background: nightMode ? "#000000" : "var(--glass-bg)", border: activePeriod === null ? "1px solid var(--accent)" : "1px solid var(--glass-border)", marginBottom: 12, transition: "all 0.2s", backdropFilter: nightMode ? "none" : "blur(20px)", WebkitBackdropFilter: nightMode ? "none" : "blur(20px)" } }, /*#__PURE__*/
+      React.createElement("div", { className: "axis-surface-tmt mood-auto-row", style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 20px", borderRadius: 22, marginBottom: 12, transition: "all 0.2s" } }, /*#__PURE__*/
       React.createElement("div", null, /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-base)", fontWeight: 600, color: activePeriod === null ? "var(--accent)" : "var(--text-white)", marginBottom: 3 } }, "Auto"), /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)" } },
@@ -12205,7 +12231,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "metrics-quick-glance" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__boxes" }, [/*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__hero-band" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__minutes", role: "status" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__minutes axis-surface-tmt", role: "status" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__minutes-inner" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title metrics-quick-glance__stat-title--movement" }, "TOTAL MOVEMENT TIME"),
       React.createElement("div", { className: "metrics-quick-glance__minutes-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent))
@@ -12278,7 +12304,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "metrics-body-metrics-toolbar" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "Body metrics")
       ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel axis-surface-tmt" }, /*#__PURE__*/
       React.createElement(MetricsWeightCard, {
         theme: theme,
         nightMode: nightMode,
@@ -12304,7 +12330,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       , /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel axis-surface-tmt" }, /*#__PURE__*/
       React.createElement(MetricsPainCard, {
         theme: theme,
         nightMode: nightMode,
