@@ -3241,10 +3241,10 @@ const css = `
     margin: 1.5rem 0;
   }
   .metrics-page-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: none;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--color-text-secondary);
     margin: 0 0 1rem;
     font-family: var(--font-display);
@@ -3638,26 +3638,79 @@ const css = `
     max-height: 480px;
     opacity: 1;
   }
-  /* Separate frames for Weight and Pain on Metrics */
+  /* Separate frames for Weight and Pain on Metrics — solid dashboard tiles + mood accent rail */
   .metrics-metric-panel {
+    --metrics-panel-accent: var(--accent);
+    position: relative;
     width: 100%;
     box-sizing: border-box;
     padding: 22px 20px 26px;
-    border-radius: var(--border-radius-md);
-    border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
-    background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
-    backdrop-filter: blur(14px) saturate(1.15);
-    -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 58%, transparent);
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #151b26;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .metrics-metric-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--metrics-panel-accent, var(--accent)) 0%, color-mix(in srgb, var(--metrics-panel-accent, var(--accent)) 35%, transparent) 72%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
   }
   .app[data-theme="light"]:not([data-night="true"]) .metrics-metric-panel {
-    box-shadow: 0 8px 26px rgba(15, 30, 46, 0.1), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 58%, transparent);
+    background: #eef2f7;
+    border-color: rgba(15, 30, 46, 0.12);
+    box-shadow: 0 12px 36px rgba(15, 30, 46, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-metric-panel::before {
+    background: linear-gradient(90deg, var(--metrics-panel-accent, var(--accent)) 0%, color-mix(in srgb, var(--metrics-panel-accent, var(--accent)) 40%, #ffffff) 65%, rgba(255, 255, 255, 0.4) 100%);
   }
   .app[data-night="true"] .metrics-metric-panel {
-    border-color: rgba(255, 59, 48, 0.38) !important;
-    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 14px 36px rgba(0, 0, 0, 0.5) !important;
+    background: #1c0505 !important;
+    border-color: rgba(255, 59, 48, 0.42) !important;
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.18), 0 16px 44px rgba(0, 0, 0, 0.65) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+  .app[data-night="true"] .metrics-metric-panel::before {
+    background: linear-gradient(90deg, #ff3b30 0%, rgba(255, 59, 48, 0.35) 55%, transparent 100%);
+  }
+  .metrics-body-metrics-toolbar {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 0 10px;
+    text-align: left;
+  }
+  .metrics-quick-glance__hero-band {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
+    padding: 18px 20px 22px;
+    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--glass-border));
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 16%, #151b26) 0%, #151b26 52%, #121822 100%);
+    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
+    border-color: color-mix(in srgb, var(--accent) 32%, rgba(15, 30, 46, 0.14));
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 14%, #ffffff) 0%, #f4f7fb 45%, #eef2f7 100%);
+    box-shadow: 0 14px 38px rgba(15, 30, 46, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .app[data-night="true"] .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
+    border-color: rgba(255, 59, 48, 0.48) !important;
+    background: linear-gradient(180deg, rgba(255, 59, 48, 0.2) 0%, #1c0505 55%, #140303 100%) !important;
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 16px 40px rgba(0, 0, 0, 0.55) !important;
   }
   .metrics-quick-stats-heading {
     font-size: 11px;
@@ -3884,14 +3937,26 @@ const css = `
     box-sizing: border-box;
   }
   .weight-section__header {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-text-secondary);
     line-height: 1.2;
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.85rem;
     font-family: var(--font-display);
+  }
+  .weight-section__header::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--weight-mood-accent, var(--accent));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 28%, transparent);
   }
   .weight-section__hero-row {
     display: flex;
@@ -3961,6 +4026,7 @@ const css = `
     margin: 0 0 1.5rem;
     box-sizing: border-box;
     position: relative;
+    overflow: visible;
   }
   .weight-section__chart-svg {
     width: 100%;
@@ -3976,28 +4042,49 @@ const css = `
     fill: none;
     vector-effect: non-scaling-stroke;
   }
+  .weight-section__chart-grid-mid {
+    stroke: color-mix(in srgb, var(--color-border-tertiary) 55%, transparent);
+    fill: none;
+    stroke-width: 0.75;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 3 4;
+  }
+  .weight-section__chart-area {
+    stroke: none;
+    pointer-events: none;
+  }
   .weight-section__chart-line {
     fill: none;
-    stroke: color-mix(in srgb, var(--weight-mood-accent, #f6f7f8) 88%, transparent);
-    stroke-width: 2.5;
+    stroke: var(--weight-mood-accent, #f6f7f8);
+    stroke-width: 3.25;
     stroke-linecap: round;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--weight-mood-accent, #fff) 35%, transparent));
   }
   .app[data-theme="light"]:not([data-night="true"]) .weight-section__chart-line {
-    stroke: color-mix(in srgb, var(--weight-mood-accent, #121418) 85%, transparent);
+    stroke: var(--weight-mood-accent, #121418);
+    filter: drop-shadow(0 1px 3px rgba(15, 30, 46, 0.12));
+  }
+  .app[data-night="true"] .weight-section__chart-line {
+    filter: drop-shadow(0 0 6px rgba(255, 59, 48, 0.35));
   }
   .weight-section__chart-dot {
     fill: var(--weight-mood-accent, #f6f7f8);
     stroke: color-mix(in srgb, var(--color-background-secondary) 70%, var(--color-text-primary) 30%);
-    stroke-width: 1.35;
+    stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
     cursor: pointer;
+    transition: r 0.12s ease, filter 0.12s ease;
+  }
+  .weight-section__chart-dot:hover,
+  .weight-section__chart-dot:focus-visible {
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--weight-mood-accent, #fff) 55%, transparent));
   }
   .weight-section__chart-dot:focus-visible {
     outline: none;
     stroke: var(--color-text-primary);
-    stroke-width: 2;
+    stroke-width: 2.25;
   }
   .metric-chart-tooltip {
     position: absolute;
@@ -4493,10 +4580,26 @@ const css = `
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
     width: 100%;
     margin: 0 0 1.5rem;
     box-sizing: border-box;
+  }
+  .pain-heat__grid--7d {
+    gap: 5px;
+  }
+  .pain-heat__grid--7d .pain-heat__cell {
+    width: clamp(38px, 11vw, 44px);
+    height: clamp(38px, 11vw, 44px);
+    min-width: 38px;
+    min-height: 38px;
+    font-size: clamp(16px, 4.2vw, 19px);
+    border-radius: 14px;
+  }
+  .pain-heat__grid--7d .pain-heat__dow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
   .pain-heat__col {
     flex: 1 1 0;
@@ -4530,6 +4633,12 @@ const css = `
   .pain-heat__cell:active {
     transform: scale(0.98);
   }
+  .pain-heat__cell--open:active {
+    transform: scale(1.05);
+  }
+  .pain-heat__cell--today.pain-heat__cell--open:active {
+    transform: scale(1.06);
+  }
   .pain-heat__cell--empty {
     background: var(--color-background-secondary);
     color: var(--color-text-secondary);
@@ -4561,9 +4670,25 @@ const css = `
     color: #fff1f2;
   }
   .pain-heat__cell--today {
-    box-shadow: 0 0 0 2px var(--weight-mood-accent, var(--accent));
-    transform: scale(1.05);
+    box-shadow: 0 0 0 2px var(--weight-mood-accent, var(--accent)), 0 4px 14px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 22%, transparent);
+    transform: scale(1.06);
     z-index: 1;
+  }
+  .pain-heat__cell--open {
+    transform: scale(1.08);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28), 0 0 0 2px var(--weight-mood-accent, var(--accent));
+    z-index: 2;
+    position: relative;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .pain-heat__cell--open {
+    box-shadow: 0 12px 28px rgba(15, 30, 46, 0.18), 0 0 0 2px var(--weight-mood-accent, var(--accent));
+  }
+  .pain-heat__cell--today.pain-heat__cell--open {
+    transform: scale(1.1);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32), 0 0 0 2px var(--weight-mood-accent, var(--accent)), 0 0 20px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 25%, transparent);
+  }
+  .app[data-night="true"] .pain-heat__cell--open {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 59, 48, 0.75);
   }
   .pain-heat__dow {
     font-size: 11px;
@@ -4850,6 +4975,10 @@ const css = `
   .metrics-inline-log-toggle-link:active {
     transform: scale(0.97);
   }
+  .weight-section .metrics-inline-log-toggle-link,
+  .pain-section .metrics-inline-log-toggle-link {
+    margin-top: 18px;
+  }
   .metrics-inline-collapsible {
     display: grid;
     grid-template-rows: 0fr;
@@ -5036,22 +5165,50 @@ const css = `
     margin-left: auto;
     margin-right: auto;
   }
+  .metrics-empty-home-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
   .metrics-empty-home-link {
-    display: inline;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
-    padding: 0;
-    border: none;
-    background: none;
-    font: inherit;
-    font-size: inherit;
+    padding: 12px 28px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--glass-border));
+    background: color-mix(in srgb, var(--glass-bg) 88%, var(--accent) 6%);
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration: none;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease, filter 0.15s ease, border-color 0.15s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+  .metrics-empty-home-link:hover {
+    filter: brightness(1.06);
+  }
+  .metrics-empty-home-link:active {
+    transform: scale(0.98);
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-empty-home-link {
+    border-color: color-mix(in srgb, var(--accent) 35%, rgba(15, 30, 46, 0.16));
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 4px 18px rgba(15, 30, 46, 0.08);
   }
   .app[data-night="true"] .metrics-empty-home-link {
     color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.55);
+    background: #1c0505;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
   }
   .metrics-pain-status {
     font-size: var(--text-sm);
@@ -10308,10 +10465,18 @@ function WeightSectionSparkline({ entries }) {
   maxW += range * 0.1;
   const span = maxW - minW || 1;
   const dotR = 3.5;
-  const innerW = Math.max(0, W - 2 * dotR);
-  const xAt = (i) => dotR + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+  const xAt = (i) => n <= 1 ? W / 2 : (i / (n - 1)) * W;
   const yAt = (lbs) => padT + (1 - (lbs - minW) / span) * plotH;
   const pts = entries.map((e, i) => `${xAt(i)},${yAt(e.lbs)}`).join(" ");
+  const yMid = padT + plotH * 0.5;
+  let areaPath = "";
+  if (n >= 2) {
+    areaPath = `M ${xAt(0)} ${baselineY}`;
+    for (let i = 0; i < n; i++) {
+      areaPath += ` L ${xAt(i)} ${yAt(entries[i].lbs)}`;
+    }
+    areaPath += ` L ${xAt(n - 1)} ${baselineY} Z`;
+  }
   const activeEntry = entries.find((e) => e.ts === activeTs) || null;
   const activeIndex = activeEntry ? entries.findIndex((e) => e.ts === activeEntry.ts) : -1;
   const tipX = activeIndex >= 0 ? (xAt(activeIndex) / W) * 100 : 50;
@@ -10328,8 +10493,15 @@ function WeightSectionSparkline({ entries }) {
     preserveAspectRatio: "xMidYMid meet",
     "aria-hidden": true
   }, /*#__PURE__*/
+  React.createElement("defs", null, /*#__PURE__*/
+  React.createElement("linearGradient", { id: "axisWeightSparkArea", x1: "0", y1: "0", x2: "0", y2: "1" }, /*#__PURE__*/
+  React.createElement("stop", { offset: "0%", stopColor: "var(--weight-mood-accent)", stopOpacity: "0.4" }),
+  React.createElement("stop", { offset: "100%", stopColor: "var(--weight-mood-accent)", stopOpacity: "0.03" })
+  )),
+  areaPath ? /*#__PURE__*/React.createElement("path", { className: "weight-section__chart-area", d: areaPath, fill: "url(#axisWeightSparkArea)" }) : null,
   React.createElement("line", { className: "weight-section__chart-baseline", x1: 0, x2: W, y1: topRuleY, y2: topRuleY }),
   React.createElement("line", { className: "weight-section__chart-baseline", x1: 0, x2: W, y1: baselineY, y2: baselineY }),
+  n >= 2 ? /*#__PURE__*/React.createElement("line", { className: "weight-section__chart-grid-mid", x1: 0, x2: W, y1: yMid, y2: yMid }) : null,
   n >= 2 ? /*#__PURE__*/React.createElement("polyline", { className: "weight-section__chart-line", points: pts }) : null,
   entries.map((e, i) => /*#__PURE__*/React.createElement("circle", {
     key: e.ts,
@@ -10477,7 +10649,8 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
     const note = axisMetricsPainGetNote(raw);
     const isToday = dk === dkToday;
     const tone = painHeatmapCellTone(level);
-    const cls = "pain-heat__cell pain-heat__cell--" + tone + (isToday ? " pain-heat__cell--today" : "");
+    const isOpen = activeDateKey === dk;
+    const cls = "pain-heat__cell pain-heat__cell--" + tone + (isToday ? " pain-heat__cell--today" : "") + (isOpen ? " pain-heat__cell--open" : "");
     const label = level != null ? `${axisRelativeDayLabel(dk)} · ${level}/10` : `${axisRelativeDayLabel(dk)} · no entry`;
     const btn = /*#__PURE__*/React.createElement("button", {
       type: "button",
@@ -10485,7 +10658,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
       onClick: () => setActiveDateKey((cur) => cur === dk ? null : dk),
       "aria-label": label
     }, level != null ? level : "\u2014");
-    const tooltip = activeDateKey === dk ? /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip", style: { left: "50%", top: "0px" } }, /*#__PURE__*/
+    const tooltip = isOpen ? /*#__PURE__*/React.createElement("div", { className: "metric-chart-tooltip", style: { left: "50%", top: "0px" } }, /*#__PURE__*/
     React.createElement("div", { className: "metric-chart-tooltip__value" }, `${axisMetricsShortDateFromDateKey(dk)} • ${level != null ? `${level}/10` : "No entry"}${note ? ` • ${note}` : ""}`)) : null;
     if (!showDow) return /*#__PURE__*/React.createElement("div", { className: "pain-heat__cell-wrap" }, tooltip, btn);
     return /*#__PURE__*/React.createElement("div", { key: dk, className: "pain-heat__col" }, /*#__PURE__*/
@@ -10494,7 +10667,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
   };
   if (mode === "7d") {
     const keys = axisMetricsLast7DateKeys();
-    return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid" }, keys.map((dk) => cell(dk, true)));
+    return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid pain-heat__grid--7d" }, keys.map((dk) => cell(dk, true)));
   }
   const k28 = axisMetricsPainLast28DateKeys();
   return /*#__PURE__*/React.createElement("div", { className: "pain-heat__grid-28" }, [0, 1, 2, 3].map((row) => {
@@ -11537,10 +11710,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "summary-sunset-stack summary-sunset-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__boxes" }, [/*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__hero-band" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__minutes", role: "status" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__minutes-inner" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title metrics-quick-glance__stat-title--movement" }, "TOTAL MOVEMENT TIME"),
       React.createElement("div", { className: "metrics-quick-glance__minutes-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent))
+      )
       )
       ), /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__duo" }, [/*#__PURE__*/
@@ -11606,7 +11781,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__hint" }, "(Tap the day to reveal more details.)"),
       /*#__PURE__*/React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme, compact: true, metricsQuickGlance: true }), /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-body-metrics-toolbar" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "Body metrics")
+      ), /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel", style: { "--metrics-panel-accent": metricsSessionAccent } }, /*#__PURE__*/
       React.createElement(MetricsWeightCard, {
         theme: theme,
         nightMode: nightMode,
@@ -11632,7 +11810,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       , /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-metric-panel" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-metric-panel", style: { "--metrics-panel-accent": metricsSessionAccent } }, /*#__PURE__*/
       React.createElement(MetricsPainCard, {
         theme: theme,
         nightMode: nightMode,
@@ -11717,11 +11895,13 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       history.length === 0 && /*#__PURE__*/
       React.createElement("div", { className: "metrics-recent-section metrics-empty-cta--flat" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-empty-history-copy" }, "Complete a session to see history here."),
+      React.createElement("div", { className: "metrics-empty-home-wrap" }, /*#__PURE__*/
       React.createElement("button", {
         type: "button",
         className: "metrics-empty-home-link",
         onClick: () => {axisHapticTick();setView("home");}
       }, "Go to Home")
+      )
       ),
       (track === "anxiety" || track === "stress") && totalDone > 0 && /*#__PURE__*/
       React.createElement("div", { style: { marginTop: 20, padding: "18px", borderRadius: 24, border: "1px solid var(--glass-border)", background: "var(--glass-bg)" } }, /*#__PURE__*/
