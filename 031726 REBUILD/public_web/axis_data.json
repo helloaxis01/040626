@@ -14,7 +14,7 @@
             {
               "id": 1,
               "name": "Cat–Cow",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Segmental Spinal Flexion/Extension",
               "type": "flow",
               "seconds": 45,
@@ -39,7 +39,7 @@
                 }
               ],
               "demoVideo": "/assets/videos/cat_cow.mp4",
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
               "then": "Drop your belly toward the floor. Lift your head and tailbone up. Breathe in.",
               "tip": "Push your back up toward the ceiling. Tuck your chin to your chest. Breathe out."
@@ -311,7 +311,7 @@
             {
               "id": 9,
               "name": "Bird Dog",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Paused Extension",
               "reps": "6–8 per side, 2–3s pause",
               "type": "reps",
@@ -336,7 +336,7 @@
                 }
               ],
               "demoVideo": "/assets/videos/cat_cow.mp4",
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Keep your back flat and look down at the floor.",
               "then": "Reach your right arm straight forward. Reach your left leg straight backward. Hold for 2 seconds.",
               "tip": "Lower your hand and knee back to the floor. Switch sides."
@@ -351,7 +351,7 @@
             {
               "id": 10,
               "name": "High Plank",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Core tight, body straight",
               "reps": "30 seconds",
               "type": "time",
@@ -374,7 +374,7 @@
                 }
               ],
               "demoVideo": "/assets/videos/cat_cow.mp4",
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands flat on the floor under your shoulders.",
               "then": "Step both feet backward to straighten your legs. Keep your body in a straight line from your head to your heels.",
               "tip": "Squeeze your stomach and butt muscles. Do not let your hips sag down."
@@ -1452,7 +1452,7 @@
             {
               "id": 203,
               "name": "Cat–Cow",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Segmental spinal warm-up",
               "type": "flow",
               "seconds": 45,
@@ -1476,7 +1476,7 @@
                   "cue": "Let belly drop, lift gaze and tailbone gently. Full inhale. 8–10 slow cycles."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
               "then": "Push your back up toward the ceiling. Tuck your chin to your chest.",
               "tip": "Let your belly drop toward the floor. Lift your head and tailbone up. Move slowly."
@@ -2264,7 +2264,7 @@
             {
               "id": "505-R",
               "name": "Thread the Needle - Right Side",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Thoracic rotation from tabletop",
               "type": "flow",
               "seconds": 45,
@@ -2288,7 +2288,7 @@
                   "cue": "Return to tabletop. Left arm threads under right. Hold 30s each side. This releases the thoracic spine that screen time locks up."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
               "then": "Slide your right arm under your left arm. Rest your right shoulder and the right side of your head on the floor. Hold for 30 seconds.",
               "tip": "Push back up to your hands and knees. Slide your left arm under your right arm. Hold for 30 seconds."
@@ -2296,7 +2296,7 @@
             {
               "id": "505-L",
               "name": "Thread the Needle - Left Side",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Thoracic rotation from tabletop",
               "type": "flow",
               "seconds": 45,
@@ -2320,7 +2320,7 @@
                   "cue": "Return to tabletop. Left arm threads under right. Hold 30s each side. This releases the thoracic spine that screen time locks up."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
               "then": "Slide your right arm under your left arm. Rest your right shoulder and the right side of your head on the floor. Hold for 30 seconds.",
               "tip": "Push back up to your hands and knees. Slide your left arm under your right arm. Hold for 30 seconds."
@@ -2530,7 +2530,7 @@
             {
               "id": "603-R",
               "name": "Pigeon Pose - Right Hip",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Supported, 90s each side",
               "type": "time",
               "seconds": 90,
@@ -2554,7 +2554,7 @@
                   "cue": "Walk hands forward and lower chest toward the floor. Rest on forearms or forehead. Let the right hip surrender completely. Breathe into the outer right hip. Hold 90s."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Slide your right knee forward behind your right hand. Slide your left leg straight back.",
               "then": "Point both hip bones forward toward the floor. Do not let your hips fall to one side.",
               "tip": "Walk your hands forward and lower your chest to the floor. Hold for 90 seconds. Switch sides."
@@ -2562,7 +2562,7 @@
             {
               "id": "603-L",
               "name": "Pigeon Pose - Left Hip",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Supported, 90s each side",
               "type": "time",
               "seconds": 90,
@@ -2586,7 +2586,7 @@
                   "cue": "Walk hands forward and lower chest toward the floor. Rest on forearms or forehead. Let the right hip surrender completely. Breathe into the outer right hip. Hold 90s."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Slide your right knee forward behind your right hand. Slide your left leg straight back.",
               "then": "Point both hip bones forward toward the floor. Do not let your hips fall to one side.",
               "tip": "Walk your hands forward and lower your chest to the floor. Hold for 90 seconds. Switch sides."
@@ -2866,7 +2866,7 @@
             {
               "id": 703,
               "name": "Cat–Cow",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Slow and segmental, 10 cycles",
               "type": "flow",
               "seconds": 45,
@@ -2890,7 +2890,7 @@
                   "cue": "Let the belly drop, lift gaze and tailbone gently. Do not compress — open. Inhale fully. 10 slow cycles. Increase the range gradually as the back warms."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
               "then": "Push your back up toward the ceiling. Tuck your chin toward your chest. Breathe out.",
               "tip": "Drop your belly toward the floor. Lift your head and tailbone toward the ceiling. Breathe in. Do 10 times."
@@ -3566,7 +3566,7 @@
             {
               "id": "907-R",
               "name": "Adductor Rock-Back - Right Side",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Posterior hip capsule & inner thigh release",
               "type": "time",
               "seconds": 60,
@@ -3590,7 +3590,7 @@
                   "cue": "Rock forward to the starting position. Pause briefly, then rock back again. 8–10 slow repetitions, then switch sides. This movement targets the posterior hip capsule and adductors — two structures that chronic sitting locks into permanent shortening."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Reach one leg straight out to the side. Point your toes straight forward. Keep your back flat.",
               "then": "Push your hips slowly backward toward your heel. Breathe out as you go down.",
               "tip": "Pull your hips forward to start again. Do 8 to 10 times, then switch sides."
@@ -3598,7 +3598,7 @@
             {
               "id": "907-L",
               "name": "Adductor Rock-Back - Left Side",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Posterior hip capsule & inner thigh release",
               "type": "time",
               "seconds": 60,
@@ -3622,7 +3622,7 @@
                   "cue": "Rock forward to the starting position. Pause briefly, then rock back again. 8–10 slow repetitions, then switch sides. This movement targets the posterior hip capsule and adductors — two structures that chronic sitting locks into permanent shortening."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Reach one leg straight out to the side. Point your toes straight forward. Keep your back flat.",
               "then": "Push your hips slowly backward toward your heel. Breathe out as you go down.",
               "tip": "Pull your hips forward to start again. Do 8 to 10 times, then switch sides."
@@ -5033,7 +5033,7 @@
             {
               "id": 3006,
               "name": "Thread the Needle",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Release tension between the shoulder blades.",
               "type": "time",
               "seconds": 45,
@@ -5051,7 +5051,7 @@
                   "cue": "Hold and breathe into the space between your shoulder blades before switching sides."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips.",
               "then": "Slide your right arm under your left arm. Reach as far as you can. Rest your right shoulder and head on the floor.",
               "tip": "Take deep breaths. Push back up and switch sides."
@@ -5338,7 +5338,7 @@
             {
               "id": 2001,
               "name": "Cat–Cow",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Segmental flexion/extension",
               "type": "reps",
               "reps": "10 reps",
@@ -5362,7 +5362,7 @@
                   "cue": "Exhale, round through the spine segment by segment. Move slowly for 10 cycles."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
               "then": "Drop your belly toward the floor. Lift your chest and tailbone up. Breathe in.",
               "tip": "Push your back up toward the ceiling. Tuck your chin to your chest. Breathe out. Do 10 times."
@@ -5457,7 +5457,7 @@
             {
               "id": 2005,
               "name": "Thread the Needle",
-              "start": "Get on your hands and knees on the floor.",
+              "start": "Start on all fours, hands and knees on the floor.",
               "sub": "Thoracic rotation & shoulder release",
               "type": "time",
               "seconds": 25,
@@ -5478,7 +5478,7 @@
                   "cue": "Let gravity do the work. Do not force the shoulder toward the floor."
                 }
               ],
-              "position": "Get on your hands and knees on the floor.",
+              "position": "Start on all fours, hands and knees on the floor.",
               "next": "Place your hands under your shoulders and your knees under your hips.",
               "then": "Slide your right arm under your left arm. Rest your right shoulder and head on the floor. Hold for 20 to 30 seconds.",
               "tip": "Push back up to your hands and knees. Switch sides."

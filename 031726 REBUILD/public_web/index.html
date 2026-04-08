@@ -1105,13 +1105,9 @@ const css = `
   [data-theme="light"] .ob-sci-text {
     font-weight: var(--body-text-weight);
   }
-  .app[data-theme="light"]:not([data-night="true"]) .cue-tiers__label:not(.cue-tiers__label--tip) {
+  .app[data-theme="light"]:not([data-night="true"]) .cue-tiers__label {
     color: color-mix(in srgb, var(--accent) 76%, #15202c) !important;
     -webkit-text-fill-color: color-mix(in srgb, var(--accent) 76%, #15202c) !important;
-  }
-  .app[data-theme="light"]:not([data-night="true"]) .cue-tiers__label--tip {
-    color: rgba(55, 62, 72, 0.92) !important;
-    -webkit-text-fill-color: rgba(55, 62, 72, 0.92) !important;
   }
   /* Light mode small text accessibility */
   [data-theme="light"] .track-group-label,
@@ -1624,7 +1620,7 @@ const css = `
   .app[data-night="true"] .content--session .er:not(.open):hover {
     border-radius: 0 !important;
     margin: 0 !important;
-    padding: 13px 0 !important;
+    padding: 13px var(--er-panel-pad-end) 13px var(--er-panel-pad-start) !important;
     background: transparent !important;
     border: none !important;
     border-bottom: 1px solid #FF3B30 !important;
@@ -2910,20 +2906,21 @@ const css = `
   /* ── EXERCISE ROW ── */
   .er-card { border-bottom:1px solid var(--border); transition:all 0.2s; position:relative; }
   .er { display:flex; align-items:center; gap:12px; padding:13px 0; margin:0; cursor:pointer; transition:all 0.2s; position:relative; border-radius:0; }
+  /* LIST/GUIDED: match expanded panel inset when closed so the header row doesn’t shift on open */
+  .content--session .er-card > .er {
+    padding-left: var(--er-panel-pad-start);
+    padding-right: var(--er-panel-pad-end);
+    box-sizing: border-box;
+  }
   .er-card:hover { background:var(--bg-hover); border-bottom-color:transparent; border-radius:10px; margin:0; padding:0; }
   .er.open {
     background:transparent; border:none;
     border-radius:12px 12px 0 0; border-bottom-color:transparent;
     box-shadow:none;
     backdrop-filter:none; -webkit-backdrop-filter:none;
-    margin:6px 0 0; padding:13px 0;
-  }
-  /* Expanded row: same horizontal band as .cue-tiers (title, actions, chevron align with instructions) */
-  .er-card.er-card--open .er.open {
+    margin:6px 0 0;
     padding-top: 13px;
     padding-bottom: 13px;
-    padding-inline: var(--er-panel-pad-start) var(--er-panel-pad-end);
-    box-sizing: border-box;
   }
   .panel {
     background:var(--glass-bg); border:1px solid var(--glass-border-strong); border-top:none;
@@ -3017,6 +3014,11 @@ const css = `
   }
   .panel:focus { outline: none; }
   .panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  /* Exercise detail panel: avoid nested “ghost” ring when programmatically focused on expand */
+  .protocol-panel.panel:focus,
+  .protocol-panel.panel:focus-visible {
+    outline: none !important;
+  }
   [data-theme="dark"] .panel {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)), rgba(0,0,0,0.1);
     box-shadow:0 8px 28px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.35);
@@ -7573,7 +7575,7 @@ function buildInstructionTiers(startText, steps) {
   { key: "position", label: "POSITION", body: position, tone: "primary" },
   { key: "next", label: "NEXT", body: next, tone: "primary" },
   { key: "then", label: "THEN", body: then, tone: "primary" },
-  { key: "tip", label: "TIP", body: tip, tone: "muted" }].
+  { key: "tip", label: "END", body: tip, tone: "primary" }].
   filter((tier) => tier.body));
 }
 
@@ -7684,7 +7686,7 @@ function axisInstructionTiersFromPack(pack) {
   { key: "position", label: "POSITION", body: axisCleanInstructionLine(pack.position), tone: "primary" },
   { key: "next", label: "NEXT", body: axisCleanInstructionLine(pack.next), tone: "primary" },
   { key: "then", label: "THEN", body: axisCleanInstructionLine(pack.then), tone: "primary" },
-  { key: "tip", label: "TIP", body: axisCleanInstructionLine(pack.tip), tone: "muted" }];
+  { key: "tip", label: "END", body: axisCleanInstructionLine(pack.tip), tone: "primary" }];
 
   return tiers.filter((tier) => tier.body);
 }
@@ -7737,32 +7739,28 @@ function axisNormalizeTracks(rawTracks) {
 function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, compact = false, bodyColorOverride = null }) {
   const isDarkMode = ultraNight || theme === "dark";
   const primary = ultraNight ? "#FF3B30" : isDarkMode ? "#F5F5F5" : "#121418";
-  const tipLabel = ultraNight ? "#FF3B30" : isDarkMode ? "#C8C8C8" : "#2a3038";
-  const tipBody = ultraNight ? "#FF3B30" : isDarkMode ? "#E8E8E8" : "#242830";
   const divider = ultraNight ? "rgba(255, 59, 48, 0.72)" : isDarkMode ? "#141414" : "#F0F0F0";
   const accent = ultraNight ? "#FF3B30" : "var(--accent)";
   const labelSize = compact ? "10px" : "11px";
   const primarySize = compact ? "var(--text-base)" : "clamp(22px, 3.9vw, 28px)";
-  const tipSize = compact ? "13px" : "15px";
   return /*#__PURE__*/React.createElement("div", { className: "cue-tiers", style: { display: "flex", flexDirection: "column", width: "100%" } },
   tiers.map((tier, idx) => {
-    const isTipTier = tier.key === "tip";
-    const bodyColor = bodyColorOverride || (isTipTier ? tipBody : primary);
+    const bodyColor = bodyColorOverride || primary;
     const bodyOpacity = tier.key === "next" ? moveOpacity : 1;
-    const bodyFontSize = isTipTier ? tipSize : primarySize;
+    const bodyFontSize = primarySize;
     const bodyFontWeight = 500;
-    const labelColor = isTipTier ? tipLabel : accent;
+    const labelColor = accent;
     const bodyText = formatInstructionBodyText(tier.body);
     return /*#__PURE__*/React.createElement("div", {
       key: tier.key,
       className: "cue-tiers__block",
       style: {
-        padding: compact ? "12px 0" : "16px 0",
+        padding: compact ? "14px 0" : "16px 0",
         borderTop: idx === 0 ? "none" : `1px solid ${divider}`,
-        marginTop: idx === 1 ? 16 : 0
+        marginTop: 0
       }
     }, /*#__PURE__*/
-    React.createElement("div", { className: "cue-tiers__label" + (isTipTier ? " cue-tiers__label--tip" : ""), style: {
+    React.createElement("div", { className: "cue-tiers__label", style: {
         fontSize: labelSize,
         fontWeight: 600,
         letterSpacing: "0.18em",
@@ -7773,8 +7771,8 @@ function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, 
     React.createElement("div", { style: {
         fontSize: bodyFontSize,
         fontWeight: bodyFontWeight,
-        lineHeight: isTipTier ? 1.5 : 1.5,
-        letterSpacing: isTipTier ? "0" : "-0.01em",
+        lineHeight: 1.5,
+        letterSpacing: "-0.01em",
         color: bodyColor,
         opacity: bodyOpacity,
         whiteSpace: "normal",
@@ -7789,7 +7787,7 @@ function buildInstructionTiersFromExercise(ex, startText, steps) {
     { key: "position", label: "POSITION", body: axisCleanInstructionLine(ex.position), tone: "primary" },
     { key: "next", label: "NEXT", body: axisCleanInstructionLine(ex.next), tone: "primary" },
     { key: "then", label: "THEN", body: axisCleanInstructionLine(ex.then), tone: "primary" },
-    { key: "tip", label: "TIP", body: axisCleanInstructionLine(ex.tip), tone: "muted" }];
+    { key: "tip", label: "END", body: axisCleanInstructionLine(ex.tip), tone: "primary" }];
 
     return tiers.filter((tier) => tier.body);
   }
@@ -7961,13 +7959,6 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     }
   }, [open]);
   useEffect(() => {
-    if (!open || !sessionDetailPanelRef.current) return;
-    const t = setTimeout(() => {
-      try {sessionDetailPanelRef.current?.focus();} catch (e) {}
-    }, 120);
-    return () => clearTimeout(t);
-  }, [open, ex.id]);
-  useEffect(() => {
     // Re-arm instructions when opening a different exercise.
     setArmed(false);
   }, [ex && ex.id, open]);
@@ -7979,7 +7970,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     React.createElement("path", { d: "M1 3.5L3.2 5.5L8 1", stroke: "#13181B", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })
     )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "ei" }, /*#__PURE__*/
+    /*#__PURE__*/React.createElement("div", { className: "ei" }, /*#__PURE__*/
     React.createElement("div", { className: `en ${done && !skipped ? "done" : ""} ${skipped ? "skipped" : ""}` }, ex.name), /*#__PURE__*/
     React.createElement("div", { className: "es" }, ex.sub),
     !skipped && !hideDone && (() => {
@@ -10291,11 +10282,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     )
 
     ),
-
     (iPhase === "work" || iPhase === "rest" || iPhase === "done") && /*#__PURE__*/
     React.createElement("div", { style: { flexShrink: 0, width: "100%", minHeight: TIMER_PHASE_BAND, boxSizing: "border-box" }, "aria-hidden": true }), /*#__PURE__*/
-
-
     React.createElement("div", { style: iPhase === "idle" ? mode === "interval" ? TIMER_BTN_SPACER_ABOVE_INTERVAL_IDLE : TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE, "aria-hidden": true }), /*#__PURE__*/
     React.createElement("div", { style: iPhase === "idle" ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW },
     iPhase === "idle" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();iStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
@@ -10307,7 +10295,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     ), /*#__PURE__*/
     React.createElement("div", { style: iPhase === "idle" ? mode === "interval" ? TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE : TIMER_BTN_SPACER_BELOW_IDLE : TIMER_BTN_SPACER_BELOW, "aria-hidden": true })
     ),
-
 
     mode === "breathe" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, alignSelf: "center", flex: 1, minHeight: 0, boxSizing: "border-box" } }, /*#__PURE__*/
@@ -12971,6 +12958,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           nextName: nextEx ? nextEx.name : null,
           hideTimer: true,
           hideDone: true,
+
           theme: theme,
           ultraNight: nightMode,
           trackId: track }
