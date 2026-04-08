@@ -7575,7 +7575,7 @@ function buildInstructionTiers(startText, steps) {
   { key: "position", label: "POSITION", body: position, tone: "primary" },
   { key: "next", label: "NEXT", body: next, tone: "primary" },
   { key: "then", label: "THEN", body: then, tone: "primary" },
-  { key: "tip", label: "END", body: tip, tone: "primary" }].
+  { key: "tip", label: "END/TIP", body: tip, tone: "primary" }].
   filter((tier) => tier.body));
 }
 
@@ -7686,7 +7686,7 @@ function axisInstructionTiersFromPack(pack) {
   { key: "position", label: "POSITION", body: axisCleanInstructionLine(pack.position), tone: "primary" },
   { key: "next", label: "NEXT", body: axisCleanInstructionLine(pack.next), tone: "primary" },
   { key: "then", label: "THEN", body: axisCleanInstructionLine(pack.then), tone: "primary" },
-  { key: "tip", label: "END", body: axisCleanInstructionLine(pack.tip), tone: "primary" }];
+  { key: "tip", label: "END/TIP", body: axisCleanInstructionLine(pack.tip), tone: "primary" }];
 
   return tiers.filter((tier) => tier.body);
 }
@@ -7787,7 +7787,7 @@ function buildInstructionTiersFromExercise(ex, startText, steps) {
     { key: "position", label: "POSITION", body: axisCleanInstructionLine(ex.position), tone: "primary" },
     { key: "next", label: "NEXT", body: axisCleanInstructionLine(ex.next), tone: "primary" },
     { key: "then", label: "THEN", body: axisCleanInstructionLine(ex.then), tone: "primary" },
-    { key: "tip", label: "END", body: axisCleanInstructionLine(ex.tip), tone: "primary" }];
+    { key: "tip", label: "END/TIP", body: axisCleanInstructionLine(ex.tip), tone: "primary" }];
 
     return tiers.filter((tier) => tier.body);
   }
@@ -8009,7 +8009,6 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     !skipped && /*#__PURE__*/
     React.createElement(React.Fragment, null,
     (ex.type === "time" || ex.type === "flow") && !hideTimer ? !armed ? /*#__PURE__*/React.createElement("div", { style: { marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border)" } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "10px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-dimmer)", marginBottom: 10 } }, "INSTRUCTIONS"),
     React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-base)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--text-white)", lineHeight: 1.25, marginBottom: 6 } }, ex.name),
     ex && ex.__axisInstructions && ex.__axisInstructions.sideLabel ? React.createElement("div", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: 12, textAlign: "center", width: "100%" } }, ex.__axisInstructions.sideLabel) : null,
     React.createElement(CueTiers, {
