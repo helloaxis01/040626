@@ -728,11 +728,12 @@ const css = `
     --home-block-gap: 32px;
     /* Space from section label (e.g. FOUNDATION) down to cards — tied to block gap */
     --home-group-label-gap: calc(var(--home-block-gap) * 0.375);
-    /* LIST/GUIDED: instruction inset — middle ground (dist build reads root index.html via npm run build) */
+    /* LIST/GUIDED: symmetric horizontal inset (row header, cue tiers, timer CTA) */
     --er-row-chk: 26px;
     --er-row-gap: 12px;
-    --er-panel-pad-start: clamp(12px, calc(3.5vw + 6px), 22px);
-    --er-panel-pad-end: clamp(12px, 3vw, 18px);
+    --er-panel-pad-inline: clamp(12px, 3.2vw, 20px);
+    --er-panel-pad-start: var(--er-panel-pad-inline);
+    --er-panel-pad-end: var(--er-panel-pad-inline);
   }
   /* AXIS design tokens — foundation */
   :root {
@@ -980,6 +981,7 @@ const css = `
     --cue-bar: rgba(255,191,101,0.7);
     --cue-bar-label: rgba(255,191,101,0.8);
     --border: rgba(255,255,255,0.08);
+    --instruction-step-divider: rgba(246, 247, 248, 0.25);
     --border-card: rgba(255,255,255,0.10);
     --text-teal: #4a9fd4;
     --text-done: rgba(255,255,255,0.20);
@@ -1027,6 +1029,7 @@ const css = `
     --cue-bar: rgba(42,95,143,0.65);
     --cue-bar-label: rgba(42,95,143,0.85);
     --border: rgba(160,195,225,0.30);
+    --instruction-step-divider: rgba(37, 37, 37, 0.25);
     --border-card: rgba(160,195,225,0.40);
     --text-teal: var(--accent);
     --text-done: rgba(15,30,46,0.48);
@@ -1207,6 +1210,7 @@ const css = `
     --cue-bar: #FF3B30;
     --cue-bar-label: #FF3B30;
     --border: #FF3B30;
+    --instruction-step-divider: rgba(246, 247, 248, 0.25);
     --border-card: #FF3B30;
     --text-done: #FF3B30;
     --dot-bg: #000000;
@@ -1620,7 +1624,7 @@ const css = `
   .app[data-night="true"] .content--session .er:not(.open):hover {
     border-radius: 0 !important;
     margin: 0 !important;
-    padding: 13px var(--er-panel-pad-end) 13px var(--er-panel-pad-start) !important;
+    padding: 13px var(--er-panel-pad-inline) !important;
     background: transparent !important;
     border: none !important;
     border-bottom: 1px solid #FF3B30 !important;
@@ -2908,8 +2912,7 @@ const css = `
   .er { display:flex; align-items:center; gap:12px; padding:13px 0; margin:0; cursor:pointer; transition:all 0.2s; position:relative; border-radius:0; }
   /* LIST/GUIDED: match expanded panel inset when closed so the header row doesn’t shift on open */
   .content--session .er-card > .er {
-    padding-left: var(--er-panel-pad-start);
-    padding-right: var(--er-panel-pad-end);
+    padding-inline: var(--er-panel-pad-inline);
     box-sizing: border-box;
   }
   .er-card:hover { background:var(--bg-hover); border-bottom-color:transparent; border-radius:10px; margin:0; padding:0; }
@@ -3036,6 +3039,80 @@ const css = `
     backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
   }
   .mark-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+  /* Expanded exercise: stack steps + timer; timer strip sits at end with even padding */
+  .er-card.er-card--open .protocol-panel.panel {
+    display: flex;
+    flex-direction: column;
+  }
+  .er-card.er-card--open .protocol-panel.panel .steps {
+    flex: 0 1 auto;
+  }
+  /* Full-width rules use --instruction-step-divider (25% opacity of #f6f7f8 on dark; light uses rgba black 0.25) */
+  .er-card.er-card--open .protocol-panel.panel .session-timer-cta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: stretch;
+    margin-top: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: var(--er-panel-pad-inline);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    border-top: 1px solid var(--instruction-step-divider);
+  }
+  .session-timer-cta-wrap > .timer-wrap {
+    border-top: none !important;
+    margin-top: 0 !important;
+    margin-inline: 0 !important;
+    padding-top: 14px;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    max-width: 100%;
+    align-items: stretch;
+  }
+  .session-timer-cta-wrap .timer-top {
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .session-timer-cta-wrap .timer-val {
+    font-size: clamp(52px, 14vw, 72px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .session-timer-cta-wrap .timer-btns {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    justify-content: stretch;
+    align-items: stretch;
+  }
+  .session-timer-cta-wrap .timer-btns .tb,
+  .session-timer-cta-wrap .timer-btns .tb-g {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+  }
+  .session-timer-cta-wrap .timer-btns .tb-g {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .protocol-panel.panel .mark-btn.mark-btn--start-timer {
+    margin-top: 0;
+    padding: 13px 16px;
+    font-size: var(--text-sm);
+    letter-spacing: 0.18em;
+    border-radius: 12px;
+    line-height: 1.25;
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    align-self: stretch;
+  }
   .chk {
     width:26px; height:26px; flex-shrink:0; border-radius:50%; cursor:pointer;
     border:1.5px solid var(--glass-border-strong); background:var(--glass-bg);
@@ -3198,14 +3275,13 @@ const css = `
   .content--session .protocol-panel.panel .steps > .cue-tiers,
   .protocol-panel.panel .steps > .cue-tiers,
   .fc-steps > .cue-tiers {
-    padding-inline: var(--er-panel-pad-start) var(--er-panel-pad-end);
+    padding-inline: var(--er-panel-pad-inline);
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
   }
   .er-card.er-card--open .protocol-panel.panel .timer-wrap {
-    margin-left:var(--er-panel-pad-start);
-    margin-right:var(--er-panel-pad-end);
+    margin-inline: var(--er-panel-pad-inline);
     box-sizing:border-box;
   }
   .step { display:flex; gap:10px; align-items:flex-start; padding:14px 0 29px; border-bottom:1px solid var(--border); }
@@ -7739,11 +7815,10 @@ function axisNormalizeTracks(rawTracks) {
 function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, compact = false, bodyColorOverride = null }) {
   const isDarkMode = ultraNight || theme === "dark";
   const primary = ultraNight ? "#FF3B30" : isDarkMode ? "#F5F5F5" : "#121418";
-  const divider = ultraNight ? "rgba(255, 59, 48, 0.72)" : isDarkMode ? "#141414" : "#F0F0F0";
   const accent = ultraNight ? "#FF3B30" : "var(--accent)";
   const labelSize = compact ? "10px" : "11px";
   const primarySize = compact ? "var(--text-base)" : "clamp(22px, 3.9vw, 28px)";
-  return /*#__PURE__*/React.createElement("div", { className: "cue-tiers", style: { display: "flex", flexDirection: "column", width: "100%" } },
+  return /*#__PURE__*/React.createElement("div", { className: "cue-tiers" + (compact ? " cue-tiers--compact" : ""), style: { display: "flex", flexDirection: "column", width: "100%" } },
   tiers.map((tier, idx) => {
     const bodyColor = bodyColorOverride || primary;
     const bodyOpacity = tier.key === "next" ? moveOpacity : 1;
@@ -7756,8 +7831,8 @@ function CueTiers({ tiers, theme = "dark", ultraNight = false, moveOpacity = 1, 
       className: "cue-tiers__block",
       style: {
         padding: compact ? "14px 0" : "16px 0",
-        borderTop: idx === 0 ? "none" : `1px solid ${divider}`,
-        marginTop: 0
+        marginTop: 0,
+        borderTop: idx === 0 ? "none" : "1px solid var(--instruction-step-divider)"
       }
     }, /*#__PURE__*/
     React.createElement("div", { className: "cue-tiers__label", style: {
@@ -8008,19 +8083,11 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     ),
     !skipped && /*#__PURE__*/
     React.createElement(React.Fragment, null,
-    (ex.type === "time" || ex.type === "flow") && !hideTimer ? !armed ? /*#__PURE__*/React.createElement("div", { style: { marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border)" } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-base)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--text-white)", lineHeight: 1.25, marginBottom: 6 } }, ex.name),
+    (ex.type === "time" || ex.type === "flow") && !hideTimer ? !armed ? /*#__PURE__*/React.createElement("div", { className: "session-timer-cta-wrap" }, /*#__PURE__*/
     ex && ex.__axisInstructions && ex.__axisInstructions.sideLabel ? React.createElement("div", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: 12, textAlign: "center", width: "100%" } }, ex.__axisInstructions.sideLabel) : null,
-    React.createElement(CueTiers, {
-      tiers: axisInstructionTiersFromPack(ex ? axisResolveInstructionFields(ex, ex.__axisSide || axisInstructionSideFromId(ex.id)) : null),
-      theme: theme,
-      ultraNight: ultraNight,
-      compact: true
-    }),
-    React.createElement("button", { className: "mark-btn ultra-filled-btn", onClick: (e) => {e.stopPropagation();axisHapticTick();setArmed(true);} }, "START TIMER")
+    React.createElement("button", { className: "mark-btn ultra-filled-btn mark-btn--start-timer", onClick: (e) => {e.stopPropagation();axisHapticTick();setArmed(true);} }, "START TIMER")
     ) :
-    React.createElement("div", { style: { marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border)" } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontFamily: "var(--font-display)", fontSize: "var(--text-base)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--text-white)", lineHeight: 1.25, marginBottom: 6 } }, ex.name),
+    React.createElement("div", { className: "session-timer-cta-wrap" }, /*#__PURE__*/
     ex && ex.__axisInstructions && ex.__axisInstructions.sideLabel ? React.createElement("div", { style: { fontSize: "12px", color: "var(--text-secondary)", marginBottom: 12, textAlign: "center", width: "100%" } }, ex.__axisInstructions.sideLabel) : null,
     React.createElement(Timer, { key: `t-${ex.id}`, seconds: exerciseDurationSeconds != null ? exerciseDurationSeconds : ex.seconds, onDone: markDoneAndCollapse, nextName: nextName, autoStart: true })
     ) :
@@ -8925,7 +8992,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       WebkitTapHighlightColor: "transparent",
       opacity: 0.92
     }
-  }, "REFRESHER")) : null),
+  }, "INSTRUCTIONS")) : null),
   /*#__PURE__*/React.createElement("div", { key: "middle", style: { position: "relative", flex: "1 1 0%", minHeight: 0, padding: "0 20px" } }, /*#__PURE__*/
   React.createElement("div", {
     ref: guidedMiddleScrollRef,
@@ -9306,7 +9373,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       className: "guided-refresher-sheet",
       role: "dialog",
       "aria-modal": "true",
-      "aria-label": "Instruction refresher",
+      "aria-label": "Instructions",
       onClick: (e) => e.stopPropagation(),
       style: { display: "flex", flexDirection: "column", gap: 14 }
     }, /*#__PURE__*/
