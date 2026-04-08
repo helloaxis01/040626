@@ -260,6 +260,12 @@ function getCircadianPeriod() {
   return "rest";
 }
 
+/** Locked mood from storage, or time-of-day when Auto — ignores invalid keys so theme data always exists. */
+function axisResolveMoodPeriod(period) {
+  if (period && CIRCADIAN_THEMES[period]) return period;
+  return getCircadianPeriod();
+}
+
 const CIRCADIAN_THEMES = {
   // ── DAWN 5–11am — warm orange/amber, sunrise ──
   dawn: {
@@ -373,7 +379,7 @@ function inkForAccentHex(hex) {
 }
 
 function applyCircadianTheme(isDark, period) {
-  const p = period || getCircadianPeriod();
+  const p = axisResolveMoodPeriod(period);
   const t = CIRCADIAN_THEMES[p][isDark ? "dark" : "light"];
   let el = document.getElementById("circadian-style");
   if (!el) {el = document.createElement("style");el.id = "circadian-style";document.head.appendChild(el);}
@@ -859,9 +865,9 @@ const css = `
     overscroll-behavior: contain;
   }
   .app-page-header { padding: var(--safe-top) var(--page-padding) 0; width: 100%; max-width: 100%; box-sizing: border-box; text-align: left; }
-  /* With dashboard: main title lines share the same vertical start as Home greeting */
+  /* With dashboard: same top inset as .home-welcome (Good Evening / Metrics title) */
   .app-body > .dashboard-header + .app-page-header {
-    padding: calc(var(--axis-dashboard-fixed-h) + max(4px, calc(var(--app-title-after-dashboard) - 32px))) var(--page-padding) 0;
+    padding: calc(var(--axis-dashboard-fixed-h) + max(10px, calc(var(--app-title-after-dashboard) - 20px))) var(--page-padding) 0;
   }
   .app-body > .dashboard-header + .home {
     padding-top: var(--axis-dashboard-fixed-h);
@@ -879,14 +885,18 @@ const css = `
     margin-bottom: 8px;
     font-size: var(--text-lg) !important;
   }
-  /* Timer: no top dashboard strip; tighter vertical rhythm so START clears tab bar without scroll */
+  /* Timer: fixed AXIS header + flex column; content clears header + small inset */
   .app.app--timer-tab {
     overflow-y: hidden;
   }
   .app--timer-tab .app-body {
     overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
   }
-  .app--timer-tab .app-body > .timer-view-body {
+  .app--timer-tab .app-body > .dashboard-header + .timer-view-body {
     flex: 1;
     min-height: 0;
     display: flex;
@@ -895,7 +905,7 @@ const css = `
     justify-content: flex-start;
     width: 100%;
     box-sizing: border-box;
-    padding: calc(var(--axis-dashboard-fixed-h) + max(4px, calc(var(--app-title-after-dashboard) - 32px)) - 18px) 20px calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 4px);
+    padding: calc(var(--axis-dashboard-fixed-h) + 12px) 20px calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 4px);
   }
   /* Dark (non-Ultra): accent CTA pills use charcoal ink on mood fills (circadian vars can lose to inline / inheritance) */
   .app[data-theme="dark"][data-night="false"] .begin-btn,
@@ -1009,7 +1019,8 @@ const css = `
     --text-dim: rgba(18,24,32,0.90);
     --text-dimmer: rgba(32,38,46,0.82);
     --text-white: var(--axis-black);
-    --accent: var(--accent);
+    /* Concrete default (circadian injects !important); avoids self-referential var(--accent) before circadian runs */
+    --accent: #007A6A;
     --accent-secondary: rgba(28,68,108,0.74);
     --accent-dim: rgba(42,95,143,0.12);
     --accent-glow: rgba(42,95,143,0.22);
@@ -2126,7 +2137,7 @@ const css = `
     padding-right: max(var(--page-gutter), env(safe-area-inset-right, 0px));
   }
   .app-body > .dashboard-header + .settings-page-rail > .app-page-header {
-    padding: calc(var(--axis-dashboard-fixed-h) + max(4px, calc(var(--app-title-after-dashboard) - 32px))) 0 2px;
+    padding: calc(var(--axis-dashboard-fixed-h) + max(10px, calc(var(--app-title-after-dashboard) - 20px))) 0 2px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -9324,10 +9335,26 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 // ─────────────────────────────────────────────────────────────
 //  TIMER VIEW — standalone interval timer
 // ─────────────────────────────────────────────────────────────
-function TimerView({ theme, view, setView, css, nightMode = false, activePeriod = null }) {
+function TimerView({ theme, view, setView, css, nightMode = false, activePeriod = null, dashboardHeader = null }) {
   const [mode, setMode] = useState("interval"); // "interval" | "breathe"
   // derive dark flag early so all uses below are safe
   const isDark = typeof nightMode === "boolean" && nightMode || theme === "dark";
+  const moodPeriod = axisResolveMoodPeriod(activePeriod);
+  const ctTimer = CIRCADIAN_THEMES[moodPeriod][isDark ? "dark" : "light"];
+  const breatheAccent = nightMode ? "#FF3B30" : ctTimer && ctTimer.accent ? ctTimer.accent : "var(--accent)";
+  const timerMoodStyle = !nightMode && ctTimer ? (() => {
+    const a = ctTimer.accent;
+    const accentSec = a && /^#[0-9a-fA-F]{6}$/i.test(String(a)) ? a + "99" : a;
+    return {
+      "--accent": a,
+      "--mood-accent": a,
+      "--mood-color": a,
+      "--accent-dim": ctTimer.accentDim,
+      "--accent-glow": ctTimer.accentGlow,
+      "--accent-secondary": accentSec,
+      ...(ctTimer.accentBtnText ? { "--accent-btn-text": ctTimer.accentBtnText } : {})
+    };
+  })() : undefined;
 
   // ── INTERVAL state ──
   const [work, setWork] = useState(30);
@@ -9573,7 +9600,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   function switchMode(m) {axisHapticTick();iReset();bReset();setMode(m);}
 
   const iPct = iPhase === "work" ? (work - iTime) / work * 100 : iPhase === "rest" ? (rest - iTime) / rest * 100 : 0;
-  const iRingColor = nightMode ? "#FF3B30" : iPhase === "rest" ? "var(--text-secondary)" : "var(--accent)";
+  const iRingColor = nightMode ? "#FF3B30" : iPhase === "rest" ? "var(--text-secondary)" : breatheAccent;
   const iCircumference = 2 * Math.PI * 140;
   // Plain seconds only — no 0: prefix (e.g. 30 not 0:30)
   const formatSecondsOnly = (s) => String(s);
@@ -10117,13 +10144,22 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   }
   ` : "";
 
+  const timerRootStyle = {
+    minHeight: "100dvh",
+    display: "flex",
+    flexDirection: "column",
+    minWidth: "100%",
+    boxSizing: "border-box",
+    ...timerMoodStyle
+  };
   return (/*#__PURE__*/
-    React.createElement("div", { className: "app app--timer-tab", "data-theme": theme, "data-night": nightMode ? "true" : "false", style: { minHeight: "100dvh", display: "flex", flexDirection: "column", minWidth: "100%", boxSizing: "border-box" } }, /*#__PURE__*/
+    React.createElement("div", { className: "app app--timer-tab", "data-theme": theme, "data-night": nightMode ? "true" : "false", style: timerRootStyle }, /*#__PURE__*/
     React.createElement("style", null, css), /*#__PURE__*/
     React.createElement("style", null, timerFlatCss + timerNightCss), /*#__PURE__*/
     React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
 
     React.createElement("div", { className: "app-body" }, /*#__PURE__*/
+    dashboardHeader,
     React.createElement("div", { className: "timer-view-body" }, /*#__PURE__*/
 
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, flex: 1, minHeight: 0 } }, /*#__PURE__*/
@@ -10159,7 +10195,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("div", { style: { ...intervalDigitStyle, transition: "color 0.4s" } }, formatSecondsOnly(iTime)),
 
     iPhase === "done" && /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "48px", fontWeight: 600, color: "var(--accent)", fontFamily: "var(--font-display)", lineHeight: 1 } }, "\u2713")
+    React.createElement("div", { style: { fontSize: "48px", fontWeight: 600, color: breatheAccent, fontFamily: "var(--font-display)", lineHeight: 1 } }, "\u2713")
 
     ),
 
@@ -10235,7 +10271,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
     !isDark && React.createElement("defs", null,
       React.createElement("radialGradient", { id: "timerBreatheGrad", cx: "50%", cy: "50%", r: "50%" },
-        React.createElement("stop", { offset: "0%", stopColor: "var(--accent)", stopOpacity: "0.08" }),
+        React.createElement("stop", { offset: "0%", stopColor: breatheAccent, stopOpacity: "0.08" }),
         React.createElement("stop", { offset: "70%", stopColor: "rgba(255,255,255,0)" })
       )
     ),
@@ -10257,8 +10293,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     !nightMode && /*#__PURE__*/ React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: isDark ? Math.max(orbOpacity ?? 0, 0.18) : 0, ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
     React.createElement("defs", null, /*#__PURE__*/
     React.createElement("radialGradient", { id: "breatheGlow", cx: "50%", cy: "50%", r: "50%" }, /*#__PURE__*/
-    React.createElement("stop", { offset: "0%", stopColor: "var(--accent)", stopOpacity: "0.32" }), /*#__PURE__*/
-    React.createElement("stop", { offset: "48%", stopColor: "var(--accent)", stopOpacity: "0.08" }), /*#__PURE__*/
+    React.createElement("stop", { offset: "0%", stopColor: breatheAccent, stopOpacity: "0.32" }), /*#__PURE__*/
+    React.createElement("stop", { offset: "48%", stopColor: breatheAccent, stopOpacity: "0.08" }), /*#__PURE__*/
     React.createElement("stop", { offset: "100%", stopColor: "transparent", stopOpacity: "0" })
     )
     ), /*#__PURE__*/
@@ -10272,7 +10308,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
       cy: "153",
       r: "120",
       fill: "none",
-      stroke: "var(--accent)",
+      stroke: breatheAccent,
       strokeWidth: "3.4",
       strokeLinecap: "round",
       style: { transition: "stroke 0.3s ease" } }
@@ -10297,7 +10333,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     bDone && /*#__PURE__*/
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "42px", fontWeight: 600, color: "var(--accent)", fontFamily: "var(--font-display)", lineHeight: 1 } }, "\u2713")
+    React.createElement("div", { style: { fontSize: "42px", fontWeight: 600, color: breatheAccent, fontFamily: "var(--font-display)", lineHeight: 1 } }, "\u2713")
     )
 
     )
@@ -11656,7 +11692,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       moodXfadeTimerRef.current = null;
     }
     const isDark = theme === "dark";
-    const period = activePeriod || getCircadianPeriod();
+    const period = axisResolveMoodPeriod(activePeriod);
     const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const circadian = nightMode ? { bg: "#000000" } : applyCircadianTheme(isDark, period);
     const fallback = isDark ?
@@ -11717,7 +11753,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         moodXfadeTimerRef.current = null;
       }
     };
-  }, [theme, activePeriod, nightMode]);
+  }, [theme, activePeriod, nightMode, view]);
   useEffect(() => {storageSet("axis_show_streak", showStreak);}, [showStreak]);
   useEffect(() => {storageSet("axis_show_timer", showTimer);}, [showTimer]);
   useEffect(() => {storageSet("axis_show_pct", showPct);}, [showPct]);
@@ -11838,7 +11874,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   // SETTINGS
   // TIMER VIEW (key forces fresh mount to avoid blank on first open)
   if (view === "timer") {
-    return /*#__PURE__*/React.createElement(TimerView, { key: "timer", theme: theme, view: view, setView: setView, css: css, activePeriod: activePeriod, nightMode: nightMode });
+    return /*#__PURE__*/React.createElement(TimerView, { key: "timer", theme: theme, view: view, setView: setView, css: css, activePeriod: activePeriod, nightMode: nightMode, dashboardHeader: dashboardHeaderEl });
   }
   if (view === "settings") return (/*#__PURE__*/
     React.createElement("div", { key: "settings", className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
@@ -12464,8 +12500,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   // TODAY (formerly Home)
   if (view === "home" && !hasActiveSession) {
     const nowPeriod = getCircadianPeriod();
-    // Suggestions follow local time; visuals follow selected mood (or auto).
-    const stylePeriod = activePeriod || nowPeriod;
+    // Suggestions follow local time; visuals follow selected mood (or auto), with valid period keys only.
+    const stylePeriod = axisResolveMoodPeriod(activePeriod);
     const homeCt = CIRCADIAN_THEMES[stylePeriod][theme === "dark" ? "dark" : "light"];
     const homeHighlight = nightMode ? "#FF3B30" : homeCt && homeCt.accent ? homeCt.accent : "var(--accent)";
     const perMove = exerciseDuration || 45;
