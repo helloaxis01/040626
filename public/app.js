@@ -1921,7 +1921,7 @@ const css = `
     box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
   }
   /* Light mode: breathing timer rings more visible */
-  [data-theme="light"] .timer-breathe-guide-ring circle {
+  [data-theme="light"] .timer-breathe-guide-ring circle:not(.timer-interval-guide-progress) {
     stroke: rgba(15,30,46,0.28);
     stroke-width: 2px;
   }

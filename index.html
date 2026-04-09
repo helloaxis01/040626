@@ -1147,7 +1147,7 @@ const css = `
     box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
   }
   /* Light mode: breathing timer rings more visible */
-  [data-theme="light"] .timer-breathe-guide-ring circle {
+  [data-theme="light"] .timer-breathe-guide-ring circle:not(.timer-interval-guide-progress) {
     stroke: rgba(15,30,46,0.28);
     stroke-width: 3px;
   }
@@ -9692,10 +9692,10 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const intervalDigitStyle = {
     fontFamily: "var(--font-display)",
     fontWeight: 600,
-    letterSpacing: "-0.02em",
+    letterSpacing: "-0.03em",
     minWidth: 72,
     textAlign: "center",
-    fontSize: 101,
+    fontSize: 112,
     color: nightMode ? "#FF3B30" : isDark ? "var(--text-white)" : "#1D1D1F",
     lineHeight: 1,
     fontVariantNumeric: "tabular-nums",
@@ -9703,19 +9703,19 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   };
   const timerNumMedium = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-lg)", color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center", fontVariantNumeric: "tabular-nums" };
   const timerNumSmall = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--text-dimmer)", lineHeight: 1.2 };
-  const BTN = { padding: "12px 32px", borderRadius: 28, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", transition: "all 0.22s" };
-  const BTN_GHOST = { padding: "12px 20px", borderRadius: 28, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", transition: "all 0.22s" };
+  const BTN = { padding: "15px 28px", borderRadius: 16, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 52, boxSizing: "border-box" };
+  const BTN_GHOST = { padding: "14px 22px", borderRadius: 16, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 48, boxSizing: "border-box" };
   // Lock INTERVAL + BREATHE layout: same ring slot, same mid slot, same button row (BREATHE as reference — no extra ring offset)
   // Circle as large as possible within column; static slot so INTERVAL/BREATHE don’t shift (ringSize / breatheInset above)
-  const TIMER_RING_WRAP = { flexShrink: 0, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft: "auto", marginRight: "auto", marginTop: 0, marginBottom: 0 };
+  const TIMER_RING_WRAP = { flexShrink: 0, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft: "auto", marginRight: "auto", marginTop: 12, marginBottom: 12 };
   const TIMER_MID_MIN_IDLE = 156; // min height for content
   const TIMER_MID_IDLE_HEIGHT = 152; // fixed height when idle so INTERVAL and BREATHE START align
   const TIMER_PHASE_BAND = 46; // matches BREATHE phase label block height so Pause/Reset align when running
   /** Same px gap: (timer ring ↔ settings) and (settings ↔ START) on Interval/Breathe idle */
-  const TIMER_IDLE_VERTICAL_GAP = 24;
+  const TIMER_IDLE_VERTICAL_GAP = 34;
   // Toggle: spacer above so INTERVAL/BREATHE sit halfway between top edge and top of circle
   const TIMER_TOGGLE_SPACER_TOP = 0;
-  const TIMER_TOGGLE_WRAP = { flexShrink: 0, display: "flex", gap: 8, marginBottom: 8, padding: 4, minHeight: 44, alignItems: "center", boxSizing: "border-box" };
+  const TIMER_TOGGLE_WRAP = { flexShrink: 0, display: "flex", gap: 10, marginBottom: 24, padding: 6, minHeight: 52, alignItems: "center", boxSizing: "border-box", width: "100%", maxWidth: 360, justifyContent: "center" };
   // Button row: equal spacers when Pause/Reset/Again — when START only, shrink spacer above so START sits same height as Pause/RESET
   const TIMER_BTN_SPACER_ABOVE = { flex: 1, minHeight: 0, width: "100%" };
   const TIMER_BTN_SPACER_BELOW = { flex: 1, minHeight: 0, width: "100%" };
@@ -9727,17 +9727,17 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE = { flex: 1.38, minHeight: 0, width: "100%" };
   // Breathe idle: same gap as Interval (ring↔pattern/cycles ↔ START)
   const TIMER_BTN_SPACER_ABOVE_BREATHE_IDLE = { flex: 0, flexGrow: 0, flexShrink: 0, minHeight: TIMER_IDLE_VERTICAL_GAP, width: "100%" };
-  const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", gap: 8, width: "100%", justifyContent: "center", boxSizing: "border-box", paddingTop: 4, paddingBottom: 4 };
+  const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", gap: 10, width: "100%", justifyContent: "center", alignItems: "stretch", boxSizing: "border-box", paddingTop: 6, paddingBottom: 4, maxWidth: 360 };
   const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW, marginTop: 0 };
 
   const timerFlatCss = `
   .timer-view-body .timer-mode-outer-pill {
-    border: 1px solid color-mix(in srgb, var(--glass-border) 82%, transparent);
+    border: 1px solid color-mix(in srgb, var(--glass-border) 65%, transparent);
     border-radius: 999px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)), rgba(0, 0, 0, 0.06);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 55%, transparent);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)), rgba(0, 0, 0, 0.14);
+    backdrop-filter: blur(28px) saturate(1.25);
+    -webkit-backdrop-filter: blur(28px) saturate(1.25);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 40%, transparent), 0 8px 28px rgba(0, 0, 0, 0.12);
     position: relative;
   }
   .timer-view-body .timer-glass-wrap {
@@ -9746,13 +9746,30 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     position: relative;
   }
   .timer-view-body .timer-glass-toggle-btn {
-    padding: 10px 24px; border-radius: 999px; border: none;
-    font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600;
-    letter-spacing: 0.12em; text-transform: uppercase; transition: all 0.2s ease;
-    background: transparent; color: var(--text-dim);
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-family: var(--font-display);
+    font-size: calc(var(--text-sm) + 1px);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    background: transparent;
+    color: rgba(237, 237, 237, 0.42);
+    -webkit-tap-highlight-color: transparent;
   }
   .timer-view-body .timer-glass-toggle-btn.active {
-    background: var(--accent); color: var(--accent-btn-text, var(--axis-white));
+    background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 92%, #fff) 0%, var(--accent) 100%);
+    color: var(--accent-btn-text, var(--axis-black));
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+      0 10px 28px color-mix(in srgb, var(--accent) 28%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
   .timer-view-body .timer-glass-orb {
     background: transparent;
@@ -9774,9 +9791,27 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     border-radius: 0;
   }
   .timer-view-body .timer-glass-btn-pri {
-    background: var(--accent);
+    background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 88%, #fff) 0%, var(--accent) 100%);
     color: var(--accent-btn-text, var(--axis-white));
     border: none;
+    box-shadow: 0 10px 32px color-mix(in srgb, var(--accent) 32%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .timer-view-body .timer-cta-row {
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .timer-view-body .timer-cta-row > .timer-glass-btn-pri:first-child:last-child {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+  .timer-view-body .timer-cta-row .timer-glass-btn-pri:not(:only-of-type) {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .timer-view-body .timer-cta-row .timer-glass-btn-ghost {
+    flex: 1 1 0;
+    min-width: 0;
   }
   .app[data-night="true"] .timer-view-body .timer-glass-btn-pri,
   .app[data-night="true"] .timer-view-body .timer-glass-btn-pri * {
@@ -9910,7 +9945,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-  /* Work/Rest/Rounds: 44px min touch target, spacing so taps don’t overlap */
+  /* Work/Rest/Rounds: 44px min touch target; quieter chrome than the main ring */
   .timer-view-body .timer-interval-stepper {
     flex-shrink: 0;
     min-width: 44px;
@@ -9918,7 +9953,14 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     width: 44px;
     height: 44px;
     padding: 0;
-    border-radius: 12px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    color: rgba(237, 237, 237, 0.4) !important;
+    font-size: 16px !important;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
@@ -9928,9 +9970,9 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     border-radius: 50%;
     overflow: hidden;
     box-sizing: border-box;
-    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 16%, #151b26) 0%, #151b26 52%, #121822 100%);
-    border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--glass-border));
-    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 14%, #151b26) 0%, #151b26 52%, #121822 100%);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--glass-border));
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.055);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -9954,10 +9996,10 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     min-height: 44px;
-    padding: 4px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
     background: transparent;
     border-left: none;
     border-right: none;
@@ -9975,10 +10017,17 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     width: 60px;
     font-size: var(--text-xs);
     font-weight: 500;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(246, 247, 248, 0.5);
+    color: rgba(246, 247, 248, 0.4);
     font-family: var(--font-display);
+  }
+  .timer-view-body .timer-interval-row-value .timer-instrument-val {
+    font-size: var(--text-base);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(246, 247, 248, 0.86);
+    text-shadow: none;
   }
   .timer-view-body .timer-instrument-val {
     font-size: var(--text-lg);
@@ -10034,7 +10083,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 8px;
     flex: 1;
     min-width: 0;
   }
@@ -10059,7 +10108,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   .timer-view-body .timer-interval-ring circle:first-of-type {
     stroke: var(--border);
   }
-  .timer-view-body .timer-breathe-guide-ring circle {
+  .timer-view-body .timer-breathe-guide-ring circle:not(.timer-interval-guide-progress) {
     stroke: var(--border);
   }
   .timer-view-body .timer-breathe-guide-ring .timer-breathe-guide-outline {
@@ -10092,8 +10141,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   [data-theme="light"] .timer-view-body .timer-interval-ring-wrap.axis-surface-tmt,
   [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap.axis-surface-tmt {
     background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 14%, #ffffff) 0%, #f4f7fb 45%, #eef2f7 100%);
-    border: 1px solid color-mix(in srgb, var(--accent) 32%, rgba(15, 30, 46, 0.14));
-    box-shadow: 0 14px 38px rgba(15, 30, 46, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, rgba(15, 30, 46, 0.12));
+    box-shadow: 0 12px 34px rgba(15, 30, 46, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -10104,9 +10153,20 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     color: #1D1D1F;
     text-shadow: none;
   }
+  [data-theme="light"] .timer-view-body .timer-interval-row-value .timer-instrument-val {
+    color: rgba(15, 30, 46, 0.72);
+  }
+  [data-theme="light"] .timer-view-body .timer-glass-toggle-btn:not(.active) {
+    color: rgba(15, 30, 46, 0.44);
+  }
   [data-theme="light"] .timer-view-body .timer-glass-stepper {
     background: rgba(0,0,0,0.04);
     border: 1px solid rgba(0,0,0,0.1);
+  }
+  [data-theme="light"] .timer-view-body .timer-interval-stepper {
+    background: rgba(0, 0, 0, 0.035) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: rgba(15, 30, 46, 0.42) !important;
   }
   [data-theme="light"] .timer-view-body .timer-glass-btn-ghost {
     color: #1D1D1F;
@@ -10190,6 +10250,11 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     background: #000000 !important;
     border: 1px solid #FF3B30 !important;
     color: #FF3B30 !important;
+  }
+  [data-night="true"] .timer-view-body .timer-interval-stepper {
+    background: rgba(0, 0, 0, 0.85) !important;
+    border: 1px solid rgba(255, 59, 48, 0.42) !important;
+    color: rgba(255, 59, 48, 0.72) !important;
   }
   [data-night="true"] .timer-view-body .timer-interval-ring-wrap.axis-surface-tmt,
   [data-night="true"] .timer-view-body .timer-breathe-ring-wrap.axis-surface-tmt {
@@ -10336,12 +10401,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("div", { key: label, className: "timer-interval-row" }, /*#__PURE__*/
     React.createElement("span", { className: "timer-interval-row-label" }, label), /*#__PURE__*/
     React.createElement("div", { className: "timer-interval-row-controls" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", "aria-label": `${label} decrease`, onClick: () => {axisHapticTick();set((v) => Math.max(min, v - step));}, className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "\u2212"), /*#__PURE__*/
+    React.createElement("button", { type: "button", "aria-label": `${label} decrease`, onClick: () => {axisHapticTick();set((v) => Math.max(min, v - step));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "\u2212"), /*#__PURE__*/
     React.createElement("div", { className: "timer-interval-row-value", style: { display: "flex", alignItems: "baseline", justifyContent: "center", gap: 2 } }, /*#__PURE__*/
     React.createElement("span", { className: "timer-instrument-val" }, val),
     !isRound && /*#__PURE__*/React.createElement("span", { style: { fontSize: "var(--text-xs)", color: "var(--text-dimmer)", fontFamily: "var(--font-display)" } }, "s")
     ), /*#__PURE__*/
-    React.createElement("button", { type: "button", "aria-label": `${label} increase`, onClick: () => {axisHapticTick();set((v) => Math.min(max, v + step));}, className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "+")
+    React.createElement("button", { type: "button", "aria-label": `${label} increase`, onClick: () => {axisHapticTick();set((v) => Math.min(max, v + step));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "+")
     )
     )
     )
@@ -10351,7 +10416,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     (iPhase === "work" || iPhase === "rest" || iPhase === "done") && /*#__PURE__*/
     React.createElement("div", { style: { flexShrink: 0, width: "100%", minHeight: TIMER_PHASE_BAND, boxSizing: "border-box" }, "aria-hidden": true }), /*#__PURE__*/
     React.createElement("div", { style: iPhase === "idle" ? mode === "interval" ? TIMER_BTN_SPACER_ABOVE_INTERVAL_IDLE : TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE, "aria-hidden": true }), /*#__PURE__*/
-    React.createElement("div", { style: iPhase === "idle" ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW },
+    React.createElement("div", { className: "timer-cta-row", style: iPhase === "idle" ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW },
     iPhase === "idle" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();iStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
     (iPhase === "work" || iPhase === "rest") && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setIRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn", style: { ...BTN, padding: "12px 28px" } }, iRunning ? "Pause" : "Resume"), /*#__PURE__*/
@@ -10486,9 +10551,9 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } }, /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)", fontFamily: "var(--font-display)", marginRight: 8 } }, "Cycles"), /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6 } }, /*#__PURE__*/
-    React.createElement("button", { type: "button", "aria-label": "Cycles decrease", onClick: () => {axisHapticTick();setBreathCycles((v) => Math.max(1, v - 1));}, className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "\u2212"), /*#__PURE__*/
-    React.createElement("div", { style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { className: "timer-instrument-val" }, breathCycles)), /*#__PURE__*/
-    React.createElement("button", { type: "button", "aria-label": "Cycles increase", onClick: () => {axisHapticTick();setBreathCycles((v) => Math.min(12, v + 1));}, className: "timer-glass-stepper timer-interval-stepper", style: { color: "var(--text-secondary)", fontSize: "var(--text-lg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", border: "none" } }, "+")
+    React.createElement("button", { type: "button", "aria-label": "Cycles decrease", onClick: () => {axisHapticTick();setBreathCycles((v) => Math.max(1, v - 1));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "\u2212"), /*#__PURE__*/
+    React.createElement("div", { className: "timer-interval-row-value", style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { className: "timer-instrument-val" }, breathCycles)), /*#__PURE__*/
+    React.createElement("button", { type: "button", "aria-label": "Cycles increase", onClick: () => {axisHapticTick();setBreathCycles((v) => Math.min(12, v + 1));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "+")
     )
     )
     )
@@ -10497,7 +10562,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     ), /*#__PURE__*/
 
     React.createElement("div", { style: TIMER_BTN_SPACER_ABOVE_BREATHE_IDLE, "aria-hidden": true }), /*#__PURE__*/
-    React.createElement("div", { style: TIMER_BTN_ROW_IDLE },
+    React.createElement("div", { className: "timer-cta-row", style: TIMER_BTN_ROW_IDLE },
     !bRunning && !bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();bStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
     bRunning && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setBRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn", style: { ...BTN, padding: "12px 28px" } }, "Pause"), /*#__PURE__*/
