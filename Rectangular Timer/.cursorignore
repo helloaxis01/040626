@@ -1,9 +1,0 @@
-# Ignore the heavy build files
-public_web/auth-bundle.js
-
-# Ignore the dependencies
-node_modules/
-
-# Ignore large media if you have any
-*.mp4
-*.zip
