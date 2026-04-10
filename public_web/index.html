@@ -3712,6 +3712,10 @@ const css = `
     color: #0f172a !important;
     box-shadow: 0 6px 18px color-mix(in srgb, var(--metrics-session-accent, var(--accent)) 28%, transparent) !important;
   }
+  .app[data-theme="light"]:not([data-night="true"]) .summary-main-stack--metrics .summary-cta-btn--metrics-mood {
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
+  }
   .app[data-night="true"] .summary-main-stack--metrics .summary-cta-btn--metrics-mood {
     color: #ffffff !important;
   }
@@ -4151,6 +4155,29 @@ const css = `
     color: var(--color-text-primary);
     font-family: var(--font-display);
   }
+  .weight-section__hero-delta {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.2;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .weight-section__hero-delta-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .weight-section__hero-delta--loss .weight-section__hero-delta-num {
+    color: #22c55e;
+  }
+  .weight-section__hero-delta--gain .weight-section__hero-delta-num {
+    color: #f97316;
+  }
   .weight-section__context {
     font-size: 13px;
     line-height: 1.45;
@@ -4159,13 +4186,16 @@ const css = `
   }
   .weight-section__insight {
     font-size: 13px;
-    line-height: 1.45;
-    color: var(--color-text-primary);
-    background: var(--color-background-secondary);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin: 0 0 1.5rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    text-align: left;
+    margin: 0 0 1rem;
     box-sizing: border-box;
+    width: 100%;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
   }
   .weight-section__weight-insight {
     font-size: 13px;
@@ -4600,6 +4630,10 @@ const css = `
     font-weight: 600;
     min-width: 3.25ch;
   }
+  .app[data-theme="light"]:not([data-night="true"]) .pain-section .metric-inline-log__pain-val--accent {
+    color: #252525;
+    -webkit-text-fill-color: #252525;
+  }
   .metric-inline-log__field-col {
     display: flex;
     flex-direction: column;
@@ -4861,6 +4895,10 @@ const css = `
     box-shadow: 0 0 0 2px var(--weight-mood-accent, var(--accent)), 0 4px 14px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 22%, transparent);
     transform: scale(1.06);
     z-index: 1;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .pain-heat__cell--today {
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
   }
   .pain-heat__cell--open {
     transform: scale(1.08);
@@ -9727,8 +9765,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE = { flex: 1.38, minHeight: 0, width: "100%" };
   // Breathe idle: same gap as Interval (ring↔pattern/cycles ↔ START)
   const TIMER_BTN_SPACER_ABOVE_BREATHE_IDLE = { flex: 0, flexGrow: 0, flexShrink: 0, minHeight: TIMER_IDLE_VERTICAL_GAP, width: "100%" };
-  const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", gap: 10, width: "100%", justifyContent: "center", alignItems: "stretch", boxSizing: "border-box", paddingTop: 6, paddingBottom: 4, maxWidth: 360 };
-  const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW, marginTop: 0 };
+  const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", gap: 10, width: "100%", justifyContent: "center", alignItems: "stretch", boxSizing: "border-box", paddingTop: 6, paddingBottom: 4, maxWidth: 360, marginTop: 28 };
+  const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW };
 
   const timerFlatCss = `
   .timer-view-body .timer-mode-outer-pill {
@@ -9802,8 +9840,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     margin-right: auto;
   }
   .timer-view-body .timer-cta-row > .timer-glass-btn-pri:first-child:last-child {
-    width: 100%;
-    flex: 1 1 auto;
+    width: 50%;
+    flex: 0 1 50%;
   }
   .timer-view-body .timer-cta-row .timer-glass-btn-pri:not(:only-of-type) {
     flex: 1 1 0;
@@ -10929,8 +10967,37 @@ function axisMetricsWeightTwoWeekTrend(samples) {
   return d < 0 ? "down" : "up";
 }
 
-function axisMetricsWeightSectionInsight() {
-  return { text: "Research shows each 1 lb of weight loss can reduce knee joint load by about 4 lbs per step." };
+const AXIS_METRICS_WEIGHT_FACTS = [
+  "Each 1 lb of weight loss can reduce knee joint load by about 4 lbs per step taken.",
+  "Every 1 lb lost reduces pressure on your lower back by 4 lbs, significantly lowering the risk of disc herniation.",
+  "Losing 10% of body weight slows knee cartilage degeneration, preserving joint function and potentially delaying the need for future surgeries.",
+  "Fat cells release pro-inflammatory cytokines like IL-6, which circulate through the body and worsen chronic pain in distant joints.",
+  "A 5% weight reduction can improve sleep apnea symptoms, leading to better rest and reduced systemic sensitivity to pain.",
+  "Weight loss reduces levels of C-reactive protein in the blood, a primary marker for chronic inflammation and physical discomfort.",
+  "Lower body mass reduces the metabolic demand on your heart, allowing for more oxygen-rich blood to reach healing tissues.",
+  "Shedding pounds decreases the load on the plantar fascia, often resolving chronic heel pain and morning foot stiffness naturally.",
+  "Obesity is linked to increased skin friction and moisture, leading to chronic skin-fold irritation and painful bacterial infections.",
+  "Losing weight reduces the mechanical compression of pelvic nerves, which can alleviate certain types of chronic lower body neuralgia.",
+  "Reducing caloric intake triggers cellular autophagy, a process that clears out damaged cells that would otherwise contribute to inflammation."
+];
+const AXIS_METRICS_PAIN_FACTS = [
+  "Pain is often higher on weekends.",
+  "One night of poor sleep increases pain sensitivity by 15-30%, as the brain's pain-killing dopamine centers become less responsive.",
+  "Pain and stiffness often peak in the morning because natural anti-inflammatory cortisol levels are at their lowest during the night.",
+  "The brain cannot distinguish between physical and social pain, as both activate the same region, the anterior cingulate cortex.",
+  "Dehydration shrinks spinal discs, which are 80% water, causing increased back pain and reduced shock absorption throughout the day.",
+  "Chronic pain can physically shrink gray matter in the prefrontal cortex, but regular exercise helps the brain regrow this tissue.",
+  "Anticipating pain can be as physically taxing as the pain itself, triggering a stress response that increases overall muscle tension.",
+  "Consistent movement acts as natural WD-40 for joints by circulating synovial fluid, which provides essential nutrients to the cartilage.",
+  "Pain perception is subjective; your emotional state and environment can act as a volume knob, making sensations feel louder.",
+  "The gate control theory explains why rubbing a bumped elbow helps; the touch signals travel faster and block pain.",
+  "Falling barometric pressure allows body tissues to expand, putting more pressure on sensitive, inflamed joints, which increases perceived pain."
+];
+function axisMetricsFactAt(list, index) {
+  if (!Array.isArray(list) || list.length === 0) return "";
+  const safe = Number.isFinite(index) ? index : 0;
+  const i = ((safe % list.length) + list.length) % list.length;
+  return list[i];
 }
 
 function axisMetricsShortDateFromDateKey(dateKey) {
@@ -11243,7 +11310,7 @@ function WeightSectionSparkline({ entries }) {
   ));
 }
 
-function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry }) {
+function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry, factsCycle }) {
   const [manualOpen, setManualOpen] = React.useState(false);
   const [logOpen, setLogOpen] = React.useState(false);
   const [draftLbs, setDraftLbs] = React.useState("");
@@ -11256,13 +11323,15 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   const arr = axisMetricsNormalizeWeightList(samples);
   const current = arr.length ? arr[arr.length - 1].lbs : null;
   const lastSample = arr.length ? arr[arr.length - 1] : null;
+  const prevSample = arr.length > 1 ? arr[arr.length - 2] : null;
+  const deltaLbs = lastSample && prevSample ? lastSample.lbs - prevSample.lbs : null;
+  const deltaText = deltaLbs == null ? "" : `${deltaLbs > 0 ? "+" : deltaLbs < 0 ? "-" : ""}${Math.abs(deltaLbs).toFixed(1)} lbs`;
+  const deltaTone = deltaLbs == null ? "" : deltaLbs < 0 ? "loss" : deltaLbs > 0 ? "gain" : "flat";
   const emptyWeight = arr.length === 0;
   const sparkEntries = axisMetricsWeightSparklineEntries(samples);
   const trend2w = axisMetricsWeightTwoWeekTrend(samples);
-  const insight = axisMetricsWeightSectionInsight();
-  const contextParts = [];
-  if (lastSample) contextParts.push("Last logged: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
-  const contextLine = contextParts.join(" \u2022 ");
+  const insightText = axisMetricsFactAt(AXIS_METRICS_WEIGHT_FACTS, factsCycle);
+  const contextLine = lastSample ? "Last logged: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts) : null;
   const heroWarm = trend2w === "up";
   const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No entries yet. Tap LOG WEIGHT to start.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
   React.useEffect(() => {
@@ -11280,8 +11349,6 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   };
   const rowsSorted = arr.slice().sort((a, b) => b.ts - a.ts);
   const hasAnyWeight = rowsSorted.length > 0;
-  const dkTodayWeight = new Date().toDateString();
-  const todayWeightRows = rowsSorted.filter((x) => new Date(x.ts).toDateString() === dkTodayWeight);
   const renderWeightLogRow = (e) => {
     const isEdit = editingTs === e.ts;
     return /*#__PURE__*/React.createElement("div", { key: e.ts, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
@@ -11290,20 +11357,24 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
     React.createElement("button", { type: "button", className: "metrics-inline-form__btn", onClick: () => { setEditingTs(null); setEditDraft(""); } }, "Cancel"),
     /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn metrics-inline-form__btn--primary", onClick: () => { const n = parseFloat(editDraft);if (Number.isFinite(n) && n > 0) onEditWeightEntry(e.ts, n);setEditingTs(null);setEditDraft(""); } }, "Save")
     )) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
-    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs • ${axisMetricsFormatTimeLocal(e.ts)}`),
+    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs • ${axisMetricsFormatWeightLastLogFriendly(e.ts)}`),
     /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
     React.createElement("button", { type: "button", className: "metrics-inline-row-action", onClick: () => { setEditingTs(e.ts); setEditDraft(String(e.lbs.toFixed(1))); } }, "Edit"),
     /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action metrics-inline-row-action--danger", onClick: () => { if (window.confirm("Delete this weight entry?")) onDeleteWeightEntry(e.ts); } }, "Delete"))));
   };
-  const weightLogBody = todayWeightRows.length === 0 ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, hasAnyWeight ? "No entries today. Tap Log Weight to add one." : "No weight entries yet. Tap Log Weight to add one.") : todayWeightRows.map(renderWeightLogRow);
+  const weightLogBody = !hasAnyWeight ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, "No weight entries yet. Tap Log Weight to add one.") : rowsSorted.map(renderWeightLogRow);
   return /*#__PURE__*/React.createElement("div", { className: "weight-section", style: { "--weight-mood-accent": moodColor } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Weight"),
   !emptyWeight && /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, /*#__PURE__*/
   React.createElement("span", { className: "weight-section__hero-num" + (heroWarm ? " weight-section__hero-num--warm" : "") }, current.toFixed(1)),
-  React.createElement("span", { className: "weight-section__hero-unit" }, "lbs")
+  React.createElement("span", { className: "weight-section__hero-unit" }, "lbs"),
+  deltaLbs != null && /*#__PURE__*/React.createElement("span", { className: `weight-section__hero-delta weight-section__hero-delta--${deltaTone}` }, /*#__PURE__*/
+  React.createElement("span", { className: "weight-section__hero-delta-num" }, deltaText),
+  /*#__PURE__*/React.createElement("span", null, deltaLbs < 0 ? "loss" : deltaLbs > 0 ? "gain" : "no change")
+  )
   ),
-  !emptyWeight && contextLine && /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine),
-  /*#__PURE__*/React.createElement("div", { className: "weight-section__weight-insight" }, insight.text),
+  contextLine ? /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine) : null,
+  /*#__PURE__*/React.createElement("div", { className: "weight-section__weight-insight" }, insightText),
   graphBlock,
   /*#__PURE__*/React.createElement("button", {
     type: "button",
@@ -11395,7 +11466,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
   }));
 }
 
-function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry }) {
+function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry, factsCycle }) {
   const [painGridMode, setPainGridMode] = React.useState("7d");
   const [formOpen, setFormOpen] = React.useState(false);
   const [logOpen, setLogOpen] = React.useState(false);
@@ -11412,7 +11483,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   const painTodayVal = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]);
   const hasAnyEntry = axisMetricsPainHasAnyEntry(painByDay);
   const contextLine = painTodayVal != null ? "Last logged: " + axisMetricsShortDateFromDateKey(dkToday) : null;
-  const painCallout = axisMetricsPainSundayInsight(painByDay) || axisMetricsPainWeekendInsight(painByDay) || axisMetricsPainImprovementInsight(painByDay) || axisMetricsPainConsistentInsight(painByDay) || axisMetricsPainMondayInsight(painByDay);
+  const painCallout = axisMetricsFactAt(AXIS_METRICS_PAIN_FACTS, factsCycle);
   const gridMode = painGridMode === "7d" ? "7d" : "28d";
   const heatmapBlock = !hasAnyEntry ? /*#__PURE__*/React.createElement("p", { className: "pain-heat__placeholder" }, "No entries yet. Tap LOG PAIN to start.") : /*#__PURE__*/React.createElement(MetricsPainGrid, {
     painByDay: painByDay,
@@ -11435,7 +11506,6 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   };
   const painRows = axisMetricsPainEntriesDescending(painByDay);
   const hasAnyPain = painRows.length > 0;
-  const todayPainRow = painRows.find((e) => e.dateKey === dkToday) || null;
   const renderPainLogRow = (e) => {
     const isEdit = editingDateKey === e.dateKey;
     return /*#__PURE__*/React.createElement("div", { key: e.dateKey, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
@@ -11445,7 +11515,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
     React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.level}/10 • ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? ` • ${e.note}` : ""}`),
     /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action", onClick: () => { setEditingDateKey(e.dateKey); setEditV(e.level); setEditNote(e.note || ""); } }, "Edit"), /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action metrics-inline-row-action--danger", onClick: () => { if (window.confirm("Delete this pain entry?")) onDeletePainEntry(e.dateKey); } }, "Delete"))));
   };
-  const painLogBody = !todayPainRow ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, hasAnyPain ? "No entry today. Tap Log pain to add one." : "No pain entries yet. Tap Log pain to add one.") : renderPainLogRow(todayPainRow);
+  const painLogBody = !hasAnyPain ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, "No pain entries yet. Tap Log pain to add one.") : painRows.map(renderPainLogRow);
   return /*#__PURE__*/React.createElement("div", { className: "weight-section pain-section", style: { "--weight-mood-accent": moodAccent } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Pain"),
   /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, painTodayVal != null ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
@@ -11458,7 +11528,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "28d", className: "pain-section__toggle" + (painGridMode === "28d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("28d"); } }, "4 Weeks")
   ),
   heatmapBlock,
-  painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, "\uD83D\uDCA1 ", painCallout) : null,
+  painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, painCallout) : null,
   /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "weight-section__btn weight-section__btn--expand",
@@ -11645,6 +11715,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   { id: "rest", label: "Rest", src: "./app-icons/icon-rest.png" }];
 
   const [view, setView] = useState("home");
+  const [metricsFactsCycle, setMetricsFactsCycle] = useState(-1);
   const [activePeriod, setActivePeriod] = useState(() => storageGet("axis_period", null)); // null = auto
   const [hasActiveSession, setHasActiveSession] = useState(false);
   const [showStreak, setShowStreak] = useState(() => storageGet("axis_show_streak", true));
@@ -11924,6 +11995,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     if (view === "home" && hasActiveSession) {
       const last = storageGet("axis_last_session_tab", null);
       setTab(last || "guided");
+    }
+    if (view === "metrics" && prevViewRef.current !== "metrics") {
+      setMetricsFactsCycle((n) => n + 1);
     }
     prevViewRef.current = view;
   }, [view, hasActiveSession]);
@@ -12507,6 +12581,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         theme: theme,
         nightMode: nightMode,
         activePeriod: activePeriod,
+        factsCycle: metricsFactsCycle,
         samples: metricsWeightSamples,
         stepsToday: metricsStepsToday,
         healthHint: metricsHealthHint,
@@ -12533,6 +12608,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         theme: theme,
         nightMode: nightMode,
         activePeriod: activePeriod,
+        factsCycle: metricsFactsCycle,
         painByDay: metricsPainByDay,
         onLogPain: (payload) => {
           const dk = new Date().toDateString();
@@ -12683,8 +12759,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const periodLabels = { dawn: "Rise", midday: "Midday", prime: "Prime", rest: "Rest" };
     const todayBoxTitleByPeriod = { dawn: "AM Activation", midday: "Postural Reset", prime: "Sundown Stretch", rest: "Sleep-Ready Recovery" };
     const periodKey = TODAY_SUGGESTIONS[nowPeriod] ? nowPeriod : "dawn";
-    const todaySug = TODAY_SUGGESTIONS[periodKey];
-    const todayTrack = TRACKS[todaySug.trackId];
+    const todaySug = TODAY_SUGGESTIONS[periodKey] || TODAY_SUGGESTIONS.dawn;
+    const todayTrackId = todaySug && TRACKS && TRACKS[todaySug.trackId] ? todaySug.trackId : "daily";
+    const todayTrack = (TRACKS && (TRACKS[todayTrackId] || TRACKS.daily)) || TRACKS_DATA_FALLBACK.daily;
+    const todaySuggestionText = todaySug && todayTrackId === todaySug.trackId ? todaySug.suggestion : (todayTrack && todayTrack.purpose) || (todaySug && todaySug.suggestion) || "";
     const isTodayLight = theme === "light" && !nightMode;
 
     // TODAY card: keep previous shape/structure, but use Metrics "TOTAL MOVEMENT TIME" surface style.
@@ -12769,7 +12847,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "1px", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 600, color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySug.suggestion), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySuggestionText), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
       React.createElement("button", {
         className: "begin-btn begin-btn--today-primary ultra-filled-btn",

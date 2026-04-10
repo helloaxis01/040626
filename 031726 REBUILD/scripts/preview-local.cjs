@@ -10,7 +10,8 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const publicWeb = path.join(root, "public_web");
 const PORT = Number(process.env.PREVIEW_PORT) || 4173;
-const HOST = process.env.PREVIEW_HOST || "127.0.0.1";
+/** Unset = bind all interfaces (IPv4 + IPv6) so http://localhost/ works when it resolves to ::1 */
+const HOST = process.env.PREVIEW_HOST;
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
@@ -30,13 +31,15 @@ const MIME = {
   ".map": "application/json; charset=utf-8",
 };
 
-function portInUse(p, host) {
+function portInUse(p) {
   return new Promise((resolve) => {
     const s = http.createServer();
     s.once("error", (err) => resolve(err.code === "EADDRINUSE"));
-    s.listen(p, host, () => {
+    const done = () => {
       s.close(() => resolve(false));
-    });
+    };
+    if (HOST) s.listen(p, HOST, done);
+    else s.listen(p, done);
   });
 }
 
@@ -75,7 +78,7 @@ function sendFile(res, filePath) {
 }
 
 async function main() {
-  const busy = await portInUse(PORT, HOST);
+  const busy = await portInUse(PORT);
   if (busy) {
     console.error(
       `\nPort ${PORT} is already in use.\n  lsof -i :${PORT}\n  kill <PID>\n`
@@ -95,9 +98,11 @@ async function main() {
     sendFile(res, filePath);
   });
 
-  server.listen(PORT, HOST, () => {
-    console.log(`Preview ready: http://${HOST}:${PORT}/`);
-  });
+  const onListen = () => {
+    console.log(`Preview ready: http://localhost:${PORT}/`);
+  };
+  if (HOST) server.listen(PORT, HOST, onListen);
+  else server.listen(PORT, onListen);
 }
 
 main().catch((e) => {
