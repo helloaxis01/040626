@@ -3639,6 +3639,33 @@ const css = `
   .metrics-quick-glance__unified-col .metrics-quick-glance__stat-title {
     margin: 0;
   }
+  .metrics-quick-glance__unified-sessions-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .metrics-quick-glance__stat-title--dashboard-hero {
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    opacity: 0.95;
+  }
+  .metrics-quick-glance__hero-week-sub {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-family: var(--font-body, system-ui, sans-serif);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--color-text-secondary) 52%, transparent);
+    line-height: 1.35;
+  }
+  .app[data-night="true"] .metrics-quick-glance__hero-week-sub {
+    color: color-mix(in srgb, #ff3b30 40%, transparent);
+  }
   .metrics-quick-glance__unified-sub {
     font-family: var(--font-body, system-ui, sans-serif);
     font-size: 11px;
@@ -11183,6 +11210,31 @@ function axisHistoryForDailyTotals(stateHistory) {
   return fs.length >= st.length ? fs : st;
 }
 
+/** Consecutive local calendar days with at least one movement entry, counting backward from today (0 if none today). */
+function axisMovementStreakDays(history) {
+  const merged = Array.isArray(history) ? history : [];
+  const daysWith = new Set();
+  for (const e of merged) {
+    if (!e) continue;
+    const m = Number(e.duration);
+    if (!Number.isFinite(m) || m <= 0) continue;
+    const k = axisLocalDateKey(e.date);
+    if (k) daysWith.add(k);
+  }
+  let streak = 0;
+  const d = new Date();
+  for (let i = 0; i < 400; i++) {
+    const key = d.toDateString();
+    if (daysWith.has(key)) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
 const AXIS_METRICS_WEIGHT_KEY = "axis_metrics_weight_v1";
 const AXIS_METRICS_PAIN_KEY = "axis_metrics_pain_v1";
 const AXIS_PAIN_LOG_KEY = "axis_pain_log";
@@ -12446,6 +12498,12 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     };
   }, [theme, activePeriod, nightMode, view]);
   useEffect(() => {storageSet("axis_show_streak", showStreak);}, [showStreak]);
+  useEffect(() => {
+    const merged = axisHistoryForDailyTotals(history);
+    const n = axisMovementStreakDays(merged);
+    setStreak(n);
+    storageSet("axis_streak", n);
+  }, [history]);
   useEffect(() => {storageSet("axis_show_timer", showTimer);}, [showTimer]);
   useEffect(() => {storageSet("axis_show_pct", showPct);}, [showPct]);
   useEffect(() => {storageSet("axis_exercise_duration", exerciseDuration);}, [exerciseDuration]);
@@ -12507,18 +12565,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         const durationMins = Math.max(1, Math.round(perMoveSec / 60));
         const newEntry = { date: today, track: TRACKS[track] && TRACKS[track].label || track, trackId: track, duration: durationMins, exerciseId: id };
         setHistory((prev) => {
-          const hadTodayBefore = prev.some((e) => axisLocalDateKey(e.date) === today);
           const newHistory = [newEntry, ...prev].slice(0, 30);
           storageSet("axis_history", newHistory);
-          if (!hadTodayBefore) {
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
-            const hadYesterday = prev.some((e) => axisLocalDateKey(e.date) === yesterday);
-            setStreak((st) => {
-              const n = hadYesterday ? st + 1 : 1;
-              storageSet("axis_streak", n);
-              return n;
-            });
-          }
           return newHistory;
         });
       }
@@ -12927,10 +12975,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   // METRICS (activity + weight + pain)
   if (view === "metrics") {
-    const formatSummaryWeeklyMinutes = (totalMins) => {
-      const n = Math.max(0, Math.floor(Number(totalMins) || 0));
-      return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}`;
-    };
     const summaryRecentLimit = summaryRecentExpanded ? 15 : 3;
     const summaryRecentRows = (history || []).slice(0, Math.min((history || []).length, summaryRecentLimit));
     const summaryHistoryGroups = [];
@@ -12947,6 +12991,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const periodForMetricsAccent = activePeriod || nowPeriodMetrics;
     const ctMetricsAccent = CIRCADIAN_THEMES[periodForMetricsAccent] && CIRCADIAN_THEMES[periodForMetricsAccent][theme === "dark" ? "dark" : "light"];
     const metricsSessionAccent = nightMode ? "#FF3B30" : (ctMetricsAccent && ctMetricsAccent.accent ? ctMetricsAccent.accent : "#4DA8FF");
+    const movementStreakDays = axisMovementStreakDays(axisHistoryForDailyTotals(history));
     return (/*#__PURE__*/
       React.createElement("div", { className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
@@ -12960,25 +13005,28 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "summary-sunset-stack summary-sunset-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__boxes" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__unified-card axis-surface-tmt", role: "status" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__unified-card axis-surface-tmt", role: "status", style: { "--metrics-session-accent": metricsSessionAccent } }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__unified-hero" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__stat-title metrics-quick-glance__stat-title--movement" }, "TOTAL MOVEMENT TIME"),
+      React.createElement("div", { className: "metrics-quick-glance__stat-title metrics-quick-glance__stat-title--movement metrics-quick-glance__stat-title--dashboard-hero" }, "MOVEMENT TODAY"),
       React.createElement("div", { className: "metrics-quick-glance__hero-time-row" }, /*#__PURE__*/
-      React.createElement("span", { className: "metrics-quick-glance__minutes-value metrics-quick-glance__hero-time-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent)),
+      React.createElement("span", { className: "metrics-quick-glance__minutes-value metrics-quick-glance__hero-time-value" }, String(Math.max(0, Math.round(todayMinutesTotal)))),
       React.createElement("span", { className: "metrics-quick-glance__hero-unit" }, "min")
-      )
+      ),
+      React.createElement("div", { className: "metrics-quick-glance__hero-week-sub" }, `${Math.max(0, Math.round(weeklyGoalBarMinutesCurrent))} min this week`)
       ), /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__unified-row" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-sessions-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "STREAK"),
+      React.createElement("div", { className: "metrics-quick-glance__stat-big" }, String(movementStreakDays)),
+      React.createElement("div", { className: "metrics-quick-glance__unified-sub" }, "day streak")
+      )
+      ), /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-sessions-stack" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "SESSIONS"),
       React.createElement("div", { className: "metrics-quick-glance__stat-big" }, String(weekSessionCountForWindow)),
       React.createElement("div", { className: "metrics-quick-glance__unified-sub" }, "this week")
-      ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "ACTIVE DAYS"),
-      React.createElement("div", { className: "metrics-quick-glance__stat-big-row" }, /*#__PURE__*/
-      React.createElement("span", { className: "metrics-quick-glance__stat-big" }, String(activeDays7Count)),
-      React.createElement("span", { className: "metrics-quick-glance__stat-suffix" }, "/ 7")
       )
       )
       )
