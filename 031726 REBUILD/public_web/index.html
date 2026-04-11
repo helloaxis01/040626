@@ -3621,11 +3621,23 @@ const css = `
     width: 100%;
     padding-top: 16px;
     margin-top: 4px;
-    border-top: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+    border-top: none;
     box-sizing: border-box;
+    position: relative;
   }
-  .app[data-night="true"] .metrics-quick-glance__unified-row {
-    border-top-color: rgba(255, 59, 48, 0.22);
+  .metrics-quick-glance__unified-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(280px, 78%);
+    height: 1px;
+    background: color-mix(in srgb, var(--glass-border) 55%, transparent);
+    pointer-events: none;
+  }
+  .app[data-night="true"] .metrics-quick-glance__unified-row::before {
+    background: rgba(255, 59, 48, 0.22);
   }
   .metrics-quick-glance__unified-col {
     display: flex;
@@ -7231,18 +7243,6 @@ const css = `
   .mood-auto-card {
     box-sizing: border-box;
     width: 100%;
-  }
-  .mood-auto-card__divider {
-    width: 100%;
-    height: 0;
-    margin: 0;
-    border: none;
-    border-top: 1px solid color-mix(in srgb, var(--glass-border) 70%, transparent);
-    padding: 0;
-    flex-shrink: 0;
-  }
-  .app[data-night="true"] .mood-auto-card__divider {
-    border-top-color: rgba(255, 59, 48, 0.2);
   }
   .mood-base-theme__label {
     font-family: var(--font-display);
@@ -12961,7 +12961,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { style: { position: "absolute", top: 3, left: activePeriod === null ? 22 : 3, width: 18, height: 18, borderRadius: "50%", background: nightMode ? "#000000" : "rgba(255,255,255,0.95)", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" } })
       )
       ), /*#__PURE__*/
-      /*#__PURE__*/React.createElement("div", { className: "mood-auto-card__divider", "aria-hidden": true }),
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingTop: 10, marginTop: 2 } }, /*#__PURE__*/
       React.createElement("span", { className: "mood-base-theme__label" }, "BASE THEME"),
       React.createElement("div", { className: "mood-base-theme__toggle", style: nightMode ? { opacity: 0.45, pointerEvents: "none", transition: "opacity 0.2s ease" } : {} },
