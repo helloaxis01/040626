@@ -7151,7 +7151,7 @@ const css = `
   /* MOOD: clearance above portaled tab bar. iOS often under-scrolls when only padding-bottom is used on overflow:auto
      flex children — a real ::after flex item extends scrollHeight reliably. BASE .app uses overflow:hidden (not scroll). */
   .app--nav-gap-tight .app-body {
-    scroll-padding-bottom: calc(var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 24px);
+    scroll-padding-bottom: calc(var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
     overscroll-behavior-y: contain;
   }
   .app--nav-gap-tight .app-body::after {
@@ -7159,8 +7159,8 @@ const css = `
     display: block;
     flex: 0 0 auto;
     width: 100%;
-    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + constant(safe-area-inset-bottom) + 64px);
-    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 64px);
+    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + constant(safe-area-inset-bottom) + 20px);
+    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 20px);
     pointer-events: none;
   }
   .app--nav-gap-tight .tab-bar-spacer--mood {

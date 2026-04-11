@@ -80,7 +80,7 @@ function copyOnboardingHtmlToDist() {
   }
 }
 copyOnboardingHtmlToDist();
-['onboarding.css', 'AXIS_Branding_DarkMode_Outlined.svg', 'AXIS_Branding_LightMode_Outlined.svg', 'axis_data.json'].forEach(copyPublicToDist);
+['onboarding.css', 'AXIS_Branding_DarkMode_Outlined.svg', 'AXIS_Branding_LightMode_Outlined.svg', 'axis_data.json', 'login.html'].forEach(copyPublicToDist);
 // Single app icon only: navy PNG in Logo - Vector → axis-icon.png (no old filenames, no SVG fallback)
 const iconPngRoot = path.join(root, 'Logo - Vector', 'AXIS_Branding_Navy.png');
 const iconPngDist = path.join(dist, 'axis-icon.png');

@@ -15,6 +15,10 @@
     {
       "source": "/onboarding",
       "destination": "/onboarding.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
     }
   ],
   "headers": [
