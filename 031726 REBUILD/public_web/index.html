@@ -3440,6 +3440,7 @@ const css = `
     display: flex;
     flex-direction: column;
     gap: 0;
+    padding-bottom: 2px;
   }
   .summary-sunset-stack.summary-sunset-stack--metrics .metrics-section {
     margin-bottom: 0;
@@ -3464,7 +3465,7 @@ const css = `
     margin: 1.5rem 0;
   }
   .metrics-rail__rule--gap-md {
-    margin: 1.5rem 0;
+    margin: 22px 0;
   }
   .metrics-page-title {
     font-size: 14px;
@@ -3578,20 +3579,126 @@ const css = `
     width: 100%;
     box-sizing: border-box;
   }
+  .metrics-quick-glance__unified-card.metrics-stat-feature {
+    padding: 18px 18px 20px;
+    border-radius: 22px;
+  }
+  .metrics-quick-glance__unified-hero {
+    margin-bottom: 0;
+  }
+  .metrics-quick-glance__unified-card .metrics-quick-glance__stat-title--movement {
+    text-align: center;
+    padding-left: 0;
+    margin: 0 0 10px;
+  }
+  .metrics-quick-glance__hero-time-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .metrics-quick-glance__hero-time-value {
+    width: auto;
+    display: inline-block;
+    text-align: inherit;
+  }
+  .metrics-quick-glance__hero-unit {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--color-text-secondary) 90%, transparent);
+    line-height: 1;
+  }
+  .app[data-night="true"] .metrics-quick-glance__hero-unit {
+    color: color-mix(in srgb, #ff3b30 65%, transparent);
+  }
+  .metrics-quick-glance__unified-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    width: 100%;
+    padding-top: 16px;
+    margin-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+    box-sizing: border-box;
+  }
+  .app[data-night="true"] .metrics-quick-glance__unified-row {
+    border-top-color: rgba(255, 59, 48, 0.22);
+  }
+  .metrics-quick-glance__unified-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    text-align: center;
+    min-width: 0;
+  }
+  .metrics-quick-glance__unified-col .metrics-quick-glance__stat-title {
+    margin: 0;
+  }
+  .metrics-quick-glance__unified-sub {
+    font-family: var(--font-body, system-ui, sans-serif);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: color-mix(in srgb, var(--color-text-secondary) 72%, transparent);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  .app[data-night="true"] .metrics-quick-glance__unified-sub {
+    color: color-mix(in srgb, #ff3b30 55%, transparent);
+  }
   .metrics-quick-glance__sub {
-    margin: 0 0 6px;
+    margin: 0 0 10px;
   }
   .metrics-quick-glance__sub.metrics-goals-toolbar__heading {
     display: block;
-    margin: 0 0 6px;
+    margin: 0 0 10px;
   }
-  .metrics-quick-glance__hint {
+  .metrics-last7days-heading.metrics-quick-glance__sub.metrics-goals-toolbar__heading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 0 0 10px;
+  }
+  .metrics-last7days-heading > span:first-of-type {
+    text-transform: uppercase;
+    letter-spacing: inherit;
+  }
+  .metrics-last7days-info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 2px;
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--color-text-secondary) 82%, transparent);
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    font-family: var(--font-display);
+    border-radius: 4px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .metrics-last7days-info-btn:active {
+    opacity: 0.78;
+  }
+  .metrics-last7days-tooltip {
     font-size: 11px;
     font-weight: 500;
-    line-height: 1.4;
-    color: color-mix(in srgb, var(--color-text-secondary) 92%, transparent);
-    margin: 0 0 12px;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--color-text-secondary) 90%, transparent);
+    margin: 4px 0 14px;
+    padding: 0;
     font-family: var(--font-body, system-ui, sans-serif);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   .metrics-section--goals {
     margin-top: 0;
@@ -3794,8 +3901,8 @@ const css = `
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    flex-wrap: wrap;
-    padding: 0 0 10px;
+    flex-wrap: nowrap;
+    padding: 0 0 12px;
     box-sizing: border-box;
   }
   .metrics-goals-toolbar__heading {
@@ -3804,12 +3911,12 @@ const css = `
     margin: 0;
     padding: 0;
     font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1.25;
     text-transform: uppercase;
-    color: var(--color-text-secondary);
+    color: color-mix(in srgb, var(--color-text-secondary) 96%, transparent);
   }
   .axis-chevron-svg {
     display: block;
@@ -3832,30 +3939,35 @@ const css = `
     height: 12px;
     opacity: 0.75;
   }
-  .metrics-goals-toolbar__settings {
+  .metrics-goals-toolbar__link {
     flex-shrink: 0;
-    padding: 6px 10px;
-    border-radius: var(--border-radius-md);
-    border: 1px solid color-mix(in srgb, var(--color-border-tertiary) 90%, transparent);
-    background: transparent;
-    font-family: var(--font-ui);
-    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    font-family: var(--font-display);
+    font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--color-text-secondary);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: color-mix(in srgb, var(--color-text-secondary) 62%, transparent);
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.18s ease;
   }
-  .metrics-goals-toolbar__settings:hover {
-    background: color-mix(in srgb, var(--color-background-secondary) 80%, transparent);
-    border-color: color-mix(in srgb, var(--accent) 35%, var(--color-border-tertiary));
+  .metrics-goals-toolbar__link:hover {
+    color: color-mix(in srgb, var(--color-text-secondary) 88%, transparent);
   }
-  .metrics-goals-toolbar__settings:active {
-    transform: scale(0.98);
+  .metrics-goals-toolbar__link:active {
+    opacity: 0.92;
   }
-  .metrics-goals-settings--after-bars {
-    align-self: flex-start;
-    margin-top: 12px;
+  .app[data-night="true"] .metrics-goals-toolbar__link {
+    color: color-mix(in srgb, #ff3b30 52%, transparent);
+  }
+  .app[data-night="true"] .metrics-goals-toolbar__link:hover {
+    color: color-mix(in srgb, #ff3b30 72%, transparent);
   }
   .metrics-goals-animate {
     overflow: hidden;
@@ -3884,7 +3996,7 @@ const css = `
     width: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 0 0 10px;
+    padding: 0 0 12px;
     text-align: left;
   }
   .metrics-quick-glance__hero-band {
@@ -4201,21 +4313,24 @@ const css = `
     gap: 6px;
     font-size: 13px;
     line-height: 1.2;
-    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-weight: 600;
+    font-weight: 500;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-section__hero-delta {
+    color: #252525;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .weight-section__hero-delta {
+    color: #f6f7f8;
+  }
+  .app[data-night="true"] .weight-section__hero-delta {
+    color: #FF3B30;
   }
   .weight-section__hero-delta-num {
     font-variant-numeric: tabular-nums;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.01em;
-  }
-  .weight-section__hero-delta--loss .weight-section__hero-delta-num {
-    color: #22c55e;
-  }
-  .weight-section__hero-delta--gain .weight-section__hero-delta-num {
-    color: #f97316;
+    color: inherit;
   }
   .weight-section__context {
     font-size: 13px;
@@ -5510,7 +5625,7 @@ const css = `
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 4px 0 8px;
+    padding: 2px 0 12px;
   }
   .metrics-goals-bar-row {
     width: 100%;
@@ -5539,13 +5654,30 @@ const css = `
     color: color-mix(in srgb, var(--text-secondary) 92%, transparent);
     font-variant-numeric: tabular-nums;
   }
-  .metrics-goals-bar-row .prog-bar {
-    height: 5px;
-    border-radius: 5px;
+  .metrics-section--goals .metrics-goals-bar-row .prog-bar {
+    height: 7px !important;
+    min-height: 7px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--text-secondary) 26%, rgba(255, 255, 255, 0.12)) !important;
+    border: none;
   }
-  .metrics-goals-bar-row .prog-fill {
-    height: 5px;
-    border-radius: 5px;
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-section--goals .metrics-goals-bar-row .prog-bar {
+    background: color-mix(in srgb, #64748b 42%, rgba(15, 30, 46, 0.1)) !important;
+  }
+  .app[data-night="true"] .metrics-section--goals .metrics-goals-bar-row .prog-bar {
+    background: color-mix(in srgb, #ff3b30 38%, rgba(255, 255, 255, 0.14)) !important;
+  }
+  .metrics-section--goals .metrics-goals-bar-row .prog-fill {
+    height: 7px !important;
+    min-height: 7px;
+    border-radius: 7px;
+    background: linear-gradient(90deg, #a78bfa, color-mix(in srgb, #a78bfa 78%, #ddd6fe)) !important;
+    box-shadow: 0 0 14px color-mix(in srgb, #a78bfa 42%, transparent);
+  }
+  .app[data-night="true"] .metrics-section--goals .metrics-goals-bar-row .prog-fill {
+    background: linear-gradient(90deg, #c4b5fd, #a78bfa) !important;
+    box-shadow: 0 0 12px rgba(167, 139, 250, 0.35) !important;
   }
   .metrics-goals-bar-fill--over {
     filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.55));
@@ -12110,6 +12242,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   });
   const [summaryRecentExpanded, setSummaryRecentExpanded] = useState(false);
   const [summaryRecentOpen, setSummaryRecentOpen] = useState(false);
+  const [last7DaysInfoOpen, setLast7DaysInfoOpen] = useState(false);
   const [metricsWeightSamples, setMetricsWeightSamples] = useState(() => axisMetricsNormalizeWeightList(storageGet(AXIS_METRICS_WEIGHT_KEY, [])));
   const [metricsPainByDay, setMetricsPainByDay] = useState(() => {
     const o = storageGet(AXIS_METRICS_PAIN_KEY, storageGet(AXIS_PAIN_LOG_KEY, {}));
@@ -12790,7 +12923,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   if (view === "metrics") {
     const formatSummaryWeeklyMinutes = (totalMins) => {
       const n = Math.max(0, Math.floor(Number(totalMins) || 0));
-      return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}m`;
+      return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}`;
     };
     const summaryRecentLimit = summaryRecentExpanded ? 15 : 3;
     const summaryRecentRows = (history || []).slice(0, Math.min((history || []).length, summaryRecentLimit));
@@ -12820,35 +12953,41 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "summary-main-stack summary-main-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-sunset-stack summary-sunset-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__boxes" }, [/*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__hero-band" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__minutes axis-surface-tmt", role: "status" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__minutes-inner" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__boxes" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__unified-card axis-surface-tmt", role: "status" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-hero" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title metrics-quick-glance__stat-title--movement" }, "TOTAL MOVEMENT TIME"),
-      React.createElement("div", { className: "metrics-quick-glance__minutes-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent))
-      )
+      React.createElement("div", { className: "metrics-quick-glance__hero-time-row" }, /*#__PURE__*/
+      React.createElement("span", { className: "metrics-quick-glance__minutes-value metrics-quick-glance__hero-time-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent)),
+      React.createElement("span", { className: "metrics-quick-glance__hero-unit" }, "min")
       )
       ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__duo" }, [/*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__stat-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-row" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "SESSIONS"),
-      React.createElement("div", { className: "metrics-quick-glance__stat-big" }, String(weekSessionCountForWindow))
+      React.createElement("div", { className: "metrics-quick-glance__stat-big" }, String(weekSessionCountForWindow)),
+      React.createElement("div", { className: "metrics-quick-glance__unified-sub" }, "this week")
       ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__stat-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "ACTIVE DAYS"),
       React.createElement("div", { className: "metrics-quick-glance__stat-big-row" }, /*#__PURE__*/
       React.createElement("span", { className: "metrics-quick-glance__stat-big" }, String(activeDays7Count)),
       React.createElement("span", { className: "metrics-quick-glance__stat-suffix" }, "/ 7")
       )
       )
-      ])
-      ])
+      )
+      )
       ),
       /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
       React.createElement("div", { className: "metrics-goals-wrap metrics-section--goals" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-block" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-toolbar" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS")
+      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS"),
+      /*#__PURE__*/React.createElement("button", {
+        type: "button",
+        className: "metrics-goals-toolbar__link",
+        onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
+      }, "Adjust in Settings")
       ),
       /*#__PURE__*/React.createElement("div", { className: "metrics-goals-compact" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-row" }, /*#__PURE__*/
@@ -12878,18 +13017,26 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         "aria-valuenow": Math.round(weeklyBarFillPct),
         "aria-label": "Weekly goal progress"
       }, /*#__PURE__*/React.createElement("div", { className: "prog-fill" + (weeklyBarOverdrive ? " metrics-goals-bar-fill--over" : ""), style: { width: `${weeklyBarFillPct}%` } }))
+      )
+      )
+      )
       ),
+      /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      /*#__PURE__*/React.createElement("div", { className: "metrics-last7days-heading metrics-quick-glance__sub metrics-goals-toolbar__heading" }, /*#__PURE__*/
+      React.createElement("span", null, "Last 7 days"),
       /*#__PURE__*/React.createElement("button", {
         type: "button",
-        className: "metrics-goals-toolbar__settings metrics-goals-settings--after-bars",
-        onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
-      }, "Adjust in Settings")
-      )
-      )
-      , /*#__PURE__*/
-      React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
-      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__sub metrics-goals-toolbar__heading" }, "Last 7 days"),
-      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__hint" }, "(Tap the day to reveal more details.)"),
+        className: "metrics-last7days-info-btn",
+        "aria-label": "About the last 7 days chart",
+        "aria-expanded": last7DaysInfoOpen ? "true" : "false",
+        onClick: () => { axisHapticTick(); setLast7DaysInfoOpen((o) => !o); }
+      }, "\u24D8")
+      ),
+      last7DaysInfoOpen && /*#__PURE__*/React.createElement("div", {
+        className: "metrics-last7days-tooltip",
+        role: "status",
+        onClick: () => { setLast7DaysInfoOpen(false); }
+      }, "Tap a day for details"),
       /*#__PURE__*/React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme, compact: true, metricsQuickGlance: true }), /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
       React.createElement("div", { className: "metrics-body-metrics-toolbar" }, /*#__PURE__*/
