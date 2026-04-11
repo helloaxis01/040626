@@ -621,6 +621,33 @@ function storageSet(key, val) {
   try {localStorage.setItem(key, JSON.stringify(val));} catch {}
 }
 
+/** First whitespace-delimited token (given name) for greetings. */
+function axisWelcomeFirstName(full) {
+  if (full == null || typeof full !== "string") return "";
+  const t = full.trim();
+  if (!t) return "";
+  const w = t.split(/\s+/)[0];
+  return w || "";
+}
+
+/** HOME greeting: first name from disclaimer (`axis_disclaimer.name`), else legacy `axisUserName`. */
+function axisWelcomeDisplayNameFromStorage() {
+  try {
+    if (typeof localStorage === "undefined") return "";
+    const raw = localStorage.getItem("axis_disclaimer");
+    if (raw) {
+      const o = JSON.parse(raw);
+      if (o && typeof o.name === "string") {
+        const t = o.name.trim();
+        if (t) return axisWelcomeFirstName(t);
+      }
+    }
+    const legacy = localStorage.getItem("axisUserName");
+    if (legacy != null && String(legacy).trim()) return axisWelcomeFirstName(String(legacy));
+  } catch (e) {}
+  return "";
+}
+
 const AXIS_GUIDED_DETAILED_INSTRUCTIONS_KEY = "axis_guided_detailed_instructions";
 
 /** Weekly goal slider: 5–500 min, snapped to step 5. */
@@ -865,6 +892,9 @@ const css = `
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
   }
+  .axis-app-scroll-root--timer {
+    overscroll-behavior-y: contain;
+  }
   .app-page-header { padding: var(--safe-top) var(--page-padding) 0; width: 100%; max-width: 100%; box-sizing: border-box; text-align: left; }
   /* With dashboard: same top inset as .home-welcome (Good Evening / Metrics title) */
   .app-body > .dashboard-header + .app-page-header {
@@ -886,20 +916,22 @@ const css = `
     margin-bottom: 8px;
     font-size: var(--text-lg) !important;
   }
-  /* Timer: fixed AXIS header + flex column; content clears header + small inset */
+  /* Timer: same scroll model as other tabs — app-body scrolls; do not trap overflow (mobile) */
   .app.app--timer-tab {
-    overflow-y: hidden;
+    overflow-x: hidden;
   }
   .app--timer-tab .app-body {
-    overflow-y: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     display: flex;
     flex-direction: column;
     min-height: 0;
     flex: 1;
   }
   .app--timer-tab .app-body > .dashboard-header + .timer-view-body {
-    flex: 1;
-    min-height: 0;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1151,10 +1183,6 @@ const css = `
     stroke: rgba(15,30,46,0.28);
     stroke-width: 3px;
   }
-  [data-theme="light"] .timer-interval-ring circle:first-of-type {
-    stroke: rgba(15,30,46,0.35);
-    stroke-width: 3px;
-  }
   [data-theme="light"] .timer-breathe-expand-ring {
     border-color: rgba(42,95,143,0.45) !important;
     box-shadow: 0 0 0 1px rgba(42,95,143,0.12);
@@ -1172,9 +1200,15 @@ const css = `
     stroke: var(--mood-accent) !important;
     stroke-width: 3.4 !important;
   }
-  [data-theme="dark"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring,
-  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+  [data-theme="dark"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring,
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
     animation: none !important;
+    transition: none !important;
+    transform-origin: center center;
+  }
+  [data-theme="dark"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring,
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring {
+    animation: breathe-hold-ring-pulse 1s ease-in-out infinite !important;
     transition: none !important;
     transform-origin: center center;
   }
@@ -1444,6 +1478,11 @@ const css = `
     -webkit-appearance: none !important;
     appearance: none !important;
     background: transparent !important;
+    /* Match light/dark vertical rhythm so goal bars don’t hug copy above */
+    height: 44px;
+  }
+  .app[data-night="true"] .settings-goals-panel {
+    gap: 18px;
   }
   .app[data-night="true"] .settings-range::-webkit-slider-runnable-track {
     background: rgba(183, 28, 28, 0.28) !important;
@@ -1936,8 +1975,7 @@ const css = `
     min-width:0;
     display:flex;
     flex-direction:column;
-    overflow-y:auto;
-    overflow-x:hidden;
+    overflow: hidden;
     -webkit-overflow-scrolling:touch;
     background: var(--bg-app, var(--bg-gradient));
     background-color: var(--bg-fallback, #0a1525);
@@ -3401,6 +3439,7 @@ const css = `
     display: flex;
     flex-direction: column;
     gap: 0;
+    padding-bottom: 2px;
   }
   .summary-sunset-stack.summary-sunset-stack--metrics .metrics-section {
     margin-bottom: 0;
@@ -3425,7 +3464,7 @@ const css = `
     margin: 1.5rem 0;
   }
   .metrics-rail__rule--gap-md {
-    margin: 1.5rem 0;
+    margin: 22px 0;
   }
   .metrics-page-title {
     font-size: 14px;
@@ -3539,20 +3578,126 @@ const css = `
     width: 100%;
     box-sizing: border-box;
   }
+  .metrics-quick-glance__unified-card.metrics-stat-feature {
+    padding: 18px 18px 20px;
+    border-radius: 22px;
+  }
+  .metrics-quick-glance__unified-hero {
+    margin-bottom: 0;
+  }
+  .metrics-quick-glance__unified-card .metrics-quick-glance__stat-title--movement {
+    text-align: center;
+    padding-left: 0;
+    margin: 0 0 10px;
+  }
+  .metrics-quick-glance__hero-time-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .metrics-quick-glance__hero-time-value {
+    width: auto;
+    display: inline-block;
+    text-align: inherit;
+  }
+  .metrics-quick-glance__hero-unit {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--color-text-secondary) 90%, transparent);
+    line-height: 1;
+  }
+  .app[data-night="true"] .metrics-quick-glance__hero-unit {
+    color: color-mix(in srgb, #ff3b30 65%, transparent);
+  }
+  .metrics-quick-glance__unified-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    width: 100%;
+    padding-top: 16px;
+    margin-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+    box-sizing: border-box;
+  }
+  .app[data-night="true"] .metrics-quick-glance__unified-row {
+    border-top-color: rgba(255, 59, 48, 0.22);
+  }
+  .metrics-quick-glance__unified-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    text-align: center;
+    min-width: 0;
+  }
+  .metrics-quick-glance__unified-col .metrics-quick-glance__stat-title {
+    margin: 0;
+  }
+  .metrics-quick-glance__unified-sub {
+    font-family: var(--font-body, system-ui, sans-serif);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: color-mix(in srgb, var(--color-text-secondary) 72%, transparent);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  .app[data-night="true"] .metrics-quick-glance__unified-sub {
+    color: color-mix(in srgb, #ff3b30 55%, transparent);
+  }
   .metrics-quick-glance__sub {
-    margin: 0 0 6px;
+    margin: 0 0 10px;
   }
   .metrics-quick-glance__sub.metrics-goals-toolbar__heading {
     display: block;
-    margin: 0 0 6px;
+    margin: 0 0 10px;
   }
-  .metrics-quick-glance__hint {
+  .metrics-last7days-heading.metrics-quick-glance__sub.metrics-goals-toolbar__heading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 0 0 10px;
+  }
+  .metrics-last7days-heading > span:first-of-type {
+    text-transform: uppercase;
+    letter-spacing: inherit;
+  }
+  .metrics-last7days-info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 2px;
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--color-text-secondary) 82%, transparent);
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    font-family: var(--font-display);
+    border-radius: 4px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .metrics-last7days-info-btn:active {
+    opacity: 0.78;
+  }
+  .metrics-last7days-tooltip {
     font-size: 11px;
     font-weight: 500;
-    line-height: 1.4;
-    color: color-mix(in srgb, var(--color-text-secondary) 92%, transparent);
-    margin: 0 0 12px;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--color-text-secondary) 90%, transparent);
+    margin: 4px 0 14px;
+    padding: 0;
     font-family: var(--font-body, system-ui, sans-serif);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   .metrics-section--goals {
     margin-top: 0;
@@ -3712,6 +3857,10 @@ const css = `
     color: #0f172a !important;
     box-shadow: 0 6px 18px color-mix(in srgb, var(--metrics-session-accent, var(--accent)) 28%, transparent) !important;
   }
+  .app[data-theme="light"]:not([data-night="true"]) .summary-main-stack--metrics .summary-cta-btn--metrics-mood {
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
+  }
   .app[data-night="true"] .summary-main-stack--metrics .summary-cta-btn--metrics-mood {
     color: #ffffff !important;
   }
@@ -3751,8 +3900,8 @@ const css = `
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    flex-wrap: wrap;
-    padding: 0 0 10px;
+    flex-wrap: nowrap;
+    padding: 0 0 12px;
     box-sizing: border-box;
   }
   .metrics-goals-toolbar__heading {
@@ -3761,12 +3910,12 @@ const css = `
     margin: 0;
     padding: 0;
     font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1.25;
     text-transform: uppercase;
-    color: var(--color-text-secondary);
+    color: color-mix(in srgb, var(--color-text-secondary) 96%, transparent);
   }
   .axis-chevron-svg {
     display: block;
@@ -3789,30 +3938,35 @@ const css = `
     height: 12px;
     opacity: 0.75;
   }
-  .metrics-goals-toolbar__settings {
+  .metrics-goals-toolbar__link {
     flex-shrink: 0;
-    padding: 6px 10px;
-    border-radius: var(--border-radius-md);
-    border: 1px solid color-mix(in srgb, var(--color-border-tertiary) 90%, transparent);
-    background: transparent;
-    font-family: var(--font-ui);
-    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    font-family: var(--font-display);
+    font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--color-text-secondary);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: color-mix(in srgb, var(--color-text-secondary) 62%, transparent);
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.18s ease;
   }
-  .metrics-goals-toolbar__settings:hover {
-    background: color-mix(in srgb, var(--color-background-secondary) 80%, transparent);
-    border-color: color-mix(in srgb, var(--accent) 35%, var(--color-border-tertiary));
+  .metrics-goals-toolbar__link:hover {
+    color: color-mix(in srgb, var(--color-text-secondary) 88%, transparent);
   }
-  .metrics-goals-toolbar__settings:active {
-    transform: scale(0.98);
+  .metrics-goals-toolbar__link:active {
+    opacity: 0.92;
   }
-  .metrics-goals-settings--after-bars {
-    align-self: flex-start;
-    margin-top: 12px;
+  .app[data-night="true"] .metrics-goals-toolbar__link {
+    color: color-mix(in srgb, #ff3b30 52%, transparent);
+  }
+  .app[data-night="true"] .metrics-goals-toolbar__link:hover {
+    color: color-mix(in srgb, #ff3b30 72%, transparent);
   }
   .metrics-goals-animate {
     overflow: hidden;
@@ -3841,7 +3995,7 @@ const css = `
     width: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 0 0 10px;
+    padding: 0 0 12px;
     text-align: left;
   }
   .metrics-quick-glance__hero-band {
@@ -4151,6 +4305,32 @@ const css = `
     color: var(--color-text-primary);
     font-family: var(--font-display);
   }
+  .weight-section__hero-delta {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .weight-section__hero-delta {
+    color: #252525;
+  }
+  .app[data-theme="dark"]:not([data-night="true"]) .weight-section__hero-delta {
+    color: #f6f7f8;
+  }
+  .app[data-night="true"] .weight-section__hero-delta {
+    color: #FF3B30;
+  }
+  .weight-section__hero-delta-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: inherit;
+  }
   .weight-section__context {
     font-size: 13px;
     line-height: 1.45;
@@ -4159,13 +4339,16 @@ const css = `
   }
   .weight-section__insight {
     font-size: 13px;
-    line-height: 1.45;
-    color: var(--color-text-primary);
-    background: var(--color-background-secondary);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin: 0 0 1.5rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    text-align: left;
+    margin: 0 0 1rem;
     box-sizing: border-box;
+    width: 100%;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
   }
   .weight-section__weight-insight {
     font-size: 13px;
@@ -4600,6 +4783,10 @@ const css = `
     font-weight: 600;
     min-width: 3.25ch;
   }
+  .app[data-theme="light"]:not([data-night="true"]) .pain-section .metric-inline-log__pain-val--accent {
+    color: #252525;
+    -webkit-text-fill-color: #252525;
+  }
   .metric-inline-log__field-col {
     display: flex;
     flex-direction: column;
@@ -4861,6 +5048,10 @@ const css = `
     box-shadow: 0 0 0 2px var(--weight-mood-accent, var(--accent)), 0 4px 14px color-mix(in srgb, var(--weight-mood-accent, var(--accent)) 22%, transparent);
     transform: scale(1.06);
     z-index: 1;
+  }
+  .app[data-theme="light"]:not([data-night="true"]) .pain-heat__cell--today {
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
   }
   .pain-heat__cell--open {
     transform: scale(1.08);
@@ -5433,7 +5624,7 @@ const css = `
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 4px 0 8px;
+    padding: 2px 0 12px;
   }
   .metrics-goals-bar-row {
     width: 100%;
@@ -5462,16 +5653,29 @@ const css = `
     color: color-mix(in srgb, var(--text-secondary) 92%, transparent);
     font-variant-numeric: tabular-nums;
   }
-  .metrics-goals-bar-row .prog-bar {
-    height: 5px;
-    border-radius: 5px;
+  .metrics-section--goals .metrics-goals-bar-row .prog-bar {
+    height: 7px !important;
+    min-height: 7px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--text-secondary) 26%, rgba(255, 255, 255, 0.12)) !important;
+    border: none;
   }
-  .metrics-goals-bar-row .prog-fill {
-    height: 5px;
-    border-radius: 5px;
+  .app[data-theme="light"]:not([data-night="true"]) .metrics-section--goals .metrics-goals-bar-row .prog-bar {
+    background: color-mix(in srgb, #64748b 42%, rgba(15, 30, 46, 0.1)) !important;
+  }
+  .app[data-night="true"] .metrics-section--goals .metrics-goals-bar-row .prog-bar {
+    background: color-mix(in srgb, #ff3b30 38%, rgba(255, 255, 255, 0.14)) !important;
+  }
+  .metrics-section--goals .metrics-goals-bar-row .prog-fill {
+    height: 7px !important;
+    min-height: 7px;
+    border-radius: 7px;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 52%, transparent)) !important;
+    box-shadow: 0 0 12px var(--accent-glow);
   }
   .metrics-goals-bar-fill--over {
-    filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.55));
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 50%, transparent));
   }
   .metrics-section__btn--ghost {
     font-weight: 600;
@@ -6944,19 +7148,30 @@ const css = `
     -webkit-backdrop-filter: none;
   }
 
-  /* MOOD: avoid stacking full tab-bar-spacer + large list padding (was ~1/4 screen gap). Spacer collapsed; padding carries clearance. */
+  /* MOOD: clearance above portaled tab bar. iOS often under-scrolls when only padding-bottom is used on overflow:auto
+     flex children — a real ::after flex item extends scrollHeight reliably. BASE .app uses overflow:hidden (not scroll). */
+  .app--nav-gap-tight .app-body {
+    scroll-padding-bottom: calc(var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
+    overscroll-behavior-y: contain;
+  }
+  .app--nav-gap-tight .app-body::after {
+    content: "";
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + constant(safe-area-inset-bottom) + 20px);
+    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 20px);
+    pointer-events: none;
+  }
   .app--nav-gap-tight .tab-bar-spacer--mood {
     height: 0 !important;
     min-height: 0 !important;
+    flex-shrink: 0;
+    width: 100%;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
     pointer-events: none;
-  }
-
-  /* One rhythm for Rest→Night and breathing room above tab (no extra row margin) */
-  .app--nav-gap-tight .app-body--list-pad {
-    padding-bottom: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) - 16px);
   }
 
   /* ── HOME ── */
@@ -7154,6 +7369,20 @@ const css = `
     box-sizing:border-box;
     width:100%;
     max-width:100%;
+  }
+  /* HOME only: same label size/style as TODAY CTA (begin-btn); fixed ink; bottom pad = top pad (Metrics: #axis-metrics-welcome) */
+  #axis-home-welcome {
+    text-align:center;
+    font-family:var(--font-display);
+    font-size:var(--text-base);
+    font-weight:400;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:#f6f7f8 !important;
+    -webkit-text-fill-color:#f6f7f8 !important;
+    text-shadow:none;
+    filter:none;
+    padding-bottom:max(10px, calc(var(--app-title-after-dashboard) - 20px));
   }
   .home .home-track-cards-outer--top {
     position:relative;
@@ -9450,7 +9679,17 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const [iTime, setITime] = useState(0);
   const [intervalRingSnap, setIntervalRingSnap] = useState(false);
   const iRef = useRef(null);
+  /** Wall-clock end of current work/rest segment — drives display + ring so duration matches settings (no setInterval drift). */
+  const iDeadlineRef = useRef(null);
+  const iPhaseRef = useRef("idle");
+  const iPrevRemainingRef = useRef(null);
+  /** Bumps while a segment runs so the ring re-renders and can track wall-clock progress between integer seconds. */
+  const [iRingPulse, setIRingPulse] = useState(0);
   const breathHapticFlagsRef = useRef({ holdMidpoint: false });
+
+  useEffect(() => {
+    iPhaseRef.current = iPhase;
+  }, [iPhase]);
 
   useEffect(() => {
     if (!intervalRingSnap) return;
@@ -9463,36 +9702,110 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   function iReset() {
     setIntervalRingSnap(true);
     clearInterval(iRef.current);
+    iDeadlineRef.current = null;
+    iPrevRemainingRef.current = null;
     setIRunning(false);
     setIPhase("idle");
     setIRound(1);
     setITime(0);
   }
-  function iStart() {triggerHaptic(HAPTIC_LIGHT_TAP);setIPhase("work");setIRound(1);setITime(work);setIRunning(true);}
+  function iStart() {
+    triggerHaptic(HAPTIC_LIGHT_TAP);
+    setIPhase("work");
+    setIRound(1);
+    setITime(work);
+    iPhaseRef.current = "work";
+    iDeadlineRef.current = Date.now() + work * 1000;
+    iPrevRemainingRef.current = null;
+    setIRunning(true);
+  }
+
+  useEffect(() => {
+    if (iRunning) return;
+    if (iPhase === "work" || iPhase === "rest") {
+      iDeadlineRef.current = null;
+    }
+  }, [iRunning, iPhase]);
 
   useEffect(() => {
     if (!iRunning || iPhase === "idle" || iPhase === "done") return;
     clearInterval(iRef.current);
-    iRef.current = setInterval(() => {
-      setITime((t) => {
-        if (t <= 1) {
-          if (iPhase === "work") {
-            beep(660, 0.25);
-            triggerHaptic(HAPTIC_DOUBLE_TAP);
-            if (rest > 0) {setIPhase("rest");return rest;}
-            setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);beep(440, 0.5);return r;}setIPhase("work");return r + 1;});
-            return work;
-          } else {
-            beep(880, 0.2);
-            triggerHaptic(HAPTIC_DOUBLE_TAP);
-            setIRound((r) => {if (r >= rounds) {setIPhase("done");setIRunning(false);beep(440, 0.5);return r;}setIPhase("work");return r + 1;});
-            return work;
-          }
+
+    if (iDeadlineRef.current == null && (iPhase === "work" || iPhase === "rest")) {
+      iDeadlineRef.current = Date.now() + Math.max(0, iTime) * 1000;
+    }
+
+    const tick = () => {
+      const d = iDeadlineRef.current;
+      if (d == null) return;
+      const msLeft = d - Date.now();
+      const remaining = Math.max(0, Math.ceil(msLeft / 1000));
+      setITime(remaining);
+      if (msLeft > 0) setIRingPulse((n) => n + 1);
+
+      const prevR = iPrevRemainingRef.current;
+      if (prevR === 5 && remaining === 4) beep(440, 0.12);
+      iPrevRemainingRef.current = remaining;
+
+      if (msLeft > 0) return;
+
+      iDeadlineRef.current = null;
+      const ph = iPhaseRef.current;
+
+      if (ph === "work") {
+        beep(660, 0.25);
+        triggerHaptic(HAPTIC_DOUBLE_TAP);
+        if (rest > 0) {
+          setIPhase("rest");
+          iPhaseRef.current = "rest";
+          iDeadlineRef.current = Date.now() + rest * 1000;
+          iPrevRemainingRef.current = null;
+          setITime(rest);
+          return;
         }
-        if (t === 4) beep(440, 0.12);
-        return t - 1;
-      });
-    }, 1000);
+        setIRound((r) => {
+          if (r >= rounds) {
+            setIPhase("done");
+            iPhaseRef.current = "done";
+            setIRunning(false);
+            iDeadlineRef.current = null;
+            beep(440, 0.5);
+            return r;
+          }
+          setIPhase("work");
+          iPhaseRef.current = "work";
+          iDeadlineRef.current = Date.now() + work * 1000;
+          iPrevRemainingRef.current = null;
+          setITime(work);
+          return r + 1;
+        });
+        return;
+      }
+
+      if (ph === "rest") {
+        beep(880, 0.2);
+        triggerHaptic(HAPTIC_DOUBLE_TAP);
+        setIRound((r) => {
+          if (r >= rounds) {
+            setIPhase("done");
+            iPhaseRef.current = "done";
+            setIRunning(false);
+            iDeadlineRef.current = null;
+            beep(440, 0.5);
+            return r;
+          }
+          setIPhase("work");
+          iPhaseRef.current = "work";
+          iDeadlineRef.current = Date.now() + work * 1000;
+          iPrevRemainingRef.current = null;
+          setITime(work);
+          return r + 1;
+        });
+      }
+    };
+
+    tick();
+    iRef.current = setInterval(tick, 32);
     return () => clearInterval(iRef.current);
   }, [iRunning, iPhase, work, rest, rounds]);
 
@@ -9518,6 +9831,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const [breathPattern, setBreathPattern] = useState("4-7-8");
   const [breathCycles, setBreathCycles] = useState(4);
   const [bRunning, setBRunning] = useState(false);
+  const [bPaused, setBPaused] = useState(false);
   const [bPhaseIdx, setBPhaseIdx] = useState(0);
   const [bCycle, setBCycle] = useState(1);
   const [bTime, setBTime] = useState(0);
@@ -9528,6 +9842,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const bPhaseStartedMsRef = useRef(0);
   const bPhaseElapsedMsRef = useRef(0);
   const [breatheAnimTick, setBreatheAnimTick] = useState(0);
+  const [intervalSettingsOpen, setIntervalSettingsOpen] = useState(false);
+  const [breatheSettingsOpen, setBreatheSettingsOpen] = useState(false);
 
   // Keep refs in sync
   useEffect(() => {bPatternRef.current = BREATH_PATTERNS[breathPattern];}, [breathPattern]);
@@ -9565,7 +9881,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     glowOpacity = 1 - Math.min(1, Math.max(0, progress)) * 0.82;
   }
   const orbOpacity = Math.max(0.18, Math.min(1, glowOpacity));
-  const countdownLabelOpacity = isInhalePhase ? 1 : breatheIntensity;
+  const countdownLabelOpacity = breatheIntensity;
   const breatheOpacityTransition = isInhalePhase ? `${Math.max(2.5, phaseDur * 0.85)}s ease` : "0.6s ease";
 
   const breatheMinScale = 0.45;
@@ -9596,7 +9912,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const breatheOpacityDuration = `${Math.max(1, phaseDur)}s`;
 
   function bReset() {
-    setBRunning(false);setBPhaseIdx(0);setBCycle(1);setBTime(0);
+    setBRunning(false);setBPaused(false);setBPhaseIdx(0);setBCycle(1);setBTime(0);
     bPhaseRef.current = 0;bCycleRef.current = 1;
     bPhaseElapsedMsRef.current = 0;
     breathHapticFlagsRef.current = { holdMidpoint: false };
@@ -9610,6 +9926,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     bPhaseStartedMsRef.current = performance.now();
     bPhaseElapsedMsRef.current = 0;
     breathHapticFlagsRef.current = { holdMidpoint: false };
+    setBPaused(false);
     setBRunning(true);
     beep(528, 0.2);
     triggerHaptic(HAPTIC_LIGHT_TAP);
@@ -9639,6 +9956,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
           setBPhaseIdx(0);
           setBCycle(bCyclesRef.current + 1);
           setBTime(0);
+          setBPaused(false);
           setBRunning(false);
             beep(528, 0.4);
           triggerHaptic(HAPTIC_DOUBLE_TAP);
@@ -9683,39 +10001,67 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   // switch mode → reset both
   function switchMode(m) {axisHapticTick();iReset();bReset();setMode(m);}
 
-  const iPct = iPhase === "work" ? (work - iTime) / work * 100 : iPhase === "rest" ? (rest - iTime) / rest * 100 : 0;
+  let iPct = 0;
+  if (iPhase === "work" || iPhase === "rest") {
+    const durSec = iPhase === "work" ? work : rest;
+    if (durSec > 0) {
+      const d = iDeadlineRef.current;
+      if (d != null) {
+        const msLeft = Math.max(0, d - Date.now());
+        const msDur = durSec * 1000;
+        iPct = Math.min(100, Math.max(0, ((msDur - msLeft) / msDur) * 100));
+      } else {
+        iPct = iPhase === "work" ? (work - iTime) / work * 100 : (rest - iTime) / rest * 100;
+      }
+    }
+  }
+  void iRingPulse;
   const iRingColor = nightMode ? "#FF3B30" : iPhase === "rest" ? "var(--text-secondary)" : breatheAccent;
-  const iCircumference = 2 * Math.PI * 140;
+  // Timer crawl on the guide ring (r=140, same path as .timer-breathe-guide-outline — the larger inner ring). Clockwise from 12 via rotate(−90 160 160).
+  const iCircumferenceProgress = 2 * Math.PI * 140;
+  const iGuideDashOffset = iPhase === "work" || iPhase === "rest" ? iCircumferenceProgress * (1 - iPct / 100) : 0;
+  const iGuideDashArray = `${iCircumferenceProgress} ${iCircumferenceProgress}`;
   // Plain seconds only — no 0: prefix (e.g. 30 not 0:30)
   const formatSecondsOnly = (s) => String(s);
   // Barlow for all timer numerals; main countdown and stepper values
   const intervalDigitStyle = {
     fontFamily: "var(--font-display)",
-    fontWeight: 600,
-    letterSpacing: "-0.03em",
+    fontWeight: 400,
+    letterSpacing: "-0.04em",
     minWidth: 72,
     textAlign: "center",
-    fontSize: 112,
+    fontSize: 120,
     color: nightMode ? "#FF3B30" : isDark ? "var(--text-white)" : "#1D1D1F",
     lineHeight: 1,
     fontVariantNumeric: "tabular-nums",
     textShadow: "none"
   };
+  /** Hero ring idle label (Ready) — reuse for Done so typography matches */
+  const TIMER_HERO_READY_STYLE = {
+    fontSize: "var(--text-lg)",
+    fontWeight: 600,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    color: "var(--text-dimmer)",
+    fontFamily: "var(--font-display)"
+  };
   const timerNumMedium = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-lg)", color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center", fontVariantNumeric: "tabular-nums" };
   const timerNumSmall = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--text-dimmer)", lineHeight: 1.2 };
-  const BTN = { padding: "15px 28px", borderRadius: 16, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 52, boxSizing: "border-box" };
+  const BTN = { padding: "17px 28px", borderRadius: 18, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 56, boxSizing: "border-box" };
   const BTN_GHOST = { padding: "14px 22px", borderRadius: 16, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 48, boxSizing: "border-box" };
+  const BTN_INTERVAL_PAUSE = { ...BTN, padding: "12px 28px", minHeight: 56, boxSizing: "border-box" };
+  const BTN_INTERVAL_RESET = { ...BTN_GHOST, minHeight: 56, padding: "14px 22px", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center" };
   // Lock INTERVAL + BREATHE layout: same ring slot, same mid slot, same button row (BREATHE as reference — no extra ring offset)
   // Circle as large as possible within column; static slot so INTERVAL/BREATHE don’t shift (ringSize / breatheInset above)
-  const TIMER_RING_WRAP = { flexShrink: 0, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft: "auto", marginRight: "auto", marginTop: 12, marginBottom: 12 };
-  const TIMER_MID_MIN_IDLE = 156; // min height for content
-  const TIMER_MID_IDLE_HEIGHT = 152; // fixed height when idle so INTERVAL and BREATHE START align
+  const TIMER_RING_WRAP = { flexShrink: 0, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: ringSize, height: ringSize, minWidth: ringSize, minHeight: ringSize, marginLeft: "auto", marginRight: "auto", marginTop: 8, marginBottom: 8 };
+  const TIMER_MID_MIN_IDLE = 96; // min height for tight Work/Rest/Rounds
+  const TIMER_MID_IDLE_HEIGHT = 92; // fixed idle height — INTERVAL + BREATHE mid slot (pattern row + cycles row)
   const TIMER_PHASE_BAND = 46; // matches BREATHE phase label block height so Pause/Reset align when running
   /** Same px gap: (timer ring ↔ settings) and (settings ↔ START) on Interval/Breathe idle */
-  const TIMER_IDLE_VERTICAL_GAP = 34;
+  const TIMER_IDLE_VERTICAL_GAP = 16;
   // Toggle: spacer above so INTERVAL/BREATHE sit halfway between top edge and top of circle
   const TIMER_TOGGLE_SPACER_TOP = 0;
-  const TIMER_TOGGLE_WRAP = { flexShrink: 0, display: "flex", gap: 10, marginBottom: 24, padding: 6, minHeight: 52, alignItems: "center", boxSizing: "border-box", width: "100%", maxWidth: 360, justifyContent: "center" };
+  const TIMER_TOGGLE_WRAP = { flexShrink: 0, display: "flex", gap: 5, marginBottom: 16, padding: 3, minHeight: 40, alignItems: "center", boxSizing: "border-box", width: "100%", maxWidth: 380, justifyContent: "center" };
   // Button row: equal spacers when Pause/Reset/Again — when START only, shrink spacer above so START sits same height as Pause/RESET
   const TIMER_BTN_SPACER_ABOVE = { flex: 1, minHeight: 0, width: "100%" };
   const TIMER_BTN_SPACER_BELOW = { flex: 1, minHeight: 0, width: "100%" };
@@ -9723,12 +10069,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   const TIMER_BTN_SPACER_ABOVE_IDLE = { flex: 0.1, minHeight: 0, width: "100%" };
   const TIMER_BTN_SPACER_BELOW_IDLE = { flex: 1.75, minHeight: 0, width: "100%" };
   // Interval idle: fixed gap below ring and above START (matches TIMER_IDLE_VERTICAL_GAP on mid block)
-  const TIMER_BTN_SPACER_ABOVE_INTERVAL_IDLE = { flex: 0, flexGrow: 0, flexShrink: 0, minHeight: TIMER_IDLE_VERTICAL_GAP, width: "100%" };
+  const TIMER_BTN_SPACER_ABOVE_INTERVAL_IDLE = { flex: 0, flexGrow: 0, flexShrink: 0, minHeight: TIMER_IDLE_VERTICAL_GAP + 14, width: "100%" };
   const TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE = { flex: 1.38, minHeight: 0, width: "100%" };
-  // Breathe idle: same gap as Interval (ring↔pattern/cycles ↔ START)
-  const TIMER_BTN_SPACER_ABOVE_BREATHE_IDLE = { flex: 0, flexGrow: 0, flexShrink: 0, minHeight: TIMER_IDLE_VERTICAL_GAP, width: "100%" };
-  const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", gap: 10, width: "100%", justifyContent: "center", alignItems: "stretch", boxSizing: "border-box", paddingTop: 6, paddingBottom: 4, maxWidth: 360 };
-  const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW, marginTop: 0 };
+  // Breathe idle: match Interval — same gap (ring↔pattern/cycles ↔ START)
+  const TIMER_BTN_SPACER_ABOVE_BREATHE_IDLE = { flex: 0, flexGrow: 0, flexShrink: 0, minHeight: TIMER_IDLE_VERTICAL_GAP + 14, width: "100%" };
+  const TIMER_BTN_ROW = { flexShrink: 0, display: "flex", flexDirection: "row", flexWrap: "nowrap", gap: 10, width: "100%", justifyContent: "center", alignItems: "center", boxSizing: "border-box", paddingTop: 6, paddingBottom: 4, maxWidth: 380, marginTop: 28 };
+  const TIMER_BTN_ROW_IDLE = { ...TIMER_BTN_ROW };
 
   const timerFlatCss = `
   .timer-view-body .timer-mode-outer-pill {
@@ -9737,8 +10083,35 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)), rgba(0, 0, 0, 0.14);
     backdrop-filter: blur(28px) saturate(1.25);
     -webkit-backdrop-filter: blur(28px) saturate(1.25);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 40%, transparent), 0 8px 28px rgba(0, 0, 0, 0.12);
     position: relative;
+    padding: 5px;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 45%, transparent), 0 14px 44px rgba(0, 0, 0, 0.22);
+  }
+  /* Focal “stage” — class on the ring wrap (same node as TMT disc; no extra JSX wrapper) */
+  .timer-view-body .timer-hero-stage.timer-interval-ring-wrap,
+  .timer-view-body .timer-hero-stage.timer-breathe-ring-wrap {
+    width: 100%;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 26px 20px 30px;
+    border-radius: 36px;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, rgba(255, 255, 255, 0.03)) 0%, rgba(8, 14, 22, 0.55) 45%, rgba(4, 8, 14, 0.72) 100%);
+    border: 1px solid color-mix(in srgb, var(--glass-border) 75%, var(--accent) 14%);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+      0 28px 64px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(22px) saturate(1.35);
+    -webkit-backdrop-filter: blur(22px) saturate(1.35);
+    box-sizing: border-box;
+  }
+  .timer-view-body .timer-secondary-block {
+    width: 100%;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    transform: translateY(-6px);
   }
   .timer-view-body .timer-glass-wrap {
     background: transparent;
@@ -9749,11 +10122,11 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     flex: 1 1 0;
     min-width: 0;
     max-width: none;
-    padding: 12px 20px;
+    padding: 9px 14px;
     border-radius: 999px;
     border: 1px solid transparent;
     font-family: var(--font-display);
-    font-size: calc(var(--text-sm) + 1px);
+    font-size: var(--text-sm);
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -9770,6 +10143,39 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
       0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
       0 10px 28px color-mix(in srgb, var(--accent) 28%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .timer-view-body .timer-settings-disclosure {
+    width: 100%;
+    max-width: 380px;
+    box-sizing: border-box;
+  }
+  .timer-view-body .timer-settings-disclosure__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 6px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .timer-view-body .timer-settings-disclosure__header .axis-chevron-svg {
+    flex-shrink: 0;
+    opacity: 0.72;
+  }
+  .timer-view-body .timer-settings-disclosure__body {
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 4px;
   }
   .timer-view-body .timer-glass-orb {
     background: transparent;
@@ -9790,6 +10196,24 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     background: transparent;
     border-radius: 0;
   }
+  /* Same vertical band as .timer-secondary-block (settings): ring → gap → ~92px slot → gap → buttons */
+  .timer-view-body .timer-active-mid-band {
+    flex: 0 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .timer-view-body .timer-active-mid-band .timer-glass-phase {
+    margin-top: 0;
+    padding-top: 8px;
+    padding-bottom: 4px;
+    min-height: 0;
+  }
   .timer-view-body .timer-glass-btn-pri {
     background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 88%, #fff) 0%, var(--accent) 100%);
     color: var(--accent-btn-text, var(--axis-white));
@@ -9797,13 +10221,21 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     box-shadow: 0 10px 32px color-mix(in srgb, var(--accent) 32%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
   .timer-view-body .timer-cta-row {
-    max-width: 360px;
+    max-width: 380px;
     margin-left: auto;
     margin-right: auto;
   }
+  .timer-view-body .timer-glass-btn-pri.timer-start-cta {
+    border-radius: 18px;
+    min-height: 56px;
+    box-shadow:
+      0 14px 44px color-mix(in srgb, var(--accent) 36%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
   .timer-view-body .timer-cta-row > .timer-glass-btn-pri:first-child:last-child {
-    width: 100%;
-    flex: 1 1 auto;
+    width: 50%;
+    flex: 0 1 50%;
   }
   .timer-view-body .timer-cta-row .timer-glass-btn-pri:not(:only-of-type) {
     flex: 1 1 0;
@@ -9831,12 +10263,11 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     border-radius: 999px;
     backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 50%, transparent);
+    box-shadow: none;
     transition: all 0.2s ease;
   }
   .timer-view-body .timer-glass-pattern-btn.active {
     background: color-mix(in srgb, var(--accent-dim) 55%, rgba(255, 255, 255, 0.04));
-    border-top-color: color-mix(in srgb, var(--accent) 45%, transparent);
     color: var(--accent);
   }
   .timer-view-body .timer-glass-pattern-btn:not(.active) {
@@ -9901,25 +10332,26 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="soft"] .timer-breathe-ring {
     filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 22%, transparent)) drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 12%, transparent));
   }
-  /* subtle hold pulse: animate glow opacity and blur (respects reduced motion) */
+  /* HOLD: no background glow pulse — mood ring pulses (see breathe-hold-ring-pulse) */
   @media (prefers-reduced-motion: no-preference) {
-    .timer-breathe-hold .timer-breathe-glow {
-      animation: breathe-hold-glow 1.2s ease-in-out infinite;
-      will-change: filter;
-    }
-    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
       animation: pulse-glow 3s ease-in-out infinite;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
       animation: none;
       filter: drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 50%, transparent)) drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 28%, transparent));
     }
   }
-  @keyframes breathe-hold-glow {
-    from { filter: blur(3px); }
-    to   { filter: blur(4px); }
+  /* HOLD: mood color ring brighter/duller once per second */
+  @keyframes breathe-hold-ring-pulse {
+    0%, 100% {
+      filter: brightness(0.7) drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 28%, transparent)) drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 16%, transparent));
+    }
+    50% {
+      filter: brightness(1.14) drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 78%, transparent)) drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 46%, transparent));
+    }
   }
   @keyframes pulse-glow {
     0%, 100% {
@@ -9929,14 +10361,37 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
       filter: drop-shadow(0 0 22px color-mix(in srgb, var(--accent) 72%, transparent)) drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 48%, transparent));
     }
   }
-  /* JS drives inner-ring scale; disable filter pulses that start at HOLD / fight phase boundaries */
-  .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+  /* JS drives inner-ring scale; steady glow on peak — except HOLD (ring pulses via breathe-hold-ring-pulse) */
+  .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
     animation: none !important;
     transition: none !important;
     filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 32%, transparent)) drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 16%, transparent)) !important;
   }
+  /* Interval: glow on guide-ring progress stroke (r=140, same as dull outline) */
+  .timer-view-body .timer-interval-ring-wrap[data-interval-glow="peak"] .timer-interval-guide-progress {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 32%, transparent)) drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 16%, transparent));
+  }
   .timer-view-body .timer-breathe-hold .timer-breathe-glow {
     animation: none !important;
+    will-change: auto;
+    opacity: 0.34;
+    filter: blur(3px) brightness(1);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring {
+      animation: breathe-hold-ring-pulse 1s ease-in-out infinite !important;
+      transform: scale(1) !important;
+      transition: none !important;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .timer-view-body .timer-breathe-hold .timer-breathe-glow,
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring {
+      animation: none !important;
+    }
+    .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring {
+      filter: brightness(0.95) drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 48%, transparent)) drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 28%, transparent)) !important;
+    }
   }
   .timer-view-body .timer-glass-stepper {
     background: rgba(255, 255, 255, 0.04);
@@ -9976,11 +10431,18 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-  .timer-view-body .timer-interval-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
+  /* Let mood drop-shadow on the progress stroke extend past the disc (default overflow:hidden clips it). */
+  .timer-view-body .timer-interval-ring-wrap.axis-surface-tmt[data-interval-glow="peak"] {
+    overflow: visible;
+  }
+  /* Work/Rest in same row as BREATHE pattern pills (timer-pattern-row); Rounds row matches Cycles row */
+  .timer-view-body .timer-pattern-row.timer-interval-work-rest-slot {
+    align-items: flex-start;
+  }
+  .timer-view-body .timer-pattern-row.timer-interval-work-rest-slot .timer-interval-row {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: calc(50% - 6px);
   }
   /* Work/Rest/Rounds: minimal strip — no outer glass card; −/+ steppers keep glass styling */
   .timer-view-body .timer-glass-panel.timer-interval-rows {
@@ -9994,39 +10456,36 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   }
   .timer-view-body .timer-interval-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 8px;
-    min-height: 44px;
-    padding: 10px 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
-    background: transparent;
-    border-left: none;
-    border-right: none;
-    border-top: none;
+    min-width: 0;
+    min-height: 0;
+    padding: 5px 5px 7px;
+    border: none;
     border-radius: 0;
+    background: transparent;
     box-shadow: none;
     box-sizing: border-box;
-    transition: all 0.2s ease;
-  }
-  .timer-view-body .timer-interval-row:last-child {
-    border-bottom: none;
+    transition: color 0.2s ease;
   }
   .timer-view-body .timer-interval-row-label {
     flex: 0 0 auto;
-    width: 60px;
-    font-size: var(--text-xs);
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(246, 247, 248, 0.4);
+    color: rgba(246, 247, 248, 0.38);
     font-family: var(--font-display);
   }
   .timer-view-body .timer-interval-row-value .timer-instrument-val {
     font-size: var(--text-base);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-    color: rgba(246, 247, 248, 0.86);
+    color: rgba(246, 247, 248, 0.9);
     text-shadow: none;
   }
   .timer-view-body .timer-instrument-val {
@@ -10082,13 +10541,14 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   .timer-view-body .timer-interval-row-controls {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    flex: 1;
+    justify-content: center;
+    gap: 7px;
+    flex: 0 0 auto;
+    width: 100%;
     min-width: 0;
   }
   .timer-view-body .timer-interval-row-value {
-    min-width: 48px;
+    min-width: 36px;
     text-align: center;
     font-variant-numeric: tabular-nums;
   }
@@ -10105,8 +10565,10 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  .timer-view-body .timer-interval-ring circle:first-of-type {
-    stroke: var(--border);
+  /* Breathe idle: nudge pattern + cycles down to match Interval Work/Rest + Rounds placement */
+  .timer-view-body .timer-pattern-row.timer-breathe-pattern-row {
+    padding-top: 14px;
+    box-sizing: border-box;
   }
   .timer-view-body .timer-breathe-guide-ring circle:not(.timer-interval-guide-progress) {
     stroke: var(--border);
@@ -10121,15 +10583,18 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     -webkit-backdrop-filter: blur(24px) saturate(1.35);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
   }
+  [data-theme="light"] .timer-view-body .timer-hero-stage.timer-interval-ring-wrap,
+  [data-theme="light"] .timer-view-body .timer-hero-stage.timer-breathe-ring-wrap {
+    background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 10%, #ffffff) 0%, #f2f6fb 42%, #e8eef6 100%);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, rgba(15, 30, 46, 0.12));
+    box-shadow: 0 22px 50px rgba(15, 30, 46, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
   [data-theme="light"] .timer-view-body .timer-glass-panel {
     border: 1px solid rgba(0,0,0,0.1);
     background: #FFFFFF;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 16px 40px rgba(0,0,0,0.04);
     backdrop-filter: blur(24px) saturate(1.35);
     -webkit-backdrop-filter: blur(24px) saturate(1.35);
-  }
-  [data-theme="light"] .timer-view-body .timer-interval-row {
-    border-bottom: 1px solid rgba(0,0,0,0.06);
   }
   [data-theme="light"] .timer-view-body .timer-glass-panel.timer-interval-rows {
     background: transparent;
@@ -10175,7 +10640,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   [data-theme="light"] .timer-view-body .timer-glass-pattern-btn {
     background: rgba(0,0,0,0.04);
     border: 1px solid rgba(0,0,0,0.1);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+    box-shadow: none;
   }
   [data-theme="light"] .timer-view-body .timer-breathe-cycle-chip {
     background: transparent;
@@ -10191,21 +10656,37 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     background: var(--mood-accent);
   }
   [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="soft"] .timer-breathe-ring,
-  [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+  [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
     filter: none;
     animation: none;
   }
+  [data-theme="light"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring {
+    animation: breathe-hold-ring-pulse 1s ease-in-out infinite !important;
+  }
+  [data-theme="light"] .timer-view-body .timer-interval-ring-wrap[data-interval-glow="peak"] .timer-interval-guide-progress {
+    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--mood-accent, var(--accent)) 42%, transparent)) drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 22%, transparent));
+    animation: none;
+  }
   @media (prefers-reduced-motion: no-preference) {
-    .timer-view-body .timer-interval-ring .timer-interval-progress {
-      transition: stroke-dashoffset 1s linear, stroke 0.4s ease;
+    .timer-view-body .timer-breathe-guide-ring .timer-interval-guide-progress {
+      will-change: stroke-dashoffset;
+      transition: stroke-dashoffset 0.14s linear, stroke 0.45s ease;
     }
-    .timer-view-body .timer-interval-ring.timer-ring--snap .timer-interval-progress {
+    .timer-view-body .timer-breathe-guide-ring .timer-interval-guide-progress.timer-ring--snap {
       transition: stroke-dashoffset 0s linear, stroke 0s !important;
     }
   }
   `;
 
   const timerNightCss = nightMode ? `
+  [data-night="true"] .timer-view-body .timer-hero-stage.timer-interval-ring-wrap,
+  [data-night="true"] .timer-view-body .timer-hero-stage.timer-breathe-ring-wrap {
+    background: linear-gradient(180deg, rgba(255, 59, 48, 0.14) 0%, #0a0000 55%, #000000 100%) !important;
+    border: 1px solid rgba(255, 59, 48, 0.55) !important;
+    box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.12), 0 24px 56px rgba(0, 0, 0, 0.65) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
   [data-night="true"] .timer-view-body .timer-mode-outer-pill,
   [data-night="true"] .timer-view-body .timer-glass-panel,
   [data-night="true"] .timer-view-body .timer-glass-pattern-btn {
@@ -10239,7 +10720,6 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   }
   [data-night="true"] .timer-view-body .timer-glass-toggle-btn { color: rgba(255, 59, 48, 0.65) !important; }
   [data-night="true"] .timer-view-body .timer-glass-toggle-btn.active { color: #000000 !important; background: #FF3B30 !important; }
-  [data-night="true"] .timer-view-body .timer-interval-row { border-bottom-color: #FF3B30 !important; }
   [data-night="true"] .timer-view-body .timer-interval-row-label { color: #FF3B30 !important; }
   [data-night="true"] .timer-view-body .timer-instrument-val {
     color: #FF3B30 !important;
@@ -10274,9 +10754,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     border-color: #FF3B30 !important;
     box-shadow: none !important;
   }
-  /* Ultra: restore the inner ring “breathing” scale (pulse-glow overrides base animation) */
-  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+  /* Ultra: steady peak ring — HOLD uses breathe-hold-ring-pulse on mood ring */
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
     animation: none !important;
+  }
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-hold .timer-breathe-ring {
+    animation: breathe-hold-ring-pulse 1s ease-in-out infinite !important;
   }
   [data-night="true"] .timer-view-body .timer-breathe-orb,
   [data-night="true"] .timer-view-body .timer-breathe-orb-soft { display: none !important; }
@@ -10288,8 +10771,11 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     pointer-events: none !important;
   }
   [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="soft"] .timer-breathe-ring,
-  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"] .timer-breathe-ring {
+  [data-night="true"] .timer-view-body .timer-breathe-ring-wrap[data-breathe-glow="peak"]:not(:has(.timer-breathe-hold)) .timer-breathe-ring {
     filter: none !important;
+  }
+  [data-night="true"] .timer-view-body .timer-interval-ring-wrap[data-interval-glow="peak"] .timer-interval-guide-progress {
+    filter: drop-shadow(0 0 14px rgba(255, 59, 48, 0.55)) drop-shadow(0 0 5px rgba(255, 59, 48, 0.38)) !important;
   }
   [data-night="true"] .timer-view-body .timer-glass-btn-ghost {
     color: #FF3B30 !important;
@@ -10299,16 +10785,23 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   [data-night="true"] .timer-view-body .timer-interval-row-value span:last-child {
     color: #FF3B30 !important;
   }
-  /* Ultra: interval arcs match breathe guide — 2.5px; track uses same stroke-opacity as breathe outline (thin look) */
-  [data-night="true"] .timer-view-body .timer-interval-ring circle:first-of-type {
-    stroke-width: 2.5 !important;
-    stroke-opacity: 0.5 !important;
-  }
-  [data-night="true"] .timer-view-body .timer-interval-ring .timer-interval-progress {
+  [data-night="true"] .timer-view-body .timer-breathe-guide-ring .timer-interval-guide-progress {
     stroke-width: 2.5 !important;
     stroke-opacity: 1 !important;
   }
   ` : "";
+
+  const renderIntervalSettingRow = ({ label, val, set, min, max, step, isRound }) => /*#__PURE__*/
+  React.createElement("div", { key: label, className: "timer-interval-row" }, /*#__PURE__*/
+  React.createElement("span", { className: "timer-interval-row-label" }, label), /*#__PURE__*/
+  React.createElement("div", { className: "timer-interval-row-controls" }, /*#__PURE__*/
+  React.createElement("button", { type: "button", "aria-label": `${label} decrease`, onClick: () => {axisHapticTick();set((v) => Math.max(min, v - step));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "\u2212"), /*#__PURE__*/
+  React.createElement("div", { className: "timer-interval-row-value", style: { display: "flex", alignItems: "baseline", justifyContent: "center", gap: 2 } }, /*#__PURE__*/
+  React.createElement("span", { className: "timer-instrument-val" }, val),
+  !isRound && /*#__PURE__*/React.createElement("span", { style: { fontSize: "var(--text-xs)", color: "var(--text-dimmer)", fontFamily: "var(--font-display)" } }, "s")
+  ), /*#__PURE__*/
+  React.createElement("button", { type: "button", "aria-label": `${label} increase`, onClick: () => {axisHapticTick();set((v) => Math.min(max, v + step));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "+")
+  ));
 
   const timerRootStyle = {
     minHeight: "100dvh",
@@ -10324,11 +10817,11 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("style", null, timerFlatCss + timerNightCss), /*#__PURE__*/
     React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
 
-    React.createElement("div", { className: "app-body" }, /*#__PURE__*/
+    React.createElement("div", { className: "app-body axis-app-scroll-root axis-app-scroll-root--timer" }, /*#__PURE__*/
     dashboardHeader,
     React.createElement("div", { className: "timer-view-body" }, /*#__PURE__*/
 
-    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, flex: 1, minHeight: 0 } }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 380, flex: 1, minHeight: 0 } }, /*#__PURE__*/
     React.createElement("div", { style: { flexShrink: 0, height: TIMER_TOGGLE_SPACER_TOP, width: "100%" }, "aria-hidden": true }), /*#__PURE__*/
     React.createElement("div", { className: "timer-mode-outer-pill timer-glass-wrap", style: TIMER_TOGGLE_WRAP },
     ["interval", "breathe"].map((m) => /*#__PURE__*/
@@ -10339,17 +10832,24 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     mode === "interval" && /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", flex: 1, minHeight: 0 } }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-orb timer-ring-slot timer-interval-ring-wrap axis-surface-tmt", style: TIMER_RING_WRAP }, /*#__PURE__*/
-    React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", className: "timer-interval-ring" + (intervalRingSnap ? " timer-ring--snap" : ""), style: { transform: "rotate(-90deg)", display: "block", margin: "0 auto" } }, /*#__PURE__*/
-    React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : isDark ? "var(--border)" : "#EEEEEE", strokeWidth: isDark ? "2.5" : "1.5" }),
-    iPhase !== "idle" && iPhase !== "done" && /*#__PURE__*/
-    React.createElement("circle", { className: "timer-interval-progress", cx: "160", cy: "160", r: "140", fill: "none",
-      stroke: iRingColor, strokeWidth: nightMode ? "2.5" : "3", strokeLinecap: "round",
-      strokeDasharray: iCircumference,
-      strokeDashoffset: iCircumference * (1 - iPct / 100) }
-    )
-
-    ), /*#__PURE__*/
+    React.createElement("div", { className: "timer-glass-orb timer-ring-slot timer-interval-ring-wrap axis-surface-tmt timer-hero-stage", style: TIMER_RING_WRAP, "data-interval-glow": iRunning && (iPhase === "work" || iPhase === "rest") ? "peak" : undefined }, /*#__PURE__*/
+    React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
+    !isDark && React.createElement("defs", null,
+      React.createElement("radialGradient", { id: "timerIntervalGrad", cx: "50%", cy: "50%", r: "50%" },
+        React.createElement("stop", { offset: "0%", stopColor: breatheAccent, stopOpacity: "0.08" }),
+        React.createElement("stop", { offset: "70%", stopColor: "rgba(255,255,255,0)" })
+      )
+    ),
+    !isDark && React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "url(#timerIntervalGrad)" }),
+    React.createElement("circle", { className: "timer-breathe-guide-outline", cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : isDark ? "var(--border)" : "#EEEEEE", strokeWidth: nightMode || isDark ? "2.5" : "3" }),
+    (iPhase === "work" || iPhase === "rest") && /*#__PURE__*/React.createElement("g", { transform: "rotate(-90 160 160)" }, /*#__PURE__*/
+    React.createElement("circle", { className: "timer-interval-guide-progress" + (intervalRingSnap ? " timer-ring--snap" : ""), cx: "160", cy: "160", r: "140", fill: "none",
+      stroke: iRingColor, strokeWidth: nightMode || isDark ? "2.5" : "3.4", strokeLinecap: "round",
+      strokeDasharray: iGuideDashArray,
+      strokeDashoffset: iGuideDashOffset,
+      style: { transition: "stroke 0.3s ease" } }
+    ))
+    ),
 
     React.createElement("div", { style: { position: "absolute", left: 0, top: 0, width: ringSize, height: ringSize, pointerEvents: "none" } }, /*#__PURE__*/
 
@@ -10361,21 +10861,32 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement("div", { style: { ...intervalDigitStyle, transition: "color 0.4s" } }, formatSecondsOnly(iTime)),
 
     iPhase === "done" && /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "48px", fontWeight: 600, color: breatheAccent, fontFamily: "var(--font-display)", lineHeight: 1 } }, "\u2713")
+    React.createElement("div", { style: TIMER_HERO_READY_STYLE }, "Done")
 
-    ),
+    )
 
-    (iPhase === "idle" || iPhase === "work" || iPhase === "rest") && /*#__PURE__*/
+    )
+    )
+    , /*#__PURE__*/
+    (iPhase === "work" || iPhase === "rest") && /*#__PURE__*/
+    React.createElement("div", { className: "timer-active-mid-band timer-secondary-block", style: { flexShrink: 0, marginTop: TIMER_IDLE_VERTICAL_GAP, minHeight: TIMER_MID_IDLE_HEIGHT, boxSizing: "border-box" } },
+    React.createElement("div", { className: "timer-glass-phase", style: { flexShrink: 0, width: "100%", textAlign: "center", padding: "10px 20px 12px", marginTop: 0, boxSizing: "border-box", minHeight: TIMER_PHASE_BAND, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
     React.createElement("div", { style: {
-        position: "absolute", left: 0, right: 0, bottom: 20, height: 80,
-        display: "flex", alignItems: "center", justifyContent: "center"
-      } }, /*#__PURE__*/
-    React.createElement("div", {
-      className: "timer-round-pips",
-      role: "group",
-      "aria-label": `Round ${iPhase === "idle" ? 1 : iRound} of ${rounds}`
-    }, Array.from({ length: rounds }, (_, i) => {
-      const activeIdx = iPhase === "idle" ? 0 : iRound - 1;
+        fontSize: "var(--text-xl)",
+        fontWeight: 500,
+        letterSpacing: "0.22em",
+        textTransform: "uppercase",
+        color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "#1D1D1F",
+        opacity: 1,
+        fontFamily: "var(--font-display)",
+        transition: "none",
+        lineHeight: 1.25
+      } }, iPhase === "rest" ? "Rest" : "Work")
+    ),
+    React.createElement("div", { style: { display: "flex", width: "100%", maxWidth: 360, marginLeft: "auto", marginRight: "auto", justifyContent: "center", marginTop: 0, marginBottom: 0, boxSizing: "border-box" } }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-breathe-cycle-chip", role: "group", "aria-label": `Round ${iRound} of ${rounds}` }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-round-pips" }, Array.from({ length: rounds }, (_, i) => {
+      const activeIdx = iRound - 1;
       const done = (iPhase === "work" || iPhase === "rest") && i < iRound - 1;
       const active = i === activeIdx;
       return /*#__PURE__*/React.createElement("div", {
@@ -10384,52 +10895,46 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         "aria-hidden": true
       });
     }))
+    ))
     )
+    , /*#__PURE__*/
 
-    )
-    ), /*#__PURE__*/
 
-
-    React.createElement("div", { style: { flexShrink: 0, height: iPhase === "idle" ? TIMER_MID_IDLE_HEIGHT : undefined, minHeight: iPhase === "idle" ? TIMER_MID_IDLE_HEIGHT : 0, width: "100%", marginTop: iPhase === "idle" ? TIMER_IDLE_VERTICAL_GAP : 6, marginBottom: iPhase === "idle" ? 0 : 6, boxSizing: "border-box" } },
-    iPhase === "idle" && /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-panel timer-interval-rows", style: { marginBottom: 0, width: "100%", boxSizing: "border-box", overflow: "visible", borderRadius: 0 } },
-    [
-    { label: "Work", val: work, set: setWork, min: 5, max: 300, step: 5, isRound: false },
-    { label: "Rest", val: rest, set: setRest, min: 0, max: 120, step: 5, isRound: false },
-    { label: "Rounds", val: rounds, set: setRounds, min: 1, max: 20, step: 1, isRound: true }].
-    map(({ label, val, set, min, max, step, isRound }) => /*#__PURE__*/
-    React.createElement("div", { key: label, className: "timer-interval-row" }, /*#__PURE__*/
-    React.createElement("span", { className: "timer-interval-row-label" }, label), /*#__PURE__*/
-    React.createElement("div", { className: "timer-interval-row-controls" }, /*#__PURE__*/
-    React.createElement("button", { type: "button", "aria-label": `${label} decrease`, onClick: () => {axisHapticTick();set((v) => Math.max(min, v - step));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "\u2212"), /*#__PURE__*/
-    React.createElement("div", { className: "timer-interval-row-value", style: { display: "flex", alignItems: "baseline", justifyContent: "center", gap: 2 } }, /*#__PURE__*/
-    React.createElement("span", { className: "timer-instrument-val" }, val),
-    !isRound && /*#__PURE__*/React.createElement("span", { style: { fontSize: "var(--text-xs)", color: "var(--text-dimmer)", fontFamily: "var(--font-display)" } }, "s")
-    ), /*#__PURE__*/
-    React.createElement("button", { type: "button", "aria-label": `${label} increase`, onClick: () => {axisHapticTick();set((v) => Math.min(max, v + step));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "+")
-    )
-    )
-    )
-    )
-
+    iPhase === "idle" && /*#__PURE__*/React.createElement("div", { className: "timer-secondary-block", style: { flexShrink: 0, height: TIMER_MID_IDLE_HEIGHT, minHeight: TIMER_MID_IDLE_HEIGHT, width: "100%", marginTop: TIMER_IDLE_VERTICAL_GAP, marginBottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box" } },
+    React.createElement(React.Fragment, null, [
+    React.createElement("div", { className: "timer-pattern-row timer-interval-work-rest-slot", style: { width: "100%", maxWidth: 360 } },
+    renderIntervalSettingRow({ label: "Work", val: work, set: setWork, min: 5, max: 300, step: 5, isRound: false }),
+    renderIntervalSettingRow({ label: "Rest", val: rest, set: setRest, min: 0, max: 120, step: 5, isRound: false })
     ),
-    (iPhase === "work" || iPhase === "rest" || iPhase === "done") && /*#__PURE__*/
+    React.createElement("div", { style: { width: "100%", maxWidth: 360, marginTop: 6, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } }, /*#__PURE__*/
+    React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)", fontFamily: "var(--font-display)", marginRight: 8 } }, "Rounds"), /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6 } }, /*#__PURE__*/
+    React.createElement("button", { type: "button", "aria-label": "Rounds decrease", onClick: () => {axisHapticTick();setRounds((v) => Math.max(1, v - 1));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "\u2212"), /*#__PURE__*/
+    React.createElement("div", { className: "timer-interval-row-value", style: { minWidth: 34, textAlign: "center", fontVariantNumeric: "tabular-nums" } }, /*#__PURE__*/React.createElement("span", { className: "timer-instrument-val" }, rounds)), /*#__PURE__*/
+    React.createElement("button", { type: "button", "aria-label": "Rounds increase", onClick: () => {axisHapticTick();setRounds((v) => Math.min(20, v + 1));}, className: "timer-glass-stepper timer-interval-stepper", style: { cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" } }, "+")
+    )
+    )
+    )
+    ])
+    ),
+    iPhase === "done" && /*#__PURE__*/
     React.createElement("div", { style: { flexShrink: 0, width: "100%", minHeight: TIMER_PHASE_BAND, boxSizing: "border-box" }, "aria-hidden": true }), /*#__PURE__*/
-    React.createElement("div", { style: iPhase === "idle" ? mode === "interval" ? TIMER_BTN_SPACER_ABOVE_INTERVAL_IDLE : TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE, "aria-hidden": true }), /*#__PURE__*/
-    React.createElement("div", { className: "timer-cta-row", style: iPhase === "idle" ? TIMER_BTN_ROW_IDLE : TIMER_BTN_ROW },
-    iPhase === "idle" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();iStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
+    React.createElement("div", { style: iPhase === "done" ? TIMER_BTN_SPACER_ABOVE : mode === "interval" && iPhase !== "done" ? TIMER_BTN_SPACER_ABOVE_INTERVAL_IDLE : iPhase === "idle" ? TIMER_BTN_SPACER_ABOVE_IDLE : TIMER_BTN_SPACER_ABOVE, "aria-hidden": true }), /*#__PURE__*/
+    React.createElement("div", { className: "timer-cta-row", style: TIMER_BTN_ROW_IDLE },
+    iPhase === "idle" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();iStart();}, className: "timer-glass-btn-pri ultra-filled-btn timer-start-cta", style: BTN }, "Start"),
     (iPhase === "work" || iPhase === "rest") && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-    React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setIRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn", style: { ...BTN, padding: "12px 28px" } }, iRunning ? "Pause" : "Resume"), /*#__PURE__*/
+    React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setIRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn timer-start-cta", style: BTN }, iRunning ? "Pause" : "Resume"), /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();iReset();}, className: "timer-glass-btn-ghost", style: BTN_GHOST }, "Reset")
     ),
-    iPhase === "done" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);iReset();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Again")
+    iPhase === "done" && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);iReset();}, className: "timer-glass-btn-pri ultra-filled-btn timer-start-cta", style: BTN }, "Again")
     ), /*#__PURE__*/
-    React.createElement("div", { style: iPhase === "idle" ? mode === "interval" ? TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE : TIMER_BTN_SPACER_BELOW_IDLE : TIMER_BTN_SPACER_BELOW, "aria-hidden": true })
+    React.createElement("div", { style: iPhase === "done" ? TIMER_BTN_SPACER_BELOW : mode === "interval" && iPhase !== "done" ? TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE : iPhase === "idle" ? TIMER_BTN_SPACER_BELOW_IDLE : TIMER_BTN_SPACER_BELOW, "aria-hidden": true })
     ),
 
     mode === "breathe" && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360, alignSelf: "center", flex: 1, minHeight: 0, boxSizing: "border-box" } }, /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot axis-surface-tmt", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning ? "peak" : undefined }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 380, alignSelf: "center", flex: 1, minHeight: 0, boxSizing: "border-box" } }, /*#__PURE__*/
+    React.createElement("div", { className: "timer-glass-orb timer-breathe-ring-wrap timer-ring-slot axis-surface-tmt timer-hero-stage", style: TIMER_RING_WRAP, "data-breathe-glow": bRunning || bPaused ? "peak" : undefined }, /*#__PURE__*/
     React.createElement("svg", { width: ringSize, height: ringSize, viewBox: "0 0 320 320", style: { position: "absolute", top: 0, left: 0 }, className: "timer-breathe-guide-ring" }, /*#__PURE__*/
     !isDark && React.createElement("defs", null,
       React.createElement("radialGradient", { id: "timerBreatheGrad", cx: "50%", cy: "50%", r: "50%" },
@@ -10440,13 +10945,13 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     !isDark && React.createElement("circle", { cx: "160", cy: "160", r: "140", fill: "url(#timerBreatheGrad)" }),
     React.createElement("circle", { className: "timer-breathe-guide-outline", cx: "160", cy: "160", r: "140", fill: "none", stroke: nightMode ? "#FF3B30" : isDark ? "var(--border)" : "#EEEEEE", strokeWidth: nightMode || isDark ? "2.5" : "3" })
     ),
-    bRunning && /*#__PURE__*/
+    (bRunning || bPaused) && /*#__PURE__*/
     React.createElement("div", { className: isHoldPhase ? "timer-breathe-hold" : "", style: {
         position: "absolute", left: breatheInset, top: breatheInset, width: 306, height: 306, borderRadius: "50%", overflow: "visible", pointerEvents: "none",
         // scale max: accent stroke outer edge = guide stroke outer edge (see breatheMaxScale)
-        transform: bRunning ? `translateZ(0) scale(${breatheScaleDisplay})` : "scale(0.45)",
+        transform: bRunning || bPaused ? `translateZ(0) scale(${breatheScaleDisplay})` : "scale(0.45)",
         transformOrigin: "center center",
-        transition: !bRunning ? "transform 0.6s ease" : "none",
+        transition: !bRunning && !bPaused ? "transform 0.6s ease" : "none",
         willChange: "transform",
         backfaceVisibility: "hidden",
         WebkitBackfaceVisibility: "hidden"
@@ -10480,29 +10985,31 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
 
     React.createElement("div", { style: { position: "absolute", left: 0, top: 0, width: ringSize, height: ringSize, pointerEvents: "none" } },
-    !bRunning && !bDone && /*#__PURE__*/
+    !bRunning && !bDone && !bPaused && /*#__PURE__*/
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-lg)", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-dimmer)", fontFamily: "var(--font-display)" } }, "Ready")
+    React.createElement("div", { style: TIMER_HERO_READY_STYLE }, "Ready")
     ),
 
-    bRunning && /*#__PURE__*/
+    (bRunning || bPaused) && !bDone && /*#__PURE__*/
     React.createElement(React.Fragment, null, /*#__PURE__*/
 
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { ...intervalDigitStyle, minWidth: 72, color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "#1D1D1F", textShadow: "none", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
+    React.createElement("div", { style: { ...intervalDigitStyle, opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
     )
     ),
 
     bDone && /*#__PURE__*/
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "42px", fontWeight: 600, color: breatheAccent, fontFamily: "var(--font-display)", lineHeight: 1 } }, "\u2713")
+    React.createElement("div", { style: TIMER_HERO_READY_STYLE }, "Done")
     )
 
     )
-    ),
+    )
+    ,
 
-    bRunning && /*#__PURE__*/
-    React.createElement("div", { className: "timer-glass-phase", style: { flexShrink: 0, width: "100%", textAlign: "center", padding: "10px 20px 12px", marginTop: 4, boxSizing: "border-box", minHeight: TIMER_PHASE_BAND, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
+    (bRunning || bPaused) && !bDone && /*#__PURE__*/
+    React.createElement("div", { className: "timer-active-mid-band timer-secondary-block", style: { flexShrink: 0, marginTop: TIMER_IDLE_VERTICAL_GAP, minHeight: TIMER_MID_IDLE_HEIGHT, boxSizing: "border-box" } },
+    React.createElement("div", { className: "timer-glass-phase", style: { flexShrink: 0, width: "100%", textAlign: "center", padding: "10px 20px 12px", marginTop: 0, boxSizing: "border-box", minHeight: TIMER_PHASE_BAND, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
     React.createElement("div", { key: `${bPhaseIdx}-${phaseLabel}-${bCycle}`, style: {
         fontSize: "var(--text-xl)",
         fontWeight: 500,
@@ -10515,10 +11022,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         lineHeight: 1.25
       } }, curBreathPhase.label)
     ),
-
-
-    bRunning && /*#__PURE__*/
-    React.createElement("div", { style: { display: "flex", width: "100%", maxWidth: 360, marginLeft: "auto", marginRight: "auto", justifyContent: "center", marginTop: 6, marginBottom: 6, boxSizing: "border-box" } }, /*#__PURE__*/
+    React.createElement("div", { style: { display: "flex", width: "100%", maxWidth: 360, marginLeft: "auto", marginRight: "auto", justifyContent: "center", marginTop: 0, marginBottom: 0, boxSizing: "border-box" } }, /*#__PURE__*/
     React.createElement("div", { className: "timer-breathe-cycle-chip", role: "group", "aria-label": `Cycle ${bCycle} of ${breathCycles}` }, /*#__PURE__*/
     React.createElement("div", { className: "timer-round-pips" }, Array.from({ length: breathCycles }, (_, i) => {
       const activeIdx = bCycle - 1;
@@ -10530,23 +11034,23 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         "aria-hidden": true
       });
     }))
+    ))
     )
-    ),
+    ,
 
 
     bDone && /*#__PURE__*/
     React.createElement("div", { style: { flexShrink: 0, width: "100%", minHeight: TIMER_PHASE_BAND, boxSizing: "border-box" }, "aria-hidden": true }), /*#__PURE__*/
 
 
-    React.createElement("div", { style: { flexShrink: 0, height: !bRunning && !bDone ? TIMER_MID_IDLE_HEIGHT : undefined, minHeight: !bRunning && !bDone ? TIMER_MID_IDLE_HEIGHT : 0, width: "100%", marginTop: !bRunning && !bDone ? TIMER_IDLE_VERTICAL_GAP : 6, marginBottom: !bRunning && !bDone ? 0 : 6, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box" } },
-    !bRunning && !bDone && /*#__PURE__*/
-    React.createElement(React.Fragment, null, /*#__PURE__*/
-    React.createElement("div", { className: "timer-pattern-row", style: { width: "100%", maxWidth: 360 } },
+    !bRunning && !bDone && !bPaused && /*#__PURE__*/React.createElement("div", { className: "timer-secondary-block", style: { flexShrink: 0, height: TIMER_MID_IDLE_HEIGHT, minHeight: TIMER_MID_IDLE_HEIGHT, width: "100%", marginTop: TIMER_IDLE_VERTICAL_GAP, marginBottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box" } },
+    React.createElement(React.Fragment, null, [
+    React.createElement("div", { className: "timer-pattern-row timer-breathe-pattern-row", style: { width: "100%", maxWidth: 360 } },
     Object.keys(BREATH_PATTERNS).map((p) => /*#__PURE__*/
     React.createElement("button", { key: p, type: "button", onClick: () => {axisHapticTick();setBreathPattern(p);}, className: "timer-glass-pattern-btn" + (breathPattern === p ? " active" : ""), style: { fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", padding: "9px 20px", cursor: "pointer", color: nightMode ? breathPattern === p ? "#FF3B30" : "rgba(255, 59, 48, 0.72)" : breathPattern === p ? "var(--accent)" : "var(--text-secondary)" } }, p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh")
     )
-    ), /*#__PURE__*/
-
+    )
+    ,
     React.createElement("div", { style: { width: "100%", maxWidth: 360, marginTop: 6, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } }, /*#__PURE__*/
     React.createElement("div", { style: { fontSize: "var(--text-xs)", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-dimmer)", fontFamily: "var(--font-display)", marginRight: 8 } }, "Cycles"), /*#__PURE__*/
@@ -10557,20 +11061,20 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     )
     )
     )
+    ])
     )
-
-    ), /*#__PURE__*/
+    , /*#__PURE__*/
 
     React.createElement("div", { style: TIMER_BTN_SPACER_ABOVE_BREATHE_IDLE, "aria-hidden": true }), /*#__PURE__*/
     React.createElement("div", { className: "timer-cta-row", style: TIMER_BTN_ROW_IDLE },
-    !bRunning && !bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();bStart();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Start"),
-    bRunning && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-    React.createElement("button", { type: "button", onClick: () => {axisHapticTick();setBRunning((r) => !r);}, className: "timer-glass-btn-pri ultra-filled-btn", style: { ...BTN, padding: "12px 28px" } }, "Pause"), /*#__PURE__*/
+    !bRunning && !bDone && !bPaused && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {primeAudio();bStart();}, className: "timer-glass-btn-pri ultra-filled-btn timer-start-cta", style: BTN }, "Start"),
+    (bRunning || bPaused) && !bDone && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
+    React.createElement("button", { type: "button", onClick: () => {axisHapticTick();if (bRunning) {setBPaused(true);setBRunning(false);} else {setBPaused(false);setBRunning(true);}}, className: "timer-glass-btn-pri ultra-filled-btn timer-start-cta", style: BTN }, bRunning ? "Pause" : "Resume"), /*#__PURE__*/
     React.createElement("button", { type: "button", onClick: () => {axisHapticTick();bReset();}, className: "timer-glass-btn-ghost", style: BTN_GHOST }, "Reset")
     ),
-    bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);bReset();}, className: "timer-glass-btn-pri ultra-filled-btn", style: BTN }, "Again")
+    bDone && /*#__PURE__*/React.createElement("button", { type: "button", onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);bReset();}, className: "timer-glass-btn-pri ultra-filled-btn timer-start-cta", style: BTN }, "Again")
     ), /*#__PURE__*/
-    React.createElement("div", { style: TIMER_BTN_SPACER_BELOW_IDLE, "aria-hidden": true })
+    React.createElement("div", { style: TIMER_BTN_SPACER_BELOW_INTERVAL_IDLE, "aria-hidden": true })
     )
 
     )
@@ -10929,8 +11433,37 @@ function axisMetricsWeightTwoWeekTrend(samples) {
   return d < 0 ? "down" : "up";
 }
 
-function axisMetricsWeightSectionInsight() {
-  return { text: "Research shows each 1 lb of weight loss can reduce knee joint load by about 4 lbs per step." };
+const AXIS_METRICS_WEIGHT_FACTS = [
+  "Each 1 lb of weight loss can reduce knee joint load by about 4 lbs per step taken.",
+  "Every 1 lb lost reduces pressure on your lower back by 4 lbs, significantly lowering the risk of disc herniation.",
+  "Losing 10% of body weight slows knee cartilage degeneration, preserving joint function and potentially delaying the need for future surgeries.",
+  "Fat cells release pro-inflammatory cytokines like IL-6, which circulate through the body and worsen chronic pain in distant joints.",
+  "A 5% weight reduction can improve sleep apnea symptoms, leading to better rest and reduced systemic sensitivity to pain.",
+  "Weight loss reduces levels of C-reactive protein in the blood, a primary marker for chronic inflammation and physical discomfort.",
+  "Lower body mass reduces the metabolic demand on your heart, allowing for more oxygen-rich blood to reach healing tissues.",
+  "Shedding pounds decreases the load on the plantar fascia, often resolving chronic heel pain and morning foot stiffness naturally.",
+  "Obesity is linked to increased skin friction and moisture, leading to chronic skin-fold irritation and painful bacterial infections.",
+  "Losing weight reduces the mechanical compression of pelvic nerves, which can alleviate certain types of chronic lower body neuralgia.",
+  "Reducing caloric intake triggers cellular autophagy, a process that clears out damaged cells that would otherwise contribute to inflammation."
+];
+const AXIS_METRICS_PAIN_FACTS = [
+  "Pain is often higher on weekends.",
+  "One night of poor sleep increases pain sensitivity by 15-30%, as the brain's pain-killing dopamine centers become less responsive.",
+  "Pain and stiffness often peak in the morning because natural anti-inflammatory cortisol levels are at their lowest during the night.",
+  "The brain cannot distinguish between physical and social pain, as both activate the same region, the anterior cingulate cortex.",
+  "Dehydration shrinks spinal discs, which are 80% water, causing increased back pain and reduced shock absorption throughout the day.",
+  "Chronic pain can physically shrink gray matter in the prefrontal cortex, but regular exercise helps the brain regrow this tissue.",
+  "Anticipating pain can be as physically taxing as the pain itself, triggering a stress response that increases overall muscle tension.",
+  "Consistent movement acts as natural WD-40 for joints by circulating synovial fluid, which provides essential nutrients to the cartilage.",
+  "Pain perception is subjective; your emotional state and environment can act as a volume knob, making sensations feel louder.",
+  "The gate control theory explains why rubbing a bumped elbow helps; the touch signals travel faster and block pain.",
+  "Falling barometric pressure allows body tissues to expand, putting more pressure on sensitive, inflamed joints, which increases perceived pain."
+];
+function axisMetricsFactAt(list, index) {
+  if (!Array.isArray(list) || list.length === 0) return "";
+  const safe = Number.isFinite(index) ? index : 0;
+  const i = ((safe % list.length) + list.length) % list.length;
+  return list[i];
 }
 
 function axisMetricsShortDateFromDateKey(dateKey) {
@@ -11243,7 +11776,7 @@ function WeightSectionSparkline({ entries }) {
   ));
 }
 
-function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry }) {
+function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday, healthHint, onLogWeight, onEditWeightEntry, onDeleteWeightEntry, factsCycle }) {
   const [manualOpen, setManualOpen] = React.useState(false);
   const [logOpen, setLogOpen] = React.useState(false);
   const [draftLbs, setDraftLbs] = React.useState("");
@@ -11256,13 +11789,15 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   const arr = axisMetricsNormalizeWeightList(samples);
   const current = arr.length ? arr[arr.length - 1].lbs : null;
   const lastSample = arr.length ? arr[arr.length - 1] : null;
+  const prevSample = arr.length > 1 ? arr[arr.length - 2] : null;
+  const deltaLbs = lastSample && prevSample ? lastSample.lbs - prevSample.lbs : null;
+  const deltaText = deltaLbs == null ? "" : `${deltaLbs > 0 ? "+" : deltaLbs < 0 ? "-" : ""}${Math.abs(deltaLbs).toFixed(1)} lbs`;
+  const deltaTone = deltaLbs == null ? "" : deltaLbs < 0 ? "loss" : deltaLbs > 0 ? "gain" : "flat";
   const emptyWeight = arr.length === 0;
   const sparkEntries = axisMetricsWeightSparklineEntries(samples);
   const trend2w = axisMetricsWeightTwoWeekTrend(samples);
-  const insight = axisMetricsWeightSectionInsight();
-  const contextParts = [];
-  if (lastSample) contextParts.push("Last logged: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts));
-  const contextLine = contextParts.join(" \u2022 ");
+  const insightText = axisMetricsFactAt(AXIS_METRICS_WEIGHT_FACTS, factsCycle);
+  const contextLine = lastSample ? "Last logged: " + axisMetricsFormatWeightLastLogFriendly(lastSample.ts) : null;
   const heroWarm = trend2w === "up";
   const graphBlock = emptyWeight ? /*#__PURE__*/React.createElement("p", { className: "weight-section__graph-placeholder" }, "No entries yet. Tap LOG WEIGHT to start.") : /*#__PURE__*/React.createElement(WeightSectionSparkline, { entries: sparkEntries });
   React.useEffect(() => {
@@ -11280,8 +11815,6 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   };
   const rowsSorted = arr.slice().sort((a, b) => b.ts - a.ts);
   const hasAnyWeight = rowsSorted.length > 0;
-  const dkTodayWeight = new Date().toDateString();
-  const todayWeightRows = rowsSorted.filter((x) => new Date(x.ts).toDateString() === dkTodayWeight);
   const renderWeightLogRow = (e) => {
     const isEdit = editingTs === e.ts;
     return /*#__PURE__*/React.createElement("div", { key: e.ts, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__new-row" }, /*#__PURE__*/
@@ -11290,20 +11823,24 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
     React.createElement("button", { type: "button", className: "metrics-inline-form__btn", onClick: () => { setEditingTs(null); setEditDraft(""); } }, "Cancel"),
     /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-form__btn metrics-inline-form__btn--primary", onClick: () => { const n = parseFloat(editDraft);if (Number.isFinite(n) && n > 0) onEditWeightEntry(e.ts, n);setEditingTs(null);setEditDraft(""); } }, "Save")
     )) : /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-read" }, /*#__PURE__*/
-    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs • ${axisMetricsFormatTimeLocal(e.ts)}`),
+    React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.lbs.toFixed(1)} lbs • ${axisMetricsFormatWeightLastLogFriendly(e.ts)}`),
     /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/
     React.createElement("button", { type: "button", className: "metrics-inline-row-action", onClick: () => { setEditingTs(e.ts); setEditDraft(String(e.lbs.toFixed(1))); } }, "Edit"),
     /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action metrics-inline-row-action--danger", onClick: () => { if (window.confirm("Delete this weight entry?")) onDeleteWeightEntry(e.ts); } }, "Delete"))));
   };
-  const weightLogBody = todayWeightRows.length === 0 ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, hasAnyWeight ? "No entries today. Tap Log Weight to add one." : "No weight entries yet. Tap Log Weight to add one.") : todayWeightRows.map(renderWeightLogRow);
+  const weightLogBody = !hasAnyWeight ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, "No weight entries yet. Tap Log Weight to add one.") : rowsSorted.map(renderWeightLogRow);
   return /*#__PURE__*/React.createElement("div", { className: "weight-section", style: { "--weight-mood-accent": moodColor } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Weight"),
   !emptyWeight && /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, /*#__PURE__*/
   React.createElement("span", { className: "weight-section__hero-num" + (heroWarm ? " weight-section__hero-num--warm" : "") }, current.toFixed(1)),
-  React.createElement("span", { className: "weight-section__hero-unit" }, "lbs")
+  React.createElement("span", { className: "weight-section__hero-unit" }, "lbs"),
+  deltaLbs != null && /*#__PURE__*/React.createElement("span", { className: `weight-section__hero-delta weight-section__hero-delta--${deltaTone}` }, /*#__PURE__*/
+  React.createElement("span", { className: "weight-section__hero-delta-num" }, deltaText),
+  /*#__PURE__*/React.createElement("span", null, deltaLbs < 0 ? "loss" : deltaLbs > 0 ? "gain" : "no change")
+  )
   ),
-  !emptyWeight && contextLine && /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine),
-  /*#__PURE__*/React.createElement("div", { className: "weight-section__weight-insight" }, insight.text),
+  contextLine ? /*#__PURE__*/React.createElement("div", { className: "weight-section__context" }, contextLine) : null,
+  /*#__PURE__*/React.createElement("div", { className: "weight-section__weight-insight" }, insightText),
   graphBlock,
   /*#__PURE__*/React.createElement("button", {
     type: "button",
@@ -11395,7 +11932,7 @@ function MetricsPainGrid({ painByDay, mode, dkToday }) {
   }));
 }
 
-function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry }) {
+function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain, onEditPainEntry, onDeletePainEntry, factsCycle }) {
   const [painGridMode, setPainGridMode] = React.useState("7d");
   const [formOpen, setFormOpen] = React.useState(false);
   const [logOpen, setLogOpen] = React.useState(false);
@@ -11412,7 +11949,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   const painTodayVal = axisMetricsPainGetLevel(painByDay && painByDay[dkToday]);
   const hasAnyEntry = axisMetricsPainHasAnyEntry(painByDay);
   const contextLine = painTodayVal != null ? "Last logged: " + axisMetricsShortDateFromDateKey(dkToday) : null;
-  const painCallout = axisMetricsPainSundayInsight(painByDay) || axisMetricsPainWeekendInsight(painByDay) || axisMetricsPainImprovementInsight(painByDay) || axisMetricsPainConsistentInsight(painByDay) || axisMetricsPainMondayInsight(painByDay);
+  const painCallout = axisMetricsFactAt(AXIS_METRICS_PAIN_FACTS, factsCycle);
   const gridMode = painGridMode === "7d" ? "7d" : "28d";
   const heatmapBlock = !hasAnyEntry ? /*#__PURE__*/React.createElement("p", { className: "pain-heat__placeholder" }, "No entries yet. Tap LOG PAIN to start.") : /*#__PURE__*/React.createElement(MetricsPainGrid, {
     painByDay: painByDay,
@@ -11435,7 +11972,6 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   };
   const painRows = axisMetricsPainEntriesDescending(painByDay);
   const hasAnyPain = painRows.length > 0;
-  const todayPainRow = painRows.find((e) => e.dateKey === dkToday) || null;
   const renderPainLogRow = (e) => {
     const isEdit = editingDateKey === e.dateKey;
     return /*#__PURE__*/React.createElement("div", { key: e.dateKey, className: "metric-inline-log__list-item" }, isEdit ? /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__pain-add-stack" }, /*#__PURE__*/
@@ -11445,7 +11981,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
     React.createElement("div", { className: "metric-inline-log__row-meta" }, `${e.level}/10 • ${axisMetricsShortDateFromDateKey(e.dateKey)}${e.note ? ` • ${e.note}` : ""}`),
     /*#__PURE__*/React.createElement("div", { className: "metric-inline-log__row-actions" }, /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action", onClick: () => { setEditingDateKey(e.dateKey); setEditV(e.level); setEditNote(e.note || ""); } }, "Edit"), /*#__PURE__*/React.createElement("button", { type: "button", className: "metrics-inline-row-action metrics-inline-row-action--danger", onClick: () => { if (window.confirm("Delete this pain entry?")) onDeletePainEntry(e.dateKey); } }, "Delete"))));
   };
-  const painLogBody = !todayPainRow ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, hasAnyPain ? "No entry today. Tap Log pain to add one." : "No pain entries yet. Tap Log pain to add one.") : renderPainLogRow(todayPainRow);
+  const painLogBody = !hasAnyPain ? /*#__PURE__*/React.createElement("p", { className: "metrics-inline-log-empty" }, "No pain entries yet. Tap Log pain to add one.") : painRows.map(renderPainLogRow);
   return /*#__PURE__*/React.createElement("div", { className: "weight-section pain-section", style: { "--weight-mood-accent": moodAccent } }, /*#__PURE__*/
   React.createElement("div", { className: "weight-section__header" }, "Pain"),
   /*#__PURE__*/React.createElement("div", { className: "weight-section__hero-row" }, painTodayVal != null ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
@@ -11458,7 +11994,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   React.createElement("button", { type: "button", role: "tab", "aria-selected": painGridMode === "28d", className: "pain-section__toggle" + (painGridMode === "28d" ? " pain-section__toggle--active" : ""), onClick: () => { axisHapticTick(); setPainGridMode("28d"); } }, "4 Weeks")
   ),
   heatmapBlock,
-  painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, "\uD83D\uDCA1 ", painCallout) : null,
+  painCallout ? /*#__PURE__*/React.createElement("div", { className: "weight-section__insight" }, painCallout) : null,
   /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "weight-section__btn weight-section__btn--expand",
@@ -11645,6 +12181,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   { id: "rest", label: "Rest", src: "./app-icons/icon-rest.png" }];
 
   const [view, setView] = useState("home");
+  const [metricsFactsCycle, setMetricsFactsCycle] = useState(-1);
   const [activePeriod, setActivePeriod] = useState(() => storageGet("axis_period", null)); // null = auto
   const [hasActiveSession, setHasActiveSession] = useState(false);
   const [showStreak, setShowStreak] = useState(() => storageGet("axis_show_streak", true));
@@ -11711,6 +12248,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   });
   const [summaryRecentExpanded, setSummaryRecentExpanded] = useState(false);
   const [summaryRecentOpen, setSummaryRecentOpen] = useState(false);
+  const [last7DaysInfoOpen, setLast7DaysInfoOpen] = useState(false);
   const [metricsWeightSamples, setMetricsWeightSamples] = useState(() => axisMetricsNormalizeWeightList(storageGet(AXIS_METRICS_WEIGHT_KEY, [])));
   const [metricsPainByDay, setMetricsPainByDay] = useState(() => {
     const o = storageGet(AXIS_METRICS_PAIN_KEY, storageGet(AXIS_PAIN_LOG_KEY, {}));
@@ -11723,13 +12261,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [metricsStepsToday, setMetricsStepsToday] = useState(null);
   const [metricsHealthHint, setMetricsHealthHint] = useState("");
   const [healthConnectSyncMsg, setHealthConnectSyncMsg] = useState("");
-  const [welcomeName, setWelcomeName] = useState(() => {
-    try {
-      return typeof localStorage !== "undefined" && localStorage.getItem("axisUserName") || "Adam";
-    } catch (e) {
-      return "Adam";
-    }
-  });
+  const [welcomeName, setWelcomeName] = useState(() => axisWelcomeDisplayNameFromStorage());
   const manifestBlobUrlRef = useRef(null);
   const prevMoodBgRef = useRef(null);
   const moodXfadeTimerRef = useRef(null);
@@ -11789,10 +12321,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     storageSet("axis_weekly_follows_daily", weeklyFollowsDaily);
   }, [weeklyFollowsDaily]);
   useEffect(() => {
-    try {
-      const n = typeof localStorage !== "undefined" && localStorage.getItem("axisUserName");
-      if (n) setWelcomeName(n);
-    } catch (e) {}
+    setWelcomeName(axisWelcomeDisplayNameFromStorage());
   }, [view]);
 
   useEffect(() => {
@@ -11924,6 +12453,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     if (view === "home" && hasActiveSession) {
       const last = storageGet("axis_last_session_tab", null);
       setTab(last || "guided");
+    }
+    if (view === "metrics" && prevViewRef.current !== "metrics") {
+      setMetricsFactsCycle((n) => n + 1);
     }
     prevViewRef.current = view;
   }, [view, hasActiveSession]);
@@ -12298,7 +12830,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "app app--nav-gap-tight", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
       React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
-      React.createElement("div", { className: "app-body app-body--list-pad" }, /*#__PURE__*/
+      React.createElement("div", { className: "app-body app-body--list-pad axis-app-scroll-root" }, /*#__PURE__*/
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "app-page-header" }, /*#__PURE__*/
       React.createElement("div", { className: "app-screen-title" }, "Mood"), /*#__PURE__*/
@@ -12397,7 +12929,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   if (view === "metrics") {
     const formatSummaryWeeklyMinutes = (totalMins) => {
       const n = Math.max(0, Math.floor(Number(totalMins) || 0));
-      return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}m`;
+      return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}`;
     };
     const summaryRecentLimit = summaryRecentExpanded ? 15 : 3;
     const summaryRecentRows = (history || []).slice(0, Math.min((history || []).length, summaryRecentLimit));
@@ -12427,35 +12959,41 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "summary-main-stack summary-main-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "summary-sunset-stack summary-sunset-stack--metrics" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__boxes" }, [/*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__hero-band" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__minutes axis-surface-tmt", role: "status" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__minutes-inner" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__boxes" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__unified-card axis-surface-tmt", role: "status" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-hero" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title metrics-quick-glance__stat-title--movement" }, "TOTAL MOVEMENT TIME"),
-      React.createElement("div", { className: "metrics-quick-glance__minutes-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent))
-      )
+      React.createElement("div", { className: "metrics-quick-glance__hero-time-row" }, /*#__PURE__*/
+      React.createElement("span", { className: "metrics-quick-glance__minutes-value metrics-quick-glance__hero-time-value" }, formatSummaryWeeklyMinutes(weeklyGoalBarMinutesCurrent)),
+      React.createElement("span", { className: "metrics-quick-glance__hero-unit" }, "min")
       )
       ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-quick-glance__duo" }, [/*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__stat-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-row" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "SESSIONS"),
-      React.createElement("div", { className: "metrics-quick-glance__stat-big" }, String(weekSessionCountForWindow))
+      React.createElement("div", { className: "metrics-quick-glance__stat-big" }, String(weekSessionCountForWindow)),
+      React.createElement("div", { className: "metrics-quick-glance__unified-sub" }, "this week")
       ), /*#__PURE__*/
-      React.createElement("div", { className: "metrics-stat-feature metrics-quick-glance__qg metrics-quick-glance__stat-stack" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-quick-glance__unified-col" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-quick-glance__stat-title" }, "ACTIVE DAYS"),
       React.createElement("div", { className: "metrics-quick-glance__stat-big-row" }, /*#__PURE__*/
       React.createElement("span", { className: "metrics-quick-glance__stat-big" }, String(activeDays7Count)),
       React.createElement("span", { className: "metrics-quick-glance__stat-suffix" }, "/ 7")
       )
       )
-      ])
-      ])
+      )
+      )
       ),
       /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
       React.createElement("div", { className: "metrics-goals-wrap metrics-section--goals" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-block" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-toolbar" }, /*#__PURE__*/
-      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS")
+      React.createElement("div", { className: "metrics-goals-toolbar__heading", role: "heading", "aria-level": "2" }, "GOALS"),
+      /*#__PURE__*/React.createElement("button", {
+        type: "button",
+        className: "metrics-goals-toolbar__link",
+        onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
+      }, "Adjust in Settings")
       ),
       /*#__PURE__*/React.createElement("div", { className: "metrics-goals-compact" }, /*#__PURE__*/
       React.createElement("div", { className: "metrics-goals-bar-row" }, /*#__PURE__*/
@@ -12485,18 +13023,26 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         "aria-valuenow": Math.round(weeklyBarFillPct),
         "aria-label": "Weekly goal progress"
       }, /*#__PURE__*/React.createElement("div", { className: "prog-fill" + (weeklyBarOverdrive ? " metrics-goals-bar-fill--over" : ""), style: { width: `${weeklyBarFillPct}%` } }))
+      )
+      )
+      )
       ),
+      /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      /*#__PURE__*/React.createElement("div", { className: "metrics-last7days-heading metrics-quick-glance__sub metrics-goals-toolbar__heading" }, /*#__PURE__*/
+      React.createElement("span", null, "Last 7 days"),
       /*#__PURE__*/React.createElement("button", {
         type: "button",
-        className: "metrics-goals-toolbar__settings metrics-goals-settings--after-bars",
-        onClick: () => { if (navigator.vibrate) navigator.vibrate(10); axisHapticTick(); setView("settings"); }
-      }, "Adjust in Settings")
-      )
-      )
-      , /*#__PURE__*/
-      React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
-      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__sub metrics-goals-toolbar__heading" }, "Last 7 days"),
-      /*#__PURE__*/React.createElement("div", { className: "metrics-quick-glance__hint" }, "(Tap the day to reveal more details.)"),
+        className: "metrics-last7days-info-btn",
+        "aria-label": "About the last 7 days chart",
+        "aria-expanded": last7DaysInfoOpen ? "true" : "false",
+        onClick: () => { axisHapticTick(); setLast7DaysInfoOpen((o) => !o); }
+      }, "\u24D8")
+      ),
+      last7DaysInfoOpen && /*#__PURE__*/React.createElement("div", {
+        className: "metrics-last7days-tooltip",
+        role: "status",
+        onClick: () => { setLast7DaysInfoOpen(false); }
+      }, "Tap a day for details"),
       /*#__PURE__*/React.createElement(MomentumMap, { history: history, nightMode: nightMode, theme: theme, compact: true, metricsQuickGlance: true }), /*#__PURE__*/
       React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }), /*#__PURE__*/
       React.createElement("div", { className: "metrics-body-metrics-toolbar" }, /*#__PURE__*/
@@ -12507,6 +13053,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         theme: theme,
         nightMode: nightMode,
         activePeriod: activePeriod,
+        factsCycle: metricsFactsCycle,
         samples: metricsWeightSamples,
         stepsToday: metricsStepsToday,
         healthHint: metricsHealthHint,
@@ -12533,6 +13080,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         theme: theme,
         nightMode: nightMode,
         activePeriod: activePeriod,
+        factsCycle: metricsFactsCycle,
         painByDay: metricsPainByDay,
         onLogPain: (payload) => {
           const dk = new Date().toDateString();
@@ -12683,8 +13231,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const periodLabels = { dawn: "Rise", midday: "Midday", prime: "Prime", rest: "Rest" };
     const todayBoxTitleByPeriod = { dawn: "AM Activation", midday: "Postural Reset", prime: "Sundown Stretch", rest: "Sleep-Ready Recovery" };
     const periodKey = TODAY_SUGGESTIONS[nowPeriod] ? nowPeriod : "dawn";
-    const todaySug = TODAY_SUGGESTIONS[periodKey];
-    const todayTrack = TRACKS[todaySug.trackId];
+    const todaySug = TODAY_SUGGESTIONS[periodKey] || TODAY_SUGGESTIONS.dawn;
+    const todayTrackId = todaySug && TRACKS && TRACKS[todaySug.trackId] ? todaySug.trackId : "daily";
+    const todayTrack = (TRACKS && (TRACKS[todayTrackId] || TRACKS.daily)) || TRACKS_DATA_FALLBACK.daily;
+    const todaySuggestionText = todaySug && todayTrackId === todaySug.trackId ? todaySug.suggestion : (todayTrack && todayTrack.purpose) || (todaySug && todaySug.suggestion) || "";
     const isTodayLight = theme === "light" && !nightMode;
 
     // TODAY card: keep previous shape/structure, but use Metrics "TOTAL MOVEMENT TIME" surface style.
@@ -12745,16 +13295,17 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     HOME_TRACK_GROUPS.filter((g) => g.id === homeTrackCategory);
 
     const minsNow = new Date().getHours() * 60 + new Date().getMinutes();
-    const nm = welcomeName || "Adam";
+    const nm = welcomeName.trim();
+    const greetWithName = (phrase) => nm ? phrase + ", " + nm : phrase;
     let timeGreeting;
     if (minsNow >= 5 * 60 && minsNow < 11 * 60) {
-      timeGreeting = "Good Morning, " + nm;
+      timeGreeting = greetWithName("Good Morning");
     } else if (minsNow >= 11 * 60 && minsNow < 17 * 60) {
-      timeGreeting = "Good Afternoon, " + nm;
+      timeGreeting = greetWithName("Good Afternoon");
     } else if (minsNow >= 17 * 60 && minsNow < 21 * 60) {
-      timeGreeting = "Good Evening, " + nm;
+      timeGreeting = greetWithName("Good Evening");
     } else {
-      timeGreeting = "Good Night, " + nm;
+      timeGreeting = greetWithName("Good Night");
     }
 
     return (/*#__PURE__*/
@@ -12765,11 +13316,11 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting + "."), /*#__PURE__*/
+      React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting), /*#__PURE__*/
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "1px", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 600, color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySug.suggestion), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySuggestionText), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
       React.createElement("button", {
         className: "begin-btn begin-btn--today-primary ultra-filled-btn",
