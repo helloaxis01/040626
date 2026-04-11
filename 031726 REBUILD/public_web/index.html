@@ -1975,8 +1975,7 @@ const css = `
     min-width:0;
     display:flex;
     flex-direction:column;
-    overflow-y:auto;
-    overflow-x:hidden;
+    overflow: hidden;
     -webkit-overflow-scrolling:touch;
     background: var(--bg-app, var(--bg-gradient));
     background-color: var(--bg-fallback, #0a1525);
@@ -7149,19 +7148,30 @@ const css = `
     -webkit-backdrop-filter: none;
   }
 
-  /* MOOD: avoid stacking full tab-bar-spacer + large list padding (was ~1/4 screen gap). Spacer collapsed; padding carries clearance. */
+  /* MOOD: clearance above portaled tab bar. iOS often under-scrolls when only padding-bottom is used on overflow:auto
+     flex children — a real ::after flex item extends scrollHeight reliably. BASE .app uses overflow:hidden (not scroll). */
+  .app--nav-gap-tight .app-body {
+    scroll-padding-bottom: calc(var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 24px);
+    overscroll-behavior-y: contain;
+  }
+  .app--nav-gap-tight .app-body::after {
+    content: "";
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + constant(safe-area-inset-bottom) + 64px);
+    min-height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 64px);
+    pointer-events: none;
+  }
   .app--nav-gap-tight .tab-bar-spacer--mood {
     height: 0 !important;
     min-height: 0 !important;
+    flex-shrink: 0;
+    width: 100%;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
     pointer-events: none;
-  }
-
-  /* One rhythm for Rest→Night and breathing room above tab (no extra row margin) */
-  .app--nav-gap-tight .app-body--list-pad {
-    padding-bottom: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 12px);
   }
 
   /* ── HOME ── */
@@ -12820,7 +12830,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "app app--nav-gap-tight", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
       React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
-      React.createElement("div", { className: "app-body app-body--list-pad" }, /*#__PURE__*/
+      React.createElement("div", { className: "app-body app-body--list-pad axis-app-scroll-root" }, /*#__PURE__*/
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "app-page-header" }, /*#__PURE__*/
       React.createElement("div", { className: "app-screen-title" }, "Mood"), /*#__PURE__*/
