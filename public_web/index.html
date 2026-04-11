@@ -9743,7 +9743,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   // Barlow for all timer numerals; main countdown and stepper values
   const intervalDigitStyle = {
     fontFamily: "var(--font-display)",
-    fontWeight: 600,
+    fontWeight: 400,
     letterSpacing: "-0.03em",
     minWidth: 72,
     textAlign: "center",
@@ -10195,6 +10195,11 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+  /* Breathe idle: nudge pattern + cycles down to match Interval Work/Rest + Rounds placement */
+  .timer-view-body .timer-pattern-row.timer-breathe-pattern-row {
+    padding-top: 14px;
+    box-sizing: border-box;
+  }
   .timer-view-body .timer-interval-ring circle:first-of-type {
     stroke: var(--border);
   }
@@ -10598,7 +10603,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
     React.createElement(React.Fragment, null, /*#__PURE__*/
 
     React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
-    React.createElement("div", { style: { ...intervalDigitStyle, minWidth: 72, color: nightMode ? "#FF3B30" : isDark ? "var(--app-white)" : "#1D1D1F", textShadow: "none", opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
+    React.createElement("div", { style: { ...intervalDigitStyle, opacity: countdownLabelOpacity, transition: "none" } }, formatSecondsOnly(bTime))
     )
     ),
 
@@ -10648,7 +10653,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
     !bRunning && !bDone && !bPaused && /*#__PURE__*/React.createElement("div", { className: "timer-secondary-block", style: { flexShrink: 0, height: TIMER_MID_IDLE_HEIGHT, minHeight: TIMER_MID_IDLE_HEIGHT, width: "100%", marginTop: TIMER_IDLE_VERTICAL_GAP, marginBottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box" } },
     React.createElement(React.Fragment, null, [
-    React.createElement("div", { className: "timer-pattern-row", style: { width: "100%", maxWidth: 360 } },
+    React.createElement("div", { className: "timer-pattern-row timer-breathe-pattern-row", style: { width: "100%", maxWidth: 360 } },
     Object.keys(BREATH_PATTERNS).map((p) => /*#__PURE__*/
     React.createElement("button", { key: p, type: "button", onClick: () => {axisHapticTick();setBreathPattern(p);}, className: "timer-glass-pattern-btn" + (breathPattern === p ? " active" : ""), style: { fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", padding: "9px 20px", cursor: "pointer", color: nightMode ? breathPattern === p ? "#FF3B30" : "rgba(255, 59, 48, 0.72)" : breathPattern === p ? "var(--accent)" : "var(--text-secondary)" } }, p === "4-7-8" ? "4-7-8" : p === "Box" ? "Box" : "Physio Sigh")
     )
