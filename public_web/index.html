@@ -621,6 +621,33 @@ function storageSet(key, val) {
   try {localStorage.setItem(key, JSON.stringify(val));} catch {}
 }
 
+/** First whitespace-delimited token (given name) for greetings. */
+function axisWelcomeFirstName(full) {
+  if (full == null || typeof full !== "string") return "";
+  const t = full.trim();
+  if (!t) return "";
+  const w = t.split(/\s+/)[0];
+  return w || "";
+}
+
+/** HOME greeting: first name from disclaimer (`axis_disclaimer.name`), else legacy `axisUserName`. */
+function axisWelcomeDisplayNameFromStorage() {
+  try {
+    if (typeof localStorage === "undefined") return "";
+    const raw = localStorage.getItem("axis_disclaimer");
+    if (raw) {
+      const o = JSON.parse(raw);
+      if (o && typeof o.name === "string") {
+        const t = o.name.trim();
+        if (t) return axisWelcomeFirstName(t);
+      }
+    }
+    const legacy = localStorage.getItem("axisUserName");
+    if (legacy != null && String(legacy).trim()) return axisWelcomeFirstName(String(legacy));
+  } catch (e) {}
+  return "";
+}
+
 const AXIS_GUIDED_DETAILED_INSTRUCTIONS_KEY = "axis_guided_detailed_instructions";
 
 /** Weekly goal slider: 5–500 min, snapped to step 5. */
@@ -7204,6 +7231,20 @@ const css = `
     width:100%;
     max-width:100%;
   }
+  /* HOME only: same label size/style as TODAY CTA (begin-btn); fixed ink; bottom pad = top pad (Metrics: #axis-metrics-welcome) */
+  #axis-home-welcome {
+    text-align:center;
+    font-family:var(--font-display);
+    font-size:var(--text-base);
+    font-weight:400;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:#f6f7f8 !important;
+    -webkit-text-fill-color:#f6f7f8 !important;
+    text-shadow:none;
+    filter:none;
+    padding-bottom:max(10px, calc(var(--app-title-after-dashboard) - 20px));
+  }
   .home .home-track-cards-outer--top {
     position:relative;
     z-index:1;
@@ -11868,13 +11909,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const [metricsStepsToday, setMetricsStepsToday] = useState(null);
   const [metricsHealthHint, setMetricsHealthHint] = useState("");
   const [healthConnectSyncMsg, setHealthConnectSyncMsg] = useState("");
-  const [welcomeName, setWelcomeName] = useState(() => {
-    try {
-      return typeof localStorage !== "undefined" && localStorage.getItem("axisUserName") || "Adam";
-    } catch (e) {
-      return "Adam";
-    }
-  });
+  const [welcomeName, setWelcomeName] = useState(() => axisWelcomeDisplayNameFromStorage());
   const manifestBlobUrlRef = useRef(null);
   const prevMoodBgRef = useRef(null);
   const moodXfadeTimerRef = useRef(null);
@@ -11934,10 +11969,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     storageSet("axis_weekly_follows_daily", weeklyFollowsDaily);
   }, [weeklyFollowsDaily]);
   useEffect(() => {
-    try {
-      const n = typeof localStorage !== "undefined" && localStorage.getItem("axisUserName");
-      if (n) setWelcomeName(n);
-    } catch (e) {}
+    setWelcomeName(axisWelcomeDisplayNameFromStorage());
   }, [view]);
 
   useEffect(() => {
@@ -12897,16 +12929,17 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     HOME_TRACK_GROUPS.filter((g) => g.id === homeTrackCategory);
 
     const minsNow = new Date().getHours() * 60 + new Date().getMinutes();
-    const nm = welcomeName || "Adam";
+    const nm = welcomeName.trim();
+    const greetWithName = (phrase) => nm ? phrase + ", " + nm : phrase;
     let timeGreeting;
     if (minsNow >= 5 * 60 && minsNow < 11 * 60) {
-      timeGreeting = "Good Morning, " + nm;
+      timeGreeting = greetWithName("Good Morning");
     } else if (minsNow >= 11 * 60 && minsNow < 17 * 60) {
-      timeGreeting = "Good Afternoon, " + nm;
+      timeGreeting = greetWithName("Good Afternoon");
     } else if (minsNow >= 17 * 60 && minsNow < 21 * 60) {
-      timeGreeting = "Good Evening, " + nm;
+      timeGreeting = greetWithName("Good Evening");
     } else {
-      timeGreeting = "Good Night, " + nm;
+      timeGreeting = greetWithName("Good Night");
     }
 
     return (/*#__PURE__*/
@@ -12917,7 +12950,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting + "."), /*#__PURE__*/
+      React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting), /*#__PURE__*/
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "1px", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 600, fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 600, color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
