@@ -5671,15 +5671,11 @@ const css = `
     height: 7px !important;
     min-height: 7px;
     border-radius: 7px;
-    background: linear-gradient(90deg, #a78bfa, color-mix(in srgb, #a78bfa 78%, #ddd6fe)) !important;
-    box-shadow: 0 0 14px color-mix(in srgb, #a78bfa 42%, transparent);
-  }
-  .app[data-night="true"] .metrics-section--goals .metrics-goals-bar-row .prog-fill {
-    background: linear-gradient(90deg, #c4b5fd, #a78bfa) !important;
-    box-shadow: 0 0 12px rgba(167, 139, 250, 0.35) !important;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 52%, transparent)) !important;
+    box-shadow: 0 0 12px var(--accent-glow);
   }
   .metrics-goals-bar-fill--over {
-    filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.55));
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 50%, transparent));
   }
   .metrics-section__btn--ghost {
     font-weight: 600;
@@ -7164,7 +7160,7 @@ const css = `
 
   /* One rhythm for Rest→Night and breathing room above tab (no extra row margin) */
   .app--nav-gap-tight .app-body--list-pad {
-    padding-bottom: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) - 16px);
+    padding-bottom: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 12px);
   }
 
   /* ── HOME ── */
