@@ -40,9 +40,9 @@
               ],
               "demoVideo": "/assets/videos/cat_cow.mp4",
               "position": "Start on all fours, hands and knees on the floor.",
-              "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
-              "then": "Drop your belly toward the floor. Lift your head and tailbone up. Breathe in.",
-              "tip": "Push your back up toward the ceiling. Tuck your chin to your chest. Breathe out."
+              "next": "INHALE: Drop your belly toward the floor. Lift your head and tailbone toward the ceiling.",
+              "then": "EXHALE: Push your back up toward the ceiling. Tuck your chin toward your chest.",
+              "tip": "Return to a neutral tabletop with your back flat. Repeat slow cycles."
             },
             {
               "id": 2,
@@ -1477,9 +1477,9 @@
                 }
               ],
               "position": "Start on all fours, hands and knees on the floor.",
-              "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
-              "then": "Push your back up toward the ceiling. Tuck your chin to your chest.",
-              "tip": "Let your belly drop toward the floor. Lift your head and tailbone up. Move slowly."
+              "next": "INHALE: Let your belly drop toward the floor. Lift your head and tailbone up.",
+              "then": "EXHALE: Push your back up toward the ceiling. Tuck your chin toward your chest.",
+              "tip": "Return to a neutral tabletop with your back flat. Move slowly."
             },
             {
               "id": 204,
@@ -2891,9 +2891,9 @@
                 }
               ],
               "position": "Start on all fours, hands and knees on the floor.",
-              "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
-              "then": "Push your back up toward the ceiling. Tuck your chin toward your chest. Breathe out.",
-              "tip": "Drop your belly toward the floor. Lift your head and tailbone toward the ceiling. Breathe in. Do 10 times."
+              "next": "INHALE: Drop your belly toward the floor. Lift your head and tailbone toward the ceiling.",
+              "then": "EXHALE: Push your back up toward the ceiling. Tuck your chin toward your chest.",
+              "tip": "Return to a neutral tabletop with your back flat. Continue for 10 slow cycles."
             },
             {
               "id": 704,
@@ -5351,21 +5351,21 @@
                 },
                 {
                   "pos": "B",
-                  "label": "Cow — Inhale",
-                  "focus": "EXTEND",
-                  "cue": "Inhale, drop the belly, lift the chest and tailbone."
+                  "label": "Cat — Exhale",
+                  "focus": "FLEX",
+                  "cue": "Exhale, round through the spine segment by segment. Tuck chin and pelvis."
                 },
                 {
                   "pos": "C",
-                  "label": "Cat — Exhale",
-                  "focus": "FLEX",
-                  "cue": "Exhale, round through the spine segment by segment. Move slowly for 10 cycles."
+                  "label": "Cow — Inhale",
+                  "focus": "EXTEND",
+                  "cue": "Inhale, drop the belly, lift the chest and tailbone. Move slowly for 10 cycles."
                 }
               ],
               "position": "Start on all fours, hands and knees on the floor.",
-              "next": "Place your hands under your shoulders and your knees under your hips. Keep your back flat.",
-              "then": "Drop your belly toward the floor. Lift your chest and tailbone up. Breathe in.",
-              "tip": "Push your back up toward the ceiling. Tuck your chin to your chest. Breathe out. Do 10 times."
+              "next": "INHALE: Drop your belly toward the floor. Lift your chest and tailbone up.",
+              "then": "EXHALE: Push your back up toward the ceiling. Tuck your chin toward your chest.",
+              "tip": "Return to a neutral tabletop with your back flat. Do 10 slow cycles."
             },
             {
               "id": 2002,
