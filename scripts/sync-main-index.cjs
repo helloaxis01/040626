@@ -33,3 +33,17 @@ if (fs.existsSync(iconsSrc) && typeof fs.cpSync === "function") {
   fs.cpSync(iconsSrc, iconsDest, { recursive: true, force: true });
   console.log("sync-main-index: copied →", path.relative(root, iconsDest));
 }
+const catCowAssetsSrc = path.join(root, "031726 REBUILD", "public_web", "assets", "exercise-animations", "cat-cow");
+const catCowAssetsDest = path.join(root, "public_web", "assets", "exercise-animations", "cat-cow");
+if (fs.existsSync(catCowAssetsSrc) && typeof fs.cpSync === "function") {
+  fs.mkdirSync(path.dirname(catCowAssetsDest), { recursive: true });
+  fs.cpSync(catCowAssetsSrc, catCowAssetsDest, { recursive: true, force: true });
+  console.log("sync-main-index: copied →", path.relative(root, catCowAssetsDest));
+}
+const videosAssetsSrc = path.join(root, "031726 REBUILD", "public_web", "assets", "videos");
+const videosAssetsDest = path.join(root, "public_web", "assets", "videos");
+if (fs.existsSync(videosAssetsSrc) && typeof fs.cpSync === "function") {
+  fs.mkdirSync(path.dirname(videosAssetsDest), { recursive: true });
+  fs.cpSync(videosAssetsSrc, videosAssetsDest, { recursive: true, force: true });
+  console.log("sync-main-index: copied →", path.relative(root, videosAssetsDest));
+}

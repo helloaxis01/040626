@@ -1,7 +1,7 @@
 {
   "name": "axis-031726-rebuild-workspace",
   "private": true,
-  "description": "Local scripts + proxy to parent AXIS repo. Preview: npm run preview → http://localhost:4173/",
+  "description": "Canonical app shell: public_web/index.html. From this folder: npm run preview → serves 031726 REBUILD/public_web on :4173 (no build). npm run build copies shell to parent + dist/; npm run preview:dist runs parent preview (serve dist on :4173). Free :4173 if port busy.",
   "scripts": {
     "dev": "npm --prefix .. run dev",
     "dev:open": "npm --prefix .. run dev:open",

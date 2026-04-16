@@ -69,6 +69,13 @@ function copyPublicToDist(name) {
   const dest = path.join(dist, name);
   if (fs.existsSync(src)) fs.copyFileSync(src, dest);
 }
+function copyPublicWebAssetToDist(relPath) {
+  const src = path.join(root, 'public_web', relPath);
+  const dest = path.join(dist, relPath);
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+}
 /** Gold copy: v2.1 LIST/GUIDED flow — same file as recovery snapshot (launch, Settings, native webDir). */
 function copyOnboardingHtmlToDist() {
   const dest = path.join(dist, 'onboarding.html');
@@ -81,6 +88,14 @@ function copyOnboardingHtmlToDist() {
 }
 copyOnboardingHtmlToDist();
 ['onboarding.css', 'AXIS_Branding_DarkMode_Outlined.svg', 'AXIS_Branding_LightMode_Outlined.svg', 'axis_data.json', 'login.html'].forEach(copyPublicToDist);
+const catCowAnimDir = path.join(root, 'public_web', 'assets', 'exercise-animations', 'cat-cow');
+const catCowVideosDir = path.join(root, 'public_web', 'assets', 'videos');
+if (fs.existsSync(catCowAnimDir)) {
+  copyRecursive(catCowAnimDir, path.join(dist, 'assets', 'exercise-animations', 'cat-cow'));
+}
+if (fs.existsSync(catCowVideosDir)) {
+  copyRecursive(catCowVideosDir, path.join(dist, 'assets', 'videos'));
+}
 // Single app icon only: navy PNG in Logo - Vector → axis-icon.png (no old filenames, no SVG fallback)
 const iconPngRoot = path.join(root, 'Logo - Vector', 'AXIS_Branding_Navy.png');
 const iconPngDist = path.join(dist, 'axis-icon.png');
