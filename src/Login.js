@@ -10,7 +10,9 @@ window.AXIS_DEBUG_KEY = 'NEW_KEY_ACTIVE';
 
 function isOnboarded() {
   try {
-    const raw = localStorage.getItem("axis_onboarded");
+    const uid = auth && auth.currentUser && auth.currentUser.uid ? String(auth.currentUser.uid) : "";
+    const scopedKey = uid ? `axis_onboarded:${uid}` : "axis_onboarded";
+    const raw = localStorage.getItem(scopedKey);
     if (raw === null) return false;
     return JSON.parse(raw) === true;
   } catch (e) {
@@ -39,15 +41,21 @@ export default function Login() {
       try {
         if (mode === "signup") {
           const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+          try {
+            localStorage.setItem("axis_auth_uid", String(cred.user.uid || ""));
+          } catch (err) {}
           await syncUserProfile(cred.user);
           try {
             localStorage.removeItem("hasCompletedOnboarding");
-            localStorage.setItem("axis_onboarded", JSON.stringify(false));
+            localStorage.setItem(`axis_onboarded:${cred.user.uid}`, JSON.stringify(false));
           } catch (err) {}
           window.location.replace(axisOnboardingUrl());
           return;
         }
         const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+        try {
+          localStorage.setItem("axis_auth_uid", String(cred.user.uid || ""));
+        } catch (err) {}
         syncUserProfile(cred.user).catch((err) => {
           try {
             console.error("AXIS: sync after sign-in", err);

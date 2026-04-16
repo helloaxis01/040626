@@ -766,6 +766,25 @@ function storageSet(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
+function axisOnboardingActiveUid() {
+  try {
+    const raw = localStorage.getItem("axis_auth_uid");
+    if (raw && String(raw).trim()) return String(raw).trim();
+  } catch (e) {}
+  return "";
+}
+
+function axisOnboardingScopedKey(baseKey) {
+  const uid = axisOnboardingActiveUid();
+  return uid ? `${baseKey}:${uid}` : baseKey;
+}
+
+function axisOnboardingSetScopedJson(baseKey, value) {
+  try {
+    localStorage.setItem(axisOnboardingScopedKey(baseKey), JSON.stringify(value));
+  } catch (e) {}
+}
+
 function getCircadianPeriod() {
   const h = new Date().getHours();
   if (h >= 5  && h < 11) return "dawn";
@@ -1035,21 +1054,21 @@ function Onboarding({ theme, onComplete }) {
     if (!name || !disclaimerChecked || consentPersistedRef.current) return;
     consentPersistedRef.current = true;
     const record = { name, date: new Date().toISOString().split("T")[0], timestamp: new Date().toISOString(), accepted: true };
-    try { localStorage.setItem("axis_disclaimer", JSON.stringify(record)); } catch (e) {}
+    axisOnboardingSetScopedJson("axis_disclaimer", record);
     void save_consent({ name, consent: true });
   }, [cur, disclaimerName, disclaimerChecked]);
 
   const doSafetyNext = () => {
     if (!disclaimerName.trim() || !disclaimerChecked) { setDisclaimerWarning(true); return; }
     const record = { name: disclaimerName.trim(), date: new Date().toISOString().split("T")[0], timestamp: new Date().toISOString(), accepted: true };
-    try { localStorage.setItem("axis_disclaimer", JSON.stringify(record)); } catch(e) {}
+    axisOnboardingSetScopedJson("axis_disclaimer", record);
     go(5);
   };
 
   const doLaunch = () => {
     storageSet("axis_period", obAutoTime ? null : periodForTheme);
     storageSet("axis_theme", obTheme);
-    storageSet("axis_onboarded", true);
+    axisOnboardingSetScopedJson("axis_onboarded", true);
     try { localStorage.setItem("hasCompletedOnboarding", "true"); } catch(e) {}
     onComplete({ period: periodForTheme, theme: obTheme });
     window.location.href = "./index.html";

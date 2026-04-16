@@ -776,11 +776,39 @@ function axisWelcomeFirstName(full) {
   return w || "";
 }
 
+function axisActiveUidForStorage() {
+  try {
+    if (typeof window !== "undefined" && window.AXIS_auth && window.AXIS_auth.currentUser && window.AXIS_auth.currentUser.uid) {
+      return String(window.AXIS_auth.currentUser.uid);
+    }
+  } catch (e) {}
+  try {
+    if (typeof localStorage !== "undefined") {
+      const cached = localStorage.getItem("axis_auth_uid");
+      if (cached && String(cached).trim()) return String(cached).trim();
+    }
+  } catch (e) {}
+  return "";
+}
+
+function axisScopedStorageGet(baseKey) {
+  try {
+    if (typeof localStorage === "undefined") return null;
+    const uid = axisActiveUidForStorage();
+    if (uid) {
+      const scoped = localStorage.getItem(baseKey + ":" + uid);
+      if (scoped !== null) return scoped;
+    }
+    return localStorage.getItem(baseKey);
+  } catch (e) {
+    return null;
+  }
+}
+
 /** HOME greeting: first name from disclaimer (`axis_disclaimer.name`), else legacy `axisUserName`. */
 function axisWelcomeDisplayNameFromStorage() {
   try {
-    if (typeof localStorage === "undefined") return "";
-    const raw = localStorage.getItem("axis_disclaimer");
+    const raw = axisScopedStorageGet("axis_disclaimer");
     if (raw) {
       const o = JSON.parse(raw);
       if (o && typeof o.name === "string") {
@@ -11571,6 +11599,10 @@ function SettingsAuthSection({ isFooter = false } = {}) {
     const unsub = onAuth(auth, (u) => {
       setUser(u || null);
       setReady(true);
+      try {
+        if (u && u.uid) localStorage.setItem("axis_auth_uid", String(u.uid));
+        else localStorage.removeItem("axis_auth_uid");
+      } catch (e) {}
     });
     return () => {
       try {
@@ -11585,6 +11617,7 @@ function SettingsAuthSection({ isFooter = false } = {}) {
   !ready ? null : !hasAuth ? /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Account sign-in is unavailable because the auth script did not load.") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
   React.createElement("div", { style: { fontSize: "var(--text-sm)", color: "var(--text-white)", marginBottom: 16, wordBreak: "break-all" } }, email || "Not signed in"), /*#__PURE__*/
   React.createElement("div", { style: { display: "flex", flexDirection: "column", width: "100%", maxWidth: "100%", gap: 0 } }, email ? /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
+        try { localStorage.removeItem("axis_auth_uid"); } catch (e) {}
         if (window.AXIS_signOut) window.AXIS_signOut().catch(() => {});
       } }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
         window.location.href = "./login.html";
@@ -13279,7 +13312,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     ), /*#__PURE__*/
     React.createElement("div", { className: "settings-block settings-block--flush" }, /*#__PURE__*/
     React.createElement("div", { className: "settings-section-title settings-block__title" }, "About"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => { try { storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, "View Onboarding Again"), /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => { try { const uid = axisActiveUidForStorage(); if (uid) storageSet("axis_onboarded:" + uid, false); else storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, "View Onboarding Again"), /*#__PURE__*/
     React.createElement("div", null, /*#__PURE__*/
     React.createElement(FeedbackButton, null)
     )
