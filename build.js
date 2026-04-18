@@ -89,9 +89,13 @@ function copyOnboardingHtmlToDist() {
 copyOnboardingHtmlToDist();
 ['onboarding.css', 'AXIS_Branding_DarkMode_Outlined.svg', 'AXIS_Branding_LightMode_Outlined.svg', 'axis_data.json', 'login.html'].forEach(copyPublicToDist);
 const catCowAnimDir = path.join(root, 'public_web', 'assets', 'exercise-animations', 'cat-cow');
+const sphinxPoseAnimDir = path.join(root, 'public_web', 'assets', 'exercise-animations', 'sphinx-pose');
 const catCowVideosDir = path.join(root, 'public_web', 'assets', 'videos');
 if (fs.existsSync(catCowAnimDir)) {
   copyRecursive(catCowAnimDir, path.join(dist, 'assets', 'exercise-animations', 'cat-cow'));
+}
+if (fs.existsSync(sphinxPoseAnimDir)) {
+  copyRecursive(sphinxPoseAnimDir, path.join(dist, 'assets', 'exercise-animations', 'sphinx-pose'));
 }
 if (fs.existsSync(catCowVideosDir)) {
   copyRecursive(catCowVideosDir, path.join(dist, 'assets', 'videos'));
