@@ -404,7 +404,7 @@ const EXERCISE_ASSET_SVGS = {
 };
 /** Baseline demo media paths — add keys with matching resolveExerciseAnimationKey + assets; LIST/GUIDED enlargement is centralized in ExerciseCarousel (native FS for video, portal for gif/webp). */
 const EXERCISE_ASSET_VIDEOS = {
-  CatCow: "./assets/exercise-animations/cat-cow/Peloton_CatCow.gif",
+  CatCow: "./assets/exercise-animations/cat-cow/Peloton_CatCow.mp4",
   SphinxPose: "./assets/exercise-animations/sphinx-pose/Sphinx_Pose.mp4"
 };
 /** document.body while carousel portal enlarge is open; portrait-lock CSS must exclude this (all such demos share one path — add new videos here, not a separate fullscreen UI). */
@@ -417,6 +417,23 @@ function exerciseCarouselExpandableDemoSrc(src) {
   const s = String(src || "");
   if (!s) return false;
   return exerciseAssetIsVideo(s) || /\.(gif|webp)(\?|#|$)/i.test(s);
+}
+/** Best-effort native fullscreen (same path as MP4 demos); avoids portal lightbox when it succeeds. */
+async function axisRequestElementFullscreen(el) {
+  if (!el) return false;
+  try {
+    if (el.requestFullscreen) {
+      await el.requestFullscreen();
+      return true;
+    }
+  } catch (e) {}
+  try {
+    if (typeof el.webkitRequestFullscreen === "function") {
+      el.webkitRequestFullscreen();
+      return true;
+    }
+  } catch (e2) {}
+  return false;
 }
 
 function getInstructionFrameSvgs(animationKey) {
@@ -452,6 +469,7 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
   const touchStartX = useRef(null);
   const carouselContentSigRef = useRef(null);
   const baselineMediaRef = useRef(null);
+  const baselineRasterFsRef = useRef(null);
   const [baselineExpandOverlay, setBaselineExpandOverlay] = useState(false);
   const n = tiers.length;
   const fc = frameSvgHtml && frameSvgHtml.length ? frameSvgHtml.length : 0;
@@ -543,8 +561,10 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
     playsInline: true,
     preload: "metadata",
     "aria-hidden": true
-  }) : /*#__PURE__*/React.createElement("img", {
-    ref: baselineMediaRef,
+  }) : /*#__PURE__*/React.createElement("div", {
+    ref: baselineRasterFsRef,
+    className: "exercise-carousel__media-fs-shell"
+  }, /*#__PURE__*/React.createElement("img", {
     className: "exercise-carousel__media",
     src: videoSrc,
     alt: "",
@@ -552,7 +572,7 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
     decoding: "async",
     draggable: false,
     "aria-hidden": true
-  }) : /*#__PURE__*/React.createElement("div", {
+  })) : /*#__PURE__*/React.createElement("div", {
     className: "exercise-carousel__graphic" + (isCatCowFrame ? " exercise-carousel__graphic--catcow" : "") + catCowFrameClass,
     style: { color: graphicColor },
     dangerouslySetInnerHTML: { __html: svgHtml },
@@ -577,18 +597,21 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
           }
           const el = baselineMediaRef.current;
           if (el && el.tagName === "VIDEO") {
-            try {
-              if (el.requestFullscreen) {
-                await el.requestFullscreen();
-                return;
-              }
-            } catch (err) {}
+            if (await axisRequestElementFullscreen(el)) return;
             try {
               if (typeof el.webkitEnterFullscreen === "function") {
                 el.webkitEnterFullscreen();
                 return;
               }
             } catch (err2) {}
+            setBaselineExpandOverlay(true);
+            return;
+          }
+          const shell = baselineRasterFsRef.current;
+          if (shell) {
+            if (await axisRequestElementFullscreen(shell)) return;
+            const img = shell.querySelector("img");
+            if (img && await axisRequestElementFullscreen(img)) return;
           }
           setBaselineExpandOverlay(true);
         } catch (err) {
@@ -3688,6 +3711,33 @@ const css = `
   .exercise-carousel__graphic { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
   .exercise-carousel__graphic svg { width: 100%; height: 100%; display: block; max-height: 100%; }
   .exercise-carousel__graphic img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .exercise-carousel__media-fs-shell {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .exercise-carousel__media-fs-shell:fullscreen,
+  .exercise-carousel__media-fs-shell:-webkit-full-screen {
+    background: #000;
+    border-radius: 0;
+  }
+  .exercise-carousel__media-fs-shell:fullscreen .exercise-carousel__media,
+  .exercise-carousel__media-fs-shell:-webkit-full-screen .exercise-carousel__media {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+    object-fit: contain;
+  }
   .exercise-carousel__media { width: 100%; height: 100%; aspect-ratio: 16 / 9; display: block; object-fit: contain; border-radius: 10px; }
   .exercise-carousel__graphic--catcow svg { transform-origin: center center; }
   /* Normalize Cat-Cow poses to CatCow_3_Black.svg visual size baseline. */
