@@ -1296,7 +1296,7 @@ function Onboarding({ theme, onComplete }) {
                       color:obAutoTime?"var(--ob-accent)":(obTheme==="light"?"#0f172a":"var(--ob-text-sec)"),
                       marginBottom:4,
                     }}>Auto</div>
-                    <div style={{fontSize:12,color:obTheme==="light"?"#334155":"var(--ob-text-sec)"}}>Set and forget — colors follow the time of day</div>
+                    <div style={{fontSize:12,color:obTheme==="light"?"#334155":"var(--ob-text-sec)"}}>Set and forget, colors follow the time of day</div>
                   </div>
                   <button type="button" role="switch" aria-checked={obAutoTime} onClick={()=>setObAutoTime(v=>!v)} style={{
                     width:48,height:28,border:"1.5px solid",borderColor:obAutoTime?"var(--ob-accent)":(obTheme==="light"?"rgba(15,23,42,0.35)":"var(--ob-box-border)"),
@@ -1417,13 +1417,13 @@ function Onboarding({ theme, onComplete }) {
                 <div className="ob-eyebrow">Session modes</div>
                 <div className="ob-heading" style={{ fontSize: 36 }}>LIST vs <em>GUIDED</em></div>
                 <div className="ob-body" style={{ marginBottom: 22, fontSize: 14 }}>
-                  On the Sessions tab you pick how you want to move—browse on your own, or follow a timed flow.
+                  On the Sessions tab you pick how you want to move: browse on your own, or follow a timed flow.
                 </div>
                 <div className="ob-benefits">
                   <div className="ob-benefit">
                     <div className="ob-bi" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "var(--ob-accent)", minWidth: 48, alignSelf: "flex-start", paddingTop: 2 }}>LIST</div>
                     <div className="ob-bt">
-                      <strong>Self-paced.</strong> Scroll the exercise list, set each move (e.g. 30–60s), skip freely, and control your own pace—great when you want flexibility or a quick pick-up.
+                      <strong>Self-paced.</strong> Scroll the exercise list, set each move (e.g. 30–60s), skip freely, and control your own pace. Good when you want flexibility or a quick pick-up.
                     </div>
                   </div>
                   <div className="ob-benefit">

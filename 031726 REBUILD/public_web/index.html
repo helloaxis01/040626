@@ -6871,14 +6871,71 @@ const css = `
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-radius: 0;
-    padding: 28px 0 12px;
-    margin-top: 12px;
+    padding: 24px 0 12px;
+    margin-top: 0;
     width: 100%;
     box-sizing: border-box;
   }
-  .summary-main-stack--metrics .summary-cta--metrics-flat .summary-cta-copy {
-    text-align: center;
+  .metrics-coaching-cta {
     width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 18px;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .metrics-coaching-cta__eyebrow {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: var(--accent);
+  }
+  /* Body matches .weight-section__context (“Last logged: …”) */
+  .metrics-coaching-cta .metrics-coaching-cta__body.weight-section__context {
+    margin: 0 0 14px;
+  }
+  .metrics-coaching-cta__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    font-family: "Barlow", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+  .metrics-coaching-cta__action:hover {
+    filter: brightness(1.04);
+  }
+  .metrics-coaching-cta__action:active {
+    opacity: 0.92;
+    transform: scale(0.99);
+  }
+  .app[data-night="true"] .metrics-coaching-cta__eyebrow {
+    color: #ff3b30;
+  }
+  .app[data-night="true"] .metrics-coaching-cta__action {
+    color: #ff3b30;
+    border-color: rgba(255, 59, 48, 0.55);
+    background: #1c0505;
   }
 
   /* 7-day momentum — square strip (device-only) */
@@ -9103,7 +9160,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
     React.createElement("div", { className: `chev ${open ? "op" : ""}`, style: { marginLeft: 4 } }, "\u25BE")
     ),
     open && /*#__PURE__*/
-    React.createElement("div", { ref: sessionDetailPanelRef, className: "panel protocol-panel", tabIndex: -1, role: "region", "aria-label": `${ex.name} — exercise details`, style: skipped ? { opacity: 0.45 } : {} }, /*#__PURE__*/
+    React.createElement("div", { ref: sessionDetailPanelRef, className: "panel protocol-panel", tabIndex: -1, role: "region", "aria-label": `${ex.name}, exercise details`, style: skipped ? { opacity: 0.45 } : {} }, /*#__PURE__*/
     React.createElement(Steps, {
       steps: ex.steps,
       small: true,
@@ -13214,7 +13271,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         setMetricsWeightSamples((prev) => axisMetricsMergeWeightByTs(axisMetricsNormalizeWeightList(prev), imported));
         setMetricsHealthHint("Synced from Apple Health / Health Connect");
       } else {
-        setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Log Weight on Metrics or Connect & sync in Settings.");
+        setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet, use Log Weight on Metrics or Connect & sync in Settings.");
       }
     })();
     return () => { cancelled = true; };
@@ -13499,7 +13556,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
             setMetricsHealthHint("Synced from Apple Health / Health Connect");
             setHealthConnectSyncMsg("Updated weight and steps.");
           } else {
-            setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet — use Log Weight on Metrics or open this app from the native shell.");
+            setMetricsHealthHint(typeof window.axisFetchHealthWeightSamples === "function" ? "" : "No health data yet, use Log Weight on Metrics or open this app from the native shell.");
             setHealthConnectSyncMsg("No new weight samples. Steps refreshed if available.");
           }
         } catch (e) {
@@ -14056,8 +14113,17 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       )
       ),
       /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
+      /*#__PURE__*/React.createElement("div", { className: "metrics-coaching-cta" }, /*#__PURE__*/
+      React.createElement("div", { className: "metrics-coaching-cta__eyebrow" }, "1-on-1 coaching"),
+      /*#__PURE__*/React.createElement("p", { className: "metrics-coaching-cta__body weight-section__context" }, "Book time to review your metrics or perfect your form in a 1-on-1, on camera session with a licensed Physical Literacy Coach."),
+      /*#__PURE__*/React.createElement("a", {
+        href: "./coaching.html",
+        className: "metrics-coaching-cta__action",
+        onClick: () => { axisHapticTick(); }
+      }, /*#__PURE__*/React.createElement(AxisThinArrowRight, { size: 14 }), "Schedule a session")
+      ),
+      /*#__PURE__*/React.createElement("hr", { className: "metrics-rail__rule metrics-rail__rule--gap-md", "aria-hidden": true }),
       /*#__PURE__*/React.createElement("div", { className: "summary-cta summary-cta--metrics-flat", style: { "--metrics-session-accent": metricsSessionAccent } }, /*#__PURE__*/
-      React.createElement("div", { className: "summary-cta-copy" }, "Ready for another reset?"), /*#__PURE__*/
       React.createElement("button", {
         className: "summary-cta-btn summary-cta-btn--metrics-mood ultra-filled-btn",
         onClick: () => {setView("home");} },
