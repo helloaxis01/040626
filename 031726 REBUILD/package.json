@@ -10,6 +10,7 @@
     "build": "npm --prefix .. run build",
     "refresh": "npm --prefix .. run refresh",
     "preview": "node scripts/preview-local.cjs",
+    "preview:open": "PREVIEW_OPEN=1 node scripts/preview-local.cjs",
     "preview:dist": "npm --prefix .. run preview",
     "preview:web": "npm --prefix .. run preview:web",
     "cap:sync": "npm --prefix .. run cap:sync"

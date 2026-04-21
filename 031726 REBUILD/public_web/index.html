@@ -7262,27 +7262,8 @@ const css = `
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:2px;
+    gap:6px;
     flex-shrink:0;
-  }
-  .tab-btn-label {
-    font-family: var(--font-ui);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.03em;
-    line-height: 1.15;
-    margin-top: 2px;
-    color: inherit;
-    opacity: 0.88;
-    max-width: 72px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-  }
-  .tab-btn.active .tab-btn-label {
-    opacity: 1;
-    font-weight: 500;
   }
   .tab-btn:not(.active) .nav-tab-indicator {
     pointer-events: none;
@@ -7333,7 +7314,7 @@ const css = `
     background: none !important;
   }
   .tab-btn .tab-icon-shell svg { position:relative; z-index:1; }
-  /* Pill above icon: 20% wider than icon, 4px gap to icon (tab-btn-stack gap), capsule ends */
+  /* Pill above icon: 20% wider than icon; gap to icon via .tab-btn-stack */
   .nav-tab-indicator {
     box-sizing: border-box;
     width: calc(var(--tab-icon-size, 30px) * 1.2);
@@ -9375,8 +9356,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
 
   React.createElement("span", { className: "tab-btn-stack" }, /*#__PURE__*/
   React.createElement("span", { className: "nav-tab-indicator", "aria-hidden": true }), /*#__PURE__*/
-  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(HomeIcon, null)), /*#__PURE__*/
-  React.createElement("span", { className: "tab-btn-label" }, "Home")
+  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(HomeIcon, null))
   )
 
   ), /*#__PURE__*/
@@ -9389,8 +9369,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
 
   React.createElement("span", { className: "tab-btn-stack" }, /*#__PURE__*/
   React.createElement("span", { className: "nav-tab-indicator", "aria-hidden": true }), /*#__PURE__*/
-  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(MetricsIcon, null)), /*#__PURE__*/
-  React.createElement("span", { className: "tab-btn-label" }, "Metrics")
+  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(MetricsIcon, null))
   )
 
   ), /*#__PURE__*/
@@ -9403,8 +9382,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
 
   React.createElement("span", { className: "tab-btn-stack" }, /*#__PURE__*/
   React.createElement("span", { className: "nav-tab-indicator", "aria-hidden": true }), /*#__PURE__*/
-  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(TimerIcon, null)), /*#__PURE__*/
-  React.createElement("span", { className: "tab-btn-label" }, "Timer")
+  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(TimerIcon, null))
   )
 
   ), /*#__PURE__*/
@@ -9417,8 +9395,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
 
   React.createElement("span", { className: "tab-btn-stack" }, /*#__PURE__*/
   React.createElement("span", { className: "nav-tab-indicator", "aria-hidden": true }), /*#__PURE__*/
-  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(MoodIcon, null)), /*#__PURE__*/
-  React.createElement("span", { className: "tab-btn-label" }, "Mood")
+  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(MoodIcon, null))
   )
 
   ), /*#__PURE__*/
@@ -9431,8 +9408,7 @@ function TabBar({ view, setView, theme, nightMode = false }) {
 
   React.createElement("span", { className: "tab-btn-stack" }, /*#__PURE__*/
   React.createElement("span", { className: "nav-tab-indicator", "aria-hidden": true }), /*#__PURE__*/
-  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(SettingsIcon, null)), /*#__PURE__*/
-  React.createElement("span", { className: "tab-btn-label" }, "Settings")
+  React.createElement("span", { className: "tab-icon-shell", "aria-hidden": true }, /*#__PURE__*/React.createElement(SettingsIcon, null))
   )
 
   )

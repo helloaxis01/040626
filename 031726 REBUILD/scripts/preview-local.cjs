@@ -10,8 +10,13 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const publicWeb = path.join(root, "public_web");
 const PORT = Number(process.env.PREVIEW_PORT) || 4173;
-/** Unset = bind all interfaces (IPv4 + IPv6) so http://localhost/ works when it resolves to ::1 */
-const HOST = process.env.PREVIEW_HOST;
+/**
+ * Default 127.0.0.1 so browsers and IDE previews reliably reach the server (localhost/IPv6 quirks).
+ * LAN / device testing: PREVIEW_HOST=0.0.0.0 npm run preview
+ */
+const HOST = process.env.PREVIEW_HOST != null && process.env.PREVIEW_HOST !== ""
+  ? process.env.PREVIEW_HOST
+  : "127.0.0.1";
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
@@ -103,10 +108,21 @@ async function main() {
   });
 
   const onListen = () => {
-    console.log(`Preview ready: http://localhost:${PORT}/`);
+    const base = HOST === "0.0.0.0" ? `http://127.0.0.1:${PORT}` : `http://${HOST}:${PORT}`;
+    console.log(`Preview ready: ${base}/`);
+    if (HOST === "0.0.0.0") {
+      console.log(`  (all interfaces) also try http://127.0.0.1:${PORT}/ on this machine`);
+    }
+    console.log(`  If an in-IDE browser shows error -102, use your system browser (Safari/Chrome) at the URL above.`);
+    if (process.env.PREVIEW_OPEN === "1") {
+      const { exec } = require("child_process");
+      const url = `${base}/`;
+      if (process.platform === "darwin") exec(`open ${JSON.stringify(url)}`);
+      else if (process.platform === "win32") exec(`start ${JSON.stringify(url)}`);
+      else exec(`xdg-open ${JSON.stringify(url)}`);
+    }
   };
-  if (HOST) server.listen(PORT, HOST, onListen);
-  else server.listen(PORT, onListen);
+  server.listen(PORT, HOST, onListen);
 }
 
 main().catch((e) => {
