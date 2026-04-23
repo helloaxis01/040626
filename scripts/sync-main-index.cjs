@@ -26,6 +26,14 @@ console.log("sync-main-index: copied →", path.relative(root, destPublic));
 fs.copyFileSync(src, destPublicWeb);
 console.log("sync-main-index: copied →", path.relative(root, destPublicWeb));
 
+const coachingSrc = path.join(root, "031726 REBUILD", "public_web", "coaching.html");
+const coachingDestWeb = path.join(root, "public_web", "coaching.html");
+if (fs.existsSync(coachingSrc)) {
+  fs.mkdirSync(path.dirname(coachingDestWeb), { recursive: true });
+  fs.copyFileSync(coachingSrc, coachingDestWeb);
+  console.log("sync-main-index: copied →", path.relative(root, coachingDestWeb));
+}
+
 const iconsSrc = path.join(root, "031726 REBUILD", "public_web", "app-icons");
 const iconsDest = path.join(root, "public_web", "app-icons");
 if (fs.existsSync(iconsSrc) && typeof fs.cpSync === "function") {

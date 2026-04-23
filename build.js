@@ -100,6 +100,7 @@ if (fs.existsSync(sphinxPoseAnimDir)) {
 if (fs.existsSync(catCowVideosDir)) {
   copyRecursive(catCowVideosDir, path.join(dist, 'assets', 'videos'));
 }
+copyPublicWebAssetToDist('coaching.html');
 // Single app icon only: navy PNG in Logo - Vector → axis-icon.png (no old filenames, no SVG fallback)
 const iconPngRoot = path.join(root, 'Logo - Vector', 'AXIS_Branding_Navy.png');
 const iconPngDist = path.join(dist, 'axis-icon.png');
@@ -142,7 +143,7 @@ function finish() {
   fs.writeFileSync(
     path.join(dist, 'serve.json'),
     JSON.stringify({
-      cleanUrls: ['!/onboarding.html'],
+      cleanUrls: ['!/onboarding.html', '!/coaching.html'],
       trailingSlash: false,
       directoryListing: false,
       headers: [
