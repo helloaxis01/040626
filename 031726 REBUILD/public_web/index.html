@@ -357,7 +357,7 @@ const TRACKS_DATA_FALLBACK = {
 let TRACKS = TRACKS_DATA_FALLBACK;
 
 /**
- * Inline SVG animation frames per exercise key (embed full <svg> strings). Cat-Cow cleared until new assets land.
+ * Inline SVG animation frames per exercise key (embed full <svg> strings). Cat-Cow uses mp4 in EXERCISE_ASSET_VIDEOS when present.
  */
 const EXERCISE_ANIMATION_SVGS = {
   CatCow: []
@@ -376,9 +376,17 @@ const EXERCISE_INSTRUCTION_FRAMES = {
 function resolveExerciseAnimationKey(trackId, exerciseId, exerciseName) {
   void trackId;
   void exerciseId;
-  const compact = String(exerciseName || "").toLowerCase().replace(/[^a-z]/g, "");
-  if (compact.includes("catcow") && (EXERCISE_ASSET_VIDEOS.CatCow || EXERCISE_ASSET_SVGS.CatCow || EXERCISE_ANIMATION_SVGS.CatCow)) return "CatCow";
-  if ((compact === "sphinxpose" || compact.includes("sphinxpose")) && EXERCISE_ASSET_VIDEOS.SphinxPose) return "SphinxPose";
+  const compact = String(exerciseName || "")
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
+  const isCatCow =
+    compact.includes("catcow") ||
+    (compact.includes("cat") && compact.includes("cow"));
+  if (isCatCow && (EXERCISE_ASSET_VIDEOS.CatCow || EXERCISE_ASSET_SVGS.CatCow || EXERCISE_ANIMATION_SVGS.CatCow)) return "CatCow";
+  const isSphinx = compact.includes("sphinxpose") || compact.includes("sphinx");
+  if (isSphinx && EXERCISE_ASSET_VIDEOS.SphinxPose) return "SphinxPose";
   return null;
 }
 
