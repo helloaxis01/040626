@@ -8158,6 +8158,10 @@ const css = `
     filter:none;
     padding-bottom:max(10px, calc(var(--app-title-after-dashboard) - 20px));
   }
+  .app[data-theme="light"]:not([data-night="true"]) #axis-home-welcome {
+    color:var(--accent) !important;
+    -webkit-text-fill-color:var(--accent) !important;
+  }
   .home .home-track-cards-outer--top {
     position:relative;
     z-index:1;
