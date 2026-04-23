@@ -8144,7 +8144,7 @@ const css = `
     width:100%;
     max-width:100%;
   }
-  /* HOME only: same label size/style as TODAY CTA (begin-btn); fixed ink; bottom pad = top pad (Metrics: #axis-metrics-welcome) */
+  /* HOME greeting: explicit theme branches so light mode never falls back to --axis-white / #f6f7f8 (invisible on pale gradients). */
   #axis-home-welcome {
     text-align:center;
     font-family:var(--font-display);
@@ -8152,15 +8152,21 @@ const css = `
     font-weight:400;
     letter-spacing:0.18em;
     text-transform:uppercase;
-    color:#f6f7f8 !important;
-    -webkit-text-fill-color:#f6f7f8 !important;
     text-shadow:none;
     filter:none;
     padding-bottom:max(10px, calc(var(--app-title-after-dashboard) - 20px));
   }
+  .app[data-theme="dark"]:not([data-night="true"]) #axis-home-welcome {
+    color:#f6f7f8 !important;
+    -webkit-text-fill-color:#f6f7f8 !important;
+  }
   .app[data-theme="light"]:not([data-night="true"]) #axis-home-welcome {
-    color:var(--accent) !important;
-    -webkit-text-fill-color:var(--accent) !important;
+    color:var(--accent, var(--mood-accent, #252525)) !important;
+    -webkit-text-fill-color:var(--accent, var(--mood-accent, #252525)) !important;
+  }
+  .app[data-night="true"] #axis-home-welcome {
+    color:#FF3B30 !important;
+    -webkit-text-fill-color:#FF3B30 !important;
   }
   .home .home-track-cards-outer--top {
     position:relative;
