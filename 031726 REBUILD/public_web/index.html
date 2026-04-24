@@ -14,6 +14,17 @@
         return "./onboarding.html";
       }
     };
+    window.axisLoginHref = function () {
+      try {
+        if (!window.location.protocol || window.location.protocol === "file:") return "./login.html";
+        var p = window.location.pathname || "/";
+        var d = p.replace(/[^/]*$/, "");
+        if (d.slice(-1) !== "/") d += "/";
+        return window.location.origin + d + "login.html";
+      } catch (e) {
+        return "./login.html";
+      }
+    };
   })();
   </script>
   <meta charset="UTF-8" />
@@ -2507,6 +2518,8 @@ const css = `
     box-sizing: border-box;
     padding-left: max(var(--page-gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--page-gutter), env(safe-area-inset-right, 0px));
+    padding-bottom: 24px;
+    margin-bottom: var(--axis-safe-bottom);
   }
   .app-body > .dashboard-header + .settings-page-rail > .app-page-header {
     padding: calc(var(--axis-dashboard-fixed-h) + max(10px, calc(var(--app-title-after-dashboard) - 20px))) 0 2px;
@@ -2519,7 +2532,480 @@ const css = `
     margin-bottom: 8px;
     font-size: var(--text-lg) !important;
   }
-  .settings-density .app-screen-title { margin-bottom: 14px !important; }
+  /* Settings title: match Metrics page title (see .metrics-page-title) */
+  .app-body > .dashboard-header + .settings-page-rail > .app-page-header .app-screen-title.metrics-page-title {
+    font-size: 14px !important;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+    margin: 0 0 1rem !important;
+    font-family: var(--font-display);
+    text-transform: none;
+    line-height: 1.2;
+  }
+  .settings-density .app-screen-title.metrics-page-title { margin-bottom: 1rem !important; }
+  /* ── Settings: iOS-style grouped list (inset sections, large title, system hierarchy) ── */
+  .app.settings-ios26 {
+    --settings-ios-elevated: color-mix(in srgb, var(--glass-bg) 88%, rgba(255, 255, 255, 0.92));
+    --settings-ios-separator: rgba(60, 60, 67, 0.29);
+    --settings-ios-group-radius: 14px;
+  }
+  .app.settings-ios26[data-theme="light"]:not([data-night="true"]) {
+    --settings-ios-elevated: #ffffff;
+    --settings-ios-separator: rgba(60, 60, 67, 0.29);
+  }
+  .app.settings-ios26[data-theme="dark"]:not([data-night="true"]) {
+    --settings-ios-elevated: #1c1c1e;
+    --settings-ios-separator: rgba(84, 84, 88, 0.65);
+  }
+  .app.settings-ios26[data-night="true"] {
+    --settings-ios-elevated: color-mix(in srgb, #000000 90%, rgba(255, 59, 48, 0.07));
+    --settings-ios-separator: rgba(255, 59, 48, 0.28);
+  }
+  /* Same translucent stack as other tabs (orbs show through); tint scroll layer only */
+  .app.settings-ios26 .app-body.app-body--settings-pad {
+    -webkit-font-smoothing: antialiased;
+  }
+  .app.settings-ios26[data-theme="light"]:not([data-night="true"]) .app-body.app-body--settings-pad {
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .app.settings-ios26[data-theme="dark"] .app-body.app-body--settings-pad,
+  .app.settings-ios26[data-night="true"] .app-body.app-body--settings-pad {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .app.settings-ios26 .app-body > .dashboard-header + .settings-page-rail {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+  .app.settings-ios26 .app-body > .dashboard-header + .settings-page-rail > .app-page-header .app-screen-title.metrics-page-title {
+    font-size: clamp(28px, 8vw, 34px) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--text-white) !important;
+    margin: 0 0 6px !important;
+    line-height: 1.08 !important;
+    font-family: var(--font-ui) !important;
+    text-transform: none !important;
+  }
+  .app.settings-ios26 .settings-ios-group {
+    border-radius: var(--settings-ios-group-radius);
+    border: 0.5px solid color-mix(in srgb, var(--settings-ios-separator) 65%, transparent);
+    background: var(--settings-ios-elevated);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+  .app.settings-ios26[data-theme="dark"] .settings-ios-group,
+  .app.settings-ios26[data-night="true"] .settings-ios-group {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+  .app.settings-ios26[data-night="true"] .settings-ios-group {
+    border-color: color-mix(in srgb, #ff3b30 24%, rgba(255, 255, 255, 0.1));
+  }
+  .app.settings-ios26 .settings-ios-group__header {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: color-mix(in srgb, var(--text-dimmer) 92%, var(--text-white));
+    margin: 0 0 8px;
+    padding-left: 2px;
+    line-height: 1.25;
+  }
+  .app.settings-ios26 .settings-ios-group__body {
+    padding: 14px 16px 14px;
+  }
+  .app.settings-ios26 .settings-ios-primary {
+    font-family: var(--font-ui);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .app.settings-ios26 label.settings-ios-primary {
+    font-weight: 400;
+  }
+  .app.settings-ios26 .settings-ios-secondary {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .app.settings-ios26 .settings-ios-value {
+    font-family: var(--font-ui);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .app.settings-ios26 .settings-ios-row-btn {
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .app.settings-ios26 .settings-ios-stack-block + .settings-ios-stack-block,
+  .app.settings-ios26 .settings-ios-group__body > .settings-ios-cell + .settings-ios-stack-block {
+    border-top: 0.5px solid color-mix(in srgb, var(--settings-ios-separator) 85%, transparent);
+  }
+  .app.settings-ios26 .settings-ios-cell {
+    min-height: 44px;
+    padding: 11px 0;
+  }
+  .app.settings-ios26 .settings-ios-toggle-track {
+    width: 51px;
+    height: 31px;
+    border-radius: 15.5px;
+  }
+  .app.settings-ios26 .settings-ios-toggle-knob {
+    top: 2px;
+    left: 2px;
+    width: 27px;
+    height: 27px;
+  }
+  .app.settings-ios26 .settings-ios-toggle-knob--on {
+    left: 22px;
+  }
+  .app.settings-ios26 .settings-ios-toggle-hit {
+    min-width: 51px;
+    min-height: 44px;
+  }
+  .app.settings-ios26 .settings-ios-group .settings-help-text {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.38;
+  }
+  .app.settings-ios26 .settings-ios-group .settings-privacy-sub {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .app.settings-ios26 .settings-ios-group .settings-privacy-line {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.42;
+  }
+  /* iOS-style grouped lists + liquid glass (Settings) — inset padding matches .metrics-metric-panel */
+  .settings-ios-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .settings-ios-stack > section {
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* Space between each glass card and the next section title */
+  .settings-ios-stack > section:not(:first-child) {
+    padding-top: 8px;
+    margin-top: 0;
+  }
+  .settings-ios-group {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--glass-border) 85%, transparent);
+    background: color-mix(in srgb, var(--glass-bg) 78%, rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    overflow: visible;
+  }
+  .app[data-night="true"] .settings-ios-group {
+    background: color-mix(in srgb, #000000 82%, rgba(255, 59, 48, 0.06));
+    border-color: color-mix(in srgb, #FF3B30 22%, rgba(255, 255, 255, 0.12));
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45);
+  }
+  .settings-ios-group__header {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--text-dimmer);
+    padding: 0;
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .settings-ios-group__body {
+    padding: 22px 20px 14px;
+  }
+  .settings-ios-stack-block {
+    padding: 14px 0;
+    box-sizing: border-box;
+  }
+  .settings-ios-stack-block:first-child {
+    padding-top: 0;
+  }
+  .settings-ios-group__body > .settings-ios-stack-block:last-child {
+    padding-bottom: 0;
+  }
+  .settings-ios-group__body > .settings-ios-cell:last-child {
+    padding-bottom: 0;
+  }
+  .settings-ios-stack-block + .settings-ios-stack-block {
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 65%, transparent);
+  }
+  .settings-ios-group__body > .settings-ios-cell + .settings-ios-stack-block {
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 65%, transparent);
+  }
+  .settings-feedback-wrap .settings-outline-btn {
+    min-height: 48px;
+    margin-top: 0;
+    width: 100%;
+  }
+  .settings-feedback-wrap .settings-outline-btn--icon {
+    justify-content: flex-start;
+  }
+  .settings-ios-label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .settings-ios-primary {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-white);
+    line-height: 1.25;
+    text-align: left;
+  }
+  label.settings-ios-primary {
+    cursor: pointer;
+    margin: 0;
+  }
+  .settings-ios-secondary {
+    font-size: 13px;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-secondary) 85%, var(--text-white));
+    line-height: 1.35;
+    margin-top: 2px;
+    text-align: left;
+  }
+  .settings-ios-meta {
+    font-size: 12px;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-secondary) 85%, var(--text-white));
+    line-height: 1.45;
+    padding: 0 0 10px;
+  }
+  .settings-ios-value {
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .settings-ios-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 10px 0;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+  }
+  .settings-ios-group__body > .settings-ios-cell:first-child {
+    padding-top: 0;
+  }
+  .settings-ios-cell__text {
+    min-width: 0;
+    flex: 1;
+    text-align: left;
+  }
+  .settings-ios-toggle-hit {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .settings-ios-toggle-track {
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    position: relative;
+    border: 1px solid var(--glass-border-strong);
+    background: var(--glass-bg);
+    transition: border-color 0.2s, background 0.2s;
+    pointer-events: none;
+  }
+  .settings-ios-toggle-track--on {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  .settings-ios-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    transition: left 0.2s;
+    pointer-events: none;
+  }
+  .settings-ios-toggle-knob--on {
+    left: 22px;
+  }
+  .app[data-night="true"] .settings-ios-toggle-knob {
+    background: #000000;
+  }
+  .settings-ios-row-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 0;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-white);
+    cursor: pointer;
+    text-align: left;
+    gap: 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .settings-ios-row-btn:hover {
+    background: color-mix(in srgb, var(--glass-bg) 45%, transparent);
+  }
+  .settings-ios-row-btn:active {
+    opacity: 0.92;
+  }
+  .settings-ios-row-btn__chev {
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .settings-ios-group .settings-help-text {
+    font-weight: 500;
+    color: color-mix(in srgb, var(--color-text-secondary) 82%, var(--text-white));
+    margin-bottom: 6px;
+    margin-top: 0;
+  }
+  .settings-ios-group .settings-privacy-sub {
+    margin: 0;
+    padding: 10px 0 4px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--text-secondary) 90%, var(--text-white));
+  }
+  .settings-ios-group .settings-privacy-sub:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .settings-ios-group .settings-privacy-line {
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-secondary) 82%, var(--text-white));
+    margin: 0;
+    padding: 3px 0 5px;
+  }
+  .settings-ios-group .settings-ios-group__body > .settings-privacy-line:last-child {
+    padding-bottom: 0;
+  }
+  .settings-ios-group .settings-privacy-actions {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .settings-ios-group .settings-ios-group__body.settings-data-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .settings-ios-group .settings-ios-group__body.settings-data-actions .settings-privacy-export-accent,
+  .settings-ios-group .settings-ios-group__body.settings-data-actions .settings-privacy-archived-outline {
+    margin: 0;
+    min-height: 48px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .settings-ios-group .settings-outline-btn.settings-health-sync-btn {
+    margin-top: 8px;
+    min-height: 48px;
+  }
+  .settings-ios-group .settings-outline-btn:not(.settings-health-sync-btn) {
+    margin-top: 0;
+  }
+  .settings-ios-group .settings-session-preset-row {
+    margin: 6px 0 0;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
+  }
+  .settings-ios-group .settings-session-preset-row .settings-duration-chip {
+    margin: 0;
+    min-height: 44px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+    text-align: center;
+  }
+  .settings-ios-group .settings-ios-stack-block--exercise-timer .settings-ios-primary {
+    margin-bottom: 2px;
+  }
+  .settings-ios-group .settings-ios-stack-block--exercise-timer .settings-help-text {
+    margin-bottom: 4px;
+  }
+  .settings-ios-group .settings-custom-duration-label {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: color-mix(in srgb, var(--text-secondary) 85%, var(--text-white));
+    margin: 12px 0 6px;
+  }
+  .settings-ios-group .settings-custom-duration-hint {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--color-text-secondary) 82%, var(--text-white));
+    margin: 6px 0 0;
+  }
+  .settings-ios-group .settings-ios-stack-block--exercise-timer .settings-custom-duration-input {
+    display: block;
+    margin: 0;
+  }
+  .settings-ios-group .settings-range {
+    margin-top: 6px;
+    min-height: 32px;
+  }
+  .settings-account-accessory-btn {
+    margin-top: 0 !important;
+    width: auto !important;
+    min-height: 44px;
+    flex-shrink: 0;
+    padding: 10px 16px !important;
+    align-self: center;
+  }
   .settings-block {
     border-top: 1px solid var(--border);
     padding-top: 14px;
@@ -2568,7 +3054,7 @@ const css = `
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: 500;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -2591,6 +3077,7 @@ const css = `
     font-size: 13px;
     color: var(--color-text-secondary);
     text-align: left;
+    font-weight: 500;
   }
   .settings-slider-value {
     font-size: 14px;
@@ -2682,7 +3169,9 @@ const css = `
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
     margin-top: 10px;
+    margin-bottom: 4px;
     line-height: 1.4;
+    font-weight: 500;
   }
   .settings-app-icon-slot {
     position: relative;
@@ -2758,6 +3247,7 @@ const css = `
     gap: 10px;
     align-items: flex-start;
     text-align: left;
+    font-weight: 500;
   }
   .settings-privacy-line::before {
     content: "";
@@ -7885,7 +8375,7 @@ const css = `
     line-height: 1.45;
   }
   .tab-bar-spacer--settings {
-    height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
+    height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 28px);
     min-height: 0;
   }
 
@@ -8372,10 +8862,58 @@ const css = `
     padding-bottom:0;
     box-sizing:border-box;
   }
+  .home-recent-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:0 0 4px;
+    width:100%;
+    box-sizing:border-box;
+  }
   .home-recent-label {
     font-size:var(--text-base); letter-spacing:-0.02em; text-transform:none;
-    color:var(--text-white); margin:0 0 4px; padding:0; font-weight:600;
+    color:var(--text-white); margin:0; padding:0; font-weight:600;
     text-align:left;
+    flex:1;
+    min-width:0;
+  }
+  .home-recent-collapse-btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;
+    height:36px;
+    margin:0;
+    padding:0;
+    border:none;
+    border-radius:10px;
+    background:color-mix(in srgb, var(--glass-bg) 78%, transparent);
+    color:var(--text-secondary);
+    cursor:pointer;
+    flex-shrink:0;
+    -webkit-tap-highlight-color:transparent;
+    transition:background 0.15s ease, color 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.3, 0.64, 1);
+    border:1px solid color-mix(in srgb, var(--glass-border) 75%, transparent);
+  }
+  .home-recent-collapse-btn:hover {
+    background:color-mix(in srgb, var(--glass-bg) 92%, transparent);
+    color:var(--text-white);
+  }
+  .home-recent-collapse-btn:active {
+    transform:scale(0.96);
+  }
+  .home-recent-collapse-btn svg {
+    display:block;
+    transition:transform 0.2s ease;
+  }
+  .home-recent-collapse-btn[aria-expanded="false"] svg {
+    transform:rotate(-90deg);
+  }
+  .app[data-night="true"] .home-recent-collapse-btn {
+    background:#000000;
+    color:#FF3B30;
+    border-color:color-mix(in srgb, #FF3B30 35%, rgba(255,255,255,0.12));
   }
   .home-recent-strip {
     display:flex; flex-wrap:nowrap; gap:10px; align-items:stretch;
@@ -8564,9 +9102,9 @@ const css = `
   }
   .begin-btn:hover { opacity:0.88; transform:scale(1.03); }
   .begin-btn:active { transform: scale(0.97); opacity: 0.92; }
-  /* TODAY primary CTA: Barlow + wider tracking; weight matches unbolded title */
+  /* TODAY primary CTA: bold track name; titles above stay medium weight */
   .begin-btn.begin-btn--today-primary {
-    font-weight: 500 !important;
+    font-weight: 700 !important;
     letter-spacing: 0.05em !important;
   }
   .session-browse-btn {
@@ -11961,7 +12499,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
 }
 
-function SettingsAuthSection({ isFooter = false } = {}) {
+function SettingsAuthSection() {
   const useState = React.useState;
   const useEffect = React.useEffect;
   const [user, setUser] = useState(null);
@@ -11988,18 +12526,26 @@ function SettingsAuthSection({ isFooter = false } = {}) {
     };
   }, []);
   const email = user && user.email ? user.email : null;
-  const hasAuth = typeof window !== "undefined" && !!window.AXIS_auth;
-  return /*#__PURE__*/React.createElement("div", { style: { borderTop: isFooter ? "none" : "1px solid var(--border)", paddingTop: isFooter ? 0 : 24, marginBottom: isFooter ? 0 : 32, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, /*#__PURE__*/
-  React.createElement("div", { className: "settings-block__title settings-account-title" }, "Account"), /*#__PURE__*/
-  !ready ? null : !hasAuth ? /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Account sign-in is unavailable because the auth script did not load.") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-  React.createElement("div", { style: { fontSize: "var(--text-sm)", color: "var(--text-white)", marginBottom: 16, wordBreak: "break-all" } }, email || "Not signed in"), /*#__PURE__*/
-  React.createElement("div", { style: { display: "flex", flexDirection: "column", width: "100%", maxWidth: "100%", gap: 0 } }, email ? /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
-        try { localStorage.removeItem("axis_auth_uid"); } catch (e) {}
-        if (window.AXIS_signOut) window.AXIS_signOut().catch(() => {});
-      } }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
-        window.location.href = "./login.html";
-      } }, "Log in"))
-  ));
+  const auth = typeof window !== "undefined" && window.AXIS_auth;
+  const onAuth = typeof window !== "undefined" && window.AXIS_onAuthStateChanged;
+  if (!ready) return null;
+  if (!auth || !onAuth) {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-meta", style: { padding: "0 0 12px" } }, "Sign in with your email to connect this device to your AXIS profile."), /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "settings-outline-btn", style: { width: "100%", minHeight: 48, marginTop: 0 }, onClick: () => {
+      window.location.href = typeof window.axisLoginHref === "function" ? window.axisLoginHref() : "./login.html";
+    } }, "Log in"));
+  }
+  return /*#__PURE__*/React.createElement("div", { className: "settings-ios-cell" }, /*#__PURE__*/
+  React.createElement("div", { className: "settings-ios-cell__text" }, /*#__PURE__*/
+  React.createElement("div", { className: "settings-ios-primary" }, "Signed in as"), /*#__PURE__*/
+  React.createElement("div", { className: "settings-ios-secondary", style: { wordBreak: "break-all" } }, email || "Not signed in")
+  ), email ? /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn settings-account-accessory-btn", onClick: () => {
+    try { localStorage.removeItem("axis_auth_uid"); } catch (e) {}
+    if (window.AXIS_signOut) window.AXIS_signOut().catch(() => {});
+  } }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn settings-account-accessory-btn", onClick: () => {
+    window.location.href = typeof window.axisLoginHref === "function" ? window.axisLoginHref() : "./login.html";
+  } }, "Log in"));
 }
 
 function FeedbackButton() {
@@ -13048,7 +13594,7 @@ function axisExportAxisLocalData() {
     goals: {
       dailyMinutes: storageGet("axis_daily_goal_minutes", 30),
       weeklyMinutes: storageGet("axis_weekly_goal_minutes", null),
-      weeklyFollowsDaily: storageGet("axis_weekly_follows_daily", true)
+      weeklyFollowsDaily: false
     },
     preferences: {
       theme: storageGet("axis_theme", "dark"),
@@ -13120,6 +13666,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const prevTabRef = useRef(tab);
   const [guidedTimelineExpanded, setGuidedTimelineExpanded] = useState(false);
   const [homeTrackCategory, setHomeTrackCategory] = useState("all");
+  const [homeRecentsCollapsed, setHomeRecentsCollapsed] = useState(() => storageGet("axis_home_recents_collapsed", false));
   /** Prevents double-counting if an exercise is toggled off/on in one session; cleared in beginTrack */
   const sessionExerciseLoggedRef = useRef(/* @__PURE__ */ new Set());
   const [recentTracks, setRecentTracks] = useState(() => {
@@ -13132,20 +13679,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const v = Number(storageGet("axis_daily_goal_minutes", 30));
     return Math.min(90, Math.max(1, Number.isFinite(v) ? v : 30));
   });
-  const [weeklyFollowsDaily, setWeeklyFollowsDaily] = useState(() => {
-    const rawWeekly = storageGet("axis_weekly_goal_minutes", null);
-    const storedFollows = storageGet("axis_weekly_follows_daily", null);
-    if (storedFollows === false) return false;
-    if (storedFollows === true) return true;
-    return rawWeekly == null || rawWeekly === "";
-  });
   const [weeklyGoalMinutes, setWeeklyGoalMinutes] = useState(() => {
     const v = Number(storageGet("axis_daily_goal_minutes", 30));
     const daily = Math.min(90, Math.max(1, Number.isFinite(v) ? v : 30));
     const rawWeekly = storageGet("axis_weekly_goal_minutes", null);
-    const storedFollows = storageGet("axis_weekly_follows_daily", null);
-    const follows = storedFollows === false ? false : storedFollows === true ? true : (rawWeekly == null || rawWeekly === "");
-    if (follows) return axisSnapWeeklyGoalMinutes(daily * 7);
     if (rawWeekly != null && rawWeekly !== "") {
       const w = Number(rawWeekly);
       if (Number.isFinite(w)) return axisSnapWeeklyGoalMinutes(w);
@@ -13224,9 +13761,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   useEffect(() => {
     storageSet("axis_weekly_goal_minutes", weeklyGoalMinutes);
   }, [weeklyGoalMinutes]);
-  useEffect(() => {
-    storageSet("axis_weekly_follows_daily", weeklyFollowsDaily);
-  }, [weeklyFollowsDaily]);
   useEffect(() => {
     setWelcomeName(axisWelcomeDisplayNameFromStorage());
   }, [view]);
@@ -13474,22 +14008,31 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return /*#__PURE__*/React.createElement(TimerView, { key: "timer", theme: theme, view: view, setView: setView, css: css, activePeriod: activePeriod, nightMode: nightMode, dashboardHeader: dashboardHeaderEl });
   }
   if (view === "settings") return (/*#__PURE__*/
-    React.createElement("div", { key: "settings", className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
+    React.createElement("div", { key: "settings", className: "app settings-ios26", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
     React.createElement("style", null, css), /*#__PURE__*/
     React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
     React.createElement("div", { className: "app-body app-body--settings-pad settings-density" }, /*#__PURE__*/
     dashboardHeaderEl, /*#__PURE__*/
     React.createElement("div", { className: "settings-page-rail" }, /*#__PURE__*/
     React.createElement("div", { className: "app-page-header" }, /*#__PURE__*/
-    React.createElement("div", { className: "app-screen-title" }, "Settings"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-goals-panel", style: { marginBottom: 14 } }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Daily Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "5 minutes is a good start. Aim for 10-20."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
-    React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-daily-goal" }, "Minutes per day"), /*#__PURE__*/
-    React.createElement("span", { className: "settings-slider-value", "aria-live": "polite" }, dailyGoalMinutes, " min")
+    React.createElement("div", { className: "app-screen-title metrics-page-title", id: "axis-settings-welcome" }, "Settings"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack" }, /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-account-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-account-h", className: "settings-ios-group__header" }, "Account"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/React.createElement(SettingsAuthSection, null))
+    )
     ), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-goals-activity-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-goals-activity-h", className: "settings-ios-group__header" }, "Goals & activity"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-label-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "settings-ios-primary", htmlFor: "axis-daily-goal" }, "Daily movement"), /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-value", "aria-live": "polite" }, dailyGoalMinutes, " min")
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "5 minutes is a good start. Aim for 10-20."), /*#__PURE__*/
     React.createElement("input", {
       className: "settings-range",
       id: "axis-daily-goal",
@@ -13501,19 +14044,16 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       onChange: (e) => {
         const n = Number(e.target.value);
         setDailyGoalMinutes(n);
-        setWeeklyFollowsDaily(true);
-        setWeeklyGoalMinutes(axisSnapWeeklyGoalMinutes(n * 7));
       },
       style: { accentColor: "var(--accent)" }
     })
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Weekly Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "Your weekly target. Adjust anytime."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
-    React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-weekly-goal" }, "Minutes per week"), /*#__PURE__*/
-    React.createElement("span", { className: "settings-slider-value", "aria-live": "polite" }, weeklyGoalMinutes, " min")
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-label-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "settings-ios-primary", htmlFor: "axis-weekly-goal" }, "Weekly movement"), /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-value", "aria-live": "polite" }, weeklyGoalMinutes, " min")
     ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "Your weekly target. Adjust anytime."), /*#__PURE__*/
     React.createElement("input", {
       className: "settings-range",
       id: "axis-weekly-goal",
@@ -13523,17 +14063,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       step: 5,
       value: weeklyGoalMinutes,
       onChange: (e) => {
-        setWeeklyFollowsDaily(false);
         setWeeklyGoalMinutes(Number(e.target.value));
       },
       style: { accentColor: "var(--accent)" }
     })
-    )
-    )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Health & metrics"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 12 } }, "Sync from Apple Health (iPhone) or Health Connect (Android). Pulls weight and steps into Metrics."),
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary", style: { marginBottom: 4 } }, "Health metrics sync"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "Sync from Apple Health (iPhone) or Health Connect (Android). Pulls weight and steps into Metrics."), /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       className: "settings-outline-btn axis-surface-tmt settings-health-sync-btn",
@@ -13557,39 +14094,42 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           setHealthConnectSyncMsg("Could not sync. Enable permissions in Apple Health or Health Connect.");
         }
       }
-    }, "Connect & sync from Health"),
-    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", marginTop: 12, lineHeight: 1.45 } }, healthConnectSyncMsg)
-    ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session Bar"),
-    [
-    { label: "Show % done", desc: "Percentage of exercises completed in the current track.", val: showPct, set: setShowPct }].
-    map(({ label, desc, val, set }) => /*#__PURE__*/
-    React.createElement("div", { key: label, style: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 12 } }, /*#__PURE__*/
-    React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, label), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, width: "100%", maxWidth: "100%" } }, desc)
-    ), /*#__PURE__*/
-    React.createElement("button", { onClick: () => {axisHapticTick();set((s) => !s);}, style: { flexShrink: 0, marginTop: 2, width: 44, height: 26, border: "1px solid", borderColor: val ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: val ? "var(--accent)" : "var(--glass-bg)", cursor: "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
-    React.createElement("div", { style: { position: "absolute", top: 3, left: val ? 22 : 3, width: 18, height: 18, borderRadius: "50%", background: nightMode ? "#000000" : "rgba(255,255,255,0.95)", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" } })
+    }, "Connect & sync from Health"), /*#__PURE__*/
+    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { className: "settings-ios-meta", style: { padding: "6px 0 0", margin: 0 } }, healthConnectSyncMsg)
     )
     )
     )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-session-stack", style: { display: "flex", flexDirection: "column", gap: 12 } }, /*#__PURE__*/
-    React.createElement("div", { style: { marginTop: 10 } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, "Timer length per exercise"), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-track-timer-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-track-timer-h", className: "settings-ios-group__header" }, "Track & timer"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { key: "axis-show-pct", className: "settings-ios-cell", style: { alignItems: "flex-start" } }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-cell__text" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary" }, "Show % done"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-secondary" }, "Percentage of exercises completed in the current track.")
+    ), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-ios-toggle-hit",
+      onClick: () => { axisHapticTick(); setShowPct((s) => !s); },
+      "aria-pressed": showPct ? "true" : "false",
+      "aria-label": "Show % done"
+    }, /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-toggle-track" + (showPct ? " settings-ios-toggle-track--on" : "") }, /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-toggle-knob" + (showPct ? " settings-ios-toggle-knob--on" : "") })
+    ))
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block settings-ios-stack-block--exercise-timer" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary" }, "Timer length per exercise"), /*#__PURE__*/
     React.createElement("div", { className: "settings-help-text" }, "Set timer length for each LIST exercise."), /*#__PURE__*/
     React.createElement("div", { className: "settings-session-preset-row", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
     [30, 45, 60].map((sec) => /*#__PURE__*/
-    React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
+    React.createElement("button", { key: sec, type: "button", className: "settings-duration-chip" + (exerciseDuration === sec ? " settings-duration-chip--active ultra-filled-btn settings-chip--active" : ""), onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "10px 16px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600, minHeight: 44, boxSizing: "border-box" } },
     sec === 60 ? "1 min" : `${sec} sec`
     )
     )
     ), /*#__PURE__*/
-    React.createElement("div", null, /*#__PURE__*/
     React.createElement("label", { className: "settings-custom-duration-label", htmlFor: "axis-exercise-custom" }, "Custom duration (seconds)"),
     React.createElement("input", {
       id: "axis-exercise-custom",
@@ -13620,38 +14160,51 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     )
     )
-    , /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--privacy" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "PRIVACY & DATA"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-sub" }, "YOUR DATA"), /*#__PURE__*/
+    ), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-privacy-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-privacy-h", className: "settings-ios-group__header" }, "Privacy"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "Privacy & data"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your workout history, goals, and preferences are stored on this device only. We never see them."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "When you log in, your account info is secured by Firebase Authentication."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-sub" }, "DATA RETENTION"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "Data retention"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "\u2022 Data is kept locally for 90 days."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "\u2022 Older entries are automatically archived."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-actions" }, /*#__PURE__*/
-    React.createElement("button", {
-      type: "button",
-      className: "settings-privacy-export-accent",
-      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
-    }, "EXPORT MY DATA"), /*#__PURE__*/
-    React.createElement("button", {
-      type: "button",
-      className: "settings-outline-btn settings-privacy-archived-outline",
-      onClick: () => { axisHapticTick(); setArchivedDataOpen(true); }
-    }, "VIEW ARCHIVED DATA")
-    ), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Backups"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your data currently stays local. Eventually we will implement cloud storage."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-sub" }, "What We Don't Do"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "What we don't do"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No analytics tracking"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No data selling"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No behavioral profiling"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No cloud storage of your workouts (device-only)")
+    )
+    )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Custom App Icon"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Pick a home screen icon style."), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-data-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-data-h", className: "settings-ios-group__header" }, "Data management"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body settings-data-actions" }, /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-privacy-export-accent",
+      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
+    }, "Export my data"), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-outline-btn settings-privacy-archived-outline",
+      onClick: () => { axisHapticTick(); setArchivedDataOpen(true); }
+    }, "View archived data")
+    )
+    )
+    ), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-app-info-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-app-info-h", className: "settings-ios-group__header" }, "App info"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary", style: { marginBottom: 6 } }, "Custom app icon"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 8 } }, "Pick a home screen icon style."), /*#__PURE__*/
     React.createElement("div", { className: "ultra-icon-grid", style: { display: "grid", width: "100%", maxWidth: "100%", boxSizing: "border-box", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 } },
     APP_ICON_OPTIONS.map((opt) => {
       const isSelected = selectedAppIcon === opt.src;
@@ -13685,20 +14238,18 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       }, /*#__PURE__*/React.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M20 6L9 17l-5-5" }))));
     })), /*#__PURE__*/
     nightMode && /*#__PURE__*/React.createElement("div", { style: { fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#FF3B30", marginTop: 10, fontWeight: 600 } }, "NOT AVAILABLE IN ULTRA MODE"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginTop: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box", fontWeight: 400 } }, "To apply a new icon, re-save the app using Share.")
+    React.createElement("div", { className: "settings-help-text", style: { marginTop: 8 } }, "To apply a new icon, re-save the app using Share.")
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--flush" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "About"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => { try { const uid = axisActiveUidForStorage(); if (uid) storageSet("axis_onboarded:" + uid, false); else storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, "View Onboarding Again"), /*#__PURE__*/
-    React.createElement("div", null, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "settings-ios-row-btn", onClick: () => { axisHapticTick(); try { const uid = axisActiveUidForStorage(); if (uid) storageSet("axis_onboarded:" + uid, false); else storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, /*#__PURE__*/
+    React.createElement("span", null, "Onboarding"), /*#__PURE__*/React.createElement("span", { className: "settings-ios-row-btn__chev" }, /*#__PURE__*/React.createElement(AxisThinArrowRight, { size: 16 }))
+    )
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block settings-feedback-wrap", style: { paddingTop: 4, paddingBottom: 8 } }, /*#__PURE__*/
     React.createElement(FeedbackButton, null)
     )
     )
-    ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-account-footer" }, /*#__PURE__*/
-    React.createElement("hr", { className: "settings-admin-hr" }), /*#__PURE__*/
-    React.createElement(SettingsAuthSection, { isFooter: true })
-    ), /*#__PURE__*/
+    )
     ), /*#__PURE__*/
     React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--settings" })
     ), /*#__PURE__*/
@@ -13709,7 +14260,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       painArchive: metricsPainArchive
     }), /*#__PURE__*/
     React.createElement(TabBar, { view: view, setView: setView, theme: theme, nightMode: nightMode })
-    ));
+    )))));
 
 
   // MOOD
@@ -14245,8 +14796,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
       React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting), /*#__PURE__*/
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 700, fontFamily: "var(--font-display)", fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 500, fontFamily: "var(--font-display)", fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 500, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySuggestionText), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
       React.createElement("button", {
@@ -14256,7 +14807,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           width: "100%",
           padding: "14px 24px",
           fontSize: "var(--text-base)",
-          fontWeight: 500,
+          fontWeight: 700,
           letterSpacing: "0.05em",
           ...todayBtn,
           ["--axis-today-glow"]: homeHighlight
@@ -14269,8 +14820,25 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         const recentResolved = recentTracks.filter((id) => TRACKS && TRACKS[id]);
         return recentResolved.length === 0 ? null : /*#__PURE__*/
         React.createElement("div", { className: "home-recent", role: "region", "aria-label": "Recent tracks" }, /*#__PURE__*/
-        React.createElement("div", { className: "home-recent-label" }, "Recents"), /*#__PURE__*/
-        React.createElement("div", { className: "home-recent-strip" },
+        React.createElement("div", { className: "home-recent-header" }, /*#__PURE__*/
+        React.createElement("div", { className: "home-recent-label", id: "axis-home-recents-h" }, "Recents"), /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          className: "home-recent-collapse-btn",
+          "aria-expanded": homeRecentsCollapsed ? "false" : "true",
+          "aria-controls": "axis-home-recents-strip",
+          "aria-label": homeRecentsCollapsed ? "Show recent tracks" : "Hide recent tracks",
+          onClick: () => {
+            axisHapticTick();
+            setHomeRecentsCollapsed((c) => {
+              const n = !c;
+              storageSet("axis_home_recents_collapsed", n);
+              return n;
+            });
+          }
+        }, /*#__PURE__*/React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M6 9l6 6 6-6" })))
+        ), /*#__PURE__*/
+        !homeRecentsCollapsed && /*#__PURE__*/React.createElement("div", { id: "axis-home-recents-strip", className: "home-recent-strip" },
         recentResolved.map((id) => {
           const rt = TRACKS[id];
           const rdur = getTrackDisplayDuration(id);
@@ -14313,6 +14881,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           if (navigator.vibrate) navigator.vibrate(8);
           axisHapticTick();
           setHomeTrackCategory(cf.id);
+          if (cf.id !== "all") setHomeRecentsCollapsed(true);
+          else setHomeRecentsCollapsed(storageGet("axis_home_recents_collapsed", false));
         }
       }, cf.label)
       ))
