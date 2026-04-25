@@ -10205,7 +10205,7 @@ function axisHapticTick() {
       w.webkit.messageHandlers.axisHaptic.postMessage({ type: "tick" });
       return;
     }
-    if (w?.AXISNative?.haptic && typeof w.AXISNative.haptic === "function") {
+    if (w && w.AXISNative && typeof w.AXISNative.haptic === "function") {
       w.AXISNative.haptic("tick");
       return;
     }
@@ -10220,7 +10220,7 @@ function axisHapticSuccess() {
       w.webkit.messageHandlers.axisHaptic.postMessage({ type: "success" });
       return;
     }
-    if (w?.AXISNative?.haptic && typeof w.AXISNative.haptic === "function") {
+    if (w && w.AXISNative && typeof w.AXISNative.haptic === "function") {
       w.AXISNative.haptic("success");
       return;
     }
