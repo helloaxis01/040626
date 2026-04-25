@@ -14,6 +14,17 @@
         return "./onboarding.html";
       }
     };
+    window.axisLoginHref = function () {
+      try {
+        if (!window.location.protocol || window.location.protocol === "file:") return "./login.html";
+        var p = window.location.pathname || "/";
+        var d = p.replace(/[^/]*$/, "");
+        if (d.slice(-1) !== "/") d += "/";
+        return window.location.origin + d + "login.html";
+      } catch (e) {
+        return "./login.html";
+      }
+    };
   })();
   </script>
   <meta charset="UTF-8" />
@@ -29,14 +40,14 @@
   <title>AXIS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Roboto+Mono:wght@500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./onboarding.css" />
   <style>
     :root {
-      --font-display: 'Barlow', sans-serif;
+      --font-display: 'Inter', sans-serif;
       --font-ui: 'Inter', sans-serif;
       --font-body: var(--font-ui);
-      --font-meta: var(--font-ui);
+      --font-meta: 'Roboto Mono', ui-monospace, monospace;
       --font-editorial: 'Lora', Georgia, 'Times New Roman', serif;
       --text-xs: 12px;
       --text-sm: 14px;
@@ -50,7 +61,7 @@
       --motion-slow: 800ms ease-in-out;
       --motion-fast: 200ms ease-out;
       --axis-safe-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
-      --border-radius-md: 8px;
+      --border-radius-md: 14px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { min-height: 100dvh; margin: 0; }
@@ -65,6 +76,31 @@
 <body>
   <div id="root"></div>
   <div id="load-err"></div>
+  <script>
+  (function(){
+    try {
+      // Force-clear any service-worker / cache storage once per deploy so Home Screen clients pick up new HTML.
+      var AXIS_BUILD_VER = "b77b994";
+      if (localStorage.getItem('axis_sw_ver') !== AXIS_BUILD_VER) {
+        // unregister service workers
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+          navigator.serviceWorker.getRegistrations().then(function(regs){
+            regs.forEach(function(r){ try { r.unregister(); } catch(e) {} });
+          }).catch(function(){});
+        }
+        // clear CacheStorage
+        if (window.caches && caches.keys) {
+          caches.keys().then(function(keys){
+            keys.forEach(function(k){ try { caches.delete(k); } catch(e) {} });
+          }).catch(function(){});
+        }
+        try { localStorage.setItem('axis_sw_ver', AXIS_BUILD_VER); } catch(e) {}
+        // reload once so the page fetches the newest assets
+        try { window.location.reload(); } catch(e) {}
+      }
+    } catch (e) {}
+  })();
+  </script>
   <script>
     function showLoadErr(msg) {
       var el = document.getElementById('load-err');
@@ -197,7 +233,7 @@ function AxisThinArrowRight({ size = 14 }) {
 
 // Main app backgrounds (dark/light) — circadian dark themes reference MAIN_APP_BG.dark
 const MAIN_APP_BG = {
-  dark: "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)",
+  dark: "#1A1A1A",
   light: "linear-gradient(145deg, #dce6f0 0%, #e4ebf4 35%, #eaf0f7 70%, #f0f5fa 100%)"
 };
 
@@ -331,8 +367,9 @@ function applyCircadianTheme(isDark, period) {
       --accent-secondary: ${accentSec} !important;
       --accent-dim: ${t.accentDim} !important;
       --accent-glow: ${t.accentGlow} !important;
-      --cue-bar: ${t.accentDim.replace(/[\d.]+\)$/, "0.7)")} !important;
-      --cue-bar-label: ${t.accentDim.replace(/[\d.]+\)$/, "0.9)")} !important;
+      /* normalize accent dim for cue bar — leave raw value (avoid complex replace in template) */
+      --cue-bar: ${t.accentDim} !important;
+      --cue-bar-label: ${t.accentDim} !important;
       ${t.textPrimary ? `--text-white: ${t.textPrimary} !important;` : ""}
       ${t.accentBtnText ? `--accent-btn-text: ${t.accentBtnText} !important;` : ""}
       ${t.tabBg ? `--tab-bg: ${t.tabBg} !important;` : ""}
@@ -357,7 +394,7 @@ const TRACKS_DATA_FALLBACK = {
 let TRACKS = TRACKS_DATA_FALLBACK;
 
 /**
- * Inline SVG animation frames per exercise key (embed full <svg> strings). Cat-Cow cleared until new assets land.
+ * Inline SVG animation frames per exercise key (embed full <svg> strings). Cat-Cow uses mp4 in EXERCISE_ASSET_VIDEOS when present.
  */
 const EXERCISE_ANIMATION_SVGS = {
   CatCow: []
@@ -376,9 +413,17 @@ const EXERCISE_INSTRUCTION_FRAMES = {
 function resolveExerciseAnimationKey(trackId, exerciseId, exerciseName) {
   void trackId;
   void exerciseId;
-  const compact = String(exerciseName || "").toLowerCase().replace(/[^a-z]/g, "");
-  if (compact.includes("catcow") && (EXERCISE_ASSET_VIDEOS.CatCow || EXERCISE_ASSET_SVGS.CatCow || EXERCISE_ANIMATION_SVGS.CatCow)) return "CatCow";
-  if ((compact === "sphinxpose" || compact.includes("sphinxpose")) && EXERCISE_ASSET_VIDEOS.SphinxPose) return "SphinxPose";
+  const compact = String(exerciseName || "")
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
+  const isCatCow =
+    compact.includes("catcow") ||
+    (compact.includes("cat") && compact.includes("cow"));
+  if (isCatCow && (EXERCISE_ASSET_VIDEOS.CatCow || EXERCISE_ASSET_SVGS.CatCow || EXERCISE_ANIMATION_SVGS.CatCow)) return "CatCow";
+  const isSphinx = compact.includes("sphinxpose") || compact.includes("sphinx");
+  if (isSphinx && EXERCISE_ASSET_VIDEOS.SphinxPose) return "SphinxPose";
   return null;
 }
 
@@ -465,13 +510,15 @@ function tierIndexToInstructionFrameIndex(tierIndex, frameCount, tierKey = "", a
 /**
  * Horizontal instruction carousel: static pose per step, tap halves / swipe, step count + prev/next. graphicMode matches exerciseAnimationModeFromTheme.
  */
-function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "medium", graphicMode = "dark", theme = "dark", ultraNight = false, bodyColorOverride = null, moveOpacity = 1, className = "", trackId = "", allowBaselineMediaExpand = false }) {
+function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "medium", graphicMode = "dark", theme = "dark", ultraNight = false, bodyColorOverride = null, moveOpacity = 1, className = "", trackId = "", allowBaselineMediaExpand = false, flatMediaSurface = false, lockBodyMinHeight = false }) {
   const [idx, setIdx] = useState(0);
   const cardRef = useRef(null);
   const touchStartX = useRef(null);
   const carouselContentSigRef = useRef(null);
   const baselineMediaRef = useRef(null);
   const baselineRasterFsRef = useRef(null);
+  const bodyMeasureHostRef = useRef(null);
+  const [bodyMinH, setBodyMinH] = useState(0);
   const [baselineExpandOverlay, setBaselineExpandOverlay] = useState(false);
   const n = tiers.length;
   const fc = frameSvgHtml && frameSvgHtml.length ? frameSvgHtml.length : 0;
@@ -512,7 +559,6 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
   const primary = ultraNight ? "#FF3B30" : isDarkMode ? "#F5F5F5" : "#121418";
   const accent = ultraNight ? "#FF3B30" : "var(--accent)";
   const bodyColor = bodyColorOverride || primary;
-  const bodyOpacity = tier && tier.key === "next" ? moveOpacity : 1;
   const go = (delta) => {
     triggerHaptic(HAPTIC_LIGHT_TAP);
     setIdx((i) => Math.max(0, Math.min(n - 1, i + delta)));
@@ -542,6 +588,46 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
   };
   const labelSize = size === "small" ? "10px" : size === "large" ? "12px" : "11px";
   const bodySize = size === "small" ? "var(--text-base)" : size === "large" ? "clamp(24px, 4vw, 30px)" : "clamp(22px, 3.9vw, 28px)";
+  const labelTopGap = lockBodyMinHeight ? 24 : 14;
+  const bodyStyleForTier = (t) => {
+    if (!t) return {};
+    const op = t && t.key === "next" ? moveOpacity : 1;
+    return {
+      fontSize: bodySize,
+      fontWeight: 400,
+      fontFamily: "var(--font-ui)",
+      lineHeight: 1.5,
+      letterSpacing: "-0.01em",
+      color: bodyColor,
+      opacity: op,
+      whiteSpace: "normal",
+      boxSizing: "border-box",
+      width: "100%"
+    };
+  };
+  const tierSig = (tiers || []).map((t) => t.key + ":" + String(t.body || "")).join("|");
+  useLayoutEffect(() => {
+    if (!lockBodyMinHeight || !tiers || !tiers.length) {
+      setBodyMinH(0);
+      return;
+    }
+    const measure = () => {
+      const host = bodyMeasureHostRef.current;
+      if (!host) return;
+      const nodes = host.querySelectorAll("[data-exercise-body-measure]");
+      let m = 0;
+      for (let i = 0; i < nodes.length; i++) {
+        m = Math.max(m, nodes[i].getBoundingClientRect().height);
+      }
+      setBodyMinH(m > 0 ? Math.ceil(m) : 0);
+    };
+    measure();
+    const el = cardRef.current;
+    if (typeof ResizeObserver === "undefined" || !el) return;
+    const ro = new ResizeObserver(() => {measure();});
+    ro.observe(el);
+    return () => {try {ro.disconnect();} catch (e) {}};
+  }, [lockBodyMinHeight, tierSig, n, size, bodySize, bodyColor, moveOpacity]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "exercise-carousel" + (className ? " " + className : "") + " exercise-carousel--" + size,
     role: "region",
@@ -553,7 +639,7 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
     onTouchStart: onTouchStart,
     onTouchEnd: onTouchEnd,
     role: "presentation"
-  }, /*#__PURE__*/React.createElement("div", { className: "exercise-carousel__graphic-frame axis-surface-tmt" }, videoSrc ? hasVideoSrc ? /*#__PURE__*/React.createElement("video", {
+  }, /*#__PURE__*/React.createElement("div", { className: "exercise-carousel__graphic-frame" + (flatMediaSurface ? "" : " axis-surface-tmt") }, videoSrc ? hasVideoSrc ? /*#__PURE__*/React.createElement("video", {
     ref: baselineMediaRef,
     className: "exercise-carousel__media",
     src: videoSrc,
@@ -632,20 +718,11 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
       textTransform: "uppercase",
       color: accent,
       marginBottom: size === "small" ? 6 : 8,
-      marginTop: 14
+      marginTop: labelTopGap
     }
   }, tier.label), /*#__PURE__*/React.createElement("div", {
     className: "exercise-carousel__body",
-    style: {
-      fontSize: bodySize,
-      fontWeight: 400,
-      fontFamily: "var(--font-ui)",
-      lineHeight: 1.5,
-      letterSpacing: "-0.01em",
-      color: bodyColor,
-      opacity: bodyOpacity,
-      whiteSpace: "normal"
-    }
+    style: Object.assign({}, bodyStyleForTier(tier), lockBodyMinHeight && bodyMinH > 0 ? { minHeight: bodyMinH, display: "flex", flexDirection: "column", justifyContent: "flex-start" } : {})
   }, formatInstructionBodyText(tier.body)), n > 1 ? /*#__PURE__*/React.createElement("div", {
     className: "exercise-carousel__nav",
     onClick: (e) => e.stopPropagation()
@@ -684,7 +761,16 @@ function ExerciseCarousel({ tiers, frameSvgHtml, animationKey = null, size = "me
     strokeLinecap: "round",
     strokeLinejoin: "round",
     "aria-hidden": true
-  }, /*#__PURE__*/React.createElement("path", { d: "M9 18l6-6-6-6" }))))) : null)), baselineExpandOverlay && showBaselineExpand && videoSrc ? /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("path", { d: "M9 18l6-6-6-6" }))))) : null, lockBodyMinHeight && n > 0 && tiers && tiers.length ? /*#__PURE__*/React.createElement("div", {
+    ref: bodyMeasureHostRef,
+    className: "exercise-carousel__body-measure-host",
+    "aria-hidden": true
+  }, (tiers || []).map((t) => /*#__PURE__*/React.createElement("div", {
+    key: (t && t.key ? t.key : "k") + "-" + String(t && t.body != null ? t.body : "").length,
+    "data-exercise-body-measure": true,
+    className: "exercise-carousel__body",
+    style: bodyStyleForTier(t)
+  }, formatInstructionBodyText(t && t.body)))) : null)), baselineExpandOverlay && showBaselineExpand && videoSrc ? /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement("div", {
     className: "exercise-carousel__media-expand-overlay",
     role: "dialog",
     "aria-modal": "true",
@@ -1019,7 +1105,7 @@ function computeSessionSeconds(totalCount, fullSecondsFromLabel, activeCount) {
 //  CSS
 // ─────────────────────────────────────────────────────────────
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Roboto+Mono:wght@500&display=swap');
   html, body, #root { width:100%; max-width:100vw; min-height:100%; min-height:100dvh; height:100dvh; margin:0; padding:0; box-sizing:border-box; background:#080d18; overflow-x:hidden; -webkit-text-size-adjust:100%; }
   * { box-sizing:border-box; margin:0; padding:0; }
   ::-webkit-scrollbar { width:0px; } * { scrollbar-width:none; }
@@ -1031,10 +1117,10 @@ const css = `
     --safe-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--axis-safe-bottom-inset));
     --page-padding: 16px;
     --page-gutter: 16px;
-    --font-display: 'Barlow', sans-serif;
+    --font-display: 'Inter', sans-serif;
     --font-ui: 'Inter', sans-serif;
     --font-body: var(--font-ui);
-    --font-meta: var(--font-ui);
+    --font-meta: 'Roboto Mono', ui-monospace, monospace;
     --font-editorial: 'Lora', Georgia, 'Times New Roman', serif;
     --text-xs: 12px;
     --text-sm: 14px;
@@ -1074,19 +1160,37 @@ const css = `
     --body-text-weight: 400;
     --axis-white: #f6f7f8;
     --axis-black: #252525;
-    --axis-radius: 12px;
+    /* App-wide corner radii: cards, CTAs, Metrics, Settings */
+    --axis-radius-card: 24px;
+    --axis-radius: 20px;
+    --axis-radius-md: 20px;
+    --axis-radius-sm: 14px;
+    --border-radius-md: 14px;
     --app-white: var(--axis-white);
     --app-black: var(--axis-black);
     --mood-accent: var(--accent, #FF9F43);
     --mood-color: var(--accent, #FF9F43);
-    --bg-app: var(--bg-gradient, #080d18);
+    --bg-app: var(--bg-gradient, #1A1A1A);
     --motion-slow: 800ms ease-in-out;
     --motion-fast: 200ms ease-out;
-    /* Captions / secondary labels: dimmed brand white */
-    --text-secondary-toned: color-mix(in srgb, var(--axis-white) 70%, transparent);
+    /* Secondary descriptive copy — 75% white (Braun hierarchy) */
+    --text-secondary-toned: rgba(246, 247, 248, 0.75);
   }
-  /* Default UI readability (Inter); display/headlines use Barlow below */
+  /* Default UI: Inter; metadata uses Roboto Mono (see .axis-meta-mono) */
   html, body, #root { font-family: var(--font-ui); }
+  /* Technical metadata: durations, body tags, reps lines, section labels
+     Use Roboto Mono Medium at a fixed 13px for strict technical hierarchy */
+  .track-card-dur, .track-card-sub, .track-card-sub .glass-label, .hdr-dur, .session-time, .session-time-lbl, .ereps, .reps-unit, .reps-str, .reps-big, .track-group-label, .glass-label, .cue-tiers__label, .mood-base-theme__label,
+  .timer-val, .timer-instrument-val, .guided-rest-timer__digits, .momentum-day-detail__dur, .momentum-day-detail__tot,
+  .today-card__line, .home-recent-sub, .home-recent-dur, .metrics-recent-row__dur, .sh-tag, .sh-ct {
+    font-family: var(--font-meta) !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px !important;
+    line-height: 1.2;
+    letter-spacing: -0.01em !important;
+  }
   /* Sticky Browse sits flush under dashboard: safe-area + row (40px) + padding-bottom (8px) + border (1px) */
   .app {
     font-family: var(--font-ui);
@@ -1097,7 +1201,7 @@ const css = `
   }
   .home-wordmark, .track-card-name, .hdr-title, .session-title,
   .fc-name, .fv-name, .guided-exercise-name, .en, .step-label,
-  .app .app-label, .page-title, .track-title, .db-title, .timer-val {
+  .app .app-label, .page-title, .track-title, .db-title {
     font-family: var(--font-display);
   }
   /* Instructional / secondary copy: medium weight + 1.5 line-height (readability) */
@@ -1107,6 +1211,10 @@ const css = `
     font-style: normal;
     line-height: 1.5 !important;
     color: color-mix(in srgb, var(--text-primary) 88%, transparent);
+  }
+  .tab-desc-line {
+    font-family: var(--font-meta) !important;
+    font-weight: 500;
   }
   .fc-pcue, .fv-cue, .step-cue { font-size: var(--text-base); }
   .purpose-text { font-size: calc(var(--text-sm) - 1px); font-style: normal; }
@@ -1119,9 +1227,10 @@ const css = `
   .app[data-theme="dark"]:not([data-night="true"]) .purpose-text,
   .app[data-theme="dark"]:not([data-night="true"]) .fc-sub,
   .app[data-theme="dark"]:not([data-night="true"]) .es,
-  .app[data-theme="dark"]:not([data-night="true"]) .track-card-purpose {
-    color: #E8E8E8 !important;
-    -webkit-text-fill-color: #E8E8E8 !important;
+  .app[data-theme="dark"]:not([data-night="true"]) .track-card-purpose,
+  .app[data-theme="dark"]:not([data-night="true"]) .tab-desc-line {
+    color: rgba(246, 247, 248, 0.75) !important;
+    -webkit-text-fill-color: rgba(246, 247, 248, 0.75) !important;
   }
   .app[data-theme="light"]:not([data-night="true"]) .fc-pcue,
   .app[data-theme="light"]:not([data-night="true"]) .fv-cue,
@@ -1137,7 +1246,7 @@ const css = `
   /* Map app text/colors to canonical axis colors */
   .app[data-theme="dark"] {
     --text-white: var(--axis-white);
-    --text-secondary: rgba(237,237,237,0.92);
+    --text-secondary: rgba(246, 247, 248, 0.75);
     --text-dimmer: rgba(237,237,237,0.55);
     --glass-bg: rgba(246,247,248,0.06);
     --glass-border: rgba(246,247,248,0.12);
@@ -1247,7 +1356,7 @@ const css = `
     box-sizing: border-box;
     padding: calc(var(--axis-dashboard-fixed-h) + 12px) 20px calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 4px);
   }
-  /* Dark (non-Ultra): accent CTA pills use charcoal ink on mood fills (circadian vars can lose to inline / inheritance) */
+  /* Dark (non-Ultra): primary CTA — flat mood fill, #252525 ink */
   .app[data-theme="dark"][data-night="false"] .begin-btn,
   .app[data-theme="dark"][data-night="false"] .session-browse-btn,
   .app[data-theme="dark"][data-night="false"] .fv-cta:not(.done),
@@ -1263,8 +1372,12 @@ const css = `
   .app-page-bottom-pad { padding-bottom: var(--safe-bottom); }
   .app-label { letter-spacing: var(--label-spacing); }
   /* ── LIQUID GLASS (one card, one bar; same blur/saturation) ── */
-  .glass-card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: var(--glass-shadow); }
+  .glass-card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4); border: 1px solid var(--glass-border); border-radius: var(--axis-radius-card); box-shadow: var(--glass-shadow); }
   .glass-bar { background: var(--tab-bg); backdrop-filter: blur(28px) saturate(1.4); -webkit-backdrop-filter: blur(28px) saturate(1.4); border: 1px solid var(--border); }
+  /* Subtle rim-light on primary cards */
+  .glass-card, .track-card, .today-card, .home-recent-card, .metrics-stat-feature {
+    border-top: 1px solid #333;
+  }
   /* ── GLASS LABEL (compact pill for three-word descriptors) ── */
   .glass-label {
     display: inline-block;
@@ -1275,9 +1388,9 @@ const css = `
     -webkit-backdrop-filter: blur(8px) saturate(1.05);
     border: 1px solid rgba(255,255,255,0.06);
     color: var(--text-secondary);
-    font-family: var(--font-ui);
+    font-family: var(--font-meta);
     font-size: var(--text-sm);
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     line-height: 1.3;
@@ -1293,8 +1406,8 @@ const css = `
   }
   /* ── LIQUID GLASS VARIABLES ── */
   [data-theme="dark"] {
-    /* Match MAIN_APP_BG.dark: deep navy shell; orbs control most color */
-    --bg-gradient: radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%);
+    /* Deep neutral shell #1A1A1A; soft orbs overlaid at low opacity */
+    --bg-gradient: #1A1A1A;
     --orb1: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99,179,237,0.18) 0%, transparent 70%);
     --orb2: radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.15) 0%, transparent 70%);
     --orb3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(251,191,36,0.10) 0%, transparent 70%);
@@ -1474,16 +1587,20 @@ const css = `
     box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
   }
   [data-theme="light"] .begin-btn {
-    box-shadow: 0 2px 12px var(--accent-glow), 0 4px 20px rgba(42,95,143,0.18);
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
+    box-shadow: none;
   }
   [data-theme="light"] .begin-btn:hover {
-    box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
+    box-shadow: none;
   }
   [data-theme="light"] .session-browse-btn {
-    box-shadow: 0 2px 12px var(--accent-glow), 0 4px 20px rgba(42,95,143,0.18);
+    color: #f6f7f8 !important;
+    -webkit-text-fill-color: #f6f7f8 !important;
+    box-shadow: none !important;
   }
   [data-theme="light"] .session-browse-btn:hover {
-    box-shadow: 0 4px 16px var(--accent-glow), 0 6px 24px rgba(42,95,143,0.22);
+    box-shadow: none !important;
   }
   /* Light mode: breathing timer rings more visible */
   [data-theme="light"] .timer-breathe-guide-ring circle:not(.timer-interval-guide-progress) {
@@ -2033,7 +2150,7 @@ const css = `
   }
   .guided-rest-timer__digits {
     width: 100%;
-    font-size: clamp(72px, 28vw, 118px);
+    font-size: clamp(84px, 14vw, 160px) !important;
     letter-spacing: -0.04em;
   }
   @supports (font-size: 1cqi) {
@@ -2057,7 +2174,7 @@ const css = `
     max-height: min(78vh, 640px);
     display: flex;
     flex-direction: column;
-    border-radius: 20px 20px 0 0;
+    border-radius: var(--axis-radius-md) var(--axis-radius-md) 0 0;
     padding: 16px 20px max(20px, env(safe-area-inset-bottom, 20px));
     box-sizing: border-box;
     animation: guidedRefresherSlideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2304,7 +2421,7 @@ const css = `
     overflow: hidden;
     -webkit-overflow-scrolling:touch;
     background: var(--bg-app, var(--bg-gradient));
-    background-color: var(--bg-fallback, #0a1525);
+    background-color: var(--bg-fallback, #1A1A1A);
     color:var(--text-primary);
     font-family:var(--font-ui);
     font-weight: 400;
@@ -2314,7 +2431,7 @@ const css = `
   }
   @media (prefers-reduced-motion: no-preference) {
     [data-theme]:not([data-night="true"]) .app {
-      background: var(--bg-fallback, #0a1525);
+      background: var(--bg-fallback, #1A1A1A);
       transition: color 0.3s ease, background var(--motion-slow), background-color var(--motion-slow);
     }
     [data-theme]:not([data-night="true"]) .app::before,
@@ -2354,7 +2471,11 @@ const css = `
     }
   }
   .app-body { flex:1; display:flex; flex-direction:column; width:100%; position:relative; min-height:0; z-index: 1; }
-  .app-orbs { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.15; background-position: top center; background-repeat: no-repeat; }
+  .app-orbs { position:fixed; inset:0; z-index:1; pointer-events:none; }
+  /* Soft orbs as atmosphere (not light sources) */
+  .app[data-theme="dark"]:not([data-night="true"]) .app-orbs {
+    opacity: 0.3;
+  }
   .app-orbs::after {
     content:''; position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%);
@@ -2403,12 +2524,10 @@ const css = `
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
-    border-radius: 16px;
+    border-radius: var(--axis-radius-card);
     transition: background 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.22s;
     position:relative; overflow:hidden;
   }
-  /* subtle rim-light on primary cards */
-  .glass-card, .track-card, .today-card, .home-recent-card, .metrics-stat-feature { border-top: 1px solid #3A3A3A; }
   .glass-card::before {
     content:''; position:absolute; top:0; left:0; right:0; height:1px;
     background: linear-gradient(90deg, transparent, var(--glass-specular) 30%, rgba(255,255,255,0.20) 50%, var(--glass-specular) 70%, transparent);
@@ -2501,6 +2620,8 @@ const css = `
     box-sizing: border-box;
     padding-left: max(var(--page-gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--page-gutter), env(safe-area-inset-right, 0px));
+    padding-bottom: 24px;
+    margin-bottom: var(--axis-safe-bottom);
   }
   .app-body > .dashboard-header + .settings-page-rail > .app-page-header {
     padding: calc(var(--axis-dashboard-fixed-h) + max(10px, calc(var(--app-title-after-dashboard) - 20px))) 0 2px;
@@ -2513,7 +2634,480 @@ const css = `
     margin-bottom: 8px;
     font-size: var(--text-lg) !important;
   }
-  .settings-density .app-screen-title { margin-bottom: 14px !important; }
+  /* Settings title: match Metrics page title (see .metrics-page-title) */
+  .app-body > .dashboard-header + .settings-page-rail > .app-page-header .app-screen-title.metrics-page-title {
+    font-size: 14px !important;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+    margin: 0 0 1rem !important;
+    font-family: var(--font-display);
+    text-transform: none;
+    line-height: 1.2;
+  }
+  .settings-density .app-screen-title.metrics-page-title { margin-bottom: 1rem !important; }
+  /* ── Settings: iOS-style grouped list (inset sections, large title, system hierarchy) ── */
+  .app.settings-ios26 {
+    --settings-ios-elevated: color-mix(in srgb, var(--glass-bg) 88%, rgba(255, 255, 255, 0.92));
+    --settings-ios-separator: rgba(60, 60, 67, 0.29);
+    --settings-ios-group-radius: var(--axis-radius-card);
+  }
+  .app.settings-ios26[data-theme="light"]:not([data-night="true"]) {
+    --settings-ios-elevated: #ffffff;
+    --settings-ios-separator: rgba(60, 60, 67, 0.29);
+  }
+  .app.settings-ios26[data-theme="dark"]:not([data-night="true"]) {
+    --settings-ios-elevated: #1c1c1e;
+    --settings-ios-separator: rgba(84, 84, 88, 0.65);
+  }
+  .app.settings-ios26[data-night="true"] {
+    --settings-ios-elevated: color-mix(in srgb, #000000 90%, rgba(255, 59, 48, 0.07));
+    --settings-ios-separator: rgba(255, 59, 48, 0.28);
+  }
+  /* Same translucent stack as other tabs (orbs show through); tint scroll layer only */
+  .app.settings-ios26 .app-body.app-body--settings-pad {
+    -webkit-font-smoothing: antialiased;
+  }
+  .app.settings-ios26[data-theme="light"]:not([data-night="true"]) .app-body.app-body--settings-pad {
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .app.settings-ios26[data-theme="dark"] .app-body.app-body--settings-pad,
+  .app.settings-ios26[data-night="true"] .app-body.app-body--settings-pad {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .app.settings-ios26 .app-body > .dashboard-header + .settings-page-rail {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+  .app.settings-ios26 .app-body > .dashboard-header + .settings-page-rail > .app-page-header .app-screen-title.metrics-page-title {
+    font-size: clamp(28px, 8vw, 34px) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--text-white) !important;
+    margin: 0 0 6px !important;
+    line-height: 1.08 !important;
+    font-family: var(--font-ui) !important;
+    text-transform: none !important;
+  }
+  .app.settings-ios26 .settings-ios-group {
+    border-radius: var(--settings-ios-group-radius);
+    border: 0.5px solid color-mix(in srgb, var(--settings-ios-separator) 65%, transparent);
+    background: var(--settings-ios-elevated);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+  .app.settings-ios26[data-theme="dark"] .settings-ios-group,
+  .app.settings-ios26[data-night="true"] .settings-ios-group {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+  .app.settings-ios26[data-night="true"] .settings-ios-group {
+    border-color: color-mix(in srgb, #ff3b30 24%, rgba(255, 255, 255, 0.1));
+  }
+  .app.settings-ios26 .settings-ios-group__header {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: color-mix(in srgb, var(--text-dimmer) 92%, var(--text-white));
+    margin: 0 0 8px;
+    padding-left: 2px;
+    line-height: 1.25;
+  }
+  .app.settings-ios26 .settings-ios-group__body {
+    padding: 14px 16px 14px;
+  }
+  .app.settings-ios26 .settings-ios-primary {
+    font-family: var(--font-ui);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .app.settings-ios26 label.settings-ios-primary {
+    font-weight: 400;
+  }
+  .app.settings-ios26 .settings-ios-secondary {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .app.settings-ios26 .settings-ios-value {
+    font-family: var(--font-ui);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .app.settings-ios26 .settings-ios-row-btn {
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .app.settings-ios26 .settings-ios-stack-block + .settings-ios-stack-block,
+  .app.settings-ios26 .settings-ios-group__body > .settings-ios-cell + .settings-ios-stack-block {
+    border-top: 0.5px solid color-mix(in srgb, var(--settings-ios-separator) 85%, transparent);
+  }
+  .app.settings-ios26 .settings-ios-cell {
+    min-height: 44px;
+    padding: 11px 0;
+  }
+  .app.settings-ios26 .settings-ios-toggle-track {
+    width: 51px;
+    height: 31px;
+    border-radius: 15.5px;
+  }
+  .app.settings-ios26 .settings-ios-toggle-knob {
+    top: 2px;
+    left: 2px;
+    width: 27px;
+    height: 27px;
+  }
+  .app.settings-ios26 .settings-ios-toggle-knob--on {
+    left: 22px;
+  }
+  .app.settings-ios26 .settings-ios-toggle-hit {
+    min-width: 51px;
+    min-height: 44px;
+  }
+  .app.settings-ios26 .settings-ios-group .settings-help-text {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.38;
+  }
+  .app.settings-ios26 .settings-ios-group .settings-privacy-sub {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .app.settings-ios26 .settings-ios-group .settings-privacy-line {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.42;
+  }
+  /* iOS-style grouped lists + liquid glass (Settings) — inset padding matches .metrics-metric-panel */
+  .settings-ios-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .settings-ios-stack > section {
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* Space between each glass card and the next section title */
+  .settings-ios-stack > section:not(:first-child) {
+    padding-top: 8px;
+    margin-top: 0;
+  }
+  .settings-ios-group {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: var(--axis-radius-card);
+    border: 1px solid color-mix(in srgb, var(--glass-border) 85%, transparent);
+    background: color-mix(in srgb, var(--glass-bg) 78%, rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    overflow: visible;
+  }
+  .app[data-night="true"] .settings-ios-group {
+    background: color-mix(in srgb, #000000 82%, rgba(255, 59, 48, 0.06));
+    border-color: color-mix(in srgb, #FF3B30 22%, rgba(255, 255, 255, 0.12));
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45);
+  }
+  .settings-ios-group__header {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--text-dimmer);
+    padding: 0;
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .settings-ios-group__body {
+    padding: 22px 20px 14px;
+  }
+  .settings-ios-stack-block {
+    padding: 14px 0;
+    box-sizing: border-box;
+  }
+  .settings-ios-stack-block:first-child {
+    padding-top: 0;
+  }
+  .settings-ios-group__body > .settings-ios-stack-block:last-child {
+    padding-bottom: 0;
+  }
+  .settings-ios-group__body > .settings-ios-cell:last-child {
+    padding-bottom: 0;
+  }
+  .settings-ios-stack-block + .settings-ios-stack-block {
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 65%, transparent);
+  }
+  .settings-ios-group__body > .settings-ios-cell + .settings-ios-stack-block {
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 65%, transparent);
+  }
+  .settings-feedback-wrap .settings-outline-btn {
+    min-height: 48px;
+    margin-top: 0;
+    width: 100%;
+  }
+  .settings-feedback-wrap .settings-outline-btn--icon {
+    justify-content: flex-start;
+  }
+  .settings-ios-label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .settings-ios-primary {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-white);
+    line-height: 1.25;
+    text-align: left;
+  }
+  label.settings-ios-primary {
+    cursor: pointer;
+    margin: 0;
+  }
+  .settings-ios-secondary {
+    font-size: 13px;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-secondary) 85%, var(--text-white));
+    line-height: 1.35;
+    margin-top: 2px;
+    text-align: left;
+  }
+  .settings-ios-meta {
+    font-size: 12px;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-secondary) 85%, var(--text-white));
+    line-height: 1.45;
+    padding: 0 0 10px;
+  }
+  .settings-ios-value {
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .settings-ios-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 10px 0;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+  }
+  .settings-ios-group__body > .settings-ios-cell:first-child {
+    padding-top: 0;
+  }
+  .settings-ios-cell__text {
+    min-width: 0;
+    flex: 1;
+    text-align: left;
+  }
+  .settings-ios-toggle-hit {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .settings-ios-toggle-track {
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    position: relative;
+    border: 1px solid var(--glass-border-strong);
+    background: var(--glass-bg);
+    transition: border-color 0.2s, background 0.2s;
+    pointer-events: none;
+  }
+  .settings-ios-toggle-track--on {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  .settings-ios-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    transition: left 0.2s;
+    pointer-events: none;
+  }
+  .settings-ios-toggle-knob--on {
+    left: 22px;
+  }
+  .app[data-night="true"] .settings-ios-toggle-knob {
+    background: #000000;
+  }
+  .settings-ios-row-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 0;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-white);
+    cursor: pointer;
+    text-align: left;
+    gap: 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .settings-ios-row-btn:hover {
+    background: color-mix(in srgb, var(--glass-bg) 45%, transparent);
+  }
+  .settings-ios-row-btn:active {
+    opacity: 0.92;
+  }
+  .settings-ios-row-btn__chev {
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .settings-ios-group .settings-help-text {
+    font-weight: 500;
+    color: color-mix(in srgb, var(--color-text-secondary) 82%, var(--text-white));
+    margin-bottom: 6px;
+    margin-top: 0;
+  }
+  .settings-ios-group .settings-privacy-sub {
+    margin: 0;
+    padding: 10px 0 4px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--text-secondary) 90%, var(--text-white));
+  }
+  .settings-ios-group .settings-privacy-sub:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .settings-ios-group .settings-privacy-line {
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-secondary) 82%, var(--text-white));
+    margin: 0;
+    padding: 3px 0 5px;
+  }
+  .settings-ios-group .settings-ios-group__body > .settings-privacy-line:last-child {
+    padding-bottom: 0;
+  }
+  .settings-ios-group .settings-privacy-actions {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .settings-ios-group .settings-ios-group__body.settings-data-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .settings-ios-group .settings-ios-group__body.settings-data-actions .settings-privacy-export-accent,
+  .settings-ios-group .settings-ios-group__body.settings-data-actions .settings-privacy-archived-outline {
+    margin: 0;
+    min-height: 48px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .settings-ios-group .settings-outline-btn.settings-health-sync-btn {
+    margin-top: 8px;
+    min-height: 48px;
+  }
+  .settings-ios-group .settings-outline-btn:not(.settings-health-sync-btn) {
+    margin-top: 0;
+  }
+  .settings-ios-group .settings-session-preset-row {
+    margin: 6px 0 0;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
+  }
+  .settings-ios-group .settings-session-preset-row .settings-duration-chip {
+    margin: 0;
+    min-height: 44px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+    text-align: center;
+  }
+  .settings-ios-group .settings-ios-stack-block--exercise-timer .settings-ios-primary {
+    margin-bottom: 2px;
+  }
+  .settings-ios-group .settings-ios-stack-block--exercise-timer .settings-help-text {
+    margin-bottom: 4px;
+  }
+  .settings-ios-group .settings-custom-duration-label {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: color-mix(in srgb, var(--text-secondary) 85%, var(--text-white));
+    margin: 12px 0 6px;
+  }
+  .settings-ios-group .settings-custom-duration-hint {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--color-text-secondary) 82%, var(--text-white));
+    margin: 6px 0 0;
+  }
+  .settings-ios-group .settings-ios-stack-block--exercise-timer .settings-custom-duration-input {
+    display: block;
+    margin: 0;
+  }
+  .settings-ios-group .settings-range {
+    margin-top: 6px;
+    min-height: 32px;
+  }
+  .settings-account-accessory-btn {
+    margin-top: 0 !important;
+    width: auto !important;
+    min-height: 44px;
+    flex-shrink: 0;
+    padding: 10px 16px !important;
+    align-self: center;
+  }
   .settings-block {
     border-top: 1px solid var(--border);
     padding-top: 14px;
@@ -2562,7 +3156,7 @@ const css = `
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: 500;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -2585,6 +3179,7 @@ const css = `
     font-size: 13px;
     color: var(--color-text-secondary);
     text-align: left;
+    font-weight: 500;
   }
   .settings-slider-value {
     font-size: 14px;
@@ -2676,7 +3271,9 @@ const css = `
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
     margin-top: 10px;
+    margin-bottom: 4px;
     line-height: 1.4;
+    font-weight: 500;
   }
   .settings-app-icon-slot {
     position: relative;
@@ -2752,6 +3349,7 @@ const css = `
     gap: 10px;
     align-items: flex-start;
     text-align: left;
+    font-weight: 500;
   }
   .settings-privacy-line::before {
     content: "";
@@ -3258,14 +3856,14 @@ const css = `
     background:var(--glass-bg);
     backdrop-filter:blur(24px) saturate(1.8); -webkit-backdrop-filter:blur(24px) saturate(1.8);
     border:1px solid var(--glass-border);
-    border-radius:22px;
+    border-radius: var(--axis-radius-card);
     padding:16px;
     box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
   }
   .sh { display:flex; align-items:baseline; gap:8px; padding-bottom:16px; border-bottom:1px solid var(--border); margin-bottom:8px; }
-  .sh-tag { font-size: var(--text-xs); font-family:var(--font-ui); font-weight:600; color:var(--text-dimmer); letter-spacing:0.12em; text-transform:uppercase; }
+  .sh-tag { font-size: var(--text-xs); font-family:var(--font-meta); font-weight:500; color:var(--text-dimmer); letter-spacing:0.12em; text-transform:uppercase; }
   .sh-name { font-size: var(--text-lg); font-weight: 700; font-family:var(--font-display); letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary); }
-  .sh-ct { margin-left:auto; font-size: var(--text-xs); font-family:var(--font-ui); font-weight:500; font-variant-numeric: tabular-nums; color:var(--text-dimmer); letter-spacing:0.03em; }
+  .sh-ct { margin-left:auto; font-size: var(--text-xs); font-family:var(--font-meta); font-weight:500; font-variant-numeric: tabular-nums; color:var(--text-dimmer); letter-spacing:0.03em; }
 
   /* ── PURPOSE NOTE ── */
   .purpose-note {
@@ -3400,7 +3998,7 @@ const css = `
   .reps-row { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:8px; border-top:1px solid var(--border); padding-top:14px; flex-wrap:nowrap; }
   .reps-left { display:flex; flex-direction:column; flex:1; min-width:0; }
   .mark-btn {
-    width:100%; padding:12px; border-radius:12px; cursor:pointer; transition:all 0.2s; margin-top:8px;
+    width:100%; padding:12px; border-radius: var(--axis-radius-sm); cursor:pointer; transition:all 0.2s; margin-top:8px;
     background:var(--glass-bg); border:1px solid var(--glass-border-strong); color:var(--text-primary);
     font-family:var(--font-display); font-size: var(--text-base); font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
     backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
@@ -3436,15 +4034,20 @@ const css = `
     padding-left: 0;
     padding-right: 0;
     width: 100%;
-    max-width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
     align-items: stretch;
   }
   .session-timer-cta-wrap .timer-top {
-    justify-content: flex-start;
+    justify-content: center;
     width: 100%;
   }
   .session-timer-cta-wrap .timer-val {
-    font-size: clamp(52px, 14vw, 72px);
+    /* LIST timer: half size of BEGIN (guided) timer */
+    width: 50%;
+    text-align: center;
+    font-size: clamp(36px, 6vw, 70px) !important;
     font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1;
@@ -3595,7 +4198,7 @@ const css = `
     display:flex; gap:10px; padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 20px); flex-shrink:0;
   }
   .fv-cta {
-    width:100%; padding:16px 24px; border-radius:20px; cursor:pointer; transition:all 0.18s; border:none;
+    width:100%; padding:16px 24px; border-radius: var(--axis-radius-md); cursor:pointer; transition:all 0.18s; border:none;
     background:var(--accent); color:var(--accent-btn-text);
     font-family:var(--font-display); font-size: var(--text-base); font-weight:700; letter-spacing:calc(0.16em * 0.95); text-transform:uppercase;
     box-shadow:0 4px 24px var(--accent-glow);
@@ -3609,7 +4212,7 @@ const css = `
     letter-spacing: calc(0.18em * 0.95) !important;
   }
   .fv-skip {
-    min-height:44px; padding:18px 20px; border-radius:18px; cursor:pointer;
+    min-height:44px; padding:18px 20px; border-radius: var(--axis-radius-md); cursor:pointer;
     transition:background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, transform var(--motion-fast), opacity var(--motion-fast);
     background:var(--glass-bg); border:1px solid var(--glass-border-strong); color:var(--text-secondary);
     font-family:var(--font-display); font-size: var(--text-base); font-weight: 600; letter-spacing:0.14em; text-transform:uppercase;
@@ -3618,7 +4221,7 @@ const css = `
   }
   .fv-skip:active { transform: scale(0.98); opacity: 0.92; }
   .fv-prev {
-    min-width:44px; min-height:44px; padding:12px 18px; border-radius:18px; cursor:pointer;
+    min-width:44px; min-height:44px; padding:12px 18px; border-radius: var(--axis-radius-md); cursor:pointer;
     transition:background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, transform var(--motion-fast), opacity var(--motion-fast);
     background:var(--glass-bg); border:1px solid var(--glass-border-strong); color:var(--text-secondary);
     font-family:var(--font-display); font-size: var(--text-lg); line-height:1;
@@ -3754,6 +4357,24 @@ const css = `
   .exercise-carousel__graphic--catcow-f2 svg { transform: scale(1.06); }
   .exercise-carousel__graphic--catcow-f3 svg { transform: scale(1); }
   .exercise-carousel__graphic svg path { fill: currentColor; }
+  .exercise-carousel--instruction-layout {
+    padding-bottom: 20px;
+  }
+  .exercise-carousel--instruction-layout .exercise-carousel__body-measure-host {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: -1;
+    visibility: hidden;
+    pointer-events: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .exercise-carousel--instruction-layout .exercise-carousel__body-measure-host .exercise-carousel__body {
+    display: block;
+    width: 100%;
+  }
   .exercise-carousel__nav {
     display: flex;
     align-items: center;
@@ -3762,17 +4383,6 @@ const css = `
     margin-top: 14px;
     min-height: 44px;
   }
-  .exercise-carousel--large .exercise-carousel__nav { align-items: flex-end; }
-  /* Add spacing between media and instructions in START GUIDED */
-  .exercise-carousel__graphic-frame + .exercise-carousel__label {
-    margin-top: 24px !important;
-  }
-  /* Lock nav position by enforcing a minimum body height (keeps arrows / step-count stable) */
-  .exercise-carousel--large .exercise-carousel__body {
-    min-height: 160px;
-  }
-  /* REST & GET READY: hide the progress bar but keep the timer digits visible (only during rest phase) */
-  .guided-overlay[data-phase="rest"] .guided-rest-timer__column > div:nth-child(2) { display: none !important; }
   .exercise-carousel__step-count {
     font-family: var(--font-display);
     font-size: 12px;
@@ -3954,7 +4564,7 @@ const css = `
   }
   .timer-btns { display:flex; gap:8px; }
   .tb {
-    flex:1; padding:10px 0; border-radius:20px; cursor:pointer; transition:all 0.15s;
+    flex:1; padding:10px 0; border-radius: var(--axis-radius-md); cursor:pointer; transition:all 0.15s;
     background:var(--accent); border:none; color:var(--accent-btn-text);
     font-family:var(--font-display); font-size: var(--text-base); font-weight:600;
     letter-spacing:0.16em; text-transform:uppercase;
@@ -3962,7 +4572,7 @@ const css = `
   }
   .tb:hover { opacity:0.88; }
   .tb-g {
-    padding:10px 20px; border-radius:20px; cursor:pointer; transition:all 0.15s;
+    padding:10px 20px; border-radius: var(--axis-radius-md); cursor:pointer; transition:all 0.15s;
     background:var(--glass-bg); border:1px solid var(--glass-border); color:var(--text-secondary);
     font-family:var(--font-display); font-size: var(--text-sm); font-weight: 600;
     letter-spacing:0.14em; text-transform:uppercase;
@@ -4156,7 +4766,7 @@ const css = `
   }
   .metrics-quick-glance__unified-card.metrics-stat-feature {
     padding: 18px 18px 20px;
-    border-radius: 22px;
+    border-radius: var(--axis-radius-card);
   }
   /* MOVEMENT TODAY — asymmetric dashboard (hero left, streak/sessions right) */
   .metrics-quick-glance__dashboard-grid {
@@ -4666,7 +5276,7 @@ const css = `
     width: 100%;
     box-sizing: border-box;
     padding: 22px 20px 26px;
-    border-radius: 22px;
+    border-radius: var(--axis-radius-card);
     overflow: visible;
   }
   /* Home TODAY uses previous layout; only surface is adjusted via inline styles. */
@@ -4683,7 +5293,7 @@ const css = `
   }
   .metrics-quick-glance__hero-band .metrics-stat-feature.metrics-quick-glance__minutes {
     padding: 18px 20px 22px;
-    border-radius: 22px;
+    border-radius: var(--axis-radius-card);
   }
   .metrics-quick-stats-heading {
     font-size: 11px;
@@ -4709,7 +5319,7 @@ const css = `
     max-width: 100%;
     box-sizing: border-box;
     padding: 16px 18px 18px;
-    border-radius: 20px;
+    border-radius: var(--axis-radius-md);
     border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
     background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
     backdrop-filter: blur(14px) saturate(1.15);
@@ -5825,7 +6435,7 @@ const css = `
   .weight-log-modal {
     width: 100%;
     max-width: 360px;
-    border-radius: 16px;
+    border-radius: var(--axis-radius-md);
     background: var(--glass-bg);
     border: 1px solid var(--color-border-secondary);
     box-shadow: var(--glass-shadow-lg);
@@ -5847,7 +6457,7 @@ const css = `
     max-height: min(100dvh, 100vh);
     height: min(100dvh, 100vh);
     margin: 0;
-    border-radius: 16px 16px 0 0;
+    border-radius: var(--axis-radius-md) var(--axis-radius-md) 0 0;
     display: flex;
     flex-direction: column;
     padding: 0;
@@ -6459,7 +7069,7 @@ const css = `
     gap: 0;
     padding: 16px 12px 18px;
     margin: 0 0 16px;
-    border-radius: 22px;
+    border-radius: var(--axis-radius-card);
     box-sizing: border-box;
     border: 1px solid color-mix(in srgb, var(--glass-border) 78%, transparent);
     background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
@@ -6679,7 +7289,7 @@ const css = `
   }
   .summary-bento-item {
     padding: 14px 16px;
-    border-radius: 24px;
+    border-radius: var(--axis-radius-card);
     border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
     background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
     backdrop-filter: blur(14px) saturate(1.15);
@@ -6721,7 +7331,7 @@ const css = `
   .summary-week-card {
     margin-bottom: 22px;
     padding: 18px 18px 16px;
-    border-radius: 24px;
+    border-radius: var(--axis-radius-card);
     border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
     background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
     backdrop-filter: blur(14px) saturate(1.15);
@@ -6775,7 +7385,7 @@ const css = `
     border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
     padding: 18px;
     margin-top: 16px;
-    border-radius: 24px;
+    border-radius: var(--axis-radius-card);
     background: color-mix(in srgb, var(--glass-bg) 88%, transparent);
     backdrop-filter: blur(14px) saturate(1.15);
     -webkit-backdrop-filter: blur(14px) saturate(1.15);
@@ -6797,7 +7407,7 @@ const css = `
   }
   .summary {
     border:1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
-    padding:16px; margin-top:20px; border-radius:24px;
+    padding:16px; margin-top:20px; border-radius: var(--axis-radius-card);
     background:color-mix(in srgb, var(--glass-bg) 88%, transparent);
     backdrop-filter:blur(14px) saturate(1.15); -webkit-backdrop-filter:blur(14px) saturate(1.15);
     box-shadow:0 6px 18px rgba(0,0,0,0.10), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 72%, transparent);
@@ -6812,7 +7422,7 @@ const css = `
   .summary-cell {
     background:color-mix(in srgb, var(--glass-bg) 92%, transparent);
     border:1px solid color-mix(in srgb, var(--glass-border) 70%, transparent);
-    border-radius:16px; padding:11px 10px;
+    border-radius: var(--axis-radius-sm); padding:11px 10px;
     backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     box-shadow:inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 70%, transparent);
   }
@@ -6829,7 +7439,7 @@ const css = `
     margin-top:16px;
     margin-bottom: 8px;
     border:1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
-    border-radius:24px;
+    border-radius: var(--axis-radius-card);
     padding:12px;
     background:color-mix(in srgb, var(--glass-bg) 90%, transparent);
     backdrop-filter:blur(10px) saturate(1.1);
@@ -6847,7 +7457,7 @@ const css = `
   .summary-cta-btn {
     width:100%;
     min-height:44px;
-    border-radius:11px;
+    border-radius: var(--axis-radius-md);
     border:1px solid color-mix(in srgb, var(--accent) 76%, transparent);
     background:var(--accent);
     color:var(--accent-btn-text);
@@ -6894,7 +7504,7 @@ const css = `
     box-sizing: border-box;
     margin: 0;
     padding: 18px;
-    border-radius: 24px;
+    border-radius: var(--axis-radius-card);
     border: 1px solid var(--glass-border);
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
@@ -7074,7 +7684,7 @@ const css = `
 
   /* ── DONE BANNER ── */
   .done-banner {
-    padding:36px 22px; text-align:center; margin-top:24px; border-radius:22px;
+    padding:36px 22px; text-align:center; margin-top:24px; border-radius: var(--axis-radius-card);
     background:var(--glass-bg); border:1px solid var(--glass-border);
     backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
@@ -7379,7 +7989,7 @@ const css = `
     box-sizing: border-box;
   }
   .metrics-card {
-    border-radius: 24px;
+    border-radius: var(--axis-radius-card);
     border: 1px solid var(--glass-border);
     background: var(--glass-bg);
     box-shadow: inset 0 1px 0 var(--glass-specular);
@@ -7456,7 +8066,7 @@ const css = `
     min-width: 0;
     display: flex;
     flex-direction: column;
-    border-radius: 16px;
+    border-radius: var(--axis-radius-md);
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
     background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
@@ -7691,7 +8301,7 @@ const css = `
   }
   .metrics-log {
     margin-top: 12px;
-    border-radius: 16px;
+    border-radius: var(--axis-radius-md);
     border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
     background: rgba(0, 0, 0, 0.12);
     max-height: 220px;
@@ -7749,7 +8359,7 @@ const css = `
   .metrics-weight-view-toggle__btn {
     flex: 1;
     min-height: 40px;
-    border-radius: 10px;
+    border-radius: var(--axis-radius-sm);
     border: 1px solid var(--glass-border);
     background: rgba(0, 0, 0, 0.15);
     color: var(--text-secondary);
@@ -7773,7 +8383,7 @@ const css = `
   .metrics-why-matters--callout {
     margin-top: 22px;
     padding: 14px 14px 16px 16px;
-    border-radius: 16px;
+    border-radius: var(--axis-radius-md);
     background: color-mix(in srgb, var(--glass-bg) 85%, var(--accent) 8%);
     border: 1px solid color-mix(in srgb, var(--glass-border) 75%, var(--accent) 18%);
     box-shadow: inset 3px 0 0 0 color-mix(in srgb, var(--accent) 65%, transparent);
@@ -7804,7 +8414,7 @@ const css = `
   .metrics-section {
     width: 100%;
     box-sizing: border-box;
-    border-radius: 20px;
+    border-radius: var(--axis-radius-md);
     border: 1px solid var(--glass-border);
     background: var(--glass-bg);
     margin-bottom: 16px;
@@ -7890,7 +8500,7 @@ const css = `
     line-height: 1.45;
   }
   .tab-bar-spacer--settings {
-    height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
+    height: calc(var(--axis-tab-clearance) + var(--axis-tab-h) + env(safe-area-inset-bottom, 0px) + 28px);
     min-height: 0;
   }
 
@@ -8161,11 +8771,10 @@ const css = `
   #axis-home-welcome {
     text-align:center;
     font-family:var(--font-display);
-    font-size:11px;
+    font-size:12px;
     font-weight:400;
     letter-spacing:0.12em;
     text-transform:uppercase;
-    opacity:0.6;
     text-shadow:none;
     filter:none;
     padding-bottom:max(10px, calc(var(--app-title-after-dashboard) - 20px));
@@ -8272,13 +8881,16 @@ const css = `
     -webkit-text-fill-color:color-mix(in srgb, var(--mood-color) 50%, #ffffff);
     opacity:1;
     font-family: var(--font-meta) !important;
-    font-size: 11px !important;
     font-weight: 500 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.05em !important;
   }
   .home-category-tab[aria-selected="true"] {
     color:var(--mood-color);
     opacity:1;
     -webkit-text-fill-color:var(--mood-color);
+    font-family: var(--font-display) !important;
+    font-weight: 700 !important;
   }
   .home-category-tab[aria-selected="true"]::after {
     content:"";
@@ -8317,6 +8929,17 @@ const css = `
     box-shadow:none;
     backdrop-filter:none;
     -webkit-backdrop-filter:none;
+  }
+  /* Top-ribbon tabs: unselected use Roboto Mono, active uses Inter Bold */
+  .tab:not(.on) {
+    font-family: var(--font-meta) !important;
+    font-weight: 500 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.05em !important;
+  }
+  .tab.on {
+    font-family: var(--font-display) !important;
+    font-weight: 700 !important;
   }
   .app[data-theme="light"]:not([data-night="true"]) .home-browse-sticky {
     background:transparent !important;
@@ -8381,10 +9004,58 @@ const css = `
     padding-bottom:0;
     box-sizing:border-box;
   }
+  .home-recent-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:0 0 4px;
+    width:100%;
+    box-sizing:border-box;
+  }
   .home-recent-label {
     font-size:var(--text-base); letter-spacing:-0.02em; text-transform:none;
-    color:var(--text-white); margin:0 0 4px; padding:0; font-weight:600;
+    color:var(--text-white); margin:0; padding:0; font-weight:600;
     text-align:left;
+    flex:1;
+    min-width:0;
+  }
+  .home-recent-collapse-btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;
+    height:36px;
+    margin:0;
+    padding:0;
+    border:none;
+    border-radius:10px;
+    background:color-mix(in srgb, var(--glass-bg) 78%, transparent);
+    color:var(--text-secondary);
+    cursor:pointer;
+    flex-shrink:0;
+    -webkit-tap-highlight-color:transparent;
+    transition:background 0.15s ease, color 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.3, 0.64, 1);
+    border:1px solid color-mix(in srgb, var(--glass-border) 75%, transparent);
+  }
+  .home-recent-collapse-btn:hover {
+    background:color-mix(in srgb, var(--glass-bg) 92%, transparent);
+    color:var(--text-white);
+  }
+  .home-recent-collapse-btn:active {
+    transform:scale(0.96);
+  }
+  .home-recent-collapse-btn svg {
+    display:block;
+    transition:transform 0.2s ease;
+  }
+  .home-recent-collapse-btn[aria-expanded="false"] svg {
+    transform:rotate(-90deg);
+  }
+  .app[data-night="true"] .home-recent-collapse-btn {
+    background:#000000;
+    color:#FF3B30;
+    border-color:color-mix(in srgb, #FF3B30 35%, rgba(255,255,255,0.12));
   }
   .home-recent-strip {
     display:flex; flex-wrap:nowrap; gap:10px; align-items:stretch;
@@ -8496,14 +9167,14 @@ const css = `
     background:var(--glass-bg); backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
     border:1px solid var(--glass-border);
     box-shadow:0 24px 48px rgba(0,0,0,0.06), var(--glass-shadow), inset 0 1px 0 var(--glass-specular);
-    border-radius:24px; padding:24px var(--page-gutter) 16px; cursor:pointer;
+    border-radius: var(--axis-radius-card); padding:24px var(--page-gutter) 16px; cursor:pointer;
     transition: background 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display:flex; flex-direction:column; gap:12px; position:relative; overflow:hidden;
   }
 
   /* Home Browse: flatter track cards (match Metrics Sessions/Active Days boxes vibe) */
   .home .track-card {
-    border-radius: 20px;
+    border-radius: var(--axis-radius-card);
     border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
     background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 58%, transparent);
@@ -8559,36 +9230,29 @@ const css = `
   .track-card-purpose { font-size: var(--text-base); margin-top:10px; }
   .track-card-right { display:flex; align-items:center; justify-content:space-between; width:100%; }
   .track-card-dur {
-    font-size: var(--text-sm); font-family:var(--font-meta); letter-spacing:-0.02em; text-transform:uppercase; color:var(--text-dim);
+    font-size: var(--text-sm); font-family:var(--font-meta); letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim);
     font-weight: 500; font-variant-numeric: tabular-nums;
   }
   .begin-btn {
     padding:8px 22px; font-family:var(--font-display); font-size: var(--text-sm); font-weight:600;
     letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:var(--axis-radius);
-    background:var(--accent); border:none; color:#1A1A1A !important;
-    -webkit-text-fill-color: #1A1A1A !important;
-    transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-    box-shadow:0 2px 12px var(--accent-glow);
+    background:var(--accent); border:none; color:var(--accent-btn-text, var(--axis-black));
+    -webkit-text-fill-color: var(--accent-btn-text, var(--axis-black));
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow:none;
     -webkit-tap-highlight-color: transparent;
   }
   .begin-btn:hover { opacity:0.88; transform:scale(1.03); }
   .begin-btn:active { transform: scale(0.97); opacity: 0.92; }
-  .session-browse-btn, .fv-cta, .summary-cta-btn {
-    background: var(--accent) !important;
-    border: none !important;
-    color: #1A1A1A !important;
-    -webkit-text-fill-color: #1A1A1A !important;
-    box-shadow: none !important;
-  }
-  /* TODAY primary CTA: Barlow + wider tracking; weight matches unbolded title */
+  /* TODAY primary CTA: bold track name; titles above stay medium weight */
   .begin-btn.begin-btn--today-primary {
-    font-weight: 500 !important;
+    font-weight: 700 !important;
     letter-spacing: 0.05em !important;
   }
   .session-browse-btn {
-    background: var(--accent) !important; border: none !important; color: var(--accent-btn-text) !important;
-    -webkit-text-fill-color: currentColor !important;
-    box-shadow: 0 2px 12px var(--accent-glow); transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    background: var(--accent) !important; border: none !important; color: var(--accent-btn-text, var(--axis-black)) !important;
+    -webkit-text-fill-color: var(--accent-btn-text, var(--axis-black)) !important;
+    box-shadow: none !important; transition: opacity 0.2s, transform 0.2s;
   }
   .session-browse-btn:hover { opacity: 0.88; transform: scale(1.03); }
   .session-browse-btn:active { transform: scale(0.97); opacity: 0.92; }
@@ -8629,7 +9293,7 @@ const css = `
     .fv-skip:active, .fv-prev:active, .begin-btn:active, .session-browse-btn:active { transform: none; }
   }
 
-  /* Inter: metadata + supporting UI (Barlow remains on .home-wordmark … .timer-val and hero metric numerals above) */
+  /* Roboto Mono: technical metadata (durations, tags); Inter on .home-wordmark and primary titles */
   .hdr-subtitle,
   .hdr-dur,
   .session-time,
@@ -8663,8 +9327,6 @@ const css = `
   .fav-filter.fav-filter--session-util .fav-toggle,
   [data-night="true"] .fav-filter.fav-filter--session-util .fav-toggle {
     font-family: var(--font-meta) !important;
-    font-weight: 500 !important;
-    letter-spacing: -0.02em !important;
   }
 `;
 
@@ -9025,7 +9687,7 @@ function GuidedRestTimer({ seconds = 15, accent, trackColor, hidden = false, pau
     React.createElement("div", { className: "guided-rest-timer__digits", style: {
         textAlign: "center",
         fontVariantNumeric: "tabular-nums",
-        fontFamily: "var(--font-display)",
+        fontFamily: "var(--font-meta)",
         fontWeight: 500,
         color: accent,
         lineHeight: 1,
@@ -9035,19 +9697,25 @@ function GuidedRestTimer({ seconds = 15, accent, trackColor, hidden = false, pau
     React.createElement("div", { style: {
         marginTop: 12,
         width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        opacity: hidden ? 0 : 1,
+        transition: "opacity 0.12s ease-out"
+      } }, /*#__PURE__*/
+    React.createElement("div", { style: {
+        width: 320,
+        maxWidth: "100%",
         height: 7,
         borderRadius: 999,
         background: trackColor,
-        overflow: "hidden",
-        opacity: hidden ? 0 : 1,
-        transition: "opacity 0.12s ease-out"
+        overflow: "hidden"
       } }, /*#__PURE__*/
     React.createElement("div", { style: {
         height: 7,
         borderRadius: 999,
         background: accent,
         width: `${progressPct}%`,
-        transition: "width 1s linear",
+        transition: paused ? "none" : "width 1s linear",
         willChange: "width"
       } }))));
 }
@@ -9100,8 +9768,9 @@ function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, p
     React.createElement("div", { className: "guided-rest-timer__digits", style: {
         textAlign: "center",
         fontVariantNumeric: "tabular-nums",
-        fontFamily: "var(--font-display)",
+        fontFamily: "var(--font-meta)",
         fontWeight: 500,
+        fontSize: "clamp(96px, 14vw, 160px)",
         color: accent,
         lineHeight: 1,
         opacity: hidden ? 0 : 1,
@@ -9110,12 +9779,18 @@ function GuidedActiveTimer({ seconds = 45, accent, trackColor, hidden = false, p
     React.createElement("div", { style: {
         marginTop: 12,
         width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        opacity: hidden ? 0 : 1,
+        transition: "opacity 0.12s ease-out"
+      } }, /*#__PURE__*/
+    React.createElement("div", { style: {
+        width: 320,
+        maxWidth: "100%",
         height: 7,
         borderRadius: 999,
         background: trackColor,
-        overflow: "hidden",
-        opacity: hidden ? 0 : 1,
-        transition: "opacity 0.12s ease-out"
+        overflow: "hidden"
       } }, /*#__PURE__*/
     React.createElement("div", { style: {
         height: 7,
@@ -9530,7 +10205,7 @@ function axisHapticTick() {
       w.webkit.messageHandlers.axisHaptic.postMessage({ type: "tick" });
       return;
     }
-    if (w && w.AXISNative && typeof w.AXISNative.haptic === "function") {
+    if (w?.AXISNative?.haptic && typeof w.AXISNative.haptic === "function") {
       w.AXISNative.haptic("tick");
       return;
     }
@@ -9545,7 +10220,7 @@ function axisHapticSuccess() {
       w.webkit.messageHandlers.axisHaptic.postMessage({ type: "success" });
       return;
     }
-    if (w && w.AXISNative && typeof w.AXISNative.haptic === "function") {
+    if (w?.AXISNative?.haptic && typeof w.AXISNative.haptic === "function") {
       w.AXISNative.haptic("success");
       return;
     }
@@ -9604,7 +10279,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
 
   // Theme-aware timer colors — use circadian accent
   const isTimerDark = nightMode || theme === "dark";
-  const timerPeriod = activePeriod || getCircadianPeriod();
+  const timerPeriod = axisResolveMoodPeriod(activePeriod);
   const timerCt = nightMode ?
   { accent: "#FF3B30", accentDim: "rgba(211, 47, 47, 0.42)" } :
   CIRCADIAN_THEMES[timerPeriod][isTimerDark ? "dark" : "light"];
@@ -9642,8 +10317,8 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center" } }, /*#__PURE__*/
       React.createElement("div", { style: {
           minWidth: 134, textAlign: "left", fontVariantNumeric: "tabular-nums",
-          fontFamily: "var(--font-display)",
-          fontSize: numSize, fontWeight: 600, letterSpacing: "-0.02em",
+          fontFamily: "var(--font-meta)",
+          fontSize: numSize, fontWeight: 500, letterSpacing: "0.02em",
           color: timerAccent, lineHeight: 1
         } }, display)
       ), /*#__PURE__*/
@@ -9666,7 +10341,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
   return (/*#__PURE__*/
     React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: gap, marginTop, alignItems: "flex-start" } }, /*#__PURE__*/
     React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 6, marginBottom: marginBottom } }, /*#__PURE__*/
-    React.createElement("div", { style: { minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-display)", fontSize: numSize, fontWeight: 600, letterSpacing: "-0.04em", color: displayColor, lineHeight: 1 } }, display)
+    React.createElement("div", { style: { minWidth: 100, textAlign: "left", fontVariantNumeric: "tabular-nums", fontFamily: "var(--font-meta)", fontSize: numSize, fontWeight: 500, letterSpacing: "0.02em", color: displayColor, lineHeight: 1 } }, display)
     ), /*#__PURE__*/
     React.createElement("div", { style: { height: barH, width: "auto", background: "transparent", borderRadius: barH, overflow: "hidden" } }, /*#__PURE__*/
     React.createElement("div", { style: { height: barH, borderRadius: barH, background: BAR_FILL,
@@ -9682,7 +10357,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
   const onExerciseDurationChange = typeof (arguments[0] && arguments[0].onExerciseDurationChange) === "function" ? arguments[0].onExerciseDurationChange : null;
-  const period = activePeriod || getCircadianPeriod();
+  const period = axisResolveMoodPeriod(activePeriod);
 
   // AXIS Ultra: deep red canvas + #FF3B30, no circadian bleed
   const ct = isNight ?
@@ -10058,7 +10733,9 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       fontFamily: "var(--font-display)",
       minHeight: 52,
       width: "100%",
-      boxSizing: "border-box"
+      boxSizing: "border-box",
+      textShadow: "none",
+      filter: "none"
     }
   }, ((cur && cur.name) || "").replace(/-/g, " ")),
   guidedPack && guidedPack.sideLabel ? /*#__PURE__*/React.createElement("div", { style: { marginTop: 6, fontSize: 12, textAlign: "center", width: "100%", alignSelf: "center", color: isNight ? "rgba(255,59,48,0.72)" : isDark ? "rgba(232,228,223,0.40)" : "rgba(15,30,46,0.50)" } }, guidedPack.sideLabel) : null,
@@ -10112,7 +10789,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       overflowY: "auto",
       overflowX: "hidden",
       WebkitOverflowScrolling: "touch",
-      padding: "6px 0 20px",
+      padding: phase === "instruction" ? "12px 0 22px" : "6px 0 20px",
       scrollbarWidth: "none",
       msOverflowStyle: "none"
     }
@@ -10129,17 +10806,19 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     bodyColorOverride: guidedBodyText,
     moveOpacity: guidedMoveOpacity,
     trackId: activeTrackId,
-    allowBaselineMediaExpand: true }) : null,
+    allowBaselineMediaExpand: true,
+    className: "exercise-carousel--instruction-layout",
+    flatMediaSurface: true,
+    lockBodyMinHeight: true }) : null,
   phase === "rest" ? /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: S, textAlign: "center", lineHeight: 1.5, padding: "8px 0 0" } }, "Next exercise starts automatically after the countdown.") : null)), /*#__PURE__*/
   React.createElement("div", { "aria-hidden": true, style: {
       position: "absolute",
       top: 0,
       left: 20,
       right: 20,
-      height: 0,
+      height: phase === "instruction" ? 0 : 22,
       pointerEvents: "none",
-      background: "none",
-      display: "none"
+      background: phase === "instruction" ? "none" : `linear-gradient(to bottom, ${guidedShellBg} 0%, rgba(0,0,0,0) 100%)`
     } }), /*#__PURE__*/
   React.createElement("div", { "aria-hidden": true, style: {
       position: "absolute",
@@ -10452,7 +11131,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       triggerHaptic(HAPTIC_LIGHT_TAP);
       }, className: exerciseDurationSeconds === sec ? "ultra-filled-btn" : undefined, style: {
         fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase",
-        padding: "8px 14px", borderRadius: 8, border: "1px solid",
+        padding: "8px 14px", borderRadius: 12, border: "1px solid",
         borderColor: isNight ? "#FF3B30" : exerciseDurationSeconds === sec ? "var(--accent)" : (isDark ? "rgba(255,255,255,0.42)" : "rgba(18,28,42,0.55)"),
         background: isNight ? exerciseDurationSeconds === sec ? "#FF3B30" : "#000000" : exerciseDurationSeconds === sec ? "var(--accent)" : "var(--glass-bg)",
         color: isNight ? exerciseDurationSeconds === sec ? "#000000" : "#FF3B30" : exerciseDurationSeconds === sec ? guidedFilledText : "var(--text-secondary)",
@@ -10942,8 +11621,8 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   };
   const timerNumMedium = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-lg)", color: "var(--text-white)", lineHeight: 1, minWidth: 40, textAlign: "center", fontVariantNumeric: "tabular-nums" };
   const timerNumSmall = { fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--text-dimmer)", lineHeight: 1.2 };
-  const BTN = { padding: "17px 28px", borderRadius: 18, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 56, boxSizing: "border-box" };
-  const BTN_GHOST = { padding: "14px 22px", borderRadius: 16, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 48, boxSizing: "border-box" };
+  const BTN = { padding: "17px 28px", borderRadius: 20, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 56, boxSizing: "border-box" };
+  const BTN_GHOST = { padding: "14px 22px", borderRadius: 18, cursor: "pointer", fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", transition: "all 0.22s", minHeight: 48, boxSizing: "border-box" };
   const BTN_INTERVAL_PAUSE = { ...BTN, padding: "12px 28px", minHeight: 56, boxSizing: "border-box" };
   const BTN_INTERVAL_RESET = { ...BTN_GHOST, minHeight: 56, padding: "14px 22px", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center" };
   // Lock INTERVAL + BREATHE layout: same ring slot, same mid slot, same button row (BREATHE as reference — no extra ring offset)
@@ -11079,7 +11758,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   }
   .timer-view-body .timer-glass-panel {
     border: 1px solid color-mix(in srgb, var(--glass-border) 82%, transparent);
-    border-radius: 24px;
+    border-radius: var(--axis-radius-card);
     position: relative;
     overflow: hidden;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)), rgba(0, 0, 0, 0.1);
@@ -11980,7 +12659,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
 }
 
-function SettingsAuthSection({ isFooter = false } = {}) {
+function SettingsAuthSection() {
   const useState = React.useState;
   const useEffect = React.useEffect;
   const [user, setUser] = useState(null);
@@ -12007,18 +12686,26 @@ function SettingsAuthSection({ isFooter = false } = {}) {
     };
   }, []);
   const email = user && user.email ? user.email : null;
-  const hasAuth = typeof window !== "undefined" && !!window.AXIS_auth;
-  return /*#__PURE__*/React.createElement("div", { style: { borderTop: isFooter ? "none" : "1px solid var(--border)", paddingTop: isFooter ? 0 : 24, marginBottom: isFooter ? 0 : 32, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, /*#__PURE__*/
-  React.createElement("div", { className: "settings-block__title settings-account-title" }, "Account"), /*#__PURE__*/
-  !ready ? null : !hasAuth ? /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Account sign-in is unavailable because the auth script did not load.") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-  React.createElement("div", { style: { fontSize: "var(--text-sm)", color: "var(--text-white)", marginBottom: 16, wordBreak: "break-all" } }, email || "Not signed in"), /*#__PURE__*/
-  React.createElement("div", { style: { display: "flex", flexDirection: "column", width: "100%", maxWidth: "100%", gap: 0 } }, email ? /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
-        try { localStorage.removeItem("axis_auth_uid"); } catch (e) {}
-        if (window.AXIS_signOut) window.AXIS_signOut().catch(() => {});
-      } }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => {
-        window.location.href = "./login.html";
-      } }, "Log in"))
-  ));
+  const auth = typeof window !== "undefined" && window.AXIS_auth;
+  const onAuth = typeof window !== "undefined" && window.AXIS_onAuthStateChanged;
+  if (!ready) return null;
+  if (!auth || !onAuth) {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-meta", style: { padding: "0 0 12px" } }, "Sign in with your email to connect this device to your AXIS profile."), /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "settings-outline-btn", style: { width: "100%", minHeight: 48, marginTop: 0 }, onClick: () => {
+      window.location.href = typeof window.axisLoginHref === "function" ? window.axisLoginHref() : "./login.html";
+    } }, "Log in"));
+  }
+  return /*#__PURE__*/React.createElement("div", { className: "settings-ios-cell" }, /*#__PURE__*/
+  React.createElement("div", { className: "settings-ios-cell__text" }, /*#__PURE__*/
+  React.createElement("div", { className: "settings-ios-primary" }, "Signed in as"), /*#__PURE__*/
+  React.createElement("div", { className: "settings-ios-secondary", style: { wordBreak: "break-all" } }, email || "Not signed in")
+  ), email ? /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn settings-account-accessory-btn", onClick: () => {
+    try { localStorage.removeItem("axis_auth_uid"); } catch (e) {}
+    if (window.AXIS_signOut) window.AXIS_signOut().catch(() => {});
+  } }, "Log out") : /*#__PURE__*/React.createElement("button", { type: "button", className: "settings-outline-btn settings-account-accessory-btn", onClick: () => {
+    window.location.href = typeof window.axisLoginHref === "function" ? window.axisLoginHref() : "./login.html";
+  } }, "Log in"));
 }
 
 function FeedbackButton() {
@@ -12708,7 +13395,7 @@ function MetricsWeightCard({ theme, nightMode, activePeriod, samples, stepsToday
   const [editingTs, setEditingTs] = React.useState(null);
   const [editDraft, setEditDraft] = React.useState("");
   const logBodyRef = React.useRef(null);
-  const periodW = activePeriod || getCircadianPeriod();
+  const periodW = axisResolveMoodPeriod(activePeriod);
   const ctW = CIRCADIAN_THEMES[periodW][theme === "dark" ? "dark" : "light"];
   const moodColor = nightMode ? "#FF3B30" : (ctW && ctW.accent ? ctW.accent : "#4DA8FF");
   const arr = axisMetricsNormalizeWeightList(samples);
@@ -12867,7 +13554,7 @@ function MetricsPainCard({ theme, nightMode, activePeriod, painByDay, onLogPain,
   const [editV, setEditV] = React.useState(5);
   const [editNote, setEditNote] = React.useState("");
   const logBodyRef = React.useRef(null);
-  const periodPain = activePeriod || getCircadianPeriod();
+  const periodPain = axisResolveMoodPeriod(activePeriod);
   const ctPain = CIRCADIAN_THEMES[periodPain][theme === "dark" ? "dark" : "light"];
   const moodAccent = nightMode ? "#FF3B30" : (ctPain && ctPain.accent ? ctPain.accent : "#4DA8FF");
   const dkToday = new Date().toDateString();
@@ -13067,7 +13754,7 @@ function axisExportAxisLocalData() {
     goals: {
       dailyMinutes: storageGet("axis_daily_goal_minutes", 30),
       weeklyMinutes: storageGet("axis_weekly_goal_minutes", null),
-      weeklyFollowsDaily: storageGet("axis_weekly_follows_daily", true)
+      weeklyFollowsDaily: false
     },
     preferences: {
       theme: storageGet("axis_theme", "dark"),
@@ -13139,6 +13826,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   const prevTabRef = useRef(tab);
   const [guidedTimelineExpanded, setGuidedTimelineExpanded] = useState(false);
   const [homeTrackCategory, setHomeTrackCategory] = useState("all");
+  const [homeRecentsCollapsed, setHomeRecentsCollapsed] = useState(() => storageGet("axis_home_recents_collapsed", false));
   /** Prevents double-counting if an exercise is toggled off/on in one session; cleared in beginTrack */
   const sessionExerciseLoggedRef = useRef(/* @__PURE__ */ new Set());
   const [recentTracks, setRecentTracks] = useState(() => {
@@ -13151,20 +13839,10 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const v = Number(storageGet("axis_daily_goal_minutes", 30));
     return Math.min(90, Math.max(1, Number.isFinite(v) ? v : 30));
   });
-  const [weeklyFollowsDaily, setWeeklyFollowsDaily] = useState(() => {
-    const rawWeekly = storageGet("axis_weekly_goal_minutes", null);
-    const storedFollows = storageGet("axis_weekly_follows_daily", null);
-    if (storedFollows === false) return false;
-    if (storedFollows === true) return true;
-    return rawWeekly == null || rawWeekly === "";
-  });
   const [weeklyGoalMinutes, setWeeklyGoalMinutes] = useState(() => {
     const v = Number(storageGet("axis_daily_goal_minutes", 30));
     const daily = Math.min(90, Math.max(1, Number.isFinite(v) ? v : 30));
     const rawWeekly = storageGet("axis_weekly_goal_minutes", null);
-    const storedFollows = storageGet("axis_weekly_follows_daily", null);
-    const follows = storedFollows === false ? false : storedFollows === true ? true : (rawWeekly == null || rawWeekly === "");
-    if (follows) return axisSnapWeeklyGoalMinutes(daily * 7);
     if (rawWeekly != null && rawWeekly !== "") {
       const w = Number(rawWeekly);
       if (Number.isFinite(w)) return axisSnapWeeklyGoalMinutes(w);
@@ -13243,9 +13921,6 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
   useEffect(() => {
     storageSet("axis_weekly_goal_minutes", weeklyGoalMinutes);
   }, [weeklyGoalMinutes]);
-  useEffect(() => {
-    storageSet("axis_weekly_follows_daily", weeklyFollowsDaily);
-  }, [weeklyFollowsDaily]);
   useEffect(() => {
     setWelcomeName(axisWelcomeDisplayNameFromStorage());
   }, [view]);
@@ -13493,22 +14168,31 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     return /*#__PURE__*/React.createElement(TimerView, { key: "timer", theme: theme, view: view, setView: setView, css: css, activePeriod: activePeriod, nightMode: nightMode, dashboardHeader: dashboardHeaderEl });
   }
   if (view === "settings") return (/*#__PURE__*/
-    React.createElement("div", { key: "settings", className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
+    React.createElement("div", { key: "settings", className: "app settings-ios26", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
     React.createElement("style", null, css), /*#__PURE__*/
     React.createElement("div", { className: "app-orbs", style: { background: "var(--orb1), var(--orb2), var(--orb3)", transition: "background 0.4s ease" } }), /*#__PURE__*/
     React.createElement("div", { className: "app-body app-body--settings-pad settings-density" }, /*#__PURE__*/
     dashboardHeaderEl, /*#__PURE__*/
     React.createElement("div", { className: "settings-page-rail" }, /*#__PURE__*/
     React.createElement("div", { className: "app-page-header" }, /*#__PURE__*/
-    React.createElement("div", { className: "app-screen-title" }, "Settings"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-goals-panel", style: { marginBottom: 14 } }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Daily Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "5 minutes is a good start. Aim for 10-20."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
-    React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-daily-goal" }, "Minutes per day"), /*#__PURE__*/
-    React.createElement("span", { className: "settings-slider-value", "aria-live": "polite" }, dailyGoalMinutes, " min")
+    React.createElement("div", { className: "app-screen-title metrics-page-title", id: "axis-settings-welcome" }, "Settings"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack" }, /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-account-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-account-h", className: "settings-ios-group__header" }, "Account"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/React.createElement(SettingsAuthSection, null))
+    )
     ), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-goals-activity-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-goals-activity-h", className: "settings-ios-group__header" }, "Goals & activity"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-label-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "settings-ios-primary", htmlFor: "axis-daily-goal" }, "Daily movement"), /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-value", "aria-live": "polite" }, dailyGoalMinutes, " min")
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "5 minutes is a good start. Aim for 10-20."), /*#__PURE__*/
     React.createElement("input", {
       className: "settings-range",
       id: "axis-daily-goal",
@@ -13520,19 +14204,16 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       onChange: (e) => {
         const n = Number(e.target.value);
         setDailyGoalMinutes(n);
-        setWeeklyFollowsDaily(true);
-        setWeeklyGoalMinutes(axisSnapWeeklyGoalMinutes(n * 7));
       },
       style: { accentColor: "var(--accent)" }
     })
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Weekly Movement Goal"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text" }, "Your weekly target. Adjust anytime."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-group" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-slider-label-row" }, /*#__PURE__*/
-    React.createElement("label", { className: "settings-slider-label", htmlFor: "axis-weekly-goal" }, "Minutes per week"), /*#__PURE__*/
-    React.createElement("span", { className: "settings-slider-value", "aria-live": "polite" }, weeklyGoalMinutes, " min")
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-label-row" }, /*#__PURE__*/
+    React.createElement("label", { className: "settings-ios-primary", htmlFor: "axis-weekly-goal" }, "Weekly movement"), /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-value", "aria-live": "polite" }, weeklyGoalMinutes, " min")
     ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "Your weekly target. Adjust anytime."), /*#__PURE__*/
     React.createElement("input", {
       className: "settings-range",
       id: "axis-weekly-goal",
@@ -13542,17 +14223,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       step: 5,
       value: weeklyGoalMinutes,
       onChange: (e) => {
-        setWeeklyFollowsDaily(false);
         setWeeklyGoalMinutes(Number(e.target.value));
       },
       style: { accentColor: "var(--accent)" }
     })
-    )
-    )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Health & metrics"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 12 } }, "Sync from Apple Health (iPhone) or Health Connect (Android). Pulls weight and steps into Metrics."),
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary", style: { marginBottom: 4 } }, "Health metrics sync"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text" }, "Sync from Apple Health (iPhone) or Health Connect (Android). Pulls weight and steps into Metrics."), /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       className: "settings-outline-btn axis-surface-tmt settings-health-sync-btn",
@@ -13576,39 +14254,42 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           setHealthConnectSyncMsg("Could not sync. Enable permissions in Apple Health or Health Connect.");
         }
       }
-    }, "Connect & sync from Health"),
-    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", marginTop: 12, lineHeight: 1.45 } }, healthConnectSyncMsg)
-    ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session Bar"),
-    [
-    { label: "Show % done", desc: "Percentage of exercises completed in the current track.", val: showPct, set: setShowPct }].
-    map(({ label, desc, val, set }) => /*#__PURE__*/
-    React.createElement("div", { key: label, style: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 12 } }, /*#__PURE__*/
-    React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, label), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, width: "100%", maxWidth: "100%" } }, desc)
-    ), /*#__PURE__*/
-    React.createElement("button", { onClick: () => {axisHapticTick();set((s) => !s);}, style: { flexShrink: 0, marginTop: 2, width: 44, height: 26, border: "1px solid", borderColor: val ? "var(--accent)" : "var(--glass-border-strong)", borderRadius: 13, background: val ? "var(--accent)" : "var(--glass-bg)", cursor: "pointer", position: "relative", transition: "all 0.2s" } }, /*#__PURE__*/
-    React.createElement("div", { style: { position: "absolute", top: 3, left: val ? 22 : 3, width: 18, height: 18, borderRadius: "50%", background: nightMode ? "#000000" : "rgba(255,255,255,0.95)", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" } })
+    }, "Connect & sync from Health"), /*#__PURE__*/
+    healthConnectSyncMsg && /*#__PURE__*/React.createElement("div", { className: "settings-ios-meta", style: { padding: "6px 0 0", margin: 0 } }, healthConnectSyncMsg)
     )
     )
     )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--session" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Session"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-session-stack", style: { display: "flex", flexDirection: "column", gap: 12 } }, /*#__PURE__*/
-    React.createElement("div", { style: { marginTop: 10 } }, /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text-white)", marginBottom: 4 } }, "Timer length per exercise"), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-track-timer-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-track-timer-h", className: "settings-ios-group__header" }, "Track & timer"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { key: "axis-show-pct", className: "settings-ios-cell", style: { alignItems: "flex-start" } }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-cell__text" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary" }, "Show % done"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-secondary" }, "Percentage of exercises completed in the current track.")
+    ), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-ios-toggle-hit",
+      onClick: () => { axisHapticTick(); setShowPct((s) => !s); },
+      "aria-pressed": showPct ? "true" : "false",
+      "aria-label": "Show % done"
+    }, /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-toggle-track" + (showPct ? " settings-ios-toggle-track--on" : "") }, /*#__PURE__*/
+    React.createElement("span", { className: "settings-ios-toggle-knob" + (showPct ? " settings-ios-toggle-knob--on" : "") })
+    ))
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block settings-ios-stack-block--exercise-timer" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary" }, "Timer length per exercise"), /*#__PURE__*/
     React.createElement("div", { className: "settings-help-text" }, "Set timer length for each LIST exercise."), /*#__PURE__*/
     React.createElement("div", { className: "settings-session-preset-row", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
     [30, 45, 60].map((sec) => /*#__PURE__*/
-    React.createElement("button", { key: sec, className: exerciseDuration === sec ? "ultra-filled-btn settings-chip--active" : undefined, onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 8, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600 } },
+    React.createElement("button", { key: sec, type: "button", className: "settings-duration-chip" + (exerciseDuration === sec ? " settings-duration-chip--active ultra-filled-btn settings-chip--active" : ""), onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);setExerciseDuration(sec);}, style: { fontFamily: "var(--font-display)", fontSize: "var(--text-xs)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "10px 16px", borderRadius: 12, border: "1px solid", borderColor: exerciseDuration === sec ? "var(--accent)" : "var(--glass-border)", background: exerciseDuration === sec ? "var(--accent)" : "var(--glass-bg)", color: exerciseDuration === sec ? nightMode ? "#000000" : theme === "light" ? "#f6f7f8" : "#252525" : "var(--text-secondary)", cursor: "pointer", fontWeight: 600, minHeight: 44, boxSizing: "border-box" } },
     sec === 60 ? "1 min" : `${sec} sec`
     )
     )
     ), /*#__PURE__*/
-    React.createElement("div", null, /*#__PURE__*/
     React.createElement("label", { className: "settings-custom-duration-label", htmlFor: "axis-exercise-custom" }, "Custom duration (seconds)"),
     React.createElement("input", {
       id: "axis-exercise-custom",
@@ -13639,38 +14320,51 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     )
     )
     )
-    , /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--privacy" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "PRIVACY & DATA"), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-sub" }, "YOUR DATA"), /*#__PURE__*/
+    ), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-privacy-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-privacy-h", className: "settings-ios-group__header" }, "Privacy"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "Privacy & data"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your workout history, goals, and preferences are stored on this device only. We never see them."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "When you log in, your account info is secured by Firebase Authentication."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-sub" }, "DATA RETENTION"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "Data retention"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "\u2022 Data is kept locally for 90 days."), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "\u2022 Older entries are automatically archived."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-actions" }, /*#__PURE__*/
-    React.createElement("button", {
-      type: "button",
-      className: "settings-privacy-export-accent",
-      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
-    }, "EXPORT MY DATA"), /*#__PURE__*/
-    React.createElement("button", {
-      type: "button",
-      className: "settings-outline-btn settings-privacy-archived-outline",
-      onClick: () => { axisHapticTick(); setArchivedDataOpen(true); }
-    }, "VIEW ARCHIVED DATA")
-    ), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-sub" }, "Backups"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "Your data currently stays local. Eventually we will implement cloud storage."), /*#__PURE__*/
-    React.createElement("div", { className: "settings-privacy-sub" }, "What We Don't Do"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-privacy-sub" }, "What we don't do"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No analytics tracking"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No data selling"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No behavioral profiling"), /*#__PURE__*/
     React.createElement("div", { className: "settings-privacy-line" }, "No cloud storage of your workouts (device-only)")
+    )
+    )
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "Custom App Icon"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginBottom: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box" } }, "Pick a home screen icon style."), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-data-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-data-h", className: "settings-ios-group__header" }, "Data management"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body settings-data-actions" }, /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-privacy-export-accent",
+      onClick: () => { axisHapticTick(); axisExportAxisLocalData(); }
+    }, "Export my data"), /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      className: "settings-outline-btn settings-privacy-archived-outline",
+      onClick: () => { axisHapticTick(); setArchivedDataOpen(true); }
+    }, "View archived data")
+    )
+    )
+    ), /*#__PURE__*/
+    React.createElement("section", { "aria-labelledby": "settings-app-info-h" }, /*#__PURE__*/
+    React.createElement("h2", { id: "settings-app-info-h", className: "settings-ios-group__header" }, "App info"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-group__body" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-primary", style: { marginBottom: 6 } }, "Custom app icon"), /*#__PURE__*/
+    React.createElement("div", { className: "settings-help-text", style: { marginBottom: 8 } }, "Pick a home screen icon style."), /*#__PURE__*/
     React.createElement("div", { className: "ultra-icon-grid", style: { display: "grid", width: "100%", maxWidth: "100%", boxSizing: "border-box", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 } },
     APP_ICON_OPTIONS.map((opt) => {
       const isSelected = selectedAppIcon === opt.src;
@@ -13697,27 +14391,25 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       }, /*#__PURE__*/React.createElement("img", {
         src: opt.src,
         alt: `${opt.label} app icon`,
-        style: { width: "100%", aspectRatio: "1 / 1", borderRadius: 10, display: "block", objectFit: "cover" }
+        style: { width: "100%", aspectRatio: "1 / 1", borderRadius: 14, display: "block", objectFit: "cover" }
       }), nightMode && /*#__PURE__*/React.createElement("span", { className: "ultra-icon-slot-dim", "aria-hidden": true }, " "), isSelected && !nightMode && /*#__PURE__*/React.createElement("span", {
         className: "settings-app-icon-badge",
         "aria-hidden": true
       }, /*#__PURE__*/React.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M20 6L9 17l-5-5" }))));
     })), /*#__PURE__*/
     nightMode && /*#__PURE__*/React.createElement("div", { style: { fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#FF3B30", marginTop: 10, fontWeight: 600 } }, "NOT AVAILABLE IN ULTRA MODE"), /*#__PURE__*/
-    React.createElement("div", { style: { fontSize: "var(--text-xs)", color: "var(--text-secondary)", lineHeight: 1.45, marginTop: 8, width: "100%", maxWidth: "100%", boxSizing: "border-box", fontWeight: 400 } }, "To apply a new icon, re-save the app using Share.")
+    React.createElement("div", { className: "settings-help-text", style: { marginTop: 8 } }, "To apply a new icon, re-save the app using Share.")
     ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-block settings-block--flush" }, /*#__PURE__*/
-    React.createElement("div", { className: "settings-section-title settings-block__title" }, "About"), /*#__PURE__*/
-    React.createElement("button", { type: "button", className: "settings-outline-btn", onClick: () => { try { const uid = axisActiveUidForStorage(); if (uid) storageSet("axis_onboarded:" + uid, false); else storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, "View Onboarding Again"), /*#__PURE__*/
-    React.createElement("div", null, /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "settings-ios-row-btn", onClick: () => { axisHapticTick(); try { const uid = axisActiveUidForStorage(); if (uid) storageSet("axis_onboarded:" + uid, false); else storageSet("axis_onboarded", false); } catch(e){} try { localStorage.setItem('hasCompletedOnboarding','false'); } catch(e){} window.location.href = window.axisOnboardingHref(); } }, /*#__PURE__*/
+    React.createElement("span", null, "Onboarding"), /*#__PURE__*/React.createElement("span", { className: "settings-ios-row-btn__chev" }, /*#__PURE__*/React.createElement(AxisThinArrowRight, { size: 16 }))
+    )
+    ), /*#__PURE__*/
+    React.createElement("div", { className: "settings-ios-stack-block settings-feedback-wrap", style: { paddingTop: 4, paddingBottom: 8 } }, /*#__PURE__*/
     React.createElement(FeedbackButton, null)
     )
     )
-    ), /*#__PURE__*/
-    React.createElement("div", { className: "settings-account-footer" }, /*#__PURE__*/
-    React.createElement("hr", { className: "settings-admin-hr" }), /*#__PURE__*/
-    React.createElement(SettingsAuthSection, { isFooter: true })
-    ), /*#__PURE__*/
+    )
     ), /*#__PURE__*/
     React.createElement("div", { className: "tab-bar-spacer tab-bar-spacer--settings" })
     ), /*#__PURE__*/
@@ -13728,7 +14420,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       painArchive: metricsPainArchive
     }), /*#__PURE__*/
     React.createElement(TabBar, { view: view, setView: setView, theme: theme, nightMode: nightMode })
-    ));
+    )))));
 
 
   // MOOD
@@ -13760,7 +14452,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
       ), /*#__PURE__*/
 
-      React.createElement("div", { className: "axis-surface-tmt mood-auto-card", style: { display: "flex", flexDirection: "column", alignItems: "stretch", padding: "16px 18px 14px", borderRadius: 22, marginBottom: 12, transition: "all 0.2s", gap: 0 } }, /*#__PURE__*/
+      React.createElement("div", { className: "axis-surface-tmt mood-auto-card", style: { display: "flex", flexDirection: "column", alignItems: "stretch", padding: "16px 18px 14px", borderRadius: 24, marginBottom: 12, transition: "all 0.2s", gap: 0 } }, /*#__PURE__*/
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 } }, /*#__PURE__*/
       React.createElement("div", null, /*#__PURE__*/
       React.createElement("div", { style: { fontSize: "var(--text-base)", fontWeight: 600, color: activePeriod === null ? "var(--accent)" : "var(--text-white)", marginBottom: 3 } }, "Auto"), /*#__PURE__*/
@@ -13777,7 +14469,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "mood-base-theme__toggle", style: nightMode ? { opacity: 0.45, pointerEvents: "none", transition: "opacity 0.2s ease" } : {} },
       [{ val: "dark", label: "Dark" }, { val: "light", label: "Light" }].map(({ val, label }) => /*#__PURE__*/
       React.createElement("button", { key: val, type: "button", onClick: nightMode ? undefined : () => {axisHapticTick();toggleTheme();}, style: {
-        padding: "5px 10px", borderRadius: 8, cursor: nightMode ? "default" : "pointer",
+        padding: "5px 10px", borderRadius: 12, cursor: nightMode ? "default" : "pointer",
         fontFamily: "var(--font-display)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase",
         border: theme === val ? "1px solid color-mix(in srgb, var(--accent) 50%, transparent)" : "1px solid color-mix(in srgb, var(--glass-border) 65%, transparent)",
         background: theme === val ? "color-mix(in srgb, var(--accent-dim) 35%, transparent)" : "color-mix(in srgb, var(--glass-bg) 40%, transparent)",
@@ -13801,14 +14493,14 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         return (/*#__PURE__*/
           React.createElement("button", { key: p, onClick: nightMode ? undefined : () => {axisHapticTick();setActivePeriod(p);storageSet("axis_period", p);}, style: {
               display: "flex", alignItems: "center", gap: 16, padding: "16px 18px",
-              borderRadius: 16, cursor: nightMode ? "default" : "pointer", textAlign: "left", width: "100%", boxSizing: "border-box",
+              borderRadius: 20, cursor: nightMode ? "default" : "pointer", textAlign: "left", width: "100%", boxSizing: "border-box",
               border: isSelected ? "1.5px solid var(--accent)" : "1px solid var(--glass-border)",
               background: nightMode ? "#000000" : isSelected ? (useMoodGlass ? `color-mix(in srgb, ${ct.accentDim} 60%, rgba(255,255,255,0.88))` : ct.accentDim) : (useMoodGlass ? "rgba(255,255,255,0.82)" : "var(--glass-bg)"),
               backdropFilter: useMoodGlass ? "blur(20px)" : "none", WebkitBackdropFilter: useMoodGlass ? "blur(20px)" : "none",
               transition: "all 0.2s"
             } }, /*#__PURE__*/
           React.createElement("div", { style: {
-              width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+              width: 44, height: 44, borderRadius: 14, flexShrink: 0,
               background: nightMode ? "#000000" : ct.bg, border: `1px solid ${ct.accent}`,
               display: "flex", alignItems: "center", justifyContent: "center",
               color: ct.accent, boxShadow: isSelected && !nightMode ? `0 0 16px ${ct.accentGlow}` : "none",
@@ -14247,7 +14939,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     if (minsNow >= 5 * 60 && minsNow < 11 * 60) {
       timeGreeting = greetWithName("Good Morning");
     } else if (minsNow >= 11 * 60 && minsNow < 17 * 60) {
-      timeGreeting = greetWithName("Good Afternoon");
+      // Afternoon should recede slightly to let the secondary header dominate.
+      timeGreeting = React.createElement("span", { style: { opacity: 0.6 } }, greetWithName("Good Afternoon"));
     } else if (minsNow >= 17 * 60 && minsNow < 21 * 60) {
       timeGreeting = greetWithName("Good Evening");
     } else {
@@ -14264,8 +14957,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
       React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting), /*#__PURE__*/
       React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 700, fontFamily: "var(--font-display)", fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 500, fontFamily: "var(--font-display)", fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
+      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 500, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySuggestionText), /*#__PURE__*/
       React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
       React.createElement("button", {
@@ -14275,7 +14968,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           width: "100%",
           padding: "14px 24px",
           fontSize: "var(--text-base)",
-          fontWeight: 500,
+          fontWeight: 700,
           letterSpacing: "0.05em",
           ...todayBtn,
           ["--axis-today-glow"]: homeHighlight
@@ -14288,8 +14981,25 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         const recentResolved = recentTracks.filter((id) => TRACKS && TRACKS[id]);
         return recentResolved.length === 0 ? null : /*#__PURE__*/
         React.createElement("div", { className: "home-recent", role: "region", "aria-label": "Recent tracks" }, /*#__PURE__*/
-        React.createElement("div", { className: "home-recent-label" }, "Recents"), /*#__PURE__*/
-        React.createElement("div", { className: "home-recent-strip" },
+        React.createElement("div", { className: "home-recent-header" }, /*#__PURE__*/
+        React.createElement("div", { className: "home-recent-label", id: "axis-home-recents-h" }, "Recents"), /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          className: "home-recent-collapse-btn",
+          "aria-expanded": homeRecentsCollapsed ? "false" : "true",
+          "aria-controls": "axis-home-recents-strip",
+          "aria-label": homeRecentsCollapsed ? "Show recent tracks" : "Hide recent tracks",
+          onClick: () => {
+            axisHapticTick();
+            setHomeRecentsCollapsed((c) => {
+              const n = !c;
+              storageSet("axis_home_recents_collapsed", n);
+              return n;
+            });
+          }
+        }, /*#__PURE__*/React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true }, /*#__PURE__*/React.createElement("path", { d: "M6 9l6 6 6-6" })))
+        ), /*#__PURE__*/
+        !homeRecentsCollapsed && /*#__PURE__*/React.createElement("div", { id: "axis-home-recents-strip", className: "home-recent-strip" },
         recentResolved.map((id) => {
           const rt = TRACKS[id];
           const rdur = getTrackDisplayDuration(id);
@@ -14332,6 +15042,8 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
           if (navigator.vibrate) navigator.vibrate(8);
           axisHapticTick();
           setHomeTrackCategory(cf.id);
+          if (cf.id !== "all") setHomeRecentsCollapsed(true);
+          else setHomeRecentsCollapsed(storageGet("axis_home_recents_collapsed", false));
         }
       }, cf.label)
       ))
@@ -14376,7 +15088,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
 
   const sessionBackNight = nightMode;
   const sessionBackDark = sessionBackNight || theme === "dark";
-  const sessionBackPeriod = activePeriod || getCircadianPeriod();
+  const sessionBackPeriod = axisResolveMoodPeriod(activePeriod);
   const sessionBackCt = sessionBackNight ? null : CIRCADIAN_THEMES[sessionBackPeriod][sessionBackDark ? "dark" : "light"];
   const sessionBackIconColor = sessionBackNight ? "#FF3B30" : sessionBackCt && sessionBackCt.textPrimary || (sessionBackDark ? "var(--axis-white)" : "#0f1020");
   const sessionBackBorderColor = sessionBackNight ? "#FF3B30" : sessionBackDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.2)";
