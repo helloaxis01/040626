@@ -2354,7 +2354,7 @@ const css = `
     }
   }
   .app-body { flex:1; display:flex; flex-direction:column; width:100%; position:relative; min-height:0; z-index: 1; }
-  .app-orbs { position:fixed; inset:0; z-index:1; pointer-events:none; }
+  .app-orbs { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.15; background-position: top center; background-repeat: no-repeat; }
   .app-orbs::after {
     content:''; position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.02) 60%, transparent 100%);
@@ -2407,6 +2407,8 @@ const css = `
     transition: background 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.22s;
     position:relative; overflow:hidden;
   }
+  /* subtle rim-light on primary cards */
+  .glass-card, .track-card, .today-card, .home-recent-card, .metrics-stat-feature { border-top: 1px solid #3A3A3A; }
   .glass-card::before {
     content:''; position:absolute; top:0; left:0; right:0; height:1px;
     background: linear-gradient(90deg, transparent, var(--glass-specular) 30%, rgba(255,255,255,0.20) 50%, var(--glass-specular) 70%, transparent);
@@ -3760,6 +3762,17 @@ const css = `
     margin-top: 14px;
     min-height: 44px;
   }
+  .exercise-carousel--large .exercise-carousel__nav { align-items: flex-end; }
+  /* Add spacing between media and instructions in START GUIDED */
+  .exercise-carousel__graphic-frame + .exercise-carousel__label {
+    margin-top: 24px !important;
+  }
+  /* Lock nav position by enforcing a minimum body height (keeps arrows / step-count stable) */
+  .exercise-carousel--large .exercise-carousel__body {
+    min-height: 160px;
+  }
+  /* REST & GET READY: hide the progress bar but keep the timer digits visible (only during rest phase) */
+  .guided-overlay[data-phase="rest"] .guided-rest-timer__column > div:nth-child(2) { display: none !important; }
   .exercise-carousel__step-count {
     font-family: var(--font-display);
     font-size: 12px;
@@ -8148,10 +8161,11 @@ const css = `
   #axis-home-welcome {
     text-align:center;
     font-family:var(--font-display);
-    font-size:var(--text-base);
+    font-size:11px;
     font-weight:400;
-    letter-spacing:0.18em;
+    letter-spacing:0.12em;
     text-transform:uppercase;
+    opacity:0.6;
     text-shadow:none;
     filter:none;
     padding-bottom:max(10px, calc(var(--app-title-after-dashboard) - 20px));
@@ -8257,6 +8271,9 @@ const css = `
     color:color-mix(in srgb, var(--mood-color) 50%, #ffffff);
     -webkit-text-fill-color:color-mix(in srgb, var(--mood-color) 50%, #ffffff);
     opacity:1;
+    font-family: var(--font-meta) !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
   }
   .home-category-tab[aria-selected="true"] {
     color:var(--mood-color);
@@ -8542,20 +8559,27 @@ const css = `
   .track-card-purpose { font-size: var(--text-base); margin-top:10px; }
   .track-card-right { display:flex; align-items:center; justify-content:space-between; width:100%; }
   .track-card-dur {
-    font-size: var(--text-sm); font-family:var(--font-ui); letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim);
-    font-weight: 600; font-variant-numeric: tabular-nums;
+    font-size: var(--text-sm); font-family:var(--font-meta); letter-spacing:-0.02em; text-transform:uppercase; color:var(--text-dim);
+    font-weight: 500; font-variant-numeric: tabular-nums;
   }
   .begin-btn {
     padding:8px 22px; font-family:var(--font-display); font-size: var(--text-sm); font-weight:600;
     letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; border-radius:var(--axis-radius);
-    background:var(--accent); border:none; color:var(--accent-btn-text);
-    -webkit-text-fill-color: currentColor;
+    background:var(--accent); border:none; color:#1A1A1A !important;
+    -webkit-text-fill-color: #1A1A1A !important;
     transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
     box-shadow:0 2px 12px var(--accent-glow);
     -webkit-tap-highlight-color: transparent;
   }
   .begin-btn:hover { opacity:0.88; transform:scale(1.03); }
   .begin-btn:active { transform: scale(0.97); opacity: 0.92; }
+  .session-browse-btn, .fv-cta, .summary-cta-btn {
+    background: var(--accent) !important;
+    border: none !important;
+    color: #1A1A1A !important;
+    -webkit-text-fill-color: #1A1A1A !important;
+    box-shadow: none !important;
+  }
   /* TODAY primary CTA: Barlow + wider tracking; weight matches unbolded title */
   .begin-btn.begin-btn--today-primary {
     font-weight: 500 !important;
@@ -8639,6 +8663,8 @@ const css = `
   .fav-filter.fav-filter--session-util .fav-toggle,
   [data-night="true"] .fav-filter.fav-filter--session-util .fav-toggle {
     font-family: var(--font-meta) !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.02em !important;
   }
 `;
 
@@ -10110,9 +10136,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       top: 0,
       left: 20,
       right: 20,
-      height: 22,
+      height: 0,
       pointerEvents: "none",
-      background: `linear-gradient(to bottom, ${guidedShellBg} 0%, rgba(0,0,0,0) 100%)`
+      background: "none",
+      display: "none"
     } }), /*#__PURE__*/
   React.createElement("div", { "aria-hidden": true, style: {
       position: "absolute",
