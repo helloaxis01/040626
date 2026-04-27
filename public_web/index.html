@@ -77,31 +77,6 @@
   <div id="root"></div>
   <div id="load-err"></div>
   <script>
-  (function(){
-    try {
-      // Force-clear any service-worker / cache storage once per deploy so Home Screen clients pick up new HTML.
-      var AXIS_BUILD_VER = "b77b994";
-      if (localStorage.getItem('axis_sw_ver') !== AXIS_BUILD_VER) {
-        // unregister service workers
-        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-          navigator.serviceWorker.getRegistrations().then(function(regs){
-            regs.forEach(function(r){ try { r.unregister(); } catch(e) {} });
-          }).catch(function(){});
-        }
-        // clear CacheStorage
-        if (window.caches && caches.keys) {
-          caches.keys().then(function(keys){
-            keys.forEach(function(k){ try { caches.delete(k); } catch(e) {} });
-          }).catch(function(){});
-        }
-        try { localStorage.setItem('axis_sw_ver', AXIS_BUILD_VER); } catch(e) {}
-        // reload once so the page fetches the newest assets
-        try { window.location.reload(); } catch(e) {}
-      }
-    } catch (e) {}
-  })();
-  </script>
-  <script>
     function showLoadErr(msg) {
       var el = document.getElementById('load-err');
       if (el) { el.style.display = 'block'; el.textContent = msg; }
@@ -367,9 +342,8 @@ function applyCircadianTheme(isDark, period) {
       --accent-secondary: ${accentSec} !important;
       --accent-dim: ${t.accentDim} !important;
       --accent-glow: ${t.accentGlow} !important;
-      /* normalize accent dim for cue bar — leave raw value (avoid complex replace in template) */
-      --cue-bar: ${t.accentDim} !important;
-      --cue-bar-label: ${t.accentDim} !important;
+      --cue-bar: ${t.accentDim.replace(/[\d.]+\)$/, "0.7)")} !important;
+      --cue-bar-label: ${t.accentDim.replace(/[\d.]+\)$/, "0.9)")} !important;
       ${t.textPrimary ? `--text-white: ${t.textPrimary} !important;` : ""}
       ${t.accentBtnText ? `--accent-btn-text: ${t.accentBtnText} !important;` : ""}
       ${t.tabBg ? `--tab-bg: ${t.tabBg} !important;` : ""}
@@ -9339,7 +9313,7 @@ function Timer({ seconds, onDone, nextName, autoStart = false }) {
   const ref = useRef(null);
   useEffect(() => {
     if (running && left > 0) ref.current = setInterval(() => setLeft((l) => l - 1), 1000);else
-    {clearInterval(ref.current);if (left === 0 && running) {setRunning(false);triggerHaptic(HAPTIC_TRIPLE_TAP);typeof onDone === "function" && onDone();}}
+    {clearInterval(ref.current);if (left === 0 && running) {setRunning(false);triggerHaptic(HAPTIC_TRIPLE_TAP);onDone?.();}}
     return () => clearInterval(ref.current);
   }, [running, left]);
   const label = running ? "Pause" : left === seconds ? "Start" : "Resume";
@@ -9418,7 +9392,7 @@ function axisHasExplicitInstructionFields(ex) {
 }
 
 function axisInstructionSideFromId(id) {
-  const s = String(id || "");
+  const s = String(id ?? "");
   if (/-R$/.test(s)) return "right";
   if (/-L$/.test(s)) return "left";
   return null;
@@ -9813,7 +9787,7 @@ function ExRow({ ex, done, onToggle, open, onExpand, skipped, onSkip, faved, onF
   };
   useEffect(() => {
     if (open && rowRef.current) {
-      setTimeout(() => rowRef.current && rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+      setTimeout(() => rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
     }
   }, [open]);
   useEffect(() => {
@@ -10201,11 +10175,11 @@ function triggerHaptic(pattern) {
 function axisHapticTick() {
   try {
     const w = typeof window !== "undefined" ? window : null;
-    if (w && w.webkit && w.webkit.messageHandlers && w.webkit.messageHandlers.axisHaptic && w.webkit.messageHandlers.axisHaptic.postMessage) {
+    if (w?.webkit?.messageHandlers?.axisHaptic?.postMessage) {
       w.webkit.messageHandlers.axisHaptic.postMessage({ type: "tick" });
       return;
     }
-    if (w && w.AXISNative && typeof w.AXISNative.haptic === "function") {
+    if (w?.AXISNative?.haptic && typeof w.AXISNative.haptic === "function") {
       w.AXISNative.haptic("tick");
       return;
     }
@@ -10216,11 +10190,11 @@ function axisHapticTick() {
 function axisHapticSuccess() {
   try {
     const w = typeof window !== "undefined" ? window : null;
-    if (w && w.webkit && w.webkit.messageHandlers && w.webkit.messageHandlers.axisHaptic && w.webkit.messageHandlers.axisHaptic.postMessage) {
+    if (w?.webkit?.messageHandlers?.axisHaptic?.postMessage) {
       w.webkit.messageHandlers.axisHaptic.postMessage({ type: "success" });
       return;
     }
-    if (w && w.AXISNative && typeof w.AXISNative.haptic === "function") {
+    if (w?.AXISNative?.haptic && typeof w.AXISNative.haptic === "function") {
       w.AXISNative.haptic("success");
       return;
     }
@@ -10260,7 +10234,7 @@ function OverlayTimer({ seconds, onDone, autoStart = false, paused = false, onRe
       }), 1000);
     } else {
       clearInterval(ref.current);
-      if (left === 0 && running) {setRunning(false);beep(880, 0.4);typeof onDone === "function" && onDone();}
+      if (left === 0 && running) {setRunning(false);beep(880, 0.4);onDone?.();}
     }
     return () => clearInterval(ref.current);
   }, [running, left]);
@@ -10356,7 +10330,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
 
   const isNight = nightMode;
   const isDark = isNight || theme === "dark";
-  const onExerciseDurationChange = typeof (arguments[0] && arguments[0].onExerciseDurationChange) === "function" ? arguments[0].onExerciseDurationChange : null;
+  const onExerciseDurationChange = typeof arguments[0]?.onExerciseDurationChange === "function" ? arguments[0].onExerciseDurationChange : null;
   const period = axisResolveMoodPeriod(activePeriod);
 
   // AXIS Ultra: deep red canvas + #FF3B30, no circadian bleed
@@ -10504,7 +10478,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     let rafInner = 0;
     const rafOuter = requestAnimationFrame(() => {
       rafInner = requestAnimationFrame(() => {
-        try {guidedCloseBtnRef.current && guidedCloseBtnRef.current.focus();} catch (e) {}
+        try {guidedCloseBtnRef.current?.focus();} catch (e) {}
       });
     });
     const onKeyDown = (e) => {
@@ -10560,14 +10534,14 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   useEffect(() => {
     if (phase === "intro") return;
     if (phase === "closing") {
-      try {wakeLockRef.current && wakeLockRef.current.release();wakeLockRef.current = null;} catch (e) {}
+      try {wakeLockRef.current?.release();wakeLockRef.current = null;} catch (e) {}
       return;
     }
     if (navigator.wakeLock && typeof navigator.wakeLock.request === "function") {
       navigator.wakeLock.request("screen").then((lock) => {wakeLockRef.current = lock;}).catch(() => {});
     }
   }, [phase]);
-  useEffect(() => () => {try {wakeLockRef.current && wakeLockRef.current.release();wakeLockRef.current = null;} catch (e) {}}, []);
+  useEffect(() => () => {try {wakeLockRef.current?.release();wakeLockRef.current = null;} catch (e) {}}, []);
 
   useEffect(() => {
     if (!titleRef.current) return;
@@ -10681,7 +10655,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
   const guidedTimerTrack = isNight ? "rgba(255, 59, 48, 0.2)" : isDark ? "rgba(255,255,255,0.08)" : "#EEEEEE";
   const guidedHeaderText = isNight ? "#FF3B30" : W;
   const guidedPhaseText = isNight ? "#FF3B30" : W;
-  const guidedExerciseName = (((cur && cur.name) || "").replace(/-/g, " ")).trim().toLowerCase();
+  const guidedExerciseName = ((cur?.name || "").replace(/-/g, " ")).trim().toLowerCase();
   const guidedNeedsMidpointHaptic = [
   "dead bug",
   "bird dog",
@@ -10737,10 +10711,10 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
       textShadow: "none",
       filter: "none"
     }
-  }, ((cur && cur.name) || "").replace(/-/g, " ")),
+  }, (cur?.name || "").replace(/-/g, " ")),
   guidedPack && guidedPack.sideLabel ? /*#__PURE__*/React.createElement("div", { style: { marginTop: 6, fontSize: 12, textAlign: "center", width: "100%", alignSelf: "center", color: isNight ? "rgba(255,59,48,0.72)" : isDark ? "rgba(232,228,223,0.40)" : "rgba(15,30,46,0.50)" } }, guidedPack.sideLabel) : null,
   phase === "rest" ? /*#__PURE__*/React.createElement(GuidedRestTimer, {
-    key: `rest-${fi}-${(cur && cur.id)}`,
+    key: `rest-${fi}-${cur?.id}`,
     seconds: GETREADY_SECONDS,
     accent: guidedTimerAccent,
     trackColor: guidedTimerTrack,
@@ -10748,7 +10722,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     paused: paused,
     onComplete: handleRestTimerComplete }) : null,
   phase === "exercise" ? /*#__PURE__*/React.createElement(GuidedActiveTimer, {
-    key: `active-${(cur && cur.id)}-${fi}`,
+    key: `active-${cur?.id}-${fi}`,
     seconds: guidedMoveSeconds,
     accent: guidedTimerAccent,
     trackColor: guidedTimerTrack,
@@ -10795,7 +10769,7 @@ function GuidedOverlay({ theme, activePeriod, activeAll: activeAllProp, TOTAL, d
     }
   }, /*#__PURE__*/React.createElement(React.Fragment, null,
   phase === "instruction" && guidedStepTotal > 0 ? /*#__PURE__*/React.createElement(ExerciseCarousel, {
-    key: `g-carousel-${fi}-${(cur && cur.id)}`,
+    key: `g-carousel-${fi}-${cur?.id}`,
     tiers: guidedInstructionTiersFiltered,
     frameSvgHtml: instructionFrameArrayForCarousel(guidedAnimKey),
     animationKey: guidedAnimKey,
@@ -11424,12 +11398,12 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
   useEffect(() => {bCyclesRef.current = breathCycles;}, [breathCycles]);
   const pattern = BREATH_PATTERNS[breathPattern];
   const curBreathPhase = pattern[bPhaseIdx];
-  const phaseLabel = (curBreathPhase && curBreathPhase.label) || "";
+  const phaseLabel = curBreathPhase?.label || "";
   const isInhalePhase = phaseLabel === "Inhale" || phaseLabel === "Sniff";
   const isHoldPhase = phaseLabel === "Hold";
   const isExhalePhase = phaseLabel.includes("Exhale");
 
-  const phaseDur = Math.max(1, (curBreathPhase && curBreathPhase.dur) || 1);
+  const phaseDur = Math.max(1, curBreathPhase?.dur ?? 1);
   void breatheAnimTick;
   const phaseElapsedSec = Math.min(
     phaseDur,
@@ -11515,7 +11489,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
           const pat = bPatternRef.current;
       let phaseIdx = bPhaseRef.current;
       let cycle = bCycleRef.current;
-      let phaseDurMs = Math.max(1, (pat[phaseIdx] && pat[phaseIdx].dur) || 1) * 1000;
+      let phaseDurMs = Math.max(1, pat[phaseIdx]?.dur ?? 1) * 1000;
       let elapsedMs = Math.max(0, now - bPhaseStartedMsRef.current);
 
       while (elapsedMs >= phaseDurMs) {
@@ -11540,7 +11514,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         phaseIdx = nextIdx;
         cycle = nextCycle;
         elapsedMs -= phaseDurMs;
-        phaseDurMs = Math.max(1, (pat[phaseIdx] && pat[phaseIdx].dur) || 1) * 1000;
+        phaseDurMs = Math.max(1, pat[phaseIdx]?.dur ?? 1) * 1000;
         bPhaseStartedMsRef.current = now - elapsedMs;
         beep(pat[phaseIdx].label === "Inhale" ? 528 : 440, 0.15);
         breathHapticFlagsRef.current = { holdMidpoint: false };
@@ -11559,7 +11533,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
 
       const nextTime = Math.max(0, Math.ceil((phaseDurMs - elapsedMs) / 1000));
       setBTime((prev) => prev === nextTime ? prev : nextTime);
-      if (breathPattern === "4-7-8" && (pat[phaseIdx] && pat[phaseIdx].label) === "Hold" && !breathHapticFlagsRef.current.holdMidpoint && elapsedMs >= 3500) {
+      if (breathPattern === "4-7-8" && pat[phaseIdx]?.label === "Hold" && !breathHapticFlagsRef.current.holdMidpoint && elapsedMs >= 3500) {
         breathHapticFlagsRef.current.holdMidpoint = true;
         triggerHaptic(HAPTIC_MEDIUM);
       }
@@ -12531,7 +12505,7 @@ function TimerView({ theme, view, setView, css, nightMode = false, activePeriod 
         WebkitBackfaceVisibility: "hidden"
       } }, /*#__PURE__*/
 
-    !nightMode && /*#__PURE__*/ React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: isDark ? Math.max(orbOpacity || 0, 0.18) : 0, ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
+    !nightMode && /*#__PURE__*/ React.createElement("svg", { className: "timer-breathe-glow", width: "306", height: "306", viewBox: "0 0 320 320", style: { position: "absolute", left: 0, top: 0, transform: "scale(1)", opacity: isDark ? Math.max(orbOpacity ?? 0, 0.18) : 0, ['--breathe-fade']: `${breatheFadeDuration}s`, ['--breathe-opacity-dur']: breatheOpacityDuration } }, /*#__PURE__*/
     React.createElement("defs", null, /*#__PURE__*/
     React.createElement("radialGradient", { id: "breatheGlow", cx: "50%", cy: "50%", r: "50%" }, /*#__PURE__*/
     React.createElement("stop", { offset: "0%", stopColor: breatheAccent, stopOpacity: "0.32" }), /*#__PURE__*/
@@ -13118,7 +13092,7 @@ function axisMetricsFormatTimeLocal(ts) {
 function axisMetricsSanitizeDecimalInput(raw) {
   let out = "";
   let dot = false;
-  for (const c of String(raw || "")) {
+  for (const c of String(raw ?? "")) {
     if (c >= "0" && c <= "9") out += c;
     else if (c === "." && !dot) {
       dot = true;
@@ -13990,7 +13964,7 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const fallback = isDark ?
     "radial-gradient(ellipse at 50% 40%, #0f1f35 0%, #0a1525 45%, #080d18 100%)" :
     "linear-gradient(145deg, #c8d8e8 0%, #d0dcea 35%, #dce4ec 70%, #e8eef4 100%)";
-    const newBg = (circadian && circadian.bg) || fallback;
+    const newBg = circadian?.bg || fallback;
     document.body.style.width = "100%";
     document.documentElement.style.width = "100%";
     document.body.style.minHeight = "100vh";
