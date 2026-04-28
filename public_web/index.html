@@ -8062,34 +8062,44 @@ const css = `
     flex-direction:row;
     align-items:center;
     justify-content:center;
-    gap:0;
-    padding:10px var(--page-gutter) 14px;
+    padding:12px var(--page-gutter) 16px;
     box-sizing:border-box;
   }
+  .home-mine-all-toggle__pill {
+    display:flex;
+    flex-direction:row;
+    align-items:stretch;
+    width:100%;
+    max-width:320px;
+    border-radius:999px;
+    padding:3px;
+    box-sizing:border-box;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    gap:0;
+  }
   .home-mine-all-toggle__btn {
-    background:none;
+    flex:1;
+    min-width:0;
+    background:transparent;
     border:none;
     margin:0;
-    padding:4px 10px;
+    padding:10px 14px;
+    border-radius:999px;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
     font-family: var(--font-roboto-mono), var(--font-meta);
     font-size:11px;
-    font-weight:500;
-    letter-spacing:0.15em;
+    font-weight:600;
+    letter-spacing:0.14em;
     text-transform:uppercase;
-    color: color-mix(in srgb, var(--text-dim) 90%, transparent);
+    color: color-mix(in srgb, var(--text-dim) 85%, transparent);
+    transition:background 0.18s ease,color 0.18s ease;
   }
   .home-mine-all-toggle__btn--on {
     color: var(--text-white, #f6f7f8);
-  }
-  .home-mine-all-toggle__sep {
-    font-family: var(--font-roboto-mono), var(--font-meta);
-    font-size:11px;
-    font-weight:500;
-    letter-spacing:0.15em;
-    color: color-mix(in srgb, var(--text-dim) 55%, transparent);
-    user-select:none;
+    background:rgba(255,255,255,0.14);
+    box-shadow:0 1px 0 rgba(255,255,255,0.06);
   }
   .axis-track-card-star {
     flex-shrink:0;
@@ -14472,11 +14482,11 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
     const showMine = homeLibTab === "mine";
     const showAll = homeLibTab === "all";
     const libraryFavSet = new Set(userLibraryFavoriteIds);
-    const homeMineAllToggleEl = React.createElement("div", { className: "home-mine-all-toggle", role: "tablist", "aria-label": "Home library" },
-    React.createElement("button", { type: "button", role: "tab", className: "home-mine-all-toggle__btn" + (showMine ? " home-mine-all-toggle__btn--on" : ""), "aria-selected": showMine ? "true" : "false", onClick: () => {axisHapticTick(); setHomeLibTab("mine");} }, "Mine"),
-    React.createElement("span", { className: "home-mine-all-toggle__sep" }, "·"),
-    React.createElement("button", { type: "button", role: "tab", className: "home-mine-all-toggle__btn" + (showAll ? " home-mine-all-toggle__btn--on" : ""), "aria-selected": showAll ? "true" : "false", onClick: () => {axisHapticTick(); setHomeLibTab("all");} }, "All")
-    );
+    const homeMineAllToggleEl = React.createElement("div", { className: "home-mine-all-toggle", role: "tablist", "aria-label": "Home library" }, /*#__PURE__*/
+    React.createElement("div", { className: "home-mine-all-toggle__pill" }, /*#__PURE__*/
+    React.createElement("button", { type: "button", role: "tab", className: "home-mine-all-toggle__btn" + (showMine ? " home-mine-all-toggle__btn--on" : ""), "aria-selected": showMine ? "true" : "false", onClick: () => {axisHapticTick(); setHomeLibTab("mine");} }, "MINE"),
+    React.createElement("button", { type: "button", role: "tab", className: "home-mine-all-toggle__btn" + (showAll ? " home-mine-all-toggle__btn--on" : ""), "aria-selected": showAll ? "true" : "false", onClick: () => {axisHapticTick(); setHomeLibTab("all");} }, "ALL")
+    ));
 
     const minsNow = new Date().getHours() * 60 + new Date().getMinutes();
     const nm = welcomeName.trim();
@@ -14609,6 +14619,31 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
         : React.createElement("p", { className: "home-recent-empty" }, "Star tracks in All to add favorites here.")
     );
 
+    const homeTodayHeroEl = /*#__PURE__*/React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top home-today-hero" }, /*#__PURE__*/
+    React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting), /*#__PURE__*/
+    React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
+    React.createElement("button", { type: "button", className: "axis-track-card-star axis-track-card-star--hero", "aria-pressed": libraryFavSet.has(todayTrack.id) ? "true" : "false", "aria-label": libraryFavSet.has(todayTrack.id) ? "Remove from favorites" : "Add to favorites", onClick: (e) => {e.stopPropagation(); toggleLibraryFavorite(todayTrack.id);} }, /*#__PURE__*/React.createElement(AxisStarIcon, { on: libraryFavSet.has(todayTrack.id) })), /*#__PURE__*/
+    React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 700, fontFamily: "var(--font-display)", fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
+    React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
+    React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySuggestionText), /*#__PURE__*/
+    React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
+    React.createElement("button", {
+      className: "begin-btn begin-btn--today-primary ultra-filled-btn",
+      onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(todayTrack.id);},
+      style: {
+        width: "100%",
+        padding: "14px 24px",
+        fontSize: "var(--text-base)",
+        fontWeight: 500,
+        letterSpacing: "0.05em",
+        ...todayBtn,
+        ["--axis-today-glow"]: homeHighlight
+      },
+      "aria-label": `Start ${todayTrack.label}, ${getTrackDisplayDuration(todayTrack.id)}` },
+    todayTrack.label
+    )
+    ));
+
     return (/*#__PURE__*/
       React.createElement("div", { className: "app", "data-theme": theme, "data-night": nightMode ? "true" : "false" }, /*#__PURE__*/
       React.createElement("style", null, css), /*#__PURE__*/
@@ -14616,34 +14651,9 @@ function WorkoutApp({ theme, toggleTheme, nightMode = false, toggleNight = () =>
       React.createElement("div", { className: "app-body" }, /*#__PURE__*/
       dashboardHeaderEl, /*#__PURE__*/
       React.createElement("div", { className: "home" }, /*#__PURE__*/
+      homeTodayHeroEl, /*#__PURE__*/
       homeMineAllToggleEl, /*#__PURE__*/
       showMine ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/
-      React.createElement("div", { className: "track-cards-outer home-track-cards-outer--top" }, /*#__PURE__*/
-      React.createElement("div", { className: "home-welcome", id: "axis-home-welcome" }, timeGreeting), /*#__PURE__*/
-      React.createElement("div", { className: "track-group start-here-group today-card today-card--ghost", role: "region", "aria-label": "Today's suggestion", style: todayCardStyle }, /*#__PURE__*/
-      React.createElement("button", { type: "button", className: "axis-track-card-star axis-track-card-star--hero", "aria-pressed": libraryFavSet.has(todayTrack.id) ? "true" : "false", "aria-label": libraryFavSet.has(todayTrack.id) ? "Remove from favorites" : "Add to favorites", onClick: (e) => {e.stopPropagation(); toggleLibraryFavorite(todayTrack.id);} }, /*#__PURE__*/React.createElement(AxisStarIcon, { on: libraryFavSet.has(todayTrack.id) })), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { letterSpacing: "-0.02em", textTransform: "uppercase", color: todayInk, marginBottom: 8, fontWeight: 700, fontFamily: "var(--font-display)", fontSize: "var(--text-lg)" } }, todayBoxTitleByPeriod[periodKey] || "Today"), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line" : undefined, style: { fontWeight: 700, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", color: todayInk, marginBottom: 6 } }, periodLabels[periodKey]), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, marginBottom: 6, lineHeight: 1.4 } }, todaySuggestionText), /*#__PURE__*/
-      React.createElement("div", { className: nightMode ? "today-card__line today-card__line--muted" : undefined, style: { color: todayInkSecondary, letterSpacing: "0.06em", marginBottom: 18 } }, getTrackDisplayDuration(todayTrack.id)), /*#__PURE__*/
-      React.createElement("button", {
-        className: "begin-btn begin-btn--today-primary ultra-filled-btn",
-        onClick: () => {triggerHaptic(HAPTIC_LIGHT_TAP);beginTrack(todayTrack.id);},
-        style: {
-          width: "100%",
-          padding: "14px 24px",
-          fontSize: "var(--text-base)",
-          fontWeight: 500,
-          letterSpacing: "0.05em",
-          ...todayBtn,
-          ["--axis-today-glow"]: homeHighlight
-        },
-        "aria-label": `Start ${todayTrack.label}, ${getTrackDisplayDuration(todayTrack.id)}` },
-      todayTrack.label
-      )
-      )
-      )
-      , /*#__PURE__*/
       homeRecentSectionEl, /*#__PURE__*/
       homeFavoritesSectionEl, /*#__PURE__*/
       React.createElement(EolMarker, null)
